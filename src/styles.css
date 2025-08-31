@@ -9,12 +9,50 @@ body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI"
 .app{max-width:1100px;margin:28px auto;padding:18px}
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .brand{font-weight:700;font-size:20px}
-.nav button{background:transparent;border:0;padding:10px 14px;border-radius:8px;margin-right:6px;cursor:pointer}
+.nav{display:flex;align-items:center;gap:8px;overflow:auto;padding-bottom:6px}
+.nav-row{display:flex;align-items:center;gap:8px}
+.nav-row--secondary{overflow:auto;padding-bottom:4px}
+.nav-row button{background:transparent;border:0;padding:8px 12px;border-radius:8px;margin-right:6px;cursor:pointer;white-space:nowrap}
+.nav-actions{display:flex;gap:8px;align-items:center}
+.nav-actions .btn{padding:6px 8px;border-radius:8px}
+
+/* mobile collapse behavior */
+@media (max-width:700px){
+  .nav-row--secondary{display:none}
+  .nav-row--secondary.open{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+}
+
+/* expanded tools grid */
+.tools-grid.expanded{grid-template-columns:repeat(4,1fr)}
+@media (max-width:1100px){
+  .tools-grid.expanded{grid-template-columns:repeat(3,1fr)}
+}
 .nav button.active{background:var(--accent);color:white}
 .main{display:flex;gap:18px}
 .tool{flex:1;background:var(--card);padding:18px;border-radius:10px;min-height:360px;box-shadow:0 1px 2px rgba(0,0,0,0.04)}
 .sidebar{width:260px;background:linear-gradient(180deg,#fff,#fbfbff);padding:16px;border-radius:10px}
 .footer{text-align:center;color:var(--muted);margin-top:14px;font-size:13px}
+
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tool-card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(13,38,59,0.04);min-height:120px;display:flex;flex-direction:column;gap:8px}
+.tool-card .title{font-weight:600}
+.tool-card .desc{color:var(--muted);font-size:13px}
+.tool-card .icon{width:44px;height:44px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-weight:700}
+
+.tool-card{position:relative;overflow:visible;transition:transform .18s ease,box-shadow .18s ease}
+.tool-card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(13,38,59,0.08)}
+.tool-card .badge{position:absolute;top:10px;right:10px;background:#ff5a5f;color:white;padding:6px 8px;border-radius:999px;font-size:12px;font-weight:700}
+.tool-card .icon-wrap{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.tool-card .card-preview{position:absolute;left:18px;right:18px;bottom:-160px;background:linear-gradient(180deg,#fff,#fbfbff);padding:12px;border-radius:8px;box-shadow:0 8px 20px rgba(13,38,59,0.08);display:none}
+.tool-card:hover .card-preview{display:block}
+.tool-card .card-preview .open-btn{margin-top:8px;background:var(--accent);color:white;border:0;padding:6px 10px;border-radius:8px;cursor:pointer}
+
+@media (max-width:1100px){
+  .tools-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:700px){
+  .tools-grid{grid-template-columns:1fr}
+}
 
 .dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #e6e9f0;padding:28px;border-radius:8px;min-height:220px}
 .file-list{margin-top:12px}

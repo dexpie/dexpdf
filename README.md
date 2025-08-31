@@ -1,15 +1,5 @@
-<<<<<<< HEAD
 # dexpdf
 =======
-# dexpdf
-
-dexpdf is a small client-side PDF toolkit built with React + Vite. It provides basic tools similar to small PDF services: merge PDFs, extract pages, and create PDFs from images — all in the browser (no server required).
-
-Features
-- Merge multiple PDFs into one
-- Split / extract selected pages from a PDF
-- Convert images into a single PDF
-
 # dexpdf
 
 dexpdf is a small client-side PDF toolkit built with React + Vite. It provides basic tools similar to small PDF services: merge PDFs, extract pages, and create PDFs from images — all in the browser (no server required).
@@ -53,3 +43,4 @@ Notes and limitations
 Next steps (optional)
 - Add progress UI and drag/drop reordering for files.
 - Add server-side conversion endpoints for heavy workloads.
+>>>>>>> 1c21bca (Initial commit: dexpdf — client-side PDF tools (merge, split, images->pdf, pdf->images))

@@ -1,9 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import jsPDF from 'jspdf'
 
-export default function ImagesToPdfTool(){
+function ImagesToPdfTool(){
 		const [images, setImages] = useState([])
-	const [busy, setBusy] = useState(false)
+		const [busy, setBusy] = useState(false)
+		const [mode, setMode] = useState('fit') // 'fit' or 'cover'
+		const [pageSize, setPageSize] = useState('A4') // 'A4' | 'Letter' | 'Custom'
+		const [customW, setCustomW] = useState(210)
+		const [customH, setCustomH] = useState(297)
+		const [margin, setMargin] = useState(10)
+		const [previewUrl, setPreviewUrl] = useState(null)
+		const previewWindowRef = useRef(null)
 
 		async function onFiles(e){
 			const list = Array.from(e.target.files)
@@ -51,22 +58,35 @@ export default function ImagesToPdfTool(){
 		})
 	}
 
-	async function makePdf(){
+		async function makePdf({download=true, showPreview=false}={download:true, showPreview:false}){
 		if(images.length===0) return
 		setBusy(true)
 		try{
 			// Preload all images to get sizes
 			const imgs = images // already loaded with dataUrl and sizes
 
-			const unit = 'mm'
-			const pxToMm = 25.4 / 96 // assume 96 DPI
-			const A4W = 210
-			const A4H = 297
+				const unit = 'mm'
+				const sizes = {
+					A4: [210,297],
+					Letter: [216,279]
+				}
+				const A4W = sizes.A4[0]
+				const A4H = sizes.A4[1]
+
 
 			// create doc based on first image orientation
-			const first = imgs[0]
-			const firstIsLandscape = first.width >= first.height
-			const doc = new jsPDF({unit, format: firstIsLandscape ? [A4H, A4W] : [A4W, A4H]})
+				const first = imgs[0]
+				const firstIsLandscape = first.width >= first.height
+				// choose page size per user selection (use first image orientation by default)
+				let baseW, baseH
+				if(pageSize === 'Custom'){
+					baseW = Number(customW) || A4W
+					baseH = Number(customH) || A4H
+				}else{
+					baseW = sizes[pageSize][0]
+					baseH = sizes[pageSize][1]
+				}
+				const doc = new jsPDF({unit, format: firstIsLandscape ? [baseH, baseW] : [baseW, baseH]})
 
 							for(let i=0;i<imgs.length;i++){
 								// support entries that may have either `dataUrl` or `thumb`
@@ -80,21 +100,37 @@ export default function ImagesToPdfTool(){
 									continue
 								}
 				const isLandscape = width >= height
-				const pageW = isLandscape ? A4H : A4W
-				const pageH = isLandscape ? A4W : A4H
+				const pageW = isLandscape ? baseH : baseW
+				const pageH = isLandscape ? baseW : baseH
 
 						if(i>0) doc.addPage([pageW, pageH])
 
-				// available area with small margins
-				const margin = 10
-				const maxW = pageW - margin*2
-				const maxH = pageH - margin*2
+				// available area with user margin (in mm)
+				const m = Number(margin) || 0
+				const maxW = pageW - m * 2
+				const maxH = pageH - m * 2
 
-				const imgWmm = width * pxToMm
-				const imgHmm = height * pxToMm
-				const scale = Math.min(maxW / imgWmm, maxH / imgHmm, 1)
-				const drawW = imgWmm * scale
-				const drawH = imgHmm * scale
+				// Fit by aspect ratio; mode 'fit' keeps whole image visible, 'cover' fills page and may crop
+				const imgAspect = width / height
+				let drawW, drawH
+				if(mode === 'fit'){
+					// fit inside maxW x maxH
+					drawW = maxW
+					drawH = drawW / imgAspect
+					if(drawH > maxH){
+						drawH = maxH
+						drawW = drawH * imgAspect
+					}
+				} else {
+					// cover: fill area, may be larger than page and thus be clipped
+					drawW = maxW
+					drawH = drawW / imgAspect
+					if(drawH < maxH){
+						// when height doesn't fill, scale by height
+						drawH = maxH
+						drawW = drawH * imgAspect
+					}
+				}
 				const x = (pageW - drawW) / 2
 				const y = (pageH - drawH) / 2
 
@@ -102,7 +138,22 @@ export default function ImagesToPdfTool(){
 		doc.addImage(dataUrl, imgFormat, x, y, drawW, drawH)
 			}
 
-			doc.save('images.pdf')
+				if(showPreview){
+					const dataUri = doc.output('datauristring')
+					setPreviewUrl(dataUri)
+					// try to open preview in a new window or reuse the previous one
+					try{
+						if(previewWindowRef.current && !previewWindowRef.current.closed){
+							previewWindowRef.current.location.href = dataUri
+						}else{
+							previewWindowRef.current = window.open(dataUri)
+						}
+					}catch(e){
+						// fallback: keep previewUrl state for inline iframe
+						console.warn('preview open failed', e)
+					}
+				}
+				if(download) doc.save('images.pdf')
 		}catch(err){console.error(err); alert('Failed: '+(err.message||err))}
 		finally{setBusy(false)}
 	}
@@ -110,10 +161,40 @@ export default function ImagesToPdfTool(){
 	return (
 		<div>
 			<h2>Images → PDF</h2>
-			<div className="dropzone">
+				<div className="dropzone">
 				<input type="file" accept="image/*" multiple onChange={onFiles} />
 				<div className="muted">Select images in the order you want them to appear.</div>
 			</div>
+				<div style={{display:'flex',gap:12,marginTop:8,alignItems:'center'}}>
+					<label style={{display:'flex',gap:8,alignItems:'center'}}>
+						Mode:
+						<select value={mode} onChange={e=>setMode(e.target.value)}>
+							<option value="fit">Fit (no crop)</option>
+							<option value="cover">Cover (fill, may crop)</option>
+						</select>
+					</label>
+					<label style={{display:'flex',gap:8,alignItems:'center'}}>
+						Page:
+						<select value={pageSize} onChange={e=>setPageSize(e.target.value)}>
+							<option value="A4">A4</option>
+							<option value="Letter">Letter</option>
+							<option value="Custom">Custom</option>
+						</select>
+					</label>
+					{pageSize === 'Custom' && (
+						<div style={{display:'flex',gap:8,alignItems:'center'}}>
+							<input type="number" value={customW} onChange={e=>setCustomW(e.target.value)} style={{width:80}} />
+							x
+							<input type="number" value={customH} onChange={e=>setCustomH(e.target.value)} style={{width:80}} />
+							mm
+						</div>
+					)}
+					<label style={{display:'flex',gap:8,alignItems:'center'}}>
+						Margin:
+						<input type="number" value={margin} onChange={e=>setMargin(e.target.value)} style={{width:80}} />
+						mm
+					</label>
+				</div>
 					<div className="file-list">
 						{images.map((entry,i)=>(
 							<div className="file-item" key={i} draggable onDragStart={(e)=>onDragStart(e,i)} onDragOver={onDragOver} onDrop={(e)=>onDrop(e,i)}>
@@ -127,10 +208,19 @@ export default function ImagesToPdfTool(){
 							</div>
 						))}
 					</div>
-			<div style={{marginTop:12}}>
-				<button className="btn" onClick={makePdf} disabled={busy || images.length===0}>{busy? 'Working...' : 'Create PDF'}</button>
+			<div style={{marginTop:12,display:'flex',gap:8}}>
+				<button className="btn" onClick={()=>makePdf({download:true, showPreview:false})} disabled={busy || images.length===0}>{busy? 'Working...' : 'Create PDF'}</button>
+				<button className="btn" onClick={()=>makePdf({download:false, showPreview:true})} disabled={busy || images.length===0}>Preview</button>
 			</div>
+			{previewUrl && (
+				<div style={{marginTop:12}}>
+					<div className="muted">Preview (close tab/window to dismiss):</div>
+					<iframe title="pdf-preview" src={previewUrl} style={{width:'100%',height:400,border:'1px solid #ddd'}} />
+				</div>
+			)}
 		</div>
 	)
 }
+
+export default ImagesToPdfTool
 
