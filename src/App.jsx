@@ -12,6 +12,9 @@ const PdfToPptTool = React.lazy(() => import('./tools/PdfToPptTool'))
 const PptToPdfTool = React.lazy(() => import('./tools/PptToPdfTool'))
 const RotateTool = React.lazy(() => import('./tools/RotateTool'))
 const WatermarkTool = React.lazy(() => import('./tools/WatermarkTool'))
+const ReorderTool = React.lazy(() => import('./tools/ReorderTool'))
+const AnnotateTool = React.lazy(() => import('./tools/AnnotateTool'))
+const OcrTool = React.lazy(() => import('./tools/OcrTool'))
 const PageNumbersTool = React.lazy(() => import('./tools/PageNumbersTool'))
 const SignatureTool = React.lazy(() => import('./tools/SignatureTool'))
 const EditPdfTool = React.lazy(() => import('./tools/EditPdfTool'))
@@ -27,6 +30,9 @@ const tools = [
   { id: 'pdf2ppt', name: 'PDF → PPTX', icon: '📤', comp: PdfToPptTool, desc: 'Export each PDF page as a PPTX slide' },
   { id: 'ppt2pdf', name: 'PPTX → PDF', icon: '📥', comp: PptToPdfTool, desc: 'Convert PPTX slides (images) to PDF' },
   { id: 'rotate', name: 'Rotate Pages', icon: '🔄', comp: RotateTool, desc: 'Rotate selected pages clockwise or counterclockwise' },
+  { id: 'reorder', name: 'Reorder Pages', icon: '🔀', comp: ReorderTool, desc: 'Drag to reorder PDF pages and export' },
+  { id: 'annotate', name: 'Annotate PDF', icon: '🖊️', comp: AnnotateTool, desc: 'Add drawings, highlights, and sticky notes' },
+  { id: 'ocr', name: 'OCR (Image→Text)', icon: '🔎', comp: OcrTool, desc: 'Extract text from images or scanned PDFs (Tesseract.js)' },
   { id: 'watermark', name: 'Watermark', icon: '💧', comp: WatermarkTool, desc: 'Add text/image watermark' },
   { id: 'pagenums', name: 'Page Numbers', icon: '🔢', comp: PageNumbersTool, desc: 'Add page numbers' },
   { id: 'signature', name: 'Signature', icon: '✒️', comp: SignatureTool, desc: 'Sign PDF pages' },
