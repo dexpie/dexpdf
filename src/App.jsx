@@ -1,75 +1,72 @@
-import React, { useState } from 'react'
-import MergeTool from './tools/MergeTool'
-import SplitTool from './tools/SplitTool'
-import ImagesToPdfTool from './tools/ImagesToPdfTool'
-import PdfToImagesTool from './tools/PdfToImagesTool'
-import PdfToTextTool from './tools/PdfToTextTool'
-import PdfToWordTool from './tools/PdfToWordTool'
-import WatermarkTool from './tools/WatermarkTool'
-import PageNumbersTool from './tools/PageNumbersTool'
-import SignatureTool from './tools/SignatureTool'
-import EditPdfTool from './tools/EditPdfTool'
-import CompressTool from './tools/CompressTool'
+import React, { useState, Suspense } from 'react'
+import ToolCard from './components/ToolCard'
+import Modal from './components/Modal'
+
+const MergeTool = React.lazy(() => import('./tools/MergeTool'))
+const SplitTool = React.lazy(() => import('./tools/SplitTool'))
+const ImagesToPdfTool = React.lazy(() => import('./tools/ImagesToPdfTool'))
+const PdfToImagesTool = React.lazy(() => import('./tools/PdfToImagesTool'))
+const PdfToTextTool = React.lazy(() => import('./tools/PdfToTextTool'))
+const PdfToWordTool = React.lazy(() => import('./tools/PdfToWordTool'))
+const WatermarkTool = React.lazy(() => import('./tools/WatermarkTool'))
+const PageNumbersTool = React.lazy(() => import('./tools/PageNumbersTool'))
+const SignatureTool = React.lazy(() => import('./tools/SignatureTool'))
+const EditPdfTool = React.lazy(() => import('./tools/EditPdfTool'))
+const CompressTool = React.lazy(() => import('./tools/CompressTool'))
 
 const tools = [
-  { id: 'merge', name: 'Merge PDF', comp: <MergeTool /> },
-  { id: 'split', name: 'Split PDF', comp: <SplitTool /> },
-  { id: 'imgs2pdf', name: 'Images → PDF', comp: <ImagesToPdfTool /> },
-  { id: 'pdf2imgs', name: 'PDF → Images', comp: <PdfToImagesTool /> },
-  { id: 'pdf2text', name: 'PDF → Text', comp: <PdfToTextTool /> },
-  { id: 'pdf2word', name: 'PDF → Word', comp: <PdfToWordTool /> },
-  { id: 'watermark', name: 'Watermark', comp: <WatermarkTool /> },
-  { id: 'pagenums', name: 'Page Numbers', comp: <PageNumbersTool /> },
-  { id: 'signature', name: 'Signature', comp: <SignatureTool /> },
-  { id: 'edit', name: 'Edit PDF', comp: <EditPdfTool /> },
-  { id: 'compress', name: 'Compress', comp: <CompressTool /> }
+  { id: 'merge', name: 'Merge PDF', comp: MergeTool, desc: 'Combine multiple PDFs into one' },
+  { id: 'split', name: 'Split PDF', comp: SplitTool, desc: 'Extract pages or split by ranges' },
+  { id: 'imgs2pdf', name: 'Images → PDF', comp: ImagesToPdfTool, desc: 'Convert images to a single PDF' },
+  { id: 'pdf2imgs', name: 'PDF → Images', comp: PdfToImagesTool, desc: 'Export PDF pages as images' },
+  { id: 'pdf2text', name: 'PDF → Text', comp: PdfToTextTool, desc: 'Extract selectable text from PDF' },
+  { id: 'pdf2word', name: 'PDF → Word', comp: PdfToWordTool, desc: 'Basic PDF to DOCX conversion' },
+  { id: 'watermark', name: 'Watermark', comp: WatermarkTool, desc: 'Add text/image watermark' },
+  { id: 'pagenums', name: 'Page Numbers', comp: PageNumbersTool, desc: 'Add page numbers' },
+  { id: 'signature', name: 'Signature', comp: SignatureTool, desc: 'Sign PDF pages' },
+  { id: 'edit', name: 'Edit PDF', comp: EditPdfTool, desc: 'Edit PDF content (basic)' },
+  { id: 'compress', name: 'Compress', comp: CompressTool, desc: 'Reduce PDF file size' }
 ]
 
 export default function App() {
-  const [active, setActive] = useState('merge')
+  const [active, setActive] = useState(null)
+  const [open, setOpen] = useState(false)
+
+  function openTool(id){
+    const t = tools.find(x => x.id === id)
+    if(!t) return
+    setActive(t)
+    setOpen(true)
+  }
+
+  function closeTool(){ setOpen(false); setActive(null) }
 
   return (
     <div className="app">
       <header className="header">
         <div className="brand">dexpdf</div>
-
-        <div className="nav-wrapper">
-          <nav className="nav nav-desktop">
-            {tools.map(t => (
-              <button
-                key={t.id}
-                className={t.id === active ? 'active' : ''}
-                onClick={() => setActive(t.id)}
-              >
-                {t.name}
-              </button>
-            ))}
-          </nav>
-
-          <div className="nav-mobile">
-            <select value={active} onChange={e => setActive(e.target.value)}>
-              {tools.map(t => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
       </header>
 
-      <main className="main">
-        <section className="tool">
-          {tools.find(t => t.id === active)?.comp}
-        </section>
-        <aside className="sidebar">
-          <h3>Tips</h3>
-          <ul>
-            <li>Drop or select multiple files to start.</li>
-            <li>Watch progress and download when ready.</li>
-          </ul>
-        </aside>
-      </main>
+      <section className="hero">
+        <div className="hero-dropzone">
+          <div className="hero-title">Drop PDF files here or click to select</div>
+          <div className="hero-sub">Merge, split, convert and more — all locally in your browser</div>
+        </div>
+      </section>
 
-      <footer className="footer">dexpdf — small local PDF toolkit • deploy-ready for Vercel</footer>
+      <section className="tool-grid">
+        {tools.map(t => (
+          <ToolCard key={t.id} title={t.name} desc={t.desc} onOpen={() => openTool(t.id)} />
+        ))}
+      </section>
+
+      <footer className="footer">dexpdf — small local PDF toolkit</footer>
+
+      <Modal open={open} onClose={closeTool} title={active?.name}>
+        <Suspense fallback={<div style={{padding:20}}>Loading...</div>}>
+          {active && <active.comp />}
+        </Suspense>
+      </Modal>
     </div>
   )
 }
