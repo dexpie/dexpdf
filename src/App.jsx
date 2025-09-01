@@ -3,12 +3,26 @@ import MergeTool from './tools/MergeTool'
 import SplitTool from './tools/SplitTool'
 import ImagesToPdfTool from './tools/ImagesToPdfTool'
 import PdfToImagesTool from './tools/PdfToImagesTool'
+import PdfToTextTool from './tools/PdfToTextTool'
+import PdfToWordTool from './tools/PdfToWordTool'
+import WatermarkTool from './tools/WatermarkTool'
+import PageNumbersTool from './tools/PageNumbersTool'
+import SignatureTool from './tools/SignatureTool'
+import EditPdfTool from './tools/EditPdfTool'
+import CompressTool from './tools/CompressTool'
 
 const tools = [
   { id: 'merge', name: 'Merge PDF', comp: <MergeTool /> },
   { id: 'split', name: 'Split PDF', comp: <SplitTool /> },
   { id: 'imgs2pdf', name: 'Images → PDF', comp: <ImagesToPdfTool /> },
-  { id: 'pdf2imgs', name: 'PDF → Images', comp: <PdfToImagesTool /> }
+  { id: 'pdf2imgs', name: 'PDF → Images', comp: <PdfToImagesTool /> },
+  { id: 'pdf2text', name: 'PDF → Text', comp: <PdfToTextTool /> },
+  { id: 'pdf2word', name: 'PDF → Word', comp: <PdfToWordTool /> },
+  { id: 'watermark', name: 'Watermark', comp: <WatermarkTool /> },
+  { id: 'pagenums', name: 'Page Numbers', comp: <PageNumbersTool /> },
+  { id: 'signature', name: 'Signature', comp: <SignatureTool /> },
+  { id: 'edit', name: 'Edit PDF', comp: <EditPdfTool /> },
+  { id: 'compress', name: 'Compress', comp: <CompressTool /> }
 ]
 
 export default function App() {
