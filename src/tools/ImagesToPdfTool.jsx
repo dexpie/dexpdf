@@ -68,12 +68,10 @@ export default function ImagesToPdfTool(){
 			const A4W = 210
 			const A4H = 297
 
-			// create doc based on first image orientation
-			const first = imgs[0]
-			const firstIsLandscape = first.width >= first.height
-			const doc = new jsPDF({unit, format: firstIsLandscape ? [A4H, A4W] : [A4W, A4H]})
+			// create A4 portrait document and fit each image inside the page
+			const doc = new jsPDF({ unit, format: [A4W, A4H] })
 
-							for(let i=0;i<imgs.length;i++){
+			for (let i = 0; i < imgs.length; i++) {
 								// support entries that may have either `dataUrl` or `thumb`
 								const entry = imgs[i]
 								const dataUrl = entry.dataUrl || entry.thumb
@@ -83,16 +81,15 @@ export default function ImagesToPdfTool(){
 									console.warn('skip image with no dataUrl/thumb', entry)
 									continue
 								}
-				const isLandscape = width >= height
-				const pageW = isLandscape ? A4H : A4W
-				const pageH = isLandscape ? A4W : A4H
-
-						if(i>0) doc.addPage([pageW, pageH])
+				// always use A4 portrait page
+				const pageW = A4W
+				const pageH = A4H
+				if (i > 0) doc.addPage()
 
 				// available area with small margins
 				const margin = 10
-				const maxW = pageW - margin*2
-				const maxH = pageH - margin*2
+				const maxW = pageW - margin * 2
+				const maxH = pageH - margin * 2
 
 				const imgWmm = width * pxToMm
 				const imgHmm = height * pxToMm
