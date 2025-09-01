@@ -3,6 +3,14 @@
 	"builds": [
 		{ "src": "package.json", "use": "@vercel/static-build" }
 	],
+	"headers": [
+		{
+			"source": "/(.*)",
+			"headers": [
+				{ "key": "X-Robots-Tag", "value": "index, follow" }
+			]
+		}
+	],
 	"routes": [
 		{ "handle": "filesystem" },
 		{ "src": "/.*", "dest": "/index.html" }
