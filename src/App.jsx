@@ -32,17 +32,28 @@ export default function App() {
     <div className="app">
       <header className="header">
         <div className="brand">dexpdf</div>
-        <nav className="nav">
-          {tools.map(t => (
-            <button
-              key={t.id}
-              className={t.id === active ? 'active' : ''}
-              onClick={() => setActive(t.id)}
-            >
-              {t.name}
-            </button>
-          ))}
-        </nav>
+
+        <div className="nav-wrapper">
+          <nav className="nav nav-desktop">
+            {tools.map(t => (
+              <button
+                key={t.id}
+                className={t.id === active ? 'active' : ''}
+                onClick={() => setActive(t.id)}
+              >
+                {t.name}
+              </button>
+            ))}
+          </nav>
+
+          <div className="nav-mobile">
+            <select value={active} onChange={e => setActive(e.target.value)}>
+              {tools.map(t => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
       </header>
 
       <main className="main">
