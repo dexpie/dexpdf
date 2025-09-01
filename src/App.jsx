@@ -8,6 +8,8 @@ const ImagesToPdfTool = React.lazy(() => import('./tools/ImagesToPdfTool'))
 const PdfToImagesTool = React.lazy(() => import('./tools/PdfToImagesTool'))
 const PdfToTextTool = React.lazy(() => import('./tools/PdfToTextTool'))
 const PdfToWordTool = React.lazy(() => import('./tools/PdfToWordTool'))
+const PdfToPptTool = React.lazy(() => import('./tools/PdfToPptTool'))
+const PptToPdfTool = React.lazy(() => import('./tools/PptToPdfTool'))
 const WatermarkTool = React.lazy(() => import('./tools/WatermarkTool'))
 const PageNumbersTool = React.lazy(() => import('./tools/PageNumbersTool'))
 const SignatureTool = React.lazy(() => import('./tools/SignatureTool'))
@@ -21,6 +23,8 @@ const tools = [
   { id: 'pdf2imgs', name: 'PDF → Images', comp: PdfToImagesTool, desc: 'Export PDF pages as images' },
   { id: 'pdf2text', name: 'PDF → Text', comp: PdfToTextTool, desc: 'Extract selectable text from PDF' },
   { id: 'pdf2word', name: 'PDF → Word', comp: PdfToWordTool, desc: 'Basic PDF to DOCX conversion' },
+  { id: 'pdf2ppt', name: 'PDF → PPTX', comp: PdfToPptTool, desc: 'Export each PDF page as a PPTX slide' },
+  { id: 'ppt2pdf', name: 'PPTX → PDF', comp: PptToPdfTool, desc: 'Convert PPTX slides (images) to PDF' },
   { id: 'watermark', name: 'Watermark', comp: WatermarkTool, desc: 'Add text/image watermark' },
   { id: 'pagenums', name: 'Page Numbers', comp: PageNumbersTool, desc: 'Add page numbers' },
   { id: 'signature', name: 'Signature', comp: SignatureTool, desc: 'Sign PDF pages' },

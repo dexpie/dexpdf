@@ -19,6 +19,8 @@ export default function SignatureTool(){
   const [pages, setPages] = useState([]) // {canvas, width, height}
   const [sigDataUrl, setSigDataUrl] = useState(null)
   const [overlays, setOverlays] = useState([]) // {page, x,y,w,h,dataUrl}
+  const [selected, setSelected] = useState(null)
+  const undoRef = useRef([])
   const [busy, setBusy] = useState(false)
   const containerRef = useRef(null)
   const dragRef = useRef(null)
@@ -87,7 +89,8 @@ export default function SignatureTool(){
       copy[`_pageOffsetY${page}`] = rect.top
       return copy
     })
-    dragRef.current = { type: 'move', idx, startX: e.clientX, startY: e.clientY, page }
+  setSelected(idx)
+  dragRef.current = { type: 'move', idx, startX: e.clientX, startY: e.clientY, page }
   }
 
   function startResize(e, idx){ e.preventDefault(); const ov = overlays[idx]; dragRef.current = { type:'resize', idx, startX: e.clientX, startY: e.clientY, startW: ov.w, startH: ov.h } }
@@ -100,7 +103,24 @@ export default function SignatureTool(){
     const h = Math.min(80, page.height * 0.15)
     const x = (page.width - w)/2
     const y = (page.height - h)/2
-    setOverlays(prev => prev.concat({ page: pageIndex, x, y, w, h, dataUrl: sigDataUrl }))
+    setOverlays(prev => {
+      const next = prev.concat({ page: pageIndex, x, y, w, h, dataUrl: sigDataUrl })
+      undoRef.current.push(prev)
+      return next
+    })
+  }
+
+  function deleteSelected(){
+    if(selected === null) return
+    setOverlays(prev => {
+      const next = prev.slice(); next.splice(selected,1); undoRef.current.push(prev); return next
+    })
+    setSelected(null)
+  }
+
+  function undo(){
+    const last = undoRef.current.pop()
+    if(last) setOverlays(last)
   }
 
   async function exportSigned(){
@@ -190,8 +210,10 @@ export default function SignatureTool(){
         ))}
       </div>
 
-      <div style={{marginTop:12}}>
+      <div style={{marginTop:12,display:'flex',gap:8}}>
         <button className="btn-primary" onClick={exportSigned} disabled={busy || !file || overlays.length===0}>{busy? 'Working...':'Export Signed PDF'}</button>
+        <button className="btn-ghost" onClick={deleteSelected} disabled={selected===null}>Delete</button>
+        <button className="btn-ghost" onClick={undo} disabled={undoRef.current.length===0}>Undo</button>
       </div>
     </div>
   )

@@ -4,6 +4,7 @@ import jsPDF from 'jspdf'
 export default function ImagesToPdfTool(){
 		const [images, setImages] = useState([])
 	const [busy, setBusy] = useState(false)
+	const [mode, setMode] = useState('fit') // fit | fill | actual
 
 		async function onFiles(e){
 				const list = Array.from(e.target.files)
@@ -93,9 +94,21 @@ export default function ImagesToPdfTool(){
 
 				const imgWmm = width * pxToMm
 				const imgHmm = height * pxToMm
-				const scale = Math.min(maxW / imgWmm, maxH / imgHmm, 1)
-				const drawW = imgWmm * scale
-				const drawH = imgHmm * scale
+				let drawW, drawH
+				if(mode === 'actual'){
+					drawW = Math.min(imgWmm, maxW)
+					drawH = Math.min(imgHmm, maxH)
+				} else if(mode === 'fill'){
+					// cover: fill the area, may crop
+					const scaleFill = Math.max(maxW / imgWmm, maxH / imgHmm)
+					drawW = imgWmm * scaleFill
+					drawH = imgHmm * scaleFill
+				} else {
+					// fit (contain)
+					const scale = Math.min(maxW / imgWmm, maxH / imgHmm, 1)
+					drawW = imgWmm * scale
+					drawH = imgHmm * scale
+				}
 				const x = (pageW - drawW) / 2
 				const y = (pageH - drawH) / 2
 
@@ -115,6 +128,14 @@ export default function ImagesToPdfTool(){
 	return (
 		<div>
 			<h2>Images → PDF</h2>
+			<div style={{display:'flex',gap:8,alignItems:'center'}}>
+				<label style={{display:'flex',alignItems:'center',gap:6}}>Mode:</label>
+				<select value={mode} onChange={e=>setMode(e.target.value)}>
+					<option value="fit">Fit (contain)</option>
+					<option value="fill">Fill (cover)</option>
+					<option value="actual">Actual size (max page)</option>
+				</select>
+			</div>
 			<div className="dropzone">
 				<input type="file" accept="image/*" multiple onChange={onFiles} />
 				<div className="muted">Select images in the order you want them to appear.</div>
