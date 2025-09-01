@@ -6,6 +6,29 @@
     <title>PDF to PPTX — dexpdf</title>
     <meta name="description" content="Convert PDF pages to PowerPoint slides (PPTX) quickly — each page becomes an image slide. Fast and private in your browser." />
     <link rel="canonical" href="https://dexpdf.vercel.app/pdf-to-pptx" />
+      <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Will my images be converted to slides?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Each PDF page is converted to a slide image. Text will be rasterized unless using advanced server-side conversion." }
+          },
+          {
+            "@type": "Question",
+            "name": "What slide size is used?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Slides use a standard 16:9 ratio to match common presentation formats." }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I edit the resulting PPTX?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. The output is a standard PPTX file that can be edited in PowerPoint or compatible editors." }
+          }
+        ]
+      }
+      </script>
   </head>
   <body>
     <main style="max-width:900px;margin:36px auto;font-family:Inter,system-ui,Arial;">
@@ -16,6 +39,21 @@
         <h2>How it works</h2>
         <p>dexpdf renders each PDF page to an image and packs them into a PPTX slide deck. Text becomes part of the slide image.</p>
       </section>
+        <section>
+          <h2>FAQ</h2>
+          <details>
+            <summary>Will my images be converted to slides?</summary>
+            <p>Each PDF page is converted to a slide image. Text will be rasterized unless using advanced server-side conversion.</p>
+          </details>
+          <details>
+            <summary>What slide size is used?</summary>
+            <p>Slides use a standard 16:9 ratio to match common presentation formats.</p>
+          </details>
+          <details>
+            <summary>Can I edit the resulting PPTX?</summary>
+            <p>Yes. The output is a standard PPTX file that can be edited in PowerPoint or compatible editors.</p>
+          </details>
+        </section>
     </main>
   </body>
 </html>
