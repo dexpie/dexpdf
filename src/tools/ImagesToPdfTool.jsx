@@ -6,13 +6,18 @@ export default function ImagesToPdfTool(){
 	const [busy, setBusy] = useState(false)
 
 		async function onFiles(e){
-			const list = Array.from(e.target.files)
-			const loaded = []
-			for(const f of list){
-				const data = await fileToImage(f)
-				loaded.push({file: f, thumb: data.dataUrl, width: data.width, height: data.height})
-			}
-			setImages(prev => prev.concat(loaded))
+				const list = Array.from(e.target.files)
+				const loaded = []
+				for(const f of list){
+					try{
+						const data = await fileToImage(f)
+						// normalize: keep both `dataUrl` and `thumb` so other code can use either
+						loaded.push({ file: f, dataUrl: data.dataUrl, thumb: data.dataUrl, width: data.width, height: data.height })
+					}catch(err){
+						console.warn('failed to load image', f, err)
+					}
+				}
+				if(loaded.length) setImages(prev => prev.concat(loaded))
 		}
 
 		function remove(i){ setImages(prev => prev.filter((_,idx)=>idx!==i)) }
@@ -74,7 +79,6 @@ export default function ImagesToPdfTool(){
 								const dataUrl = entry.dataUrl || entry.thumb
 								const width = entry.width
 								const height = entry.height
-								const file = entry.file || entry.file
 								if(!dataUrl){
 									console.warn('skip image with no dataUrl/thumb', entry)
 									continue
@@ -98,8 +102,12 @@ export default function ImagesToPdfTool(){
 				const x = (pageW - drawW) / 2
 				const y = (pageH - drawH) / 2
 
-		const imgFormat = (typeof dataUrl === 'string' && dataUrl.indexOf('image/png') >= 0) ? 'PNG' : 'JPEG'
-		doc.addImage(dataUrl, imgFormat, x, y, drawW, drawH)
+				const imgFormat = (typeof dataUrl === 'string' && dataUrl.indexOf('image/png') >= 0) ? 'PNG' : 'JPEG'
+				try{
+					doc.addImage(dataUrl, imgFormat, x, y, drawW, drawH)
+				}catch(e){
+					console.error('addImage failed for entry', i, e)
+				}
 			}
 
 			doc.save('images.pdf')
