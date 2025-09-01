@@ -10,6 +10,7 @@ const PdfToTextTool = React.lazy(() => import('./tools/PdfToTextTool'))
 const PdfToWordTool = React.lazy(() => import('./tools/PdfToWordTool'))
 const PdfToPptTool = React.lazy(() => import('./tools/PdfToPptTool'))
 const PptToPdfTool = React.lazy(() => import('./tools/PptToPdfTool'))
+const RotateTool = React.lazy(() => import('./tools/RotateTool'))
 const WatermarkTool = React.lazy(() => import('./tools/WatermarkTool'))
 const PageNumbersTool = React.lazy(() => import('./tools/PageNumbersTool'))
 const SignatureTool = React.lazy(() => import('./tools/SignatureTool'))
@@ -17,19 +18,20 @@ const EditPdfTool = React.lazy(() => import('./tools/EditPdfTool'))
 const CompressTool = React.lazy(() => import('./tools/CompressTool'))
 
 const tools = [
-  { id: 'merge', name: 'Merge PDF', comp: MergeTool, desc: 'Combine multiple PDFs into one' },
-  { id: 'split', name: 'Split PDF', comp: SplitTool, desc: 'Extract pages or split by ranges' },
-  { id: 'imgs2pdf', name: 'Images → PDF', comp: ImagesToPdfTool, desc: 'Convert images to a single PDF' },
-  { id: 'pdf2imgs', name: 'PDF → Images', comp: PdfToImagesTool, desc: 'Export PDF pages as images' },
-  { id: 'pdf2text', name: 'PDF → Text', comp: PdfToTextTool, desc: 'Extract selectable text from PDF' },
-  { id: 'pdf2word', name: 'PDF → Word', comp: PdfToWordTool, desc: 'Basic PDF to DOCX conversion' },
-  { id: 'pdf2ppt', name: 'PDF → PPTX', comp: PdfToPptTool, desc: 'Export each PDF page as a PPTX slide' },
-  { id: 'ppt2pdf', name: 'PPTX → PDF', comp: PptToPdfTool, desc: 'Convert PPTX slides (images) to PDF' },
-  { id: 'watermark', name: 'Watermark', comp: WatermarkTool, desc: 'Add text/image watermark' },
-  { id: 'pagenums', name: 'Page Numbers', comp: PageNumbersTool, desc: 'Add page numbers' },
-  { id: 'signature', name: 'Signature', comp: SignatureTool, desc: 'Sign PDF pages' },
-  { id: 'edit', name: 'Edit PDF', comp: EditPdfTool, desc: 'Edit PDF content (basic)' },
-  { id: 'compress', name: 'Compress', comp: CompressTool, desc: 'Reduce PDF file size' }
+  { id: 'merge', name: 'Merge PDF', icon: '🔗', comp: MergeTool, desc: 'Combine multiple PDFs into one' },
+  { id: 'split', name: 'Split PDF', icon: '✂️', comp: SplitTool, desc: 'Extract pages or split by ranges' },
+  { id: 'imgs2pdf', name: 'Images → PDF', icon: '🖼️', comp: ImagesToPdfTool, desc: 'Convert images to a single PDF' },
+  { id: 'pdf2imgs', name: 'PDF → Images', icon: '🖼️', comp: PdfToImagesTool, desc: 'Export PDF pages as images' },
+  { id: 'pdf2text', name: 'PDF → Text', icon: '📝', comp: PdfToTextTool, desc: 'Extract selectable text from PDF' },
+  { id: 'pdf2word', name: 'PDF → Word', icon: '📄', comp: PdfToWordTool, desc: 'Basic PDF to DOCX conversion' },
+  { id: 'pdf2ppt', name: 'PDF → PPTX', icon: '📤', comp: PdfToPptTool, desc: 'Export each PDF page as a PPTX slide' },
+  { id: 'ppt2pdf', name: 'PPTX → PDF', icon: '📥', comp: PptToPdfTool, desc: 'Convert PPTX slides (images) to PDF' },
+  { id: 'rotate', name: 'Rotate Pages', icon: '🔄', comp: RotateTool, desc: 'Rotate selected pages clockwise or counterclockwise' },
+  { id: 'watermark', name: 'Watermark', icon: '💧', comp: WatermarkTool, desc: 'Add text/image watermark' },
+  { id: 'pagenums', name: 'Page Numbers', icon: '🔢', comp: PageNumbersTool, desc: 'Add page numbers' },
+  { id: 'signature', name: 'Signature', icon: '✒️', comp: SignatureTool, desc: 'Sign PDF pages' },
+  { id: 'edit', name: 'Edit PDF', icon: '🛠️', comp: EditPdfTool, desc: 'Edit PDF content (basic)' },
+  { id: 'compress', name: 'Compress', icon: '🗜️', comp: CompressTool, desc: 'Reduce PDF file size' }
 ]
 
 export default function App() {
@@ -66,7 +68,7 @@ export default function App() {
 
       <footer className="footer">dexpdf — small local PDF toolkit</footer>
 
-      <Modal open={open} onClose={closeTool} title={active?.name}>
+  <Modal open={open} onClose={closeTool} title={active?.name} subtitle={active?.desc}>
         <Suspense fallback={<div style={{padding:20}}>Loading...</div>}>
           {active && <active.comp />}
         </Suspense>
