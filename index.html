@@ -40,16 +40,40 @@
 </head>
 
 <body>
-  <header style="max-width:900px;margin:28px auto;padding:20px 16px;font-family:Inter,system-ui,Arial;">
-    <h1 style="margin:0 0 8px 0;font-size:32px;">dexpdf</h1>
-    <p style="margin:0 0 12px 0;color:#222;font-size:18px;line-height:1.4;">Simple, privacy-first PDF tools delivered from your browser. Merge, split, convert, compress and sign — we focus on fast, local conversions and clear pricing for business use.</p>
-  <!-- header intentionally minimal; contact block moved to footer -->
+  <style>
+    /* small homepage UX styles */
+    .hero { background: #f6f7fb; padding: 36px 0; }
+    .hero-inner { max-width: 980px; margin: 0 auto; font-family: Inter, system-ui, Arial; }
+    .hero h1 { margin: 0 0 8px 0; font-size: 32px; }
+    .hero .lead { margin: 0 0 14px 0; color: #222; font-size: 18px; line-height: 1.4; }
+    .ctas { margin-top: 12px; }
+    .btn { display: inline-block; margin-right: 8px; padding: 10px 16px; border-radius: 8px; background: #1673ff; color: #fff; text-decoration: none; font-weight:600; }
+    .btn-outline { background: transparent; color:#1673ff; border:1px solid rgba(22,115,255,0.12); }
+    .features { margin:14px 0 0 0; padding-left:18px; color:#444 }
+    .features li { margin:6px 0 }
+  </style>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <h1>dexpdf</h1>
+      <p class="lead">Simple, privacy-first PDF tools in your browser — merge, split, convert, compress, sign. Fast local conversions and clear options for business.</p>
+      <div class="ctas">
+        <a class="btn" href="/merge.html">Merge PDF</a>
+        <a class="btn btn-outline" href="/compress.html">Compress PDF</a>
+        <a class="btn" href="/pdf-to-word.html">PDF → Word</a>
+      </div>
+      <ul class="features">
+        <li>Privacy-first: most tools run locally in your browser</li>
+        <li>Quick results for common PDF tasks</li>
+        <li>Clean UI and lightweight experience</li>
+      </ul>
+    </div>
   </header>
   <div id="root"></div>
   <footer style="max-width:900px;margin:28px auto;padding:20px 16px;font-family:Inter,system-ui,Arial;">
     <div style="padding:12px;background:#fafafa;border-radius:8px;border:1px solid #eee;">
       <strong>Contact</strong>
-      <p style="margin:6px 0 0 0;color:#555;">DM for business: <em>@your_handle_here</em> — replace with your preferred contact or add an email like <code>mailto:you@example.com</code>.</p>
+      <p style="margin:6px 0 0 0;color:#555;">DM for business: <em>@oldest.in</em> — replace with your preferred contact or add an email like <code>mailto:you@example.com</code>.</p>
       <p style="margin:6px 0 0 0;color:#555;">Profile / portfolio: <a href="#" onclick="return false;">add-your-profile-link</a></p>
     </div>
   </footer>
