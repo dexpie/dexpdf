@@ -6,12 +6,19 @@ try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs
 export default function PdfToTextTool() {
   const [file, setFile] = useState(null)
   const [busy, setBusy] = useState(false)
+  const [dragging, setDragging] = useState(false)
+  const [dropped, setDropped] = useState(false)
 
   async function loadFile(e) {
     const f = e.target.files[0]
     if (!f) return
     setFile(f)
   }
+
+  function onDragEnter(e) { e.preventDefault(); setDragging(true) }
+  function onDragOverZone(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy' }
+  function onDragLeave(e) { e.preventDefault(); setDragging(false) }
+  async function onDropZone(e) { e.preventDefault(); setDragging(false); const f = e.dataTransfer?.files?.[0]; if (f) { setFile(f); setDropped(true); setTimeout(() => setDropped(false), 1500); } }
 
   async function extract() {
     if (!file) return
@@ -40,12 +47,13 @@ export default function PdfToTextTool() {
   return (
     <div>
       <h2>PDF → Text</h2>
-      <div className="dropzone">
+      <div className={`dropzone ${dragging ? 'dragover' : ''}`} onDragEnter={onDragEnter} onDragOver={onDragOverZone} onDragLeave={onDragLeave} onDrop={onDropZone}>
         <input type="file" accept="application/pdf" onChange={loadFile} />
         <div className="muted">Select a PDF to extract text (plain text).</div>
+        {dropped && <div className="drop-overlay">✓ Uploaded</div>}
       </div>
       <div style={{ marginTop: 12 }}>
-        <button className="btn" onClick={extract} disabled={busy || !file}>{busy ? 'Working...' : 'Extract Text'}</button>
+        <button className="btn-primary" onClick={extract} disabled={busy || !file}>{busy ? 'Working...' : 'Extract Text'}</button>
       </div>
     </div>
   )

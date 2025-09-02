@@ -7,12 +7,19 @@ try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs
 export default function PdfToWordTool() {
     const [file, setFile] = useState(null)
     const [busy, setBusy] = useState(false)
+    const [dragging, setDragging] = useState(false)
+    const [dropped, setDropped] = useState(false)
 
     async function loadFile(e) {
         const f = e.target.files[0]
         if (!f) return
         setFile(f)
     }
+
+    function onDragEnter(e) { e.preventDefault(); setDragging(true) }
+    function onDragOverZone(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy' }
+    function onDragLeave(e) { e.preventDefault(); setDragging(false) }
+    async function onDropZone(e) { e.preventDefault(); setDragging(false); const f = e.dataTransfer?.files?.[0]; if (f) { setFile(f); setDropped(true); setTimeout(() => setDropped(false), 1500) } }
 
     async function convert() {
         if (!file) return
@@ -43,12 +50,13 @@ export default function PdfToWordTool() {
     return (
         <div>
             <h2>PDF → Word (.docx)</h2>
-            <div className="dropzone">
+            <div className={`dropzone ${dragging ? 'dragover' : ''}`} onDragEnter={onDragEnter} onDragOver={onDragOverZone} onDragLeave={onDragLeave} onDrop={onDropZone}>
                 <input type="file" accept="application/pdf" onChange={loadFile} />
                 <div className="muted">Select a PDF to convert to a simple .docx (text-only).</div>
+                {dropped && <div className="drop-overlay">✓ Uploaded</div>}
             </div>
             <div style={{ marginTop: 12 }}>
-                <button className="btn" onClick={convert} disabled={busy || !file}>{busy ? 'Working...' : 'Convert to DOCX'}</button>
+                <button className="btn-primary" onClick={convert} disabled={busy || !file}>{busy ? 'Working...' : 'Convert to DOCX'}</button>
             </div>
         </div>
     )

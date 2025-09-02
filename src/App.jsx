@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react'
+import React, { useState, Suspense, useEffect } from 'react'
 import ToolCard from './components/ToolCard'
 import Modal from './components/Modal'
 
@@ -43,6 +43,23 @@ const tools = [
 export default function App() {
   const [active, setActive] = useState(null)
   const [open, setOpen] = useState(false)
+  const [theme, setTheme] = useState(() => {
+    try {
+      if (typeof window === 'undefined') return 'light'
+      const stored = localStorage.getItem('theme')
+      if (stored) return stored
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    } catch (e) { return 'light' }
+  })
+
+  useEffect(() => {
+    try {
+      document.documentElement.classList.toggle('dark', theme === 'dark')
+      localStorage.setItem('theme', theme)
+    } catch (e) { /* ignore */ }
+  }, [theme])
+
+  function toggleTheme(){ setTheme(t => t === 'dark' ? 'light' : 'dark') }
 
   function openTool(id){
     const t = tools.find(x => x.id === id)
@@ -57,6 +74,9 @@ export default function App() {
     <div className="app">
       <header className="header">
         <div className="brand">dexpdf</div>
+        <div className="nav">
+          <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle dark mode">{theme === 'dark' ? '☀️' : '🌙'}</button>
+        </div>
       </header>
 
       <section className="hero">
