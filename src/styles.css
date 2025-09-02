@@ -3,37 +3,62 @@
   --card:#ffffff;
   --muted:#6b7280;
   --accent:#2563eb;
+  --border:#e6e9f0; /* borders, strokes */
+  --paper:#ffffff; /* canvas / paper color */
+  --overlay-border:rgba(0,0,0,0.12);
+}
+
+/* Dark theme variables applied when .dark is on the root element */
+:root{
+  --bg:#fbfbff; /* softer background */
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent:#2563eb;
+  --border:#e6e9f0; /* borders, strokes */
+  --paper:#ffffff; /* canvas / paper color */
+  --overlay-border:rgba(0,0,0,0.12);
+  /* cute palette extras */
+  --accent-2: #7dd3fc; /* soft cyan */
+  --accent-3: #ffd6e0; /* soft pink */
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --soft-shadow: 0 10px 30px rgba(2,6,23,0.06);
 }
 
 /* Dark theme variables applied when .dark is on the root element */
 .dark{
-  --bg:#0b1220;
+  --bg:#071226;
   --card:#0f1724;
   --muted:#9ca3af;
   --accent:#60a5fa;
+  --border:#1f2a37;
+  --paper:#071019;
+  --overlay-border:rgba(255,255,255,0.06);
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#111;background:var(--bg)}
-.app{max-width:1100px;margin:28px auto;padding:18px}
+
+/* Base layout */
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--muted);background:var(--bg)}
+.app{max-width:1100px;margin:28px auto;padding:22px}
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.brand{font-weight:700;font-size:22px}
-.nav button{background:transparent;border:0;padding:10px 14px;border-radius:8px;margin-right:6px;cursor:pointer}
-.theme-toggle{font-size:16px;padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;cursor:pointer}
-.dark .theme-toggle{border-color:rgba(255,255,255,0.06)}
+.brand{font-weight:800;font-size:24px;letter-spacing:0.2px;color:var(--accent)}
+.nav button{background:transparent;border:0;padding:10px 14px;border-radius:10px;margin-right:6px;cursor:pointer}
+
+/* Theme toggle */
+.theme-toggle{font-size:16px;padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:linear-gradient(180deg,#fff,#fbfbff);box-shadow:0 3px 10px rgba(37,99,235,0.04);cursor:pointer}
+.dark .theme-toggle{border-color:rgba(255,255,255,0.06);background:linear-gradient(180deg,var(--card),#081124)}
 .nav button.active{background:var(--accent);color:white}
 .nav-desktop{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .nav-mobile{display:none}
-.nav-mobile select{padding:8px;border-radius:8px;border:1px solid #e6e9f0}
+.nav-mobile select{padding:8px;border-radius:8px;border:1px solid var(--border)}
 .main{display:flex;gap:18px}
-.tool{flex:1;background:var(--card);padding:18px;border-radius:10px;min-height:360px;box-shadow:0 1px 2px rgba(0,0,0,0.04)}
+.tool{flex:1;background:var(--card);padding:20px;border-radius:var(--radius-md);min-height:360px;box-shadow:0 6px 20px rgba(2,6,23,0.04)}
 .sidebar{width:260px;background:linear-gradient(180deg,#fff,#fbfbff);padding:16px;border-radius:10px}
 .footer{text-align:center;color:var(--muted);margin-top:14px;font-size:13px}
 
 /* Make components adapt to dark background where appropriate */
 .dark .sidebar{background:linear-gradient(180deg,var(--card),#051226)}
 .dark .hero-dropzone{border-color:rgba(255,255,255,0.06);background:linear-gradient(180deg,var(--card),#091327)}
-.dark .tool-card{box-shadow:0 1px 2px rgba(0,0,0,0.6)}
-.dark .tool{box-shadow:0 1px 2px rgba(0,0,0,0.6)}
 .dark .hero-title,.dark .brand{color:#fff}
 .dark .hero-sub,.dark .subtitle,.dark .tool-card-desc{color:var(--muted)}
 
@@ -42,11 +67,32 @@ html,body,.app,.tool-card,.tool,.hero-dropzone,.sidebar,.modal{transition:backgr
 
 /* Hero */
 .hero{display:flex;justify-content:center;margin-bottom:22px}
-.hero-dropzone{width:100%;max-width:900px;background:linear-gradient(180deg,#fff,#fbfbff);border-radius:12px;padding:36px;text-align:center;border:1px dashed #e6e9f0}
-.hero-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.hero-dropzone{width:100%;max-width:900px;background:linear-gradient(180deg,#fff,#fbfbff);border-radius:12px;padding:36px;text-align:center;border:1px dashed var(--border)}
+.hero-title{font-size:20px;font-weight:700;margin-bottom:8px;color:var(--accent)}
 .hero-sub{color:var(--muted)}
 
-/* Tool grid */
+/* search */
+.tool-search{width:100%;max-width:820px;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);font-size:15px;box-shadow:0 6px 20px rgba(2,6,23,0.04)}
+.tool-search:focus{outline:3px solid rgba(96,165,250,0.18);box-shadow:0 8px 30px rgba(96,165,250,0.08)}
+
+/* nicer tool card interactions */
+.tool-card{display:flex;align-items:center;gap:14px;padding:16px;border-radius:var(--radius-lg);background:linear-gradient(180deg,var(--card),var(--accent-3));box-shadow:var(--soft-shadow);transition:transform 200ms cubic-bezier(.2,.9,.3,1),box-shadow 200ms ease}
+.tool-card:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 18px 40px rgba(2,6,23,0.08)}
+.tool-card-icon{font-size:34px;border-radius:10px;padding:8px;background:linear-gradient(180deg,var(--accent-2),var(--accent));color:white;box-shadow:0 6px 18px rgba(37,99,235,0.08)}
+.tool-card-title{font-weight:800;font-size:15px}
+.tool-card-desc{color:var(--muted);font-size:13px;margin-top:2px}
+.tool-card-micro{color:var(--muted);font-size:12px;margin-top:6px;opacity:0.95}
+.tool-card-actions{margin-left:auto}
+.btn{background:var(--accent);color:white;border:0;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700;box-shadow:0 8px 20px rgba(37,99,235,0.08);transition:transform 160ms ease,box-shadow 160ms ease}
+.btn:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(37,99,235,0.12)}
+.btn:active{transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid var(--border);padding:8px 10px;border-radius:10px}
+.btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white;border:0;padding:10px 14px;border-radius:12px;font-weight:700}
+
+/* grid spacing improvements */
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px;padding:18px}
+
+/* Tool grid (deduped) */
 .tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
 .tool-card{display:flex;align-items:center;gap:12px;padding:14px;border-radius:10px;background:var(--card);box-shadow:0 1px 2px rgba(0,0,0,0.04)}
 .tool-card-icon{font-size:28px}
@@ -63,13 +109,20 @@ html,body,.app,.tool-card,.tool,.hero-dropzone,.sidebar,.modal{transition:backgr
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .modal-body{background:transparent}
 .subtitle{color:var(--muted);font-size:13px;margin-top:4px}
-.tool-help{background:#fbfbff;border:1px solid #eef2ff;padding:10px;border-radius:8px;margin-bottom:12px}
+.tool-help{background:linear-gradient(180deg,var(--card),transparent);border:1px solid var(--border);padding:10px;border-radius:var(--radius-md);margin-bottom:12px}
 
-.dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed #e6e9f0;padding:28px;border-radius:8px;min-height:220px}
+.dropzone{display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px dashed var(--border);padding:26px;border-radius:var(--radius-lg);min-height:220px;background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent)}
 .file-list{margin-top:12px}
 .file-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:6px;background:#fafbff;margin-bottom:8px}
 .btn{background:var(--accent);color:white;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
 .muted{color:var(--muted)}
+
+/* footer card used on homepage */
+.footer-card{padding:12px;background:var(--card);border-radius:8px;border:1px solid var(--border);}
+
+/* signature overlay helpers */
+.sig-overlay{position:absolute;box-sizing:border-box;border:2px dashed var(--overlay-border);cursor:move}
+.sig-resize{position:absolute;right:0;bottom:0;width:12px;height:12px;background:var(--paper);border:1px solid var(--border);cursor:nwse-resize}
 
 @media (max-width:900px){
   .main{flex-direction:column}
@@ -82,4 +135,11 @@ html,body,.app,.tool-card,.tool,.hero-dropzone,.sidebar,.modal{transition:backgr
 @media (max-width:600px){
   .tool-grid{grid-template-columns:repeat(1,1fr)}
   .hero-dropzone{padding:20px}
+  .tool-card{padding:12px}
+  .tool-card-title{font-size:15px}
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .tool-card,.btn,.theme-toggle{transition:none!important;transform:none!important}
 }

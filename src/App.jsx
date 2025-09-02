@@ -43,6 +43,7 @@ const tools = [
 export default function App() {
   const [active, setActive] = useState(null)
   const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
   const [theme, setTheme] = useState(() => {
     try {
       if (typeof window === 'undefined') return 'light'
@@ -86,8 +87,19 @@ export default function App() {
         </div>
       </section>
 
-      <section className="tool-grid">
-        {tools.map(t => (
+      {/* quick search to find tools */}
+      <div style={{maxWidth:1100,margin:'12px auto 0',padding:'0 18px'}}>
+        <input
+          className="tool-search"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Search tools — e.g. merge, compress, OCR"
+          aria-label="Search tools"
+        />
+      </div>
+
+      <section className="tool-grid" aria-live="polite">
+        {tools.filter(t => (t.name + ' ' + t.desc).toLowerCase().includes(query.trim().toLowerCase())).map(t => (
           <ToolCard key={t.id} title={t.name} desc={t.desc} onOpen={() => openTool(t.id)} />
         ))}
       </section>

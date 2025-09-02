@@ -7,9 +7,9 @@ try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs
 function Overlay({ ov, onDrag, onStartDrag, onStartResize }){
   // ov: { x,y,w,h, page }
   return (
-    <div className="sig-overlay" style={{position:'absolute',left:ov.x,top:ov.y,width:ov.w,height:ov.h,cursor:'move',border:'2px dashed rgba(0,0,0,0.2)',boxSizing:'border-box'}} onMouseDown={onStartDrag}>
-      <img src={ov.dataUrl} style={{width:'100%',height:'100%',objectFit:'contain',pointerEvents:'none'}} alt="sig" />
-      <div className="sig-resize" onMouseDown={onStartResize} style={{position:'absolute',right:0,bottom:0,width:12,height:12,background:'#fff',border:'1px solid #bbb',cursor:'nwse-resize'}} />
+    <div className="sig-overlay" style={{left:ov.x,top:ov.y,width:ov.w,height:ov.h}} onMouseDown={onStartDrag}>
+      <img src={ov.dataUrl} className="sig-image" alt="sig" />
+      <div className="sig-resize" onMouseDown={onStartResize} />
     </div>
   )
 }
@@ -186,7 +186,7 @@ export default function SignatureTool(){
 
       <div ref={containerRef} style={{marginTop:12,display:'flex',flexDirection:'column',gap:18}}>
         {pages.map((p,idx)=> (
-          <div key={idx} style={{position:'relative',border:'1px solid #eee',display:'inline-block'}}>
+          <div key={idx} style={{position:'relative',border:'1px solid var(--border)',display:'inline-block'}}>
             <div style={{position:'absolute',right:8,top:8,zIndex:10}}>
               <button className="btn-ghost" onClick={()=>addOverlayToPage(idx)}>Add</button>
             </div>

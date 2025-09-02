@@ -43,8 +43,9 @@ export default function WatermarkTool(){
     ctx.rotate((rotation * Math.PI)/180)
     const s = Number(scale) || 1
     if(mode === 'text'){
-      ctx.font = `${48 * s}px sans-serif`
-      ctx.fillStyle = '#444'
+  ctx.font = `${48 * s}px sans-serif`
+  // use CSS variable for text color if available
+  try{ const css = getComputedStyle(document.documentElement); ctx.fillStyle = css.getPropertyValue('--muted') || '#444' }catch(e){ ctx.fillStyle = '#444' }
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       if(tiling){
@@ -93,11 +94,10 @@ export default function WatermarkTool(){
     const w = canvas.width
     const h = canvas.height
     // light paper background
-    ctx.fillStyle = '#fff'
-    ctx.fillRect(0,0,w,h)
-    // draw page border
-    ctx.strokeStyle = '#ddd'
-    ctx.strokeRect(10,10,w-20,h-20)
+  try{ const css = getComputedStyle(document.documentElement); ctx.fillStyle = css.getPropertyValue('--paper') || '#fff'; ctx.strokeStyle = css.getPropertyValue('--border') || '#ddd' }catch(e){ ctx.fillStyle = '#fff'; ctx.strokeStyle = '#ddd' }
+  ctx.fillRect(0,0,w,h)
+  // draw page border
+  ctx.strokeRect(10,10,w-20,h-20)
     // draw watermark centered in the inner area
     ctx.save()
     ctx.translate(w/2, h/2)
@@ -227,8 +227,8 @@ export default function WatermarkTool(){
       </div>
 
       <div style={{marginTop:12}}>
-        <div className="muted">Preview</div>
-        <canvas aria-label="Watermark preview" ref={previewRef} width={600} height={800} style={{width:'100%',maxWidth:600,display:'block',border:'1px solid #ddd',background:'#fff'}} />
+  <div className="muted">Preview</div>
+  <canvas aria-label="Watermark preview" ref={previewRef} width={600} height={800} style={{width:'100%',maxWidth:600,display:'block',border:'1px solid var(--border)',background:'var(--paper)'}} />
       </div>
 
       <div style={{marginTop:12}}>

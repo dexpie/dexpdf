@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import jsPDF from 'jspdf'
 
@@ -21,15 +21,24 @@ export default function CompressTool(){
   const [estimating, setEstimating] = useState(false)
   const [progressText, setProgressText] = useState('')
 
+  // refs for caching and cancelling
+  const pdfDataRef = useRef(null)
+  const pdfDocRef = useRef(null)
+  const estimateReqRef = useRef(0)
+  const debounceRef = useRef(null)
+
   async function onFile(e){
     const f = e.target.files?.[0]
     if(!f) return
     setFile(f)
     setOriginalSize(f.size)
     try{
-      const data = await f.arrayBuffer()
-      const pdf = await pdfjsLib.getDocument({data}).promise
-      setPages(pdf.numPages)
+  const data = await f.arrayBuffer()
+  // cache arrayBuffer and pdf document for faster repeated estimates
+  pdfDataRef.current = data
+  const pdf = await pdfjsLib.getDocument({data}).promise
+  pdfDocRef.current = pdf
+  setPages(pdf.numPages)
       setEstimateSize(null)
       setProgressText('')
     }catch(err){console.error(err); alert('Unable to read PDF: '+(err.message||err))}
@@ -39,6 +48,7 @@ export default function CompressTool(){
   function onDragOverZone(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'copy' }
   function onDragLeave(e){ e.preventDefault(); setDragging(false) }
   async function onDropZone(e){ e.preventDefault(); setDragging(false); const f = e.dataTransfer?.files?.[0]; if(f) { setFile(f); setOriginalSize(f.size); const data = await f.arrayBuffer(); const pdf = await pdfjsLib.getDocument({data}).promise; setPages(pdf.numPages); setEstimateSize(null); setProgressText(''); setDropped(true); setTimeout(()=>setDropped(false),1500) } }
+
 
   function pxToMm(px){
     // assume 96 DPI for canvas pixels -> mm
@@ -137,10 +147,11 @@ export default function CompressTool(){
 
   // Render first page at specific settings and return estimated total size
   async function estimateForSettings(q, s){
-    const data = await file.arrayBuffer()
-    const pdf = await pdfjsLib.getDocument({data}).promise
-    const num = pdf.numPages
-    const page = await pdf.getPage(1)
+  // try to reuse cached pdf/doc
+  const data = pdfDataRef.current || await file.arrayBuffer()
+  const pdf = pdfDocRef.current || await pdfjsLib.getDocument({data}).promise
+  const num = pdf.numPages
+  const page = await pdf.getPage(1)
     const viewport = page.getViewport({scale: s})
     const canvas = document.createElement('canvas')
     canvas.width = Math.ceil(viewport.width)
@@ -160,10 +171,13 @@ export default function CompressTool(){
     setEstimating(true)
     setProgressText('Estimating range...')
     try{
-      const data = await file.arrayBuffer()
-      const pdf = await pdfjsLib.getDocument({data}).promise
-      const num = pdf.numPages
-      setPages(num)
+  // reuse cached PDF when available
+  const data = pdfDataRef.current || await file.arrayBuffer()
+  const pdf = pdfDocRef.current || await pdfjsLib.getDocument({data}).promise
+  pdfDataRef.current = data
+  pdfDocRef.current = pdf
+  const num = pdf.numPages
+  setPages(num)
 
       // define representative extremes
       const minQ = 0.1, minS = 0.5
@@ -171,11 +185,15 @@ export default function CompressTool(){
       const curQ = Number(quality), curS = Number(scale)
 
       setProgressText('Rendering low-quality sample...')
-      const low = await estimateForSettings(minQ, minS)
+  const currentReq = ++estimateReqRef.current
+  const low = await estimateForSettings(minQ, minS)
+  if(currentReq !== estimateReqRef.current) throw new Error('Cancelled')
       setProgressText('Rendering current settings sample...')
-      const cur = await estimateForSettings(curQ, curS)
+  const cur = await estimateForSettings(curQ, curS)
+  if(currentReq !== estimateReqRef.current) throw new Error('Cancelled')
       setProgressText('Rendering high-quality sample...')
-      const high = await estimateForSettings(maxQ, maxS)
+  const high = await estimateForSettings(maxQ, maxS)
+  if(currentReq !== estimateReqRef.current) throw new Error('Cancelled')
 
       // store as object for UI
       setEstimateSize({low, cur, high})
@@ -183,6 +201,32 @@ export default function CompressTool(){
     }catch(err){console.error(err); alert('Range estimate failed: '+(err.message||err))}
     finally{setEstimating(false)}
   }
+
+  // Live estimations: debounce when quality/scale or file changes
+  useEffect(()=>{
+    if(!file) return
+    // clear pending debounce
+    if(debounceRef.current) clearTimeout(debounceRef.current)
+    // schedule estimate of current settings after short delay
+    debounceRef.current = setTimeout(()=>{
+      // increment request id to allow cancellation
+      estimateReqRef.current++
+      // perform lightweight sample estimate (current settings)
+      (async ()=>{
+        try{
+          setEstimating(true)
+          setProgressText('Estimating...')
+          const cur = await estimateForSettings(Number(quality), Number(scale))
+          // if cancelled, bail
+          if(estimateReqRef.current === 0) return
+          setEstimateSize({cur})
+          setProgressText('Live estimate updated')
+        }catch(err){if(err.message !== 'Cancelled') console.error(err)}
+        finally{setEstimating(false)}
+      })()
+    }, 350)
+    return ()=>{ if(debounceRef.current) clearTimeout(debounceRef.current) }
+  }, [file, quality, scale])
 
   function formatBytes(n){
     if(n == null) return '-'
@@ -203,17 +247,28 @@ export default function CompressTool(){
       {file && (
         <div style={{marginTop:12}}>
           <div><strong>{file.name}</strong> — {pages} pages — original: {formatBytes(originalSize)}</div>
-          {estimateSize && typeof estimateSize === 'number' && (
-            <div style={{marginTop:8}}>Estimated compressed size: <strong>{formatBytes(estimateSize)}</strong> ({Math.round(100 - (estimateSize/originalSize)*100)}% smaller)</div>
-          )}
-          {estimateSize && typeof estimateSize === 'object' && (
+          {estimateSize && (
             <div style={{marginTop:8}}>
-              <div>Estimated range:</div>
-              <div style={{display:'flex',gap:12,marginTop:6}}>
-                <div>Min: <strong>{formatBytes(estimateSize.low)}</strong> ({Math.round(100 - (estimateSize.low/originalSize)*100)}% smaller)</div>
-                <div>Current: <strong>{formatBytes(estimateSize.cur)}</strong> ({Math.round(100 - (estimateSize.cur/originalSize)*100)}% smaller)</div>
-                <div>Max: <strong>{formatBytes(estimateSize.high)}</strong> ({Math.round(100 - (estimateSize.high/originalSize)*100)}% smaller)</div>
-              </div>
+              {typeof estimateSize === 'number' && (
+                <div>Estimated compressed size: <strong>{formatBytes(estimateSize)}</strong> ({originalSize? Math.round(100 - (estimateSize/originalSize)*100) : 0}% smaller)</div>
+              )}
+              {typeof estimateSize === 'object' && (
+                <div>
+                  {estimateSize.low && estimateSize.cur && estimateSize.high ? (
+                    <>
+                      <div>Estimated range:</div>
+                      <div style={{display:'flex',gap:12,marginTop:6}}>
+                        <div>Min: <strong>{formatBytes(estimateSize.low)}</strong> ({originalSize? Math.round(100 - (estimateSize.low/originalSize)*100) : 0}% smaller)</div>
+                        <div>Current: <strong>{formatBytes(estimateSize.cur)}</strong> ({originalSize? Math.round(100 - (estimateSize.cur/originalSize)*100) : 0}% smaller)</div>
+                        <div>Max: <strong>{formatBytes(estimateSize.high)}</strong> ({originalSize? Math.round(100 - (estimateSize.high/originalSize)*100) : 0}% smaller)</div>
+                      </div>
+                    </>
+                  ) : (
+                    // object with only cur (live estimate)
+                    <div>Estimated compressed size (live): <strong>{formatBytes(estimateSize.cur)}</strong> {originalSize? `(${Math.round(100 - (estimateSize.cur/originalSize)*100)}% smaller)` : ''}</div>
+                  )}
+                </div>
+              )}
             </div>
           )}
           {progressText && (
