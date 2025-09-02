@@ -46,8 +46,8 @@
   <style>
     /* small homepage UX styles */
     .hero {
-  background: #f6f7fb;
-  padding: 36px 0;
+      background: #f6f7fb;
+      padding: 36px 0;
     }
 
     .hero-inner {
@@ -96,18 +96,41 @@
     }
 
     /* Responsive hero adjustments */
-    @media (max-width:900px){
-      .hero{padding:22px 0}
-      .hero h1{font-size:28px}
-      .hero .lead{font-size:16px}
+    @media (max-width:900px) {
+      .hero {
+        padding: 22px 0
+      }
+
+      .hero h1 {
+        font-size: 28px
+      }
+
+      .hero .lead {
+        font-size: 16px
+      }
     }
 
-    @media (max-width:600px){
-      .hero{padding:16px 0}
-      .hero-inner{padding:0 12px}
-      .hero h1{font-size:22px}
-      .hero .lead{font-size:15px}
-      .features{padding-left:14px;font-size:14px}
+    @media (max-width:600px) {
+      .hero {
+        padding: 16px 0
+      }
+
+      .hero-inner {
+        padding: 0 12px
+      }
+
+      .hero h1 {
+        font-size: 22px
+      }
+
+      .hero .lead {
+        font-size: 15px
+      }
+
+      .features {
+        padding-left: 14px;
+        font-size: 14px
+      }
     }
 
     .features li {
@@ -131,25 +154,37 @@
   <section class="features-grid" aria-label="features">
     <div class="features-inner">
       <article class="card">
-        <div class="card-emoji">🛡️</div>
+        <div class="card-emoji" aria-hidden="true">
+          <!-- shield SVG -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2L3 5v6c0 5 3.8 9.7 9 11 5.2-1.3 9-6 9-11V5l-9-3z" fill="currentColor"/></svg>
+        </div>
         <h3>Privacy-first</h3>
         <p class="muted">Files are processed in your browser — no uploads required for most tools.</p>
       </article>
 
       <article class="card">
-        <div class="card-emoji">⚡</div>
+        <div class="card-emoji" aria-hidden="true">
+          <!-- bolt SVG -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" fill="currentColor"/></svg>
+        </div>
         <h3>Fast & lightweight</h3>
         <p class="muted">Optimized for speed — small UI, focused features, and clear steps.</p>
       </article>
 
       <article class="card">
-        <div class="card-emoji">🧩</div>
+        <div class="card-emoji" aria-hidden="true">
+          <!-- puzzle SVG -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 13v6a2 2 0 0 1-2 2h-6v-2a3 3 0 0 0-3-3H6v-6h2a3 3 0 0 0 3-3V4h6a2 2 0 0 1 2 2v6z" fill="currentColor"/></svg>
+        </div>
         <h3>All essential tools</h3>
         <p class="muted">Merge, split, convert, compress, watermark, sign — handy tools in one place.</p>
       </article>
 
       <article class="card">
-        <div class="card-emoji">🔒</div>
+        <div class="card-emoji" aria-hidden="true">
+          <!-- lock SVG -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 8V6a5 5 0 0 0-10 0v2H5v12h14V8h-2zM9 8V6a3 3 0 0 1 6 0v2H9z" fill="currentColor"/></svg>
+        </div>
         <h3>Secure</h3>
         <p class="muted">No server-side storage for private files — you keep control.</p>
       </article>
@@ -159,7 +194,8 @@
   <footer style="max-width:900px;margin:28px auto;padding:20px 16px;font-family:Inter,system-ui,Arial;">
     <div class="footer-card">
       <strong>Contact</strong>
-      <p style="margin:6px 0 0 0;color:var(--muted);">DM for business: <em>@oldest.in</em> — replace with your preferred contact
+      <p style="margin:6px 0 0 0;color:var(--muted);">DM for business: <em>@oldest.in</em> — replace with your preferred
+        contact
         or add an email like <code>mailto:you@example.com</code>.</p>
       <p style="margin:6px 0 0 0;color:var(--muted);">Profile / portfolio: <a href="https://github.com/dexpie"
           onclick="return false;">Github Link</a></p>
