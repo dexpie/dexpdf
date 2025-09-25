@@ -1,0 +1,46 @@
+import { useState, useEffect } from 'react'
+import './styles.css'
+
+function App() {
+  const [tools, setTools] = useState([])
+
+  useEffect(() => {
+    // Fetch tools when component mounts
+    fetch('/tools.json')
+      .then(res => res.json())
+      .then(data => setTools(data))
+      .catch(err => console.error('Error loading tools:', err))
+  }, [])
+
+  return (
+    <div className="app">
+      <header className="landing-header">
+        <div className="landing-inner">
+          <div className="landing-left">
+            <img src="/assets/logo-dexpdf.svg" alt="dexpdf" className="logo-dexpdf" />
+          </div>
+          <div className="landing-right">
+            <span className="hello">HELLO</span>
+            <img src="/assets/logo-dexers.svg" alt="DEXERS" className="logo-dexers" />
+          </div>
+        </div>
+      </header>
+
+      <main className="landing-main">
+        <div className="landing-grid-inner">
+          {tools.map(tool => (
+            <a key={tool.id} href={`/${tool.id}`} className="landing-card-link">
+              <div className="landing-card">
+                <h2 className="landing-card-title">{tool.name}</h2>
+                <p className="landing-card-desc">{tool.desc}</p>
+                <button className="landing-card-btn">Open</button>
+              </div>
+            </a>
+          ))}
+        </div>
+      </main>
+    </div>
+  )
+}
+
+export default App

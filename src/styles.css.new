@@ -1,0 +1,222 @@
+/* Base theme variables */
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --border: #e6e9f0;
+  --paper: #ffffff;
+  --overlay-border: rgba(0,0,0,0.12);
+  --brand-red: #CF2727;
+  --brand-pdf-red: #FF0000;
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --soft-shadow: 0 10px 30px rgba(2,6,23,0.06);
+  --accent-2: #7dd3fc;
+  --accent-3: #ffd6e0;
+}
+
+/* Dark theme */
+.dark {
+  --bg: #0f1724;
+  --card: #1a2332;
+  --border: rgba(255,255,255,0.1);
+  --muted: #8b92a5;
+}
+
+/* Main layout components */
+.app {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+/* Landing page specific styles */
+.landing-header {
+  padding: 36px 0;
+  background: var(--bg);
+}
+
+.landing-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 18px;
+}
+
+.landing-main {
+  padding: 48px 0;
+}
+
+.landing-grid-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 34px;
+  padding: 0 18px;
+}
+
+/* Tool cards */
+.landing-card {
+  background: var(--brand-red);
+  border-radius: 18px;
+  padding: 34px 24px;
+  min-height: 190px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
+  transition: box-shadow 0.18s, transform 0.18s;
+  cursor: pointer;
+  outline: none;
+}
+
+.landing-card:hover,
+.landing-card:focus {
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.16);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.landing-card-title {
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  margin-bottom: 24px;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.landing-card-desc {
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  margin: 0;
+}
+
+.landing-card-btn {
+  margin-top: auto;
+  background: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: var(--brand-red);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.landing-card-btn:hover {
+  opacity: 0.9;
+}
+
+/* Hero section */
+.hero {
+  padding: 40px 0;
+  background: var(--bg);
+}
+
+.hero-dropzone {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  text-align: center;
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--border);
+}
+
+.hero-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--brand-red);
+}
+
+.hero-sub {
+  color: var(--muted);
+  font-size: 16px;
+}
+
+/* Tool search */
+.tool-search {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  background: var(--card);
+}
+
+/* Responsive grid */
+@media (max-width: 1200px) {
+  .landing-grid-inner {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .landing-grid-inner {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .landing-grid-inner {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .landing-header {
+    padding: 24px 0;
+  }
+  
+  .hero-dropzone {
+    padding: 32px 20px;
+  }
+}
+
+/* Custom font */
+@font-face {
+  font-family: 'DexpdfCustom';
+  src: url('/assets/fonts/YourFont.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Common components */
+.btn {
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: linear-gradient(90deg,var(--accent),var(--accent-2));
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  margin-right: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37,99,235,0.12);
+}
+
+.btn:active {
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid rgba(37,99,235,0.12);
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
+/* Utility classes */
+.muted {
+  color: var(--muted);
+}

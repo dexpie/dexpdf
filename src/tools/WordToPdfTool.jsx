@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import mammoth from 'mammoth'
 import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
+// jsPDF will be dynamically imported during conversion to avoid bundling it in the main chunk
 
 export default function WordToPdfTool() {
     const [file, setFile] = useState(null)
@@ -33,6 +33,7 @@ export default function WordToPdfTool() {
             document.body.appendChild(wrapper)
             const canvas = await html2canvas(wrapper, { scale: 2 })
             const imgData = canvas.toDataURL('image/png')
+            const { jsPDF } = await import('jspdf')
             const pdf = new jsPDF('p', 'mm', 'a4')
             const imgProps = pdf.getImageProperties(imgData)
             const pdfWidth = 210

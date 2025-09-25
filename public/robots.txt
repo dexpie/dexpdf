@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://dexpdf.vercel.app/sitemap.xml

@@ -1,116 +1,129 @@
-import React, { useState, Suspense, useEffect } from 'react'
-import ToolCard from './components/ToolCard'
-import Modal from './components/Modal'
+﻿import { useState, useEffect, useMemo } from 'react'
+import './styles.css'
+import './tools.js'
+import ToolContainer from './components/tools/ToolContainer'
 
-const MergeTool = React.lazy(() => import('./tools/MergeTool'))
-const SplitTool = React.lazy(() => import('./tools/SplitTool'))
-const ImagesToPdfTool = React.lazy(() => import('./tools/ImagesToPdfTool'))
-const PdfToImagesTool = React.lazy(() => import('./tools/PdfToImagesTool'))
-const PdfToTextTool = React.lazy(() => import('./tools/PdfToTextTool'))
-const PdfToWordTool = React.lazy(() => import('./tools/PdfToWordTool'))
-const PdfToPptTool = React.lazy(() => import('./tools/PdfToPptTool'))
-const PptToPdfTool = React.lazy(() => import('./tools/PptToPdfTool'))
-const RotateTool = React.lazy(() => import('./tools/RotateTool'))
-const WatermarkTool = React.lazy(() => import('./tools/WatermarkTool'))
-const ReorderTool = React.lazy(() => import('./tools/ReorderTool'))
-const AnnotateTool = React.lazy(() => import('./tools/AnnotateTool'))
-const OcrTool = React.lazy(() => import('./tools/OcrTool'))
-const PageNumbersTool = React.lazy(() => import('./tools/PageNumbersTool'))
-const SignatureTool = React.lazy(() => import('./tools/SignatureTool'))
-const EditPdfTool = React.lazy(() => import('./tools/EditPdfTool'))
-const CompressTool = React.lazy(() => import('./tools/CompressTool'))
-
-const tools = [
-  { id: 'merge', name: 'Merge PDF', icon: '🔗', comp: MergeTool, desc: 'Combine multiple PDFs into one' },
-  { id: 'split', name: 'Split PDF', icon: '✂️', comp: SplitTool, desc: 'Extract pages or split by ranges' },
-  { id: 'imgs2pdf', name: 'Images → PDF', icon: '🖼️', comp: ImagesToPdfTool, desc: 'Convert images to a single PDF' },
-  { id: 'pdf2imgs', name: 'PDF → Images', icon: '🖼️', comp: PdfToImagesTool, desc: 'Export PDF pages as images' },
-  { id: 'pdf2text', name: 'PDF → Text', icon: '📝', comp: PdfToTextTool, desc: 'Extract selectable text from PDF' },
-  { id: 'pdf2word', name: 'PDF → Word', icon: '📄', comp: PdfToWordTool, desc: 'Basic PDF to DOCX conversion' },
-  { id: 'pdf2ppt', name: 'PDF → PPTX', icon: '📤', comp: PdfToPptTool, desc: 'Export each PDF page as a PPTX slide' },
-  { id: 'ppt2pdf', name: 'PPTX → PDF', icon: '📥', comp: PptToPdfTool, desc: 'Convert PPTX slides (images) to PDF' },
-  { id: 'rotate', name: 'Rotate Pages', icon: '🔄', comp: RotateTool, desc: 'Rotate selected pages clockwise or counterclockwise' },
-  { id: 'reorder', name: 'Reorder Pages', icon: '🔀', comp: ReorderTool, desc: 'Drag to reorder PDF pages and export' },
-  { id: 'annotate', name: 'Annotate PDF', icon: '🖊️', comp: AnnotateTool, desc: 'Add drawings, highlights, and sticky notes' },
-  { id: 'ocr', name: 'OCR (Image→Text)', icon: '🔎', comp: OcrTool, desc: 'Extract text from images or scanned PDFs (Tesseract.js)' },
-  { id: 'watermark', name: 'Watermark', icon: '💧', comp: WatermarkTool, desc: 'Add text/image watermark' },
-  { id: 'pagenums', name: 'Page Numbers', icon: '🔢', comp: PageNumbersTool, desc: 'Add page numbers' },
-  { id: 'signature', name: 'Signature', icon: '✒️', comp: SignatureTool, desc: 'Sign PDF pages' },
-  { id: 'edit', name: 'Edit PDF', icon: '🛠️', comp: EditPdfTool, desc: 'Edit PDF content (basic)' },
-  { id: 'compress', name: 'Compress', icon: '🗜️', comp: CompressTool, desc: 'Reduce PDF file size' }
-]
-
-export default function App() {
-  const [active, setActive] = useState(null)
-  const [open, setOpen] = useState(false)
+function App() {
+  const [tools, setTools] = useState([])
+  const [activeTool, setActiveTool] = useState(null)
   const [query, setQuery] = useState('')
-  const [theme, setTheme] = useState(() => {
-    try {
-      if (typeof window === 'undefined') return 'light'
-      const stored = localStorage.getItem('theme')
-      if (stored) return stored
-      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    } catch (e) { return 'light' }
-  })
+
+  // Handle tool opening
+  useEffect(() => {
+    const handleToolOpen = (e) => {
+      setActiveTool(e.detail)
+    }
+    window.addEventListener('open-tool', handleToolOpen)
+    return () => window.removeEventListener('open-tool', handleToolOpen)
+  }, [])
+
+  // First useEffect is enough for tool opening handler
 
   useEffect(() => {
-    try {
-      document.documentElement.classList.toggle('dark', theme === 'dark')
-      localStorage.setItem('theme', theme)
-    } catch (e) { /* ignore */ }
-  }, [theme])
+    // Fetch tools when component mounts
+    fetch('/tools.json')
+      .then(res => res.json())
+      .then(data => setTools(data))
+      .catch(err => console.error('Error loading tools:', err))
+  }, [])
 
-  function toggleTheme(){ setTheme(t => t === 'dark' ? 'light' : 'dark') }
-
-  function openTool(id){
-    const t = tools.find(x => x.id === id)
-    if(!t) return
-    setActive(t)
-    setOpen(true)
-  }
-
-  function closeTool(){ setOpen(false); setActive(null) }
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return tools
+    return tools.filter(t => {
+      const inName = t.name && t.name.toLowerCase().includes(q)
+      const inDesc = t.desc && t.desc.toLowerCase().includes(q)
+      const inTags = Array.isArray(t.tags) && t.tags.join(' ').toLowerCase().includes(q)
+      return inName || inDesc || inTags
+    })
+  }, [tools, query])
 
   return (
     <div className="app">
-      <header className="header">
-        <div className="brand">dexpdf</div>
-        <div className="nav">
-          <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle dark mode">{theme === 'dark' ? '☀️' : '🌙'}</button>
-        </div>
-      </header>
-
-      <section className="hero">
-        <div className="hero-dropzone">
-          <div className="hero-title">Drop PDF files here or click to select</div>
-          <div className="hero-sub">Merge, split, convert and more — all locally in your browser</div>
-        </div>
-      </section>
-
-      {/* quick search to find tools */}
-      <div style={{maxWidth:1100,margin:'12px auto 0',padding:'0 18px'}}>
-        <input
-          className="tool-search"
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          placeholder="Search tools — e.g. merge, compress, OCR"
-          aria-label="Search tools"
+      {activeTool ? (
+        <ToolContainer
+          toolId={activeTool}
+          onClose={() => {
+            setActiveTool(null)
+            window.history.pushState({}, '', '/')
+          }}
         />
-      </div>
+      ) : (
+        <>
+          <header className="landing-header">
+            <div className="landing-inner">
+              <div className="landing-left">
+                <div className="logo-dexpdf">
+                  <svg width="92" height="36" viewBox="0 0 92 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="82" height="36" rx="4" fill="#CF2727" />
+                    <text x="12" y="26" fill="white" fontFamily="Arial" fontSize="24" fontWeight="bold">DEX</text>
+                  </svg>
+                </div>
+              </div>
+              <div className="landing-right">
+                <span className="hello">HELLO</span>
+                <div className="logo-dexers">
+                  <svg width="120" height="28" viewBox="0 0 120 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="22" fill="#111" fontFamily="Arial" fontSize="22" fontWeight="bold">DEXERS</text>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </header>
 
-      <section className="tool-grid" aria-live="polite">
-        {tools.filter(t => (t.name + ' ' + t.desc).toLowerCase().includes(query.trim().toLowerCase())).map(t => (
-          <ToolCard key={t.id} title={t.name} desc={t.desc} onOpen={() => openTool(t.id)} />
-        ))}
-      </section>
-
-      <footer className="footer">dexpdf — small local PDF toolkit</footer>
-
-  <Modal open={open} onClose={closeTool} title={active?.name} subtitle={active?.desc}>
-        <Suspense fallback={<div style={{padding:20}}>Loading...</div>}>
-          {active && <active.comp />}
-        </Suspense>
-      </Modal>
+          <main className="landing-main">
+            <div className="landing-search">
+              <input
+                aria-label="Search tools"
+                className="landing-search-input"
+                placeholder="Search tools by name, description or tag..."
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Escape') setQuery('')
+                }}
+              />
+              {query && (
+                <button
+                  className="landing-search-clear"
+                  onClick={() => setQuery('')}
+                  aria-label="Clear search"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="landing-grid-inner">
+              {filtered.length === 0 ? (
+                <div className="no-results">No tools match "{query}"</div>
+              ) : (
+                filtered.map((tool) => {
+                  return (
+                    <a
+                      key={tool.id}
+                      href={`/?tool=${tool.id}`}
+                      className="landing-card-link"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        console.log('Tool clicked:', tool.id)
+                        window.dispatchEvent(new CustomEvent('open-tool', { detail: tool.id }))
+                      }}
+                    >
+                      <div className="landing-card">
+                        <h2 className="landing-card-title">{tool.name}</h2>
+                        <p className="landing-card-desc">{tool.desc}</p>
+                        <button className="landing-card-btn">Open</button>
+                      </div>
+                    </a>
+                  )
+                })
+              )}
+            </div>
+          </main>
+        </>
+      )}
     </div>
   )
 }
+
+export default App

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import jsPDF from 'jspdf'
+// jsPDF will be dynamically imported when creating the PDF to avoid inflating initial bundle
 
 export default function ImagesToPdfTool() {
 	const [images, setImages] = useState([])
@@ -70,6 +70,8 @@ export default function ImagesToPdfTool() {
 			const A4H = 297
 
 			// create A4 portrait document and fit each image inside the page
+			// dynamic import so jsPDF lives in a separate chunk
+			const { jsPDF } = await import('jspdf')
 			const doc = new jsPDF({ unit, format: [A4W, A4H] })
 
 			for (let i = 0; i < imgs.length; i++) {

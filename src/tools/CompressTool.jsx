@@ -265,7 +265,7 @@ export default function CompressTool(){
                     </>
                   ) : (
                     // object with only cur (live estimate)
-                    <div>Estimated compressed size (live): <strong>{formatBytes(estimateSize.cur)}</strong> {originalSize? `(${Math.round(100 - (estimateSize.cur/originalSize)*100)}% smaller)` : ''}</div>
+                    <div>Estimated compressed size (live): <strong>{formatBytes(estimateSize.cur)}</strong> {originalSize? `(${Math.round(100 - (estimateSize.cur/originalSize)*100)}% smaller)` : ''} {estimating && <span className="small-spinner" aria-hidden="true" />}</div>
                   )}
                 </div>
               )}

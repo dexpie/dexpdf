@@ -1,7 +1,7 @@
 import React from 'react'
 
-export default function Modal({ open, onClose, title, subtitle, children }){
-  if(!open) return null
+const Modal = ({ open, onClose, title, subtitle, children }) => {
+  if (!open) return null
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
@@ -15,9 +15,9 @@ export default function Modal({ open, onClose, title, subtitle, children }){
         <div className="modal-body">
           {subtitle && (
             <div className="tool-help">
-              <div style={{fontWeight:600}}>Quick help</div>
-              <div className="muted" style={{marginTop:6}}>{subtitle}</div>
-              <div className="muted" style={{marginTop:8,fontSize:12}}>
+              <div style={{ fontWeight: 600 }}>Quick help</div>
+              <div className="muted" style={{ marginTop: 6 }}>{subtitle}</div>
+              <div className="muted" style={{ marginTop: 8, fontSize: 12 }}>
                 Privacy: files are processed locally in your browser where possible. For large or high-fidelity conversions server-side processing may be required.
               </div>
             </div>
@@ -28,3 +28,5 @@ export default function Modal({ open, onClose, title, subtitle, children }){
     </div>
   )
 }
+
+export default Modal;

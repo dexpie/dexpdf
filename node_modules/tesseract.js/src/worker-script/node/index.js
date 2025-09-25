@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  *
  * Tesseract Worker Script for Node
@@ -7,8 +9,8 @@
  * @author Guillermo Webster <gui@mit.edu>
  * @author Jerome Wu <jeromewus@gmail.com>
  */
-
-const fetch = require('node-fetch');
+// Use built-in fetch if available, otherwise fallback to node-fetch
+const fetch = global.fetch || require('node-fetch');
 const { parentPort } = require('worker_threads');
 const worker = require('..');
 const getCore = require('./getCore');
