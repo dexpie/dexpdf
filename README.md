@@ -1,5 +1,4 @@
-# Workspace snapshot
-This file is used as a temporary marker for automated edits.
+
 # dexpdf
 
 dexpdf is a small client-side PDF toolkit built with React + Vite. It provides basic tools similar to small PDF services: merge PDFs, extract pages, and create PDFs from images — all in the browser (no server required).
