@@ -435,3 +435,187 @@
 .convert-btn:hover {
   opacity: 0.9;
 }
+
+/* Ad spot styling */
+.ad-spot {
+  max-width: 1100px;
+  margin: 0 auto 20px;
+  padding: 0 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ad-spot img.ad-spot-img {
+  width: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: var(--soft-shadow);
+  border: 1px solid var(--border);
+}
+
+.ad-spot .ad-spot-fallback {
+  width: 100%;
+  max-width: 980px;
+  background: linear-gradient(90deg, var(--accent-2), var(--accent-3));
+  color: #111;
+  padding: 18px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .ad-spot img.ad-spot-img {
+    max-height: 80px;
+    border-radius: 8px;
+  }
+
+  .ad-spot {
+    margin-bottom: 12px;
+  }
+}
+
+/* Recent files list */
+.recent-files {
+  max-width: 1100px;
+  margin: 0 auto 12px;
+  padding: 0 18px;
+}
+
+.recent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.recent-clear {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.recent-files ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap
+}
+
+.recent-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px
+}
+
+.recent-name {
+  font-weight: 600;
+  font-size: 13px
+}
+
+.recent-time {
+  font-size: 11px;
+  color: var(--muted)
+}
+
+/* Consent banner */
+.consent-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  display: flex;
+  justify-content: center;
+  z-index: 200;
+}
+
+.consent-inner {
+  max-width: 1100px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  box-shadow: var(--soft-shadow);
+}
+
+.consent-text {
+  font-size: 13px;
+  color: var(--muted)
+}
+
+.consent-actions {
+  display: flex;
+  gap: 8px
+}
+
+.consent-accept {
+  background: var(--brand-red);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer
+}
+
+.consent-decline {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer
+}
+
+/* CSV → PDF tool styles */
+.tool-csv2pdf .tool-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px
+}
+
+.tool-csv2pdf .btn {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer
+}
+
+.tool-csv2pdf .btn.primary {
+  background: var(--brand-red);
+  color: white;
+  border: none
+}
+
+.csv-preview {
+  overflow: auto;
+  border: 1px solid var(--border);
+  padding: 8px;
+  background: var(--card);
+  border-radius: 10px
+}
+
+.csv-preview table {
+  border-collapse: collapse;
+  width: 100%
+}
+
+.csv-preview td {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 6px;
+  font-size: 13px
+}

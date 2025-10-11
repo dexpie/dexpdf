@@ -35,6 +35,11 @@
     "desc": "Export each PDF page as a PPTX slide"
   },
   {
+    "id": "csv2pdf",
+    "name": "CSV → PDF",
+    "desc": "Convert CSV tables to a printable PDF"
+  },
+  {
     "id": "ppt2pdf",
     "name": "PPTX → PDF",
     "desc": "Convert PPTX slides (images) to PDF"
