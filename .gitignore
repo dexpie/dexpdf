@@ -1,1 +1,45 @@
+# Node modules
+node_modules/
+
+# Vite / build output
+dist/
+build/
+/.parcel-cache/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor backups and temp files
+*.bak
+*.old
+*.orig
+*.tmp
+*.new
+*~
+
+# IDEs
+.idea/
+.vscode/
+
+# Mac
+.DS_Store
+
+# Windows image file caches
+ehthumbs.db
+
+# Vite dev server cache
+node_modules/.vite/
+
+# Build output folders used by some tools
+/.cache/
+/.next/
+
+# Certificates
+*.pem
 .vercel
