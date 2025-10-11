@@ -10,6 +10,7 @@ import ImagesToPdfTool from '../../tools/ImagesToPdfTool'
 import PdfToImagesTool from '../../tools/PdfToImagesTool'
 import AnnotateTool from '../../tools/AnnotateTool'
 import CompressTool from '../../tools/CompressTool'
+import CSVToPdfTool from '../../tools/CSVToPdfTool'
 import EditPdfTool from '../../tools/EditPdfTool'
 import OcrTool from '../../tools/OcrTool'
 import PageNumbersTool from '../../tools/PageNumbersTool'
@@ -35,6 +36,7 @@ const TOOL_COMPONENTS = {
   'pagenums': PageNumbersTool,
   'pdf2ppt': PdfToPptTool,
   'ppt2pdf': PptToPdfTool,
+  'csv2pdf': CSVToPdfTool,
   'reorder': ReorderTool,
   'rotate': RotateTool,
   'signature': SignatureTool,

@@ -2,16 +2,30 @@
 import './styles.css'
 import './tools.js'
 import ToolContainer from './components/tools/ToolContainer'
+import AdSpot from './components/AdSpot'
+import RecentFiles from './components/RecentFiles'
+import { pushRecent } from './utils/storage'
+import ConsentBanner from './components/ConsentBanner'
+import { getAdConsent } from './utils/consent'
 
 function App() {
   const [tools, setTools] = useState([])
   const [activeTool, setActiveTool] = useState(null)
   const [query, setQuery] = useState('')
+  const [adConsent, setAdConsent] = useState(() => getAdConsent())
 
   // Handle tool opening
   useEffect(() => {
     const handleToolOpen = (e) => {
       setActiveTool(e.detail)
+      // Save to recent list (try to find tool metadata)
+      try {
+        const id = e.detail
+        const t = tools.find(x => x.id === id) || { id }
+        pushRecent({ id: t.id, name: t.name })
+      } catch (err) {
+        // ignore
+      }
     }
     window.addEventListener('open-tool', handleToolOpen)
     return () => window.removeEventListener('open-tool', handleToolOpen)
@@ -93,6 +107,14 @@ function App() {
                 </button>
               )}
             </div>
+            <RecentFiles onOpen={(item) => {
+              // dispatch same open-tool event
+              window.dispatchEvent(new CustomEvent('open-tool', { detail: item.id }))
+            }} />
+            <ConsentBanner onChange={(v) => setAdConsent(v)} />
+            {adConsent === true && (
+              <AdSpot image="/assets/bippy.jpg" href="https://dexpdf.vercel.app" alt="Sponsor" />
+            )}
             <div className="landing-grid-inner">
               {filtered.length === 0 ? (
                 <div className="no-results">No tools match "{query}"</div>
