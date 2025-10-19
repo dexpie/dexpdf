@@ -3,10 +3,12 @@ import { PDFDocument } from 'pdf-lib'
 import * as pdfjsLib from 'pdfjs-dist'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename } from '../utils/fileHelpers'
+import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 
 try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) { }
 
 export default function MergeTool() {
+  const [batchMode, setBatchMode] = useState(false)
   const [files, setFiles] = useState([])
   const [busy, setBusy] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
@@ -127,9 +129,84 @@ export default function MergeTool() {
     }
   }
 
+  // Batch processing: For merge in batch mode, we'll merge each file with optimization
+  // Note: In batch mode for "merge", each PDF could be optimized/processed individually
+  // This is different from single mode where multiple PDFs are merged into one
+  const processBatchFile = async (file, index, onProgress) => {
+    try {
+      onProgress(10)
+
+      // Load the PDF
+      const bytes = await file.arrayBuffer()
+      onProgress(30)
+
+      // Load and optimize
+      const pdf = await PDFDocument.load(bytes)
+      onProgress(60)
+
+      // Save (this will optimize the PDF)
+      const optimized = await pdf.save()
+      onProgress(90)
+
+      // Create blob
+      const blob = new Blob([optimized], { type: 'application/pdf' })
+      onProgress(100)
+
+      return blob
+    } catch (error) {
+      console.error(`Error processing ${file.name}:`, error)
+      throw error
+    }
+  }
+
   return (
     <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
       <h2 style={{ textAlign: 'center', marginBottom: 16 }}>Merge PDF</h2>
+      
+      {/* Mode Toggle */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+        <button 
+          className={!batchMode ? 'btn-primary' : 'btn-outline'}
+          onClick={() => setBatchMode(false)}
+          style={{ minWidth: 120 }}
+        >
+          📄 Merge Multiple
+        </button>
+        <button 
+          className={batchMode ? 'btn-primary' : 'btn-outline'}
+          onClick={() => setBatchMode(true)}
+          style={{ minWidth: 120 }}
+        >
+          🔄 Batch Optimize
+        </button>
+      </div>
+
+      {/* Batch Mode */}
+      {batchMode && (
+        <UniversalBatchProcessor
+          toolName="Optimize PDFs"
+          processFile={processBatchFile}
+          acceptedTypes=".pdf"
+          outputExtension=".pdf"
+          maxFiles={100}
+          customOptions={
+            <div style={{ padding: '12px 0' }}>
+              <div style={{ fontSize: 14, color: '#666', marginBottom: 8 }}>
+                💡 <strong>Batch Optimize Mode:</strong> Process multiple PDFs individually with optimization.
+              </div>
+              <div style={{ fontSize: 13, color: '#888' }}>
+                ⚡ Each PDF is optimized and compressed<br />
+                📦 Download individual files or all as ZIP<br />
+                💾 Original files remain unchanged
+              </div>
+            </div>
+          }
+        />
+      )}
+
+      {/* Single Merge Mode */}
+      {!batchMode && (
+        <div>
       {errorMsg && (
         <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
       )}
@@ -172,6 +249,8 @@ export default function MergeTool() {
         <button className="btn-primary" onClick={merge} disabled={busy || files.length === 0}>{busy ? 'Working...' : 'Merge & Download'}</button>
         <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFiles([]); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || files.length === 0}>Reset</button>
       </div>
+      </div>
+      )}
     </div>
   )
 }
