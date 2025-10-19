@@ -1,0 +1,457 @@
+/* Universal Batch Processor Styling */
+.batch-processor {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* Header */
+.batch-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.batch-header h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary, #1f2937);
+}
+
+.batch-header p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary, #6b7280);
+  margin: 0;
+}
+
+/* Error */
+.batch-error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #fca5a5;
+  font-weight: 500;
+}
+
+/* Upload Zone */
+.batch-upload-zone {
+  border: 3px dashed var(--border-color, #d1d5db);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: var(--bg-secondary, #f9fafb);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.batch-upload-zone:hover {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+  transform: translateY(-2px);
+}
+
+.upload-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.upload-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  margin-bottom: 0.5rem;
+}
+
+.upload-hint {
+  font-size: 0.875rem;
+  color: var(--text-tertiary, #9ca3af);
+}
+
+/* Options */
+.batch-options {
+  background: var(--bg-secondary, #f9fafb);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Files Container */
+.batch-files {
+  background: var(--bg-primary, #ffffff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.batch-files-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color, #e5e7eb);
+}
+
+.batch-files-header h4 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+}
+
+.btn-clear {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1.5px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-clear:hover {
+  background: var(--bg-hover, #f3f4f6);
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+/* File List */
+.batch-files-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+/* Custom Scrollbar */
+.batch-files-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.batch-files-list::-webkit-scrollbar-track {
+  background: var(--bg-secondary, #f9fafb);
+  border-radius: 4px;
+}
+
+.batch-files-list::-webkit-scrollbar-thumb {
+  background: var(--border-color, #d1d5db);
+  border-radius: 4px;
+}
+
+.batch-files-list::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary, #9ca3af);
+}
+
+/* File Item */
+.batch-file-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary, #f9fafb);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.batch-file-item:hover {
+  background: var(--bg-hover, #f3f4f6);
+  transform: translateX(2px);
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.file-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.file-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size {
+  font-size: 0.8125rem;
+  color: var(--text-tertiary, #9ca3af);
+  margin-top: 0.25rem;
+}
+
+/* Progress Bar */
+.file-progress {
+  flex: 0 0 100px;
+  height: 6px;
+  background: var(--bg-secondary, #e5e7eb);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.file-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+/* File Error */
+.file-error {
+  flex: 1;
+  font-size: 0.8125rem;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+/* File Actions */
+.file-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-download-small,
+.btn-remove {
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-download-small:hover {
+  background: #d1fae5;
+  transform: scale(1.1);
+}
+
+.btn-remove:hover {
+  background: #fee2e2;
+  transform: scale(1.1);
+}
+
+/* Global Progress */
+.batch-global-progress {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+  border: 2px solid #667eea;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-tertiary, #9ca3af);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #1f2937);
+}
+
+.stat-value.error {
+  color: #dc2626;
+}
+
+.global-progress-bar {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.global-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.5s ease;
+  border-radius: 6px;
+}
+
+.global-progress-text {
+  text-align: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #667eea;
+}
+
+/* Action Buttons */
+.batch-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-primary-batch,
+.btn-pause,
+.btn-download-all {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary-batch {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  flex: 1;
+  justify-content: center;
+}
+
+.btn-primary-batch:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-pause {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-pause:hover {
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+  transform: translateY(-2px);
+}
+
+.btn-download-all {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  flex: 1;
+  justify-content: center;
+}
+
+.btn-download-all:hover {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1f2937;
+    --bg-secondary: #111827;
+    --bg-hover: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-tertiary: #9ca3af;
+    --border-color: #374151;
+  }
+
+  .batch-upload-zone {
+    background: #1f2937;
+  }
+
+  .batch-upload-zone:hover {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  }
+
+  .batch-global-progress {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  }
+
+  .global-progress-bar {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .batch-processor {
+    padding: 1rem;
+  }
+
+  .batch-upload-zone {
+    padding: 2rem 1rem;
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+  }
+
+  .upload-text {
+    font-size: 1rem;
+  }
+
+  .batch-files-list {
+    max-height: 300px;
+  }
+
+  .batch-file-item {
+    flex-wrap: wrap;
+  }
+
+  .file-progress {
+    flex: 0 0 100%;
+    order: 3;
+    margin-top: 0.5rem;
+  }
+
+  .progress-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .batch-actions {
+    flex-direction: column;
+  }
+
+  .btn-primary-batch,
+  .btn-pause,
+  .btn-download-all {
+    width: 100%;
+  }
+}
