@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 // import heavy libs only when needed
 
 export default function PptToPdfTool() {
@@ -8,6 +10,7 @@ export default function PptToPdfTool() {
   const [busy, setBusy] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [outputFileName, setOutputFileName] = useState('')
   const errorRef = React.useRef(null);
   const successRef = React.useRef(null);
   React.useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus(); }, [errorMsg]);
@@ -18,6 +21,7 @@ export default function PptToPdfTool() {
     const f = e.target.files[0]
     if (!f) return
     setFile(f)
+    setOutputFileName(getDefaultFilename(f))
   }
 
   async function convert() {
@@ -52,7 +56,7 @@ export default function PptToPdfTool() {
           if (i < images.length - 1) doc.addPage()
           URL.revokeObjectURL(imgUrl)
         }
-        doc.save(file.name.replace(/\.pptx$/i, '') + '.pdf')
+        doc.save(getOutputFilename(outputFileName, file.name.replace(/\.pptx$/i, '')))
         setSuccessMsg('Berhasil! PDF berhasil dibuat dan diunduh.');
       } else {
         const out = new JSZip()
@@ -95,6 +99,14 @@ export default function PptToPdfTool() {
             <button className="btn" onClick={() => setFile(null)} disabled={busy}>Remove</button>
           </div>
         </div>
+      )}
+      {file && (
+        <FilenameInput
+          value={outputFileName}
+          onChange={(e) => setOutputFileName(e.target.value)}
+          disabled={busy}
+          placeholder="output"
+        />
       )}
       <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <button className="btn-primary" onClick={convert} disabled={!file || busy}>{busy ? 'Converting...' : 'Convert to PDF'}</button>

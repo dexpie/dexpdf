@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { createInlineModuleWorker, terminateWorker } from '../utils/workerHelpers'
 import workerCode from '../workers/batchWatermarkCode'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 export default function BatchWatermarkTool() {
   const [files, setFiles] = useState([])
@@ -9,6 +11,7 @@ export default function BatchWatermarkTool() {
   const abortRef = useRef({ aborted: false })
   const workerRef = useRef(null)
   const [fileStates, setFileStates] = useState([]) // { name, status: 'pending'|'processing'|'done'|'error', percent }
+  const [outputFileName, setOutputFileName] = useState('watermarked-files')
 
   useEffect(() => {
     return () => {
@@ -75,7 +78,7 @@ export default function BatchWatermarkTool() {
           const url = URL.createObjectURL(blob)
           const a = document.createElement('a')
           a.href = url
-          a.download = 'watermarked-files.zip'
+          a.download = getOutputFilename(outputFileName, 'watermarked-files', '.zip')
           document.body.appendChild(a)
           a.click()
           a.remove()
@@ -217,7 +220,7 @@ export default function BatchWatermarkTool() {
         const url = URL.createObjectURL(content)
         const a = document.createElement('a')
         a.href = url
-        a.download = 'watermarked-files.zip'
+        a.download = getOutputFilename(outputFileName, 'watermarked-files', '.zip')
         document.body.appendChild(a)
         a.click()
         a.remove()
@@ -260,6 +263,14 @@ export default function BatchWatermarkTool() {
             ))}
           </ul>
         </div>
+      )}
+      {files.length > 0 && (
+        <FilenameInput
+          value={outputFileName}
+          onChange={(e) => setOutputFileName(e.target.value)}
+          disabled={busy}
+          placeholder="watermarked-files"
+        />
       )}
       <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
         <button className="btn-primary" onClick={applyWatermarks} disabled={busy || files.length === 0}>

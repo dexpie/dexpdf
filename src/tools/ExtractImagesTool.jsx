@@ -1,10 +1,13 @@
 import { useState } from 'react'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 export default function ExtractImagesTool() {
   const [files, setFiles] = useState([])
   const [busy, setBusy] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [outputFileName, setOutputFileName] = useState('extracted-images')
   const errorRef = React.useRef(null);
   const successRef = React.useRef(null);
   React.useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus(); }, [errorMsg]);
@@ -39,7 +42,7 @@ export default function ExtractImagesTool() {
       const url = URL.createObjectURL(content)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'extracted-images.zip'
+      a.download = getOutputFilename(outputFileName, 'extracted-images', '.zip')
       document.body.appendChild(a)
       a.click()
       a.remove()
@@ -74,6 +77,14 @@ export default function ExtractImagesTool() {
           </div>
         ))}
       </div>
+      {files.length > 0 && (
+        <FilenameInput
+          value={outputFileName}
+          onChange={(e) => setOutputFileName(e.target.value)}
+          disabled={busy}
+          placeholder="extracted-images"
+        />
+      )}
       <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <button className="btn-primary" onClick={extract} disabled={busy || files.length === 0}>{busy ? 'Working...' : 'Extract & Download'}</button>
         <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFiles([]); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || files.length === 0}>Reset</button>

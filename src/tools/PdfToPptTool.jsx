@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 // load heavy libs dynamically to keep initial bundle smaller
 
 try {
@@ -10,12 +12,14 @@ export default function PdfToPptTool() {
   const [file, setFile] = useState(null)
   const [busy, setBusy] = useState(false)
   const [previews, setPreviews] = useState([]) // {dataUrl, selected}
+  const [outputFileName, setOutputFileName] = useState('')
 
   async function loadFile(e) {
     const f = e.target.files[0]
     if (!f) return
     setFile(f)
     setPreviews([])
+    setOutputFileName(getDefaultFilename(f))
     try {
       const data = await f.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data }).promise
@@ -50,7 +54,7 @@ export default function PdfToPptTool() {
         const slide = pres.addSlide()
         slide.addImage({ data: p.dataUrl, x: 0, y: 0, w: '100%', h: '100%' })
       }
-      await pres.writeFile({ fileName: file.name.replace(/\.pdf$/i, '') + '.pptx' })
+      await pres.writeFile({ fileName: getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, ''), '.pptx') })
     } catch (err) { console.error(err); alert('Conversion failed: ' + err.message) }
     finally { setBusy(false) }
   }
@@ -76,6 +80,15 @@ export default function PdfToPptTool() {
             ))}
           </div>
         </div>
+      )}
+
+      {file && (
+        <FilenameInput
+          value={outputFileName}
+          onChange={(e) => setOutputFileName(e.target.value)}
+          disabled={busy}
+          placeholder="output"
+        />
       )}
 
       <div style={{ marginTop: 12 }}>
