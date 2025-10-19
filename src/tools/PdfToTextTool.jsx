@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 
 try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) { }
 
 export default function PdfToTextTool() {
+  const [batchMode, setBatchMode] = useState(false)
   const [file, setFile] = useState(null)
   const [busy, setBusy] = useState(false)
   const [dragging, setDragging] = useState(false)
@@ -65,9 +67,91 @@ export default function PdfToTextTool() {
     finally { setBusy(false) }
   }
 
+  // Batch processing: Extract text from multiple PDFs
+  const processBatchFile = async (file, index, onProgress) => {
+    try {
+      onProgress(10)
+
+      // Load PDF
+      const data = await file.arrayBuffer()
+      const pdf = await pdfjsLib.getDocument({ data }).promise
+      onProgress(25)
+
+      // Extract text from all pages
+      let out = ''
+      const numPages = pdf.numPages
+      
+      for (let i = 1; i <= numPages; i++) {
+        const page = await pdf.getPage(i)
+        const txtContent = await page.getTextContent()
+        const strings = txtContent.items.map(it => it.str)
+        out += `\n--- Page ${i} ---\n` + strings.join(' ') + '\n'
+        
+        // Update progress for each page
+        onProgress(25 + (i / numPages) * 65)
+      }
+
+      onProgress(90)
+
+      // Create text blob
+      const blob = new Blob([out], { type: 'text/plain' })
+      onProgress(100)
+
+      return blob
+    } catch (error) {
+      console.error(`Error extracting text from ${file.name}:`, error)
+      throw error
+    }
+  }
+
   return (
     <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
       <h2 style={{ textAlign: 'center', marginBottom: 16 }}>PDF → Text</h2>
+      
+      {/* Mode Toggle */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+        <button 
+          className={!batchMode ? 'btn-primary' : 'btn-outline'}
+          onClick={() => setBatchMode(false)}
+          style={{ minWidth: 120 }}
+        >
+          📄 Single File
+        </button>
+        <button 
+          className={batchMode ? 'btn-primary' : 'btn-outline'}
+          onClick={() => setBatchMode(true)}
+          style={{ minWidth: 120 }}
+        >
+          🔄 Batch Extract
+        </button>
+      </div>
+
+      {/* Batch Mode */}
+      {batchMode && (
+        <UniversalBatchProcessor
+          toolName="Extract Text"
+          processFile={processBatchFile}
+          acceptedTypes=".pdf"
+          outputExtension=".txt"
+          maxFiles={100}
+          customOptions={
+            <div style={{ padding: '12px 0' }}>
+              <div style={{ fontSize: 14, color: '#666', marginBottom: 8 }}>
+                💡 <strong>Batch Extract Mode:</strong> Extract text from multiple PDFs at once.
+              </div>
+              <div style={{ fontSize: 13, color: '#888' }}>
+                📝 Plain text extraction with page separators<br />
+                📦 Download individual .txt files or all as ZIP<br />
+                ⚡ Process up to 100 PDFs simultaneously
+              </div>
+            </div>
+          }
+        />
+      )}
+
+      {/* Single File Mode */}
+      {!batchMode && (
+        <div>
       {errorMsg && (
         <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
       )}
@@ -98,6 +182,8 @@ export default function PdfToTextTool() {
         <button className="btn-primary" onClick={extract} disabled={busy || !file}>{busy ? 'Working...' : 'Extract Text'}</button>
         <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || !file}>Reset</button>
       </div>
+      </div>
+      )}
     </div>
   )
 }

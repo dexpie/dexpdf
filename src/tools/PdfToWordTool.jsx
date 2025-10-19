@@ -3,10 +3,12 @@ import * as pdfjsLib from 'pdfjs-dist'
 import { Document, Packer, Paragraph, TextRun } from 'docx'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 
 try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) { }
 
 export default function PdfToWordTool() {
+    const [batchMode, setBatchMode] = useState(false)
     const [file, setFile] = useState(null)
     const [busy, setBusy] = useState(false)
     const [dragging, setDragging] = useState(false)
@@ -68,9 +70,92 @@ export default function PdfToWordTool() {
         finally { setBusy(false) }
     }
 
+    // Batch processing: Convert multiple PDFs to Word documents
+    const processBatchFile = async (file, index, onProgress) => {
+        try {
+            onProgress(10)
+
+            // Load PDF
+            const data = await file.arrayBuffer()
+            const pdf = await pdfjsLib.getDocument({ data }).promise
+            onProgress(25)
+
+            // Extract text from all pages
+            const paragraphs = []
+            const numPages = pdf.numPages
+            
+            for (let i = 1; i <= numPages; i++) {
+                const page = await pdf.getPage(i)
+                const txtContent = await page.getTextContent()
+                const strings = txtContent.items.map(it => it.str)
+                paragraphs.push(new Paragraph(strings.join(' ')))
+                
+                // Update progress for each page
+                onProgress(25 + (i / numPages) * 60)
+            }
+
+            onProgress(85)
+
+            // Create Word document
+            const doc = new Document({ sections: [{ children: paragraphs }] })
+            const blob = await Packer.toBlob(doc)
+            onProgress(100)
+
+            return blob
+        } catch (error) {
+            console.error(`Error converting ${file.name}:`, error)
+            throw error
+        }
+    }
+
     return (
         <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
             <h2 style={{ textAlign: 'center', marginBottom: 16 }}>PDF → Word (.docx)</h2>
+            
+            {/* Mode Toggle */}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+                <button 
+                    className={!batchMode ? 'btn-primary' : 'btn-outline'}
+                    onClick={() => setBatchMode(false)}
+                    style={{ minWidth: 120 }}
+                >
+                    📄 Single File
+                </button>
+                <button 
+                    className={batchMode ? 'btn-primary' : 'btn-outline'}
+                    onClick={() => setBatchMode(true)}
+                    style={{ minWidth: 120 }}
+                >
+                    🔄 Batch Convert
+                </button>
+            </div>
+
+            {/* Batch Mode */}
+            {batchMode && (
+                <UniversalBatchProcessor
+                    toolName="PDF to Word"
+                    processFile={processBatchFile}
+                    acceptedTypes=".pdf"
+                    outputExtension=".docx"
+                    maxFiles={100}
+                    customOptions={
+                        <div style={{ padding: '12px 0' }}>
+                            <div style={{ fontSize: 14, color: '#666', marginBottom: 8 }}>
+                                💡 <strong>Batch Convert Mode:</strong> Convert multiple PDFs to Word documents at once.
+                            </div>
+                            <div style={{ fontSize: 13, color: '#888' }}>
+                                📝 Text-only conversion (preserves text content)<br />
+                                📦 Download individual .docx files or all as ZIP<br />
+                                ⚡ Process up to 100 PDFs simultaneously
+                            </div>
+                        </div>
+                    }
+                />
+            )}
+
+            {/* Single File Mode */}
+            {!batchMode && (
+                <div>
             {errorMsg && (
                 <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
             )}
@@ -101,6 +186,8 @@ export default function PdfToWordTool() {
                 <button className="btn-primary" onClick={convert} disabled={busy || !file}>{busy ? 'Working...' : 'Convert to DOCX'}</button>
                 <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || !file}>Reset</button>
             </div>
+            </div>
+            )}
         </div>
     )
 }
