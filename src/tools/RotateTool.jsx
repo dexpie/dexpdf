@@ -2,8 +2,11 @@ import React, { useState, useRef, useEffect } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 
 export default function RotateTool() {
+  const [batchMode, setBatchMode] = useState(false)
+  const [batchRotation, setBatchRotation] = useState(90) // 90, 180, 270
   const [file, setFile] = useState(null)
   const [pages, setPages] = useState([])
   const [busy, setBusy] = useState(false)
@@ -107,10 +110,103 @@ export default function RotateTool() {
     setSuccessMsg('')
   }
 
+  // Batch processing: Rotate all pages in multiple PDFs
+  const processBatchFile = async (file, index, onProgress) => {
+    try {
+      onProgress(10)
+
+      // Load the PDF
+      const bytes = await file.arrayBuffer()
+      const pdf = await PDFDocument.load(bytes)
+      onProgress(30)
+
+      // Rotate all pages
+      const pageCount = pdf.getPageCount()
+      for (let i = 0; i < pageCount; i++) {
+        const page = pdf.getPage(i)
+        page.setRotation({ angle: batchRotation })
+        onProgress(30 + (i / pageCount) * 50)
+      }
+
+      onProgress(80)
+
+      // Save
+      const pdfBytes = await pdf.save()
+      onProgress(95)
+
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
+      onProgress(100)
+
+      return blob
+    } catch (error) {
+      console.error(`Error rotating ${file.name}:`, error)
+      throw error
+    }
+  }
+
   return (
     <div>
       <h2>Rotate Pages</h2>
       <p className="muted">Select pages and rotate them clockwise or counter-clockwise.</p>
+      
+      {/* Mode Toggle */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+        <button 
+          className={!batchMode ? 'btn-primary' : 'btn-outline'}
+          onClick={() => setBatchMode(false)}
+          style={{ minWidth: 120 }}
+        >
+          📄 Single PDF
+        </button>
+        <button 
+          className={batchMode ? 'btn-primary' : 'btn-outline'}
+          onClick={() => setBatchMode(true)}
+          style={{ minWidth: 120 }}
+        >
+          🔄 Batch Rotate
+        </button>
+      </div>
+
+      {/* Batch Mode */}
+      {batchMode && (
+        <UniversalBatchProcessor
+          toolName="Rotate PDFs"
+          processFile={processBatchFile}
+          acceptedTypes=".pdf"
+          outputExtension=".pdf"
+          maxFiles={100}
+          customOptions={
+            <div style={{ padding: '12px 0' }}>
+              <div style={{ fontSize: 14, color: '#666', marginBottom: 8 }}>
+                💡 <strong>Batch Rotate Mode:</strong> Rotate all pages in multiple PDFs at once.
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  Rotation:
+                  <select 
+                    value={batchRotation} 
+                    onChange={e => setBatchRotation(Number(e.target.value))}
+                    style={{ padding: '6px 12px', borderRadius: 6, border: '1px solid #ddd' }}
+                  >
+                    <option value={90}>90° (Clockwise)</option>
+                    <option value={180}>180° (Upside Down)</option>
+                    <option value={270}>270° (Counter-clockwise)</option>
+                  </select>
+                </label>
+              </div>
+              <div style={{ fontSize: 13, color: '#888' }}>
+                🔄 All pages in each PDF will be rotated<br />
+                📦 Download individual files or all as ZIP<br />
+                ⚡ Process up to 100 PDFs simultaneously
+              </div>
+            </div>
+          }
+        />
+      )}
+
+      {/* Single File Mode */}
+      {!batchMode && (
+        <div>
       
       {errorMsg && (
         <div className="error-message" ref={errorRef} tabIndex={-1} role="alert">
@@ -182,6 +278,8 @@ export default function RotateTool() {
               Reset
             </button>
           </div>
+        </div>
+      )}
         </div>
       )}
     </div>
