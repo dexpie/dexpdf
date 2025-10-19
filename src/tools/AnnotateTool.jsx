@@ -19,30 +19,30 @@ export default function AnnotateTool() {
   async function loadFile(e) {
     const f = e.target.files[0]
     if (!f) return
-    
+
     setErrorMsg('')
     setSuccessMsg('')
-    
+
     if (!f.type.includes('pdf')) {
       setErrorMsg('Please select a PDF file.')
       return
     }
-    
+
     try {
       setBusy(true)
       setFile(f)
       setOutputFileName(getDefaultFilename(f, '_annotated'))
-    const data = await f.arrayBuffer()
-    const pdf = await pdfjsLib.getDocument({ data }).promise
-    const page = await pdf.getPage(1)
-    const viewport = page.getViewport({ scale: 1.5 })
-    const canvas = document.createElement('canvas')
-    canvas.width = Math.ceil(viewport.width)
-    canvas.height = Math.ceil(viewport.height)
-    const ctx = canvas.getContext('2d')
-    await page.render({ canvasContext: ctx, viewport }).promise
-    setPageImg(canvas.toDataURL('image/png'))
-    setSuccessMsg('PDF loaded! Draw on the canvas to annotate.')
+      const data = await f.arrayBuffer()
+      const pdf = await pdfjsLib.getDocument({ data }).promise
+      const page = await pdf.getPage(1)
+      const viewport = page.getViewport({ scale: 1.5 })
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.ceil(viewport.width)
+      canvas.height = Math.ceil(viewport.height)
+      const ctx = canvas.getContext('2d')
+      await page.render({ canvasContext: ctx, viewport }).promise
+      setPageImg(canvas.toDataURL('image/png'))
+      setSuccessMsg('PDF loaded! Draw on the canvas to annotate.')
     } catch (err) {
       console.error(err)
       setErrorMsg('Failed to load PDF: ' + err.message)
@@ -75,10 +75,10 @@ export default function AnnotateTool() {
 
   async function exportAnnotated() {
     if (!file || !canvasRef.current) return
-    
+
     setErrorMsg('')
     setBusy(true)
-    
+
     try {
       const blob = await new Promise(res => canvasRef.current.toBlob(res, 'image/png'))
       const pdfDoc = await PDFDocument.create()
@@ -102,7 +102,7 @@ export default function AnnotateTool() {
       setBusy(false)
     }
   }
-  
+
   function handleReset() {
     setFile(null)
     setPageImg(null)
@@ -114,37 +114,37 @@ export default function AnnotateTool() {
     <div>
       <h2>Annotate PDF</h2>
       <p className="muted">Draw annotations on the first page of your PDF.</p>
-      
+
       {errorMsg && (
         <div className="error-message" role="alert">
           ⚠️ {errorMsg}
         </div>
       )}
-      
+
       {successMsg && (
         <div className="success-message" role="status">
           ✅ {successMsg}
         </div>
       )}
-      
+
       <div className="dropzone">
         <input type="file" accept="application/pdf" onChange={loadFile} disabled={busy} />
         <div className="muted">Load a PDF (first page shown). Click and drag to draw annotations.</div>
       </div>
-      
+
       {file && !pageImg && busy && (
         <div style={{ marginTop: 12 }}>⏳ Loading PDF...</div>
       )}
-      
+
       {pageImg && (
         <div style={{ marginTop: 12 }}>
           <div style={{ border: '2px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
-            <canvas 
-              ref={canvasRef} 
-              onMouseDown={start} 
-              onMouseUp={stop} 
-              onMouseMove={draw} 
-              style={{ display: 'block', width: '100%', cursor: 'crosshair' }} 
+            <canvas
+              ref={canvasRef}
+              onMouseDown={start}
+              onMouseUp={stop}
+              onMouseMove={draw}
+              style={{ display: 'block', width: '100%', cursor: 'crosshair' }}
             />
           </div>
           {file && (
