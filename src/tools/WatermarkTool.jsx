@@ -2,8 +2,10 @@ import React, { useState, useRef, useEffect } from 'react'
 import { PDFDocument, rgb } from 'pdf-lib'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 
 export default function WatermarkTool() {
+  const [batchMode, setBatchMode] = useState(false)
   const [file, setFile] = useState(null)
   const [mode, setMode] = useState('text') // 'text' or 'image'
   const [text, setText] = useState('Sample Watermark')
@@ -192,78 +194,243 @@ export default function WatermarkTool() {
     finally { setBusy(false) }
   }
 
+  async function processBatchFile(f, onProgress) {
+    try {
+      if (mode === 'image' && !imageFile) {
+        throw new Error('Please upload a watermark image first.')
+      }
+
+      onProgress(10)
+      const array = await f.arrayBuffer()
+      onProgress(30)
+      const pdf = await PDFDocument.load(array)
+      const pages = pdf.getPages()
+      onProgress(50)
+
+      // If image mode and have an image, prepare bytes and embed
+      let imgBytes = null
+      let embeddedImage = null
+      let isPng = false
+      if (mode === 'image' && imageFile) {
+        imgBytes = await imageFile.arrayBuffer()
+        const t = (imageFile.type || '').toLowerCase()
+        isPng = t.includes('png')
+        if (isPng) embeddedImage = await pdf.embedPng(imgBytes)
+        else embeddedImage = await pdf.embedJpg(imgBytes)
+      }
+
+      onProgress(60)
+
+      for (let i = 0; i < pages.length; i++) {
+        const p = pages[i]
+        const { width, height } = p.getSize()
+        if (mode === 'text') {
+          const fontSize = 48 * Number(scale || 1)
+          if (tiling) {
+            // tile text across page
+            const gapX = 300 * Number(scale || 1)
+            const gapY = 200 * Number(scale || 1)
+            for (let y = -gapY; y < height + gapY; y += gapY) {
+              for (let x = -gapX; x < width + gapX; x += gapX) {
+                p.drawText(text, { x: x + gapX / 2, y: y + gapY / 2, size: fontSize, color: rgb(0.4, 0.4, 0.4), opacity: Number(opacity) })
+              }
+            }
+          } else {
+            p.drawText(text, { x: width / 2 - (text.length * fontSize * 0.12), y: height / 2, size: fontSize, color: rgb(0.4, 0.4, 0.4), opacity: Number(opacity) })
+          }
+        } else if (mode === 'image' && embeddedImage) {
+          const iw = embeddedImage.width * Number(scale || 1)
+          const ih = embeddedImage.height * Number(scale || 1)
+          if (tiling) {
+            const gapX = iw + 40
+            const gapY = ih + 40
+            for (let y = -gapY; y < height + gapY; y += gapY) {
+              for (let x = -gapX; x < width + gapX; x += gapX) {
+                p.drawImage(embeddedImage, { x, y, width: iw, height: ih, opacity: Number(opacity) })
+              }
+            }
+          } else {
+            p.drawImage(embeddedImage, { x: width / 2 - iw / 2, y: height / 2 - ih / 2, width: iw, height: ih, opacity: Number(opacity) })
+          }
+        }
+        onProgress(60 + (i / pages.length) * 30)
+      }
+
+      onProgress(90)
+      const out = await pdf.save()
+      const blob = new Blob([out], { type: 'application/pdf' })
+      onProgress(100)
+      return blob
+    } catch (err) {
+      throw new Error(`Failed to watermark PDF: ${err.message || err}`)
+    }
+  }
+
   return (
     <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
       <h2 style={{ textAlign: 'center', marginBottom: 16 }}>Watermark PDF</h2>
+      
+      {/* Mode Toggle */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, borderBottom: '2px solid var(--border)', paddingBottom: 8 }}>
+        <button
+          onClick={() => setBatchMode(false)}
+          disabled={busy}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: !batchMode ? 'var(--primary)' : 'transparent',
+            color: !batchMode ? 'white' : 'var(--text)',
+            border: !batchMode ? 'none' : '1px solid var(--border)',
+            borderRadius: 4,
+            cursor: 'pointer',
+            fontWeight: !batchMode ? 'bold' : 'normal'
+          }}
+        >
+          📄 Single File
+        </button>
+        <button
+          onClick={() => setBatchMode(true)}
+          disabled={busy}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: batchMode ? 'var(--primary)' : 'transparent',
+            color: batchMode ? 'white' : 'var(--text)',
+            border: batchMode ? 'none' : '1px solid var(--border)',
+            borderRadius: 4,
+            cursor: 'pointer',
+            fontWeight: batchMode ? 'bold' : 'normal'
+          }}
+        >
+          📚 Batch Process
+        </button>
+      </div>
+
       {errorMsg && (
         <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
       )}
       {successMsg && (
         <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
       )}
-      {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
-      <div style={{ marginBottom: 8, background: '#f9fafb', borderRadius: 8, padding: 8, boxShadow: '0 1px 4px #0001' }}>
-        <input type="file" accept="application/pdf" onChange={onFile} disabled={busy} />
-        {file && (
-          <div style={{ marginTop: 8 }}>
-            <div style={{ fontWeight: 500, color: '#3b82f6', wordBreak: 'break-all' }}>{file.name}</div>
-            <div style={{ color: '#888', fontSize: 13 }}>{(file.size / 1024).toFixed(1)} KB • {file.lastModified ? new Date(file.lastModified).toLocaleString() : ''}</div>
+      
+      {batchMode ? (
+        <div>
+          <div style={{ marginTop: 12, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input type="radio" name="mode" value="text" checked={mode === 'text'} onChange={() => setMode('text')} disabled={busy} /> Text
+            </label>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input type="radio" name="mode" value="image" checked={mode === 'image'} onChange={() => setMode('image')} disabled={busy} /> Image
+            </label>
+            {mode === 'image' && (
+              <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                Image: <input type="file" accept="image/*" onChange={onImageFile} disabled={busy} />
+              </label>
+            )}
           </div>
-        )}
-      </div>
-      <div style={{ marginTop: 12, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <input type="radio" name="mode" value="text" checked={mode === 'text'} onChange={() => setMode('text')} disabled={busy} /> Text
-        </label>
-        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <input type="radio" name="mode" value="image" checked={mode === 'image'} onChange={() => setMode('image')} disabled={busy} /> Image
-        </label>
-        {mode === 'image' && (
-          <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            Image: <input type="file" accept="image/*" onChange={onImageFile} disabled={busy} />
-          </label>
-        )}
-      </div>
-      {mode === 'text' && (
-        <div style={{ marginTop: 8 }}>
-          <input value={text} onChange={e => setText(e.target.value)} style={{ width: '60%' }} disabled={busy} />
+          {mode === 'text' && (
+            <div style={{ marginTop: 8 }}>
+              <input value={text} onChange={e => setText(e.target.value)} style={{ width: '60%' }} disabled={busy} placeholder="Watermark text" />
+            </div>
+          )}
+          <div style={{ marginTop: 8, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              Opacity
+              <input type="range" min="0" max="1" step="0.01" value={opacity} onChange={e => setOpacity(Number(e.target.value))} disabled={busy} />
+              <div style={{ width: 48, textAlign: 'right' }}>{Math.round(opacity * 100)}%</div>
+            </label>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              Scale
+              <input type="range" min="0.1" max="3" step="0.05" value={scale} onChange={e => setScale(Number(e.target.value))} disabled={busy} />
+              <div style={{ width: 48, textAlign: 'right' }}>{scale.toFixed(2)}x</div>
+            </label>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input type="checkbox" checked={tiling} onChange={e => setTiling(e.target.checked)} disabled={busy} /> Tiling
+            </label>
+          </div>
+          
+          <div style={{ marginTop: 12, padding: 12, border: '1px solid var(--border)', borderRadius: 4, background: 'var(--paper)' }}>
+            <strong>Watermark Settings:</strong>
+            <ul style={{ marginTop: 8, marginBottom: 0, paddingLeft: 20 }}>
+              <li>Mode: {mode === 'text' ? `Text ("${text}")` : 'Image'}</li>
+              <li>Opacity: {Math.round(opacity * 100)}%</li>
+              <li>Scale: {scale.toFixed(2)}x</li>
+              <li>Tiling: {tiling ? 'Yes' : 'No'}</li>
+            </ul>
+          </div>
+
+          <UniversalBatchProcessor
+            processFile={processBatchFile}
+            outputFilenameSuffix="_watermarked"
+            acceptedFileTypes="application/pdf"
+            description="Apply watermark to multiple PDFs"
+          />
+        </div>
+      ) : (
+        <div>
+          {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
+          <div style={{ marginBottom: 8, background: '#f9fafb', borderRadius: 8, padding: 8, boxShadow: '0 1px 4px #0001' }}>
+            <input type="file" accept="application/pdf" onChange={onFile} disabled={busy} />
+            {file && (
+              <div style={{ marginTop: 8 }}>
+                <div style={{ fontWeight: 500, color: '#3b82f6', wordBreak: 'break-all' }}>{file.name}</div>
+                <div style={{ color: '#888', fontSize: 13 }}>{(file.size / 1024).toFixed(1)} KB • {file.lastModified ? new Date(file.lastModified).toLocaleString() : ''}</div>
+              </div>
+            )}
+          </div>
+          <div style={{ marginTop: 12, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input type="radio" name="mode" value="text" checked={mode === 'text'} onChange={() => setMode('text')} disabled={busy} /> Text
+            </label>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input type="radio" name="mode" value="image" checked={mode === 'image'} onChange={() => setMode('image')} disabled={busy} /> Image
+            </label>
+            {mode === 'image' && (
+              <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                Image: <input type="file" accept="image/*" onChange={onImageFile} disabled={busy} />
+              </label>
+            )}
+          </div>
+          {mode === 'text' && (
+            <div style={{ marginTop: 8 }}>
+              <input value={text} onChange={e => setText(e.target.value)} style={{ width: '60%' }} disabled={busy} />
+            </div>
+          )}
+          <div style={{ marginTop: 8, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              Opacity
+              <input type="range" min="0" max="1" step="0.01" value={opacity} onChange={e => setOpacity(Number(e.target.value))} disabled={busy} />
+              <div style={{ width: 48, textAlign: 'right' }}>{Math.round(opacity * 100)}%</div>
+            </label>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              Rotation
+              <input type="number" value={rotation} onChange={e => setRotation(Number(e.target.value))} style={{ width: 80 }} disabled={busy} />
+            </label>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              Scale
+              <input type="range" min="0.1" max="3" step="0.05" value={scale} onChange={e => setScale(Number(e.target.value))} disabled={busy} />
+              <div style={{ width: 48, textAlign: 'right' }}>{scale.toFixed(2)}x</div>
+            </label>
+            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input type="checkbox" checked={tiling} onChange={e => setTiling(e.target.checked)} disabled={busy} /> Tiling
+            </label>
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <div className="muted">Preview</div>
+            <canvas aria-label="Watermark preview" ref={previewRef} width={600} height={800} style={{ width: '100%', maxWidth: 600, display: 'block', border: '1px solid var(--border)', background: 'var(--paper)' }} />
+          </div>
+          {file && (
+            <FilenameInput
+              value={outputFileName}
+              onChange={(e) => setOutputFileName(e.target.value)}
+              disabled={busy}
+              placeholder="watermarked"
+            />
+          )}
+          <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button className="btn-primary" onClick={applyWatermark} disabled={busy || !file}>{busy ? 'Working...' : 'Apply Watermark'}</button>
+            <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setImageFile(null); setImageDataUrl(null); setOutputFileName(''); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || !file}>Reset</button>
+          </div>
         </div>
       )}
-      <div style={{ marginTop: 8, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          Opacity
-          <input type="range" min="0" max="1" step="0.01" value={opacity} onChange={e => setOpacity(Number(e.target.value))} disabled={busy} />
-          <div style={{ width: 48, textAlign: 'right' }}>{Math.round(opacity * 100)}%</div>
-        </label>
-        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          Rotation
-          <input type="number" value={rotation} onChange={e => setRotation(Number(e.target.value))} style={{ width: 80 }} disabled={busy} />
-        </label>
-        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          Scale
-          <input type="range" min="0.1" max="3" step="0.05" value={scale} onChange={e => setScale(Number(e.target.value))} disabled={busy} />
-          <div style={{ width: 48, textAlign: 'right' }}>{scale.toFixed(2)}x</div>
-        </label>
-        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <input type="checkbox" checked={tiling} onChange={e => setTiling(e.target.checked)} disabled={busy} /> Tiling
-        </label>
-      </div>
-      <div style={{ marginTop: 12 }}>
-        <div className="muted">Preview</div>
-        <canvas aria-label="Watermark preview" ref={previewRef} width={600} height={800} style={{ width: '100%', maxWidth: 600, display: 'block', border: '1px solid var(--border)', background: 'var(--paper)' }} />
-      </div>
-      {file && (
-        <FilenameInput 
-          value={outputFileName}
-          onChange={(e) => setOutputFileName(e.target.value)}
-          disabled={busy}
-          placeholder="watermarked"
-        />
-      )}
-      <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <button className="btn-primary" onClick={applyWatermark} disabled={busy || !file}>{busy ? 'Working...' : 'Apply Watermark'}</button>
-        <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setImageFile(null); setImageDataUrl(null); setOutputFileName(''); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || !file}>Reset</button>
-      </div>
     </div>
   )
 }
