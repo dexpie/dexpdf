@@ -355,7 +355,7 @@ export default function SignatureTool() {
       )}
 
       {batchMode ? (
-        <>
+        <div>
           <div style={{ marginBottom: 16 }}>
             <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <strong>Upload Signature Image</strong>
@@ -378,9 +378,9 @@ export default function SignatureTool() {
             acceptedFileTypes="application/pdf"
             description="Add signatures to multiple PDFs automatically"
           />
-        </>
+        </div>
       ) : (
-        <>
+        <div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 16 }}>
             <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <strong>1. Select PDF</strong>
@@ -453,7 +453,7 @@ export default function SignatureTool() {
               Reset
             </button>
           </div>
-        </>
+        </div>
       )}
     </div>
   )
