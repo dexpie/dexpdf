@@ -1,9 +1,15 @@
-﻿import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo, useRef } from 'react'
 import './styles.css'
 import './tools.js'
 import ToolContainer from './components/tools/ToolContainer'
 import AdSpot from './components/AdSpot'
 import RecentFiles from './components/RecentFiles'
+import ProgressBar from './components/ProgressBar'
+import NavBar from './components/NavBar'
+import Footer from './components/Footer'
+import ThemeToggle from './components/ThemeToggle'
+import Features from './components/Features'
+import FAQ from './components/FAQ'
 import { pushRecent } from './utils/storage'
 import ConsentBanner from './components/ConsentBanner'
 import { getAdConsent } from './utils/consent'
@@ -13,6 +19,8 @@ function App() {
   const [activeTool, setActiveTool] = useState(null)
   const [query, setQuery] = useState('')
   const [adConsent, setAdConsent] = useState(() => getAdConsent())
+  const searchRef = useRef(null)
+  const [showHotkeyHint, setShowHotkeyHint] = useState(false)
 
   // Handle tool opening
   useEffect(() => {
@@ -41,6 +49,20 @@ function App() {
       .catch(err => console.error('Error loading tools:', err))
   }, [])
 
+  // '/' hotkey: focus main search input when not typing in another input/textarea
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === '/' && !(document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA'))) {
+        e.preventDefault()
+        if (searchRef.current) searchRef.current.focus()
+        setShowHotkeyHint(true)
+        setTimeout(() => setShowHotkeyHint(false), 1200)
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return tools
@@ -54,6 +76,8 @@ function App() {
 
   return (
     <div className="app">
+      <ProgressBar />
+      <NavBar />
       {activeTool ? (
         <ToolContainer
           toolId={activeTool}
@@ -64,86 +88,159 @@ function App() {
         />
       ) : (
         <>
-          <header className="landing-header">
-            <div className="landing-inner">
-              <div className="landing-left">
-                <div className="logo-dexpdf">
-                  <svg width="92" height="36" viewBox="0 0 92 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="82" height="36" rx="4" fill="#CF2727" />
-                    <text x="12" y="26" fill="white" fontFamily="Arial" fontSize="24" fontWeight="bold">DEX</text>
+          {/* Hero Header */}
+          <header className="hero-header">
+            {/* Background Video */}
+            <video 
+              className="hero-background-video"
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+            >
+              <source src="/assets/city-pop-gradient.mp4" type="video/mp4" />
+            </video>
+            
+            <div className="hero-container">
+              <div className="hero-nav">
+                <div className="hero-logo">
+                  <svg width="140" height="48" viewBox="0 0 140 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="36" fill="white" fontFamily="system-ui,-apple-system,sans-serif" fontSize="32" fontWeight="bold">DexPDF</text>
                   </svg>
                 </div>
+                <div className="hero-actions">
+                  <ThemeToggle />
+                  <a href="https://github.com/dexpie/dexpdf" target="_blank" rel="noopener noreferrer" className="hero-link">GitHub</a>
+                </div>
               </div>
-              <div className="landing-right">
-                <span className="hello">HELLO</span>
-                <div className="logo-dexers">
-                  <svg width="120" height="28" viewBox="0 0 120 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <text x="0" y="22" fill="#111" fontFamily="Arial" fontSize="22" fontWeight="bold">DEXERS</text>
-                  </svg>
+
+              <div className="hero-content">
+                <h1 className="hero-title">Complete PDF Toolkit for Modern Productivity</h1>
+                <p className="hero-subtitle">DexPDF brings powerful PDF tools directly to your browser. Fast, secure, and completely free merge, split, compress, convert, and edit PDFs without uploading files to any server. Privacy-first processing.</p>
+
+                <div className="hero-search">
+                  <div className="search-wrapper">
+                    <svg className="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM19 19l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <input
+                      aria-label="Search PDF tools"
+                      className="hero-search-input"
+                      placeholder="Search PDF tools..."
+                      ref={searchRef}
+                      value={query}
+                      onChange={e => setQuery(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Escape') setQuery('')
+                      }}
+                    />
+                    {query && (
+                      <button
+                        className="search-clear"
+                        onClick={() => setQuery('')}
+                        aria-label="Clear search"
+                      >
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  {showHotkeyHint && (
+                    <div className="hotkey-hint">Press / to search</div>
+                  )}
                 </div>
               </div>
             </div>
           </header>
 
-          <main className="landing-main">
-            <div className="landing-search">
-              <input
-                aria-label="Search tools"
-                className="landing-search-input"
-                placeholder="Search tools by name, description or tag..."
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Escape') setQuery('')
-                }}
-              />
-              {query && (
-                <button
-                  className="landing-search-clear"
-                  onClick={() => setQuery('')}
-                  aria-label="Clear search"
-                >
-                  Clear
-                </button>
+          <main className="main-content">
+            <div className="tools-container">
+              {/* Recent Files Section */}
+              <div className="recent-section">
+                <RecentFiles onOpen={(item) => {
+                  window.dispatchEvent(new CustomEvent('open-tool', { detail: item.id }))
+                }} />
+              </div>
+
+              {/* Ads Section */}
+              {adConsent === true && (
+                <div className="ads-section">
+                  <div className="ads-label">Sponsored</div>
+                  <AdSpot image="/assets/bippy.jpg" href="https://dexpdf.vercel.app" alt="Sponsor" />
+                </div>
               )}
-            </div>
-            <RecentFiles onOpen={(item) => {
-              // dispatch same open-tool event
-              window.dispatchEvent(new CustomEvent('open-tool', { detail: item.id }))
-            }} />
-            <ConsentBanner onChange={(v) => setAdConsent(v)} />
-            {adConsent === true && (
-              <AdSpot image="/assets/bippy.jpg" href="https://dexpdf.vercel.app" alt="Sponsor" />
-            )}
-            <div className="landing-grid-inner">
-              {filtered.length === 0 ? (
-                <div className="no-results">No tools match "{query}"</div>
-              ) : (
-                filtered.map((tool) => {
-                  return (
-                    <a
-                      key={tool.id}
-                      href={`/?tool=${tool.id}`}
-                      className="landing-card-link"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        console.log('Tool clicked:', tool.id)
-                        window.dispatchEvent(new CustomEvent('open-tool', { detail: tool.id }))
-                      }}
-                    >
-                      <div className="landing-card">
-                        <h2 className="landing-card-title">{tool.name}</h2>
-                        <p className="landing-card-desc">{tool.desc}</p>
-                        <button className="landing-card-btn">Open</button>
-                      </div>
-                    </a>
-                  )
-                })
+
+              <ConsentBanner onChange={(v) => setAdConsent(v)} />
+
+              {query && filtered.length > 0 && (
+                <div className="tools-section-title">
+                  <h2>Search Results ({filtered.length})</h2>
+                </div>
               )}
+
+              <div className="tools-grid">
+                {filtered.length === 0 ? (
+                  <div className="no-results-card">
+                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="32" cy="32" r="30" stroke="#e5e7eb" strokeWidth="2" />
+                      <path d="M32 20v16M32 44h.01" stroke="#9ca3af" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                    <h3>No tools found</h3>
+                    <p>No tools match "{query}". Try a different search term.</p>
+                  </div>
+                ) : (
+                  filtered.map((tool) => {
+                    const colors = {
+                      merge: '#DC2626',
+                      split: '#2563EB',
+                      compress: '#059669',
+                      'pdf-to-word': '#7C3AED',
+                      'pdf-to-text': '#EA580C',
+                      'images-to-pdf': '#DB2777',
+                      watermark: '#0891B2',
+                      'extract-images': '#CA8A04',
+                      'ppt-to-pdf': '#DC2626',
+                      'pdf-info': '#4F46E5',
+                      reorder: '#16A34A'
+                    }
+                    const bgColor = colors[tool.id] || '#6B7280'
+
+                    return (
+                      <a
+                        key={tool.id}
+                        href={`/?tool=${tool.id}`}
+                        className="tool-card"
+                        style={{ '--tool-color': bgColor }}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          window.dispatchEvent(new CustomEvent('open-tool', { detail: tool.id }))
+                        }}
+                      >
+                        <div className="tool-icon" style={{ background: bgColor }}>
+                          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="8" y="4" width="16" height="24" rx="2" stroke="white" strokeWidth="2" />
+                            <path d="M12 12h8M12 16h8M12 20h5" stroke="white" strokeWidth="2" strokeLinecap="round" />
+                          </svg>
+                        </div>
+                        <h3 className="tool-name">{tool.name}</h3>
+                        <p className="tool-desc">{tool.desc}</p>
+                      </a>
+                    )
+                  })
+                )}
+              </div>
             </div>
+
+            {/* Features Section */}
+            <Features />
+
+            {/* FAQ Section */}
+            <FAQ />
           </main>
         </>
       )}
+      <Footer />
     </div>
   )
 }

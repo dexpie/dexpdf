@@ -1,19 +1,108 @@
 [
-  { "id": "merge", "name": "Merge PDF", "desc": "Combine multiple PDFs into one" },
-  { "id": "split", "name": "Split PDF", "desc": "Extract pages or split by ranges" },
-  { "id": "imgs2pdf", "name": "Images → PDF", "desc": "Convert images to a single PDF" },
-  { "id": "pdf2imgs", "name": "PDF → Images", "desc": "Export PDF pages as images" },
-  { "id": "pdf2text", "name": "PDF → Text", "desc": "Extract selectable text from PDF" },
-  { "id": "pdf2word", "name": "PDF → Word", "desc": "Basic PDF to DOCX conversion" },
-  { "id": "pdf2ppt", "name": "PDF → PPTX", "desc": "Export each PDF page as a PPTX slide" },
-  { "id": "ppt2pdf", "name": "PPTX → PDF", "desc": "Convert PPTX slides (images) to PDF" },
-  { "id": "rotate", "name": "Rotate Pages", "desc": "Rotate selected pages clockwise or counterclockwise" },
-  { "id": "reorder", "name": "Reorder Pages", "desc": "Drag to reorder PDF pages and export" },
-  { "id": "annotate", "name": "Annotate PDF", "desc": "Add drawings, highlights, and sticky notes" },
-  { "id": "ocr", "name": "OCR (Image→Text)", "desc": "Extract text from images or scanned PDFs (Tesseract.js)" },
-  { "id": "watermark", "name": "Watermark", "desc": "Add text/image watermark" },
-  { "id": "pagenums", "name": "Page Numbers", "desc": "Add page numbers" },
-  { "id": "signature", "name": "Signature", "desc": "Sign PDF pages" },
-  { "id": "edit", "name": "Edit PDF", "desc": "Edit PDF content (basic)" },
-  { "id": "compress", "name": "Compress", "desc": "Reduce PDF file size" }
+  {
+    "id": "merge",
+    "name": "Merge PDF",
+    "desc": "Combine multiple PDFs into one"
+  },
+  {
+    "id": "split",
+    "name": "Split PDF",
+    "desc": "Extract pages or split by ranges"
+  },
+  {
+    "id": "imgs2pdf",
+    "name": "Images → PDF",
+    "desc": "Convert images to a single PDF"
+  },
+  {
+    "id": "pdf2imgs",
+    "name": "PDF → Images",
+    "desc": "Export PDF pages as images"
+  },
+  {
+    "id": "pdf2text",
+    "name": "PDF → Text",
+    "desc": "Extract selectable text from PDF"
+  },
+  {
+    "id": "pdf2word",
+    "name": "PDF → Word",
+    "desc": "Basic PDF to DOCX conversion"
+  },
+  {
+    "id": "pdf2ppt",
+    "name": "PDF → PPTX",
+    "desc": "Export each PDF page as a PPTX slide"
+  },
+  {
+    "id": "csv2pdf",
+    "name": "CSV → PDF",
+    "desc": "Convert CSV tables to a printable PDF"
+  },
+  {
+    "id": "ppt2pdf",
+    "name": "PPTX → PDF",
+    "desc": "Convert PPTX slides (images) to PDF"
+  },
+  {
+    "id": "rotate",
+    "name": "Rotate Pages",
+    "desc": "Rotate selected pages clockwise or counterclockwise"
+  },
+  {
+    "id": "reorder",
+    "name": "Reorder Pages",
+    "desc": "Drag to reorder PDF pages and export"
+  },
+  {
+    "id": "annotate",
+    "name": "Annotate PDF",
+    "desc": "Add drawings, highlights, and sticky notes"
+  },
+  {
+    "id": "ocr",
+    "name": "OCR (Image→Text)",
+    "desc": "Extract text from images or scanned PDFs (Tesseract.js)"
+  },
+  {
+    "id": "watermark",
+    "name": "Watermark",
+    "desc": "Add text/image watermark"
+  },
+  {
+    "id": "pagenums",
+    "name": "Page Numbers",
+    "desc": "Add page numbers"
+  },
+  {
+    "id": "signature",
+    "name": "Signature",
+    "desc": "Sign PDF pages"
+  },
+  {
+    "id": "edit",
+    "name": "Edit PDF",
+    "desc": "Edit PDF content (basic)"
+  },
+  {
+    "id": "compress",
+    "name": "Compress",
+    "desc": "Reduce PDF file size"
+  }
+  ,
+  {
+    "id": "batch-watermark",
+    "name": "Batch Watermark",
+    "desc": "Apply a text watermark to multiple PDFs and download a ZIP"
+  },
+  {
+    "id": "pdf-info",
+    "name": "PDF Info",
+    "desc": "Display page count and basic metadata"
+  },
+  {
+    "id": "extract-images",
+    "name": "Extract Images",
+    "desc": "Extract images from PDFs (best-effort)"
+  }
 ]

@@ -88,5 +88,20 @@
     "id": "compress",
     "name": "Compress",
     "desc": "Reduce PDF file size"
+  },
+  {
+    "id": "batch-watermark",
+    "name": "Batch Watermark",
+    "desc": "Apply a text watermark to multiple PDFs and download a ZIP"
+  },
+  {
+    "id": "pdf-info",
+    "name": "PDF Info",
+    "desc": "Display page count and basic metadata"
+  },
+  {
+    "id": "extract-images",
+    "name": "Extract Images",
+    "desc": "Extract images from PDFs (best-effort)"
   }
 ]

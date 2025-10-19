@@ -20,6 +20,9 @@ import ReorderTool from '../../tools/ReorderTool'
 import RotateTool from '../../tools/RotateTool'
 import SignatureTool from '../../tools/SignatureTool'
 import WatermarkTool from '../../tools/WatermarkTool'
+import BatchWatermarkTool from '../../tools/BatchWatermarkTool'
+import PDFInfoTool from '../../tools/PDFInfoTool'
+import ExtractImagesTool from '../../tools/ExtractImagesTool'
 import WordToPdfTool from '../../tools/WordToPdfTool'
 
 const TOOL_COMPONENTS = {
@@ -41,6 +44,9 @@ const TOOL_COMPONENTS = {
   'rotate': RotateTool,
   'signature': SignatureTool,
   'watermark': WatermarkTool,
+  'batch-watermark': BatchWatermarkTool,
+  'pdf-info': PDFInfoTool,
+  'extract-images': ExtractImagesTool,
   'word2pdf': WordToPdfTool,
 }
 
