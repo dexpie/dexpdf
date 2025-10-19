@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react'
 import Papa from 'papaparse'
 import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename } from '../utils/fileHelpers'
 
 function parseCSV(fileOrText) {
   return new Promise((resolve, reject) => {
@@ -21,6 +23,7 @@ export default function CSVToPdfTool() {
   const [rows, setRows] = useState([])
   const [error, setError] = useState(null)
   const previewRef = useRef(null)
+  const [outputFileName, setOutputFileName] = useState('table')
 
   async function handleFile(e) {
     setError(null)
@@ -54,7 +57,7 @@ export default function CSVToPdfTool() {
     const pdfWidth = pdf.internal.pageSize.getWidth()
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-    pdf.save('table.pdf')
+    pdf.save(getOutputFilename(outputFileName, 'table'))
   }
 
   return (
@@ -66,10 +69,22 @@ export default function CSVToPdfTool() {
         </label>
         <button className="btn" onClick={handlePasteText}>Paste CSV from clipboard</button>
         <button className="btn" onClick={() => { setRows([]); setError(null) }}>Clear</button>
-        <button className="btn primary" onClick={exportPdf} disabled={!rows || rows.length === 0}>Export to PDF</button>
       </div>
 
       {error && <div className="tool-error">{error}</div>}
+
+      {rows && rows.length > 0 && (
+        <FilenameInput
+          value={outputFileName}
+          onChange={(e) => setOutputFileName(e.target.value)}
+          disabled={false}
+          placeholder="table"
+        />
+      )}
+
+      <div style={{ marginTop: 12 }}>
+        <button className="btn primary" onClick={exportPdf} disabled={!rows || rows.length === 0}>Export to PDF</button>
+      </div>
 
       <div className="csv-preview" ref={previewRef}>
         <table>

@@ -1,16 +1,20 @@
 import React, { useState } from 'react'
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 export default function PageNumbersTool(){
   const [file, setFile] = useState(null)
   const [position, setPosition] = useState('bottom-right')
   const [start, setStart] = useState(1)
   const [busy, setBusy] = useState(false)
+  const [outputFileName, setOutputFileName] = useState('')
 
   async function onFile(e){
     const f = e.target.files?.[0]
     if(!f) return
     setFile(f)
+    setOutputFileName(getDefaultFilename(f, '_pagenums'))
   }
 
   async function applyNumbers(){
@@ -37,7 +41,7 @@ export default function PageNumbersTool(){
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'pagenums.pdf'
+      a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_pagenums')
       a.click()
       URL.revokeObjectURL(url)
     }catch(err){console.error(err); alert('Failed: '+err.message)}
@@ -59,6 +63,14 @@ export default function PageNumbersTool(){
         <label style={{marginLeft:8}}>Start</label>
         <input type="number" value={start} onChange={e=>setStart(e.target.value)} style={{width:80,marginLeft:6}} />
       </div>
+      {file && (
+        <FilenameInput
+          value={outputFileName}
+          onChange={(e) => setOutputFileName(e.target.value)}
+          disabled={busy}
+          placeholder="output_pagenums"
+        />
+      )}
       <div style={{marginTop:12}}>
   <button className="btn-primary" onClick={applyNumbers} disabled={busy}>{busy? 'Working...' : 'Add Page Numbers'}</button>
       </div>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import JSZip from 'jszip'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 // Ensure worker is set from pdfjs-dist
 try {
@@ -15,6 +17,7 @@ export default function PdfToImagesTool() {
   const [successMsg, setSuccessMsg] = useState('')
   const [format, setFormat] = useState('png')
   const [quality, setQuality] = useState(0.92)
+  const [outputFileName, setOutputFileName] = useState('')
 
   async function loadFile(e) {
     const f = e.target.files[0]
@@ -35,6 +38,7 @@ export default function PdfToImagesTool() {
     
     try {
       setFile(f)
+      setOutputFileName(getDefaultFilename(f))
       const data = await f.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data }).promise
       setPages(new Array(pdf.numPages).fill(false))
@@ -89,7 +93,7 @@ export default function PdfToImagesTool() {
         const url = URL.createObjectURL(b)
         const a = document.createElement('a')
         a.href = url
-        a.download = `${file.name.replace(/\.pdf$/i, '')}_page_${toZip[0].pnum}${ext}`
+        a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + `_page_${toZip[0].pnum}`, ext)
         a.click()
         URL.revokeObjectURL(url)
         setSuccessMsg(`Exported 1 page as ${format.toUpperCase()}!`)
@@ -104,7 +108,7 @@ export default function PdfToImagesTool() {
         const url = URL.createObjectURL(content)
         const a = document.createElement('a')
         a.href = url
-        a.download = `${file.name.replace(/\.pdf$/i, '')}_pages.zip`
+        a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_pages', '.zip')
         a.click()
         URL.revokeObjectURL(url)
         setSuccessMsg(`Exported ${indices.length} pages as ${format.toUpperCase()} in ZIP!`)
@@ -200,6 +204,14 @@ export default function PdfToImagesTool() {
               </div>
             ))}
           </div>
+          {file && (
+            <FilenameInput
+              value={outputFileName}
+              onChange={(e) => setOutputFileName(e.target.value)}
+              disabled={busy}
+              placeholder="output"
+            />
+          )}
           <div style={{ display: 'flex', gap: 12 }}>
             <button className="btn-primary" onClick={renderAndDownload} disabled={busy || pages.filter(p => p).length === 0}>
               {busy ? '⏳ Rendering...' : `📥 Export as ${format.toUpperCase()}`}
