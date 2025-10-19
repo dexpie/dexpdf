@@ -13,6 +13,8 @@ import FAQ from './components/FAQ'
 import { pushRecent } from './utils/storage'
 import ConsentBanner from './components/ConsentBanner'
 import { getAdConsent } from './utils/consent'
+import CommandPalette from './components/CommandPalette'
+import KeyboardShortcuts from './components/KeyboardShortcuts'
 
 function App() {
   const [tools, setTools] = useState([])
@@ -21,6 +23,8 @@ function App() {
   const [adConsent, setAdConsent] = useState(() => getAdConsent())
   const searchRef = useRef(null)
   const [showHotkeyHint, setShowHotkeyHint] = useState(false)
+  const [showCommandPalette, setShowCommandPalette] = useState(false)
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false)
 
   // Handle tool opening
   useEffect(() => {
@@ -49,14 +53,34 @@ function App() {
       .catch(err => console.error('Error loading tools:', err))
   }, [])
 
-  // '/' hotkey: focus main search input when not typing in another input/textarea
+  // Global keyboard shortcuts
   useEffect(() => {
     const onKeyDown = (e) => {
+      // '/' - Focus search (when not in input)
       if (e.key === '/' && !(document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA'))) {
         e.preventDefault()
         if (searchRef.current) searchRef.current.focus()
         setShowHotkeyHint(true)
         setTimeout(() => setShowHotkeyHint(false), 1200)
+      }
+      
+      // Cmd+K / Ctrl+K - Open Command Palette
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setShowCommandPalette(true)
+      }
+
+      // '?' - Show Keyboard Shortcuts
+      if (e.key === '?' && !(document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA'))) {
+        e.preventDefault()
+        setShowKeyboardShortcuts(prev => !prev)
+      }
+
+      // Cmd+D / Ctrl+D - Toggle dark mode
+      if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
+        e.preventDefault()
+        const themeToggle = document.querySelector('.theme-toggle')
+        if (themeToggle) themeToggle.click()
       }
     }
     window.addEventListener('keydown', onKeyDown)
@@ -78,6 +102,24 @@ function App() {
     <div className="app">
       <ProgressBar />
       <NavBar />
+
+      {/* Command Palette */}
+      <CommandPalette
+        tools={tools}
+        isOpen={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        onSelect={(toolId) => {
+          setShowCommandPalette(false)
+          window.dispatchEvent(new CustomEvent('open-tool', { detail: toolId }))
+        }}
+      />
+
+      {/* Keyboard Shortcuts Panel */}
+      <KeyboardShortcuts
+        isOpen={showKeyboardShortcuts}
+        onClose={() => setShowKeyboardShortcuts(false)}
+      />
+
       {activeTool ? (
         <ToolContainer
           toolId={activeTool}
