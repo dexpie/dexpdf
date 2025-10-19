@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 export default function EditPdfTool(){
   const [file, setFile] = useState(null)
@@ -7,11 +9,13 @@ export default function EditPdfTool(){
   const [text, setText] = useState('New text')
   const [busy, setBusy] = useState(false)
   const [imageFile, setImageFile] = useState(null)
+  const [outputFileName, setOutputFileName] = useState('')
 
   async function onFile(e){
     const f = e.target.files?.[0]
     if(!f) return
     setFile(f)
+    setOutputFileName(getDefaultFilename(f, '_edited'))
   }
 
   async function onImage(e){
@@ -48,7 +52,7 @@ export default function EditPdfTool(){
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'edited.pdf'
+      a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_edited')
       a.click()
       URL.revokeObjectURL(url)
     }catch(err){console.error(err); alert('Failed: '+err.message)}
@@ -76,6 +80,14 @@ export default function EditPdfTool(){
         <div style={{marginTop:8}}>
           <input type="file" accept="image/*" onChange={onImage} />
         </div>
+      )}
+      {file && (
+        <FilenameInput
+          value={outputFileName}
+          onChange={(e) => setOutputFileName(e.target.value)}
+          disabled={busy}
+          placeholder="output_edited"
+        />
       )}
       <div style={{marginTop:12}}>
   <button className="btn-primary" onClick={applyEdits} disabled={busy}>{busy? 'Working...' : 'Apply Edits'}</button>
