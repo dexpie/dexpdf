@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { Document, Packer, Paragraph, TextRun } from 'docx'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) { }
 
@@ -11,6 +13,7 @@ export default function PdfToWordTool() {
     const [dropped, setDropped] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
     const [successMsg, setSuccessMsg] = useState('')
+    const [outputFileName, setOutputFileName] = useState('') // Custom filename
     const errorRef = React.useRef(null);
     const successRef = React.useRef(null);
     React.useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus(); }, [errorMsg]);
@@ -29,6 +32,7 @@ export default function PdfToWordTool() {
             return;
         }
         setFile(f)
+        setOutputFileName(getDefaultFilename(f))
     }
 
     function onDragEnter(e) { e.preventDefault(); if (!busy) setDragging(true) }
@@ -56,7 +60,7 @@ export default function PdfToWordTool() {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = `${file.name.replace(/\.pdf$/i, '')}.docx`
+            a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, ''), '.docx')
             a.click()
             URL.revokeObjectURL(url)
             setSuccessMsg('Berhasil! File berhasil dikonversi dan diunduh.');
@@ -84,6 +88,14 @@ export default function PdfToWordTool() {
                     <div style={{ fontWeight: 500, color: '#3b82f6', wordBreak: 'break-all' }}>{file.name}</div>
                     <div style={{ color: '#888', fontSize: 13 }}>{(file.size / 1024).toFixed(1)} KB • {file.lastModified ? new Date(file.lastModified).toLocaleString() : ''}</div>
                 </div>
+            )}
+            {file && (
+                <FilenameInput
+                    value={outputFileName}
+                    onChange={(e) => setOutputFileName(e.target.value)}
+                    disabled={busy}
+                    placeholder="output"
+                />
             )}
             <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <button className="btn-primary" onClick={convert} disabled={busy || !file}>{busy ? 'Working...' : 'Convert to DOCX'}</button>

@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { PDFDocument } from 'pdf-lib'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) {/*ignore*/ }
 
@@ -12,6 +14,7 @@ export default function AnnotateTool() {
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [busy, setBusy] = useState(false)
+  const [outputFileName, setOutputFileName] = useState('')
 
   async function loadFile(e) {
     const f = e.target.files[0]
@@ -28,6 +31,7 @@ export default function AnnotateTool() {
     try {
       setBusy(true)
       setFile(f)
+      setOutputFileName(getDefaultFilename(f, '_annotated'))
     const data = await f.arrayBuffer()
     const pdf = await pdfjsLib.getDocument({ data }).promise
     const page = await pdf.getPage(1)
@@ -87,7 +91,7 @@ export default function AnnotateTool() {
       const url = URL.createObjectURL(outBlob)
       const a = document.createElement('a')
       a.href = url
-      a.download = file.name.replace(/\.pdf$/i, '') + '_annotated.pdf'
+      a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_annotated')
       a.click()
       URL.revokeObjectURL(url)
       setSuccessMsg('Annotated PDF exported successfully!')
@@ -143,6 +147,14 @@ export default function AnnotateTool() {
               style={{ display: 'block', width: '100%', cursor: 'crosshair' }} 
             />
           </div>
+          {file && (
+            <FilenameInput
+              value={outputFileName}
+              onChange={(e) => setOutputFileName(e.target.value)}
+              disabled={busy}
+              placeholder="output_annotated"
+            />
+          )}
           <div style={{ marginTop: 12, display: 'flex', gap: 12 }}>
             <button className="btn-primary" onClick={exportAnnotated} disabled={busy}>
               {busy ? '⏳ Exporting...' : '📥 Export Annotated PDF'}

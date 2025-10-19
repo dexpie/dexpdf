@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import mammoth from 'mammoth'
 import html2canvas from 'html2canvas'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 // jsPDF will be dynamically imported during conversion to avoid bundling it in the main chunk
 
 export default function WordToPdfTool() {
@@ -10,6 +12,7 @@ export default function WordToPdfTool() {
     const [dropped, setDropped] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
     const [successMsg, setSuccessMsg] = useState('')
+    const [outputFileName, setOutputFileName] = useState('')
 
     async function loadFile(e) {
         const f = e.target.files[0]
@@ -29,6 +32,7 @@ export default function WordToPdfTool() {
         }
         
         setFile(f)
+        setOutputFileName(getDefaultFilename(f))
         setSuccessMsg('Document loaded! Click "Convert to PDF" to proceed.')
     }
 
@@ -63,7 +67,7 @@ export default function WordToPdfTool() {
             const pdfWidth = 210
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-            pdf.save(file.name.replace(/\.docx$/i, '') + '.pdf')
+            pdf.save(getOutputFilename(outputFileName, file.name.replace(/\.docx$/i, '')))
             document.body.removeChild(wrapper)
             setSuccessMsg('Successfully converted Word document to PDF and downloaded!')
         } catch (err) {
@@ -107,6 +111,15 @@ export default function WordToPdfTool() {
                 <div className="file-info">
                     <strong>📄 File:</strong> {file.name} ({(file.size / 1024).toFixed(1)} KB)
                 </div>
+            )}
+
+            {file && (
+                <FilenameInput
+                    value={outputFileName}
+                    onChange={(e) => setOutputFileName(e.target.value)}
+                    disabled={busy}
+                    placeholder="output"
+                />
             )}
 
             <div style={{ marginTop: 12, display: 'flex', gap: 12 }}>

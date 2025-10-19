@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { PDFDocument } from 'pdf-lib'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) {/*ignore*/ }
 
@@ -12,6 +14,7 @@ export default function ReorderTool() {
   const [busy, setBusy] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [outputFileName, setOutputFileName] = useState('')
   const errorRef = React.useRef(null);
   const successRef = React.useRef(null);
   React.useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus(); }, [errorMsg]);
@@ -21,6 +24,7 @@ export default function ReorderTool() {
     setErrorMsg(''); setSuccessMsg('');
     const f = e.target.files[0]; if (!f) return
     setFile(f); setPages([])
+    setOutputFileName(getDefaultFilename(f, '_reordered'))
     setBusy(true)
     try {
       const data = await f.arrayBuffer()
@@ -62,7 +66,7 @@ export default function ReorderTool() {
       const outBytes = await out.save()
       const blob = new Blob([outBytes], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
-      const a = document.createElement('a'); a.href = url; a.download = file.name.replace(/\.pdf$/i, '') + '_reordered.pdf'; a.click(); URL.revokeObjectURL(url)
+      const a = document.createElement('a'); a.href = url; a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_reordered'); a.click(); URL.revokeObjectURL(url)
       setSuccessMsg('Berhasil! PDF berhasil diekspor dan diunduh.');
     } catch (err) {
       setErrorMsg('Gagal ekspor PDF: ' + (err.message || err));
@@ -104,6 +108,14 @@ export default function ReorderTool() {
               </div>
             ))}
           </div>
+          {file && (
+            <FilenameInput
+              value={outputFileName}
+              onChange={(e) => setOutputFileName(e.target.value)}
+              disabled={busy}
+              placeholder="output_reordered"
+            />
+          )}
           <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <button className="btn-primary" onClick={exportPdf} disabled={busy}>{busy ? 'Exporting...' : 'Export Reordered PDF'}</button>
             <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setPages([]); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || !file}>Reset</button>
