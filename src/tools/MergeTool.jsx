@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import * as pdfjsLib from 'pdfjs-dist'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename } from '../utils/fileHelpers'
 
 try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) { }
 
@@ -9,6 +11,7 @@ export default function MergeTool() {
   const [busy, setBusy] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [outputFileName, setOutputFileName] = useState('merged') // Custom filename
   const errorRef = React.useRef(null);
   const successRef = React.useRef(null);
   React.useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus(); }, [errorMsg]);
@@ -51,7 +54,7 @@ export default function MergeTool() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'merged.pdf'
+      a.download = getOutputFilename(outputFileName, 'merged')
       a.click()
       URL.revokeObjectURL(url)
       setSuccessMsg('Berhasil! File PDF berhasil digabung dan diunduh.');
@@ -157,6 +160,14 @@ export default function MergeTool() {
           </div>
         ))}
       </div>
+      {files.length > 0 && (
+        <FilenameInput 
+          value={outputFileName}
+          onChange={(e) => setOutputFileName(e.target.value)}
+          disabled={busy}
+          placeholder="merged"
+        />
+      )}
       <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <button className="btn-primary" onClick={merge} disabled={busy || files.length === 0}>{busy ? 'Working...' : 'Merge & Download'}</button>
         <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFiles([]); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || files.length === 0}>Reset</button>

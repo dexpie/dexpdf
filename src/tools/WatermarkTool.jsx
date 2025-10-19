@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { PDFDocument, rgb } from 'pdf-lib'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 export default function WatermarkTool() {
   const [file, setFile] = useState(null)
@@ -14,6 +16,7 @@ export default function WatermarkTool() {
   const [busy, setBusy] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [outputFileName, setOutputFileName] = useState('') // Custom filename
   const errorRef = useRef(null);
   const successRef = useRef(null);
   useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus(); }, [errorMsg]);
@@ -39,6 +42,7 @@ export default function WatermarkTool() {
       return;
     }
     setFile(f)
+    setOutputFileName(getDefaultFilename(f, '_watermarked'))
   }
 
   async function onImageFile(e) {
@@ -180,7 +184,7 @@ export default function WatermarkTool() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = file.name.replace(/\.pdf$/i, '') + '_watermarked.pdf'
+      a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_watermarked')
       a.click()
       URL.revokeObjectURL(url)
       setSuccessMsg('Berhasil! Watermark berhasil diterapkan dan diunduh.');
@@ -248,9 +252,17 @@ export default function WatermarkTool() {
         <div className="muted">Preview</div>
         <canvas aria-label="Watermark preview" ref={previewRef} width={600} height={800} style={{ width: '100%', maxWidth: 600, display: 'block', border: '1px solid var(--border)', background: 'var(--paper)' }} />
       </div>
+      {file && (
+        <FilenameInput 
+          value={outputFileName}
+          onChange={(e) => setOutputFileName(e.target.value)}
+          disabled={busy}
+          placeholder="watermarked"
+        />
+      )}
       <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <button className="btn-primary" onClick={applyWatermark} disabled={busy || !file}>{busy ? 'Working...' : 'Apply Watermark'}</button>
-        <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setImageFile(null); setImageDataUrl(null); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || !file}>Reset</button>
+        <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setImageFile(null); setImageDataUrl(null); setOutputFileName(''); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || !file}>Reset</button>
       </div>
     </div>
   )

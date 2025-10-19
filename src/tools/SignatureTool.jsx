@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import * as pdfjsLib from 'pdfjs-dist'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) { }
 
@@ -26,6 +28,7 @@ export default function SignatureTool() {
   const dragRef = useRef(null)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [outputFileName, setOutputFileName] = useState('') // Custom filename
   
   const errorRef = useRef(null)
   const successRef = useRef(null)
@@ -78,6 +81,7 @@ export default function SignatureTool() {
     
     try {
       setFile(f)
+      setOutputFileName(getDefaultFilename(f, '_signed'))
       await renderPdfPreview(f)
       setSuccessMsg('PDF loaded successfully! Upload or draw a signature.')
     } catch (err) {
@@ -224,7 +228,7 @@ export default function SignatureTool() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = file.name.replace(/\.pdf$/i, '') + '_signed.pdf'
+      a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_signed')
       a.click()
       URL.revokeObjectURL(url)
       setSuccessMsg(`Successfully signed PDF with ${overlays.length} signature(s) and downloaded!`)
@@ -243,6 +247,7 @@ export default function SignatureTool() {
     setOverlays([])
     setSelected(null)
     undoRef.current = []
+    setOutputFileName('')
     setErrorMsg('')
     setSuccessMsg('')
   }
@@ -312,6 +317,15 @@ export default function SignatureTool() {
           </div>
         ))}
       </div>
+
+      {file && (
+        <FilenameInput 
+          value={outputFileName}
+          onChange={(e) => setOutputFileName(e.target.value)}
+          disabled={busy}
+          placeholder="signed"
+        />
+      )}
 
       <div style={{ marginTop: 16, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
         <button className="btn-primary" onClick={exportSigned} disabled={busy || !file || overlays.length === 0}>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import jsPDF from 'jspdf'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 // set worker (best-effort like other tools)
 try {
@@ -31,6 +33,7 @@ export default function CompressTool() {
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [backendStatus, setBackendStatus] = useState('idle') // idle, checking, online, sleeping, error
+  const [outputFileName, setOutputFileName] = useState('') // Custom filename
 
   // For accessibility: focus error/success
   const errorRef = useRef(null);
@@ -61,6 +64,8 @@ export default function CompressTool() {
     setEstimateSize(null)
     setProgressText('')
     setPreviewUrl(null)
+    // Set default filename from original file
+    setOutputFileName(getDefaultFilename(f, '_compressed'))
     try {
       const data = await f.arrayBuffer()
       // always use a fresh copy for pdfjsLib
@@ -121,7 +126,7 @@ export default function CompressTool() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'compressed.pdf';
+      a.download = getOutputFilename(outputFileName, 'compressed');
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -362,6 +367,13 @@ export default function CompressTool() {
               </select>
             </label>
           </div>
+          {/* Custom filename input */}
+          <FilenameInput 
+            value={outputFileName}
+            onChange={(e) => setOutputFileName(e.target.value)}
+            disabled={busy}
+            placeholder="compressed"
+          />
           <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <button className="btn-primary" onClick={() => compressAndDownload({ download: true })} disabled={busy}>{busy ? 'Compressing...' : 'Compress & Download'}</button>
             {/* Preview hanya untuk mode browser, nonaktifkan jika pakai backend */}

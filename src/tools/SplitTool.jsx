@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 export default function SplitTool() {
   const [file, setFile] = useState(null)
@@ -8,6 +10,7 @@ export default function SplitTool() {
   const [busy, setBusy] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [outputFileName, setOutputFileName] = useState('') // Custom filename
   const errorRef = React.useRef(null);
   const successRef = React.useRef(null);
   React.useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus(); }, [errorMsg]);
@@ -26,6 +29,7 @@ export default function SplitTool() {
       return;
     }
     setFile(f)
+    setOutputFileName(getDefaultFilename(f, '_extracted'))
     const bytes = await f.arrayBuffer()
     const pdf = await PDFDocument.load(bytes)
     setPages(new Array(pdf.getPageCount()).fill(false))
@@ -64,7 +68,7 @@ export default function SplitTool() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'extracted.pdf'
+      a.download = getOutputFilename(outputFileName, 'extracted')
       a.click()
       URL.revokeObjectURL(url)
       setSuccessMsg('Berhasil! Halaman berhasil diekspor dan diunduh.');
@@ -108,9 +112,17 @@ export default function SplitTool() {
                 </div>
               ))}
             </div>
+            {file && (
+              <FilenameInput 
+                value={outputFileName}
+                onChange={(e) => setOutputFileName(e.target.value)}
+                disabled={busy}
+                placeholder="extracted"
+              />
+            )}
             <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               <button className="btn-primary" onClick={exportSelected} disabled={busy}>{busy ? 'Working...' : 'Export Selected'}</button>
-              <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setPages([]); setRotations([]); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy}>Reset</button>
+              <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setPages([]); setRotations([]); setOutputFileName(''); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy}>Reset</button>
             </div>
           </div>
         )}

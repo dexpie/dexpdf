@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { PDFDocument } from 'pdf-lib'
+import FilenameInput from '../components/FilenameInput'
+import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 
 export default function RotateTool() {
   const [file, setFile] = useState(null)
@@ -7,6 +9,7 @@ export default function RotateTool() {
   const [busy, setBusy] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [outputFileName, setOutputFileName] = useState('') // Custom filename
   
   const errorRef = useRef(null)
   const successRef = useRef(null)
@@ -33,6 +36,7 @@ export default function RotateTool() {
     
     try {
       setFile(f)
+      setOutputFileName(getDefaultFilename(f, '_rotated'))
       const bytes = await f.arrayBuffer()
       const pdf = await PDFDocument.load(bytes)
       setPages(new Array(pdf.getPageCount()).fill(false))
@@ -82,7 +86,7 @@ export default function RotateTool() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = file.name.replace(/\.pdf$/i, '') + '_rotated.pdf'
+      a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_rotated')
       a.click()
       URL.revokeObjectURL(url)
       
@@ -98,6 +102,7 @@ export default function RotateTool() {
   function handleReset() {
     setFile(null)
     setPages([])
+    setOutputFileName('')
     setErrorMsg('')
     setSuccessMsg('')
   }
@@ -156,6 +161,15 @@ export default function RotateTool() {
               </div>
             ))}
           </div>
+          
+          {file && (
+            <FilenameInput 
+              value={outputFileName}
+              onChange={(e) => setOutputFileName(e.target.value)}
+              disabled={busy}
+              placeholder="rotated"
+            />
+          )}
           
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
             <button className="btn" onClick={() => rotateAll('cw')} disabled={busy || pages.filter(p => p).length === 0}>
