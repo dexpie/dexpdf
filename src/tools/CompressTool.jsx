@@ -3,6 +3,7 @@ import * as pdfjsLib from 'pdfjs-dist'
 import jsPDF from 'jspdf'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 
 // set worker (best-effort like other tools)
 try {
@@ -10,6 +11,7 @@ try {
 } catch (e) { console.warn('pdfjs worker not set', e) }
 
 export default function CompressTool() {
+  const [batchMode, setBatchMode] = useState(false)
   const [file, setFile] = useState(null)
   const [pages, setPages] = useState(0)
   const [busy, setBusy] = useState(false)
@@ -262,9 +264,87 @@ export default function CompressTool() {
     return (n / (1024 * 1024)).toFixed(2) + ' MB'
   }
 
+  // Batch processing function for UniversalBatchProcessor
+  const processBatchFile = async (file, index, onProgress) => {
+    try {
+      onProgress(10)
+
+      // Prepare form data
+      const formData = new FormData()
+      formData.append('pdf', file)
+      
+      onProgress(30)
+
+      // Send to backend
+      const response = await fetch('https://dexpdfbackend-production.up.railway.app/compress', {
+        method: 'POST',
+        body: formData,
+      })
+
+      onProgress(70)
+
+      if (!response.ok) {
+        throw new Error(`Compression failed: ${response.statusText}`)
+      }
+
+      const blob = await response.blob()
+      onProgress(100)
+
+      return blob
+    } catch (error) {
+      console.error(`Error compressing file ${file.name}:`, error)
+      throw error
+    }
+  }
+
   return (
     <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
       <h2 style={{ textAlign: 'center', marginBottom: 16 }}>Compress PDF</h2>
+      
+      {/* Mode Toggle */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+        <button 
+          className={!batchMode ? 'btn-primary' : 'btn-outline'}
+          onClick={() => setBatchMode(false)}
+          style={{ minWidth: 120 }}
+        >
+          📄 Single File
+        </button>
+        <button 
+          className={batchMode ? 'btn-primary' : 'btn-outline'}
+          onClick={() => setBatchMode(true)}
+          style={{ minWidth: 120 }}
+        >
+          🔄 Batch Mode
+        </button>
+      </div>
+
+      {/* Batch Mode */}
+      {batchMode && (
+        <UniversalBatchProcessor
+          toolName="Compress PDF"
+          processFile={processBatchFile}
+          acceptedTypes=".pdf"
+          outputExtension=".pdf"
+          maxFiles={100}
+          customOptions={
+            <div style={{ padding: '12px 0' }}>
+              <div style={{ fontSize: 14, color: '#666', marginBottom: 8 }}>
+                💡 <strong>Batch Tips:</strong> Backend compression optimizes automatically for best quality/size ratio.
+              </div>
+              <div style={{ fontSize: 13, color: '#888' }}>
+                ⚡ Processing speed: ~2-5 seconds per PDF<br />
+                🎯 Quality: High (automatic optimization)<br />
+                📦 Download: Individual files or all as ZIP
+              </div>
+            </div>
+          }
+        />
+      )}
+
+      {/* Single File Mode */}
+      {!batchMode && (
+        <div>
       {/* Error & Success messages with aria-live for accessibility */}
       {errorMsg && (
         <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
@@ -390,6 +470,7 @@ export default function CompressTool() {
           )}
         </div>
       )}
+      </div>
     </div>
   )
 }
