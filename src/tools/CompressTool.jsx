@@ -471,6 +471,7 @@ export default function CompressTool() {
         </div>
       )}
       </div>
+      )}
     </div>
   )
 }
