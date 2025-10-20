@@ -361,7 +361,7 @@
 
 /* Ads Section */
 .ads-section {
-  background: 
+  background:
     url('/assets/orange-gradient-bg.jpg') center/cover no-repeat,
     linear-gradient(135deg, #fbbf24 0%, #f59e0b 20%, #ea580c 40%, #dc2626 60%, #c2410c 80%, #ea580c 100%);
   border-radius: 20px;

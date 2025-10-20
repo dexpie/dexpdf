@@ -134,7 +134,7 @@ export default function PdfToImagesTool() {
 
       const zip = new JSZip()
       const ext = format === 'png' ? '.png' : format === 'webp' ? '.webp' : '.jpg'
-      
+
       for (let pnum = 1; pnum <= numPages; pnum++) {
         const page = await pdf.getPage(pnum)
         const viewport = page.getViewport({ scale: 2 })
@@ -143,18 +143,18 @@ export default function PdfToImagesTool() {
         canvas.height = Math.ceil(viewport.height)
         const ctx = canvas.getContext('2d')
         await page.render({ canvasContext: ctx, viewport }).promise
-        
+
         const mimeType = format === 'png' ? 'image/png' : format === 'webp' ? 'image/webp' : 'image/jpeg'
         const blob = await new Promise(res =>
           format === 'png' ? canvas.toBlob(res, 'image/png') : canvas.toBlob(res, mimeType, quality)
         )
-        
+
         const arr = await blob.arrayBuffer()
         zip.file(`page_${pnum}${ext}`, arr)
-        
+
         onProgress(30 + (pnum / numPages) * 60)
       }
-      
+
       onProgress(90)
       const content = await zip.generateAsync({ type: 'blob' })
       onProgress(100)

@@ -7,9 +7,9 @@
  * @param {string} extension - File extension (default: '.pdf')
  */
 export function getOutputFilename(customName, defaultName = 'output', extension = '.pdf') {
-  const finalName = (customName || defaultName).trim()
-  const ext = extension.startsWith('.') ? extension : '.' + extension
-  return finalName.endsWith(ext) ? finalName : finalName + ext
+    const finalName = (customName || defaultName).trim()
+    const ext = extension.startsWith('.') ? extension : '.' + extension
+    return finalName.endsWith(ext) ? finalName : finalName + ext
 }
 
 /**
@@ -18,8 +18,8 @@ export function getOutputFilename(customName, defaultName = 'output', extension 
  * @param {string} suffix - Suffix to add to filename (e.g., '_compressed')
  */
 export function getDefaultFilename(originalFile, suffix = '') {
-  if (!originalFile || !originalFile.name) return suffix || 'output'
-  // Remove extension from original file
-  const baseName = originalFile.name.replace(/\.\w+$/i, '')
-  return suffix ? baseName + suffix : baseName
+    if (!originalFile || !originalFile.name) return suffix || 'output'
+    // Remove extension from original file
+    const baseName = originalFile.name.replace(/\.\w+$/i, '')
+    return suffix ? baseName + suffix : baseName
 }

@@ -64,21 +64,21 @@ export default function ExtractImagesTool() {
       const pdfjsLib = await import('pdfjs-dist')
       // Set worker
       try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) { }
-      
+
       onProgress(20)
       const arr = await f.arrayBuffer()
       const loadingTask = pdfjsLib.getDocument({ data: arr })
       const pdf = await loadingTask.promise
-      
+
       onProgress(40)
       const JSZip = (await import('jszip')).default
       const zip = new JSZip()
-      
+
       // Extract images from each page
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page = await pdf.getPage(pageNum)
         const ops = await page.getOperatorList()
-        
+
         // Find image operations
         let imgIndex = 0
         for (let i = 0; i < ops.fnArray.length; i++) {
@@ -95,7 +95,7 @@ export default function ExtractImagesTool() {
                 const ctx = canvas.getContext('2d')
                 const imageData = new ImageData(new Uint8ClampedArray(img.data), img.width, img.height)
                 ctx.putImageData(imageData, 0, 0)
-                
+
                 // Convert canvas to blob
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
                 zip.file(`page${pageNum}_img${imgIndex}.png`, blob)
@@ -106,16 +106,16 @@ export default function ExtractImagesTool() {
             }
           }
         }
-        
+
         onProgress(40 + (pageNum / pdf.numPages) * 50)
       }
-      
+
       onProgress(90)
       // If no images found, create a note file
       if (Object.keys(zip.files).length === 0) {
         zip.file('no-images-found.txt', `No images were found in ${f.name}`)
       }
-      
+
       const content = await zip.generateAsync({ type: 'blob' })
       onProgress(100)
       return content
@@ -128,7 +128,7 @@ export default function ExtractImagesTool() {
     <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
       <h2 style={{ textAlign: 'center', marginBottom: 16 }}>Extract Images</h2>
       <p>Upload PDFs and extract images.</p>
-      
+
       {/* Mode Toggle */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 16, borderBottom: '2px solid var(--border)', paddingBottom: 8 }}>
         <button
@@ -169,7 +169,7 @@ export default function ExtractImagesTool() {
       {successMsg && (
         <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
       )}
-      
+
       {batchMode ? (
         <div>
           <p style={{ marginBottom: 16, padding: 12, background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 4 }}>

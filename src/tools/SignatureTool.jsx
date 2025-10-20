@@ -253,33 +253,33 @@ export default function SignatureTool() {
       onProgress(30)
       const pdf = await PDFDocument.load(array)
       onProgress(50)
-      
+
       const imgBytes = await (await fetch(sigDataUrl)).arrayBuffer()
       const isJpeg = String(sigDataUrl).startsWith('data:image/jpeg') || String(sigDataUrl).startsWith('data:image/jpg')
       let embedded = null
       if (isJpeg) { try { embedded = await pdf.embedJpg(imgBytes) } catch (e) { embedded = await pdf.embedPng(imgBytes) } }
       else { try { embedded = await pdf.embedPng(imgBytes) } catch (e) { embedded = await pdf.embedJpg(imgBytes) } }
-      
+
       onProgress(60)
-      
+
       // Apply signature to all pages in bottom-right corner
       const pages = pdf.getPages()
       for (let i = 0; i < pages.length; i++) {
         const page = pages[i]
         const { width: pdfW, height: pdfH } = page.getSize()
-        
+
         // Signature dimensions: 150x60 points
         const sigW = 150
         const sigH = 60
-        
+
         // Position in bottom-right corner with 20pt margin
         const x = pdfW - sigW - 20
         const y = 20
-        
+
         page.drawImage(embedded, { x, y, width: sigW, height: sigH })
         onProgress(60 + (i / pages.length) * 30)
       }
-      
+
       onProgress(90)
       const out = await pdf.save()
       const blob = new Blob([out], { type: 'application/pdf' })

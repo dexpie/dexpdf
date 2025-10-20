@@ -9,8 +9,8 @@
  * @returns {number} Size in bytes
  */
 export const getFileSize = (file) => {
-  if (!file) return 0
-  return file.size || 0
+    if (!file) return 0
+    return file.size || 0
 }
 
 /**
@@ -19,8 +19,8 @@ export const getFileSize = (file) => {
  * @returns {number} Size in bytes
  */
 export const getPdfBytesSize = (pdfBytes) => {
-  if (!pdfBytes) return 0
-  return pdfBytes.length || pdfBytes.byteLength || 0
+    if (!pdfBytes) return 0
+    return pdfBytes.length || pdfBytes.byteLength || 0
 }
 
 /**
@@ -29,8 +29,8 @@ export const getPdfBytesSize = (pdfBytes) => {
  * @returns {number} Total size in bytes
  */
 export const getTotalFilesSize = (files) => {
-  if (!files || !Array.isArray(files)) return 0
-  return files.reduce((total, file) => total + getFileSize(file), 0)
+    if (!files || !Array.isArray(files)) return 0
+    return files.reduce((total, file) => total + getFileSize(file), 0)
 }
 
 /**
@@ -40,15 +40,15 @@ export const getTotalFilesSize = (files) => {
  * @returns {string} Formatted size string
  */
 export const formatFileSize = (bytes, decimals = 2) => {
-  if (!bytes || bytes === 0) return '0 B'
-  
-  const k = 1024
-  const dm = decimals < 0 ? 0 : decimals
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    if (!bytes || bytes === 0) return '0 B'
+
+    const k = 1024
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
 
 /**
@@ -58,25 +58,25 @@ export const formatFileSize = (bytes, decimals = 2) => {
  * @returns {Object} Savings data
  */
 export const calculateSavings = (originalSize, processedSize) => {
-  if (!originalSize || !processedSize) {
-    return {
-      diff: 0,
-      percent: 0,
-      isReduced: false,
-      ratio: 1
+    if (!originalSize || !processedSize) {
+        return {
+            diff: 0,
+            percent: 0,
+            isReduced: false,
+            ratio: 1
+        }
     }
-  }
 
-  const diff = originalSize - processedSize
-  const percent = ((diff / originalSize) * 100).toFixed(1)
-  const ratio = (processedSize / originalSize).toFixed(2)
+    const diff = originalSize - processedSize
+    const percent = ((diff / originalSize) * 100).toFixed(1)
+    const ratio = (processedSize / originalSize).toFixed(2)
 
-  return {
-    diff: Math.abs(diff),
-    percent: Math.abs(parseFloat(percent)),
-    isReduced: diff > 0,
-    ratio: parseFloat(ratio)
-  }
+    return {
+        diff: Math.abs(diff),
+        percent: Math.abs(parseFloat(percent)),
+        isReduced: diff > 0,
+        ratio: parseFloat(ratio)
+    }
 }
 
 /**
@@ -86,15 +86,15 @@ export const calculateSavings = (originalSize, processedSize) => {
  * @returns {number} Estimated size in bytes
  */
 export const estimateCompressedSize = (originalSize, quality = 0.7) => {
-  if (!originalSize) return 0
-  
-  // Rough estimation based on quality
-  // Quality 0.9 = ~80% of original
-  // Quality 0.7 = ~50% of original
-  // Quality 0.5 = ~30% of original
-  const compressionFactor = 0.3 + (quality * 0.6)
-  
-  return Math.round(originalSize * compressionFactor)
+    if (!originalSize) return 0
+
+    // Rough estimation based on quality
+    // Quality 0.9 = ~80% of original
+    // Quality 0.7 = ~50% of original
+    // Quality 0.5 = ~30% of original
+    const compressionFactor = 0.3 + (quality * 0.6)
+
+    return Math.round(originalSize * compressionFactor)
 }
 
 /**
@@ -103,9 +103,9 @@ export const estimateCompressedSize = (originalSize, quality = 0.7) => {
  * @returns {string} Extension (e.g., '.pdf', '.docx')
  */
 export const getFileExtension = (filename) => {
-  if (!filename) return ''
-  const parts = filename.split('.')
-  return parts.length > 1 ? `.${parts[parts.length - 1]}` : ''
+    if (!filename) return ''
+    const parts = filename.split('.')
+    return parts.length > 1 ? `.${parts[parts.length - 1]}` : ''
 }
 
 /**
@@ -116,17 +116,17 @@ export const getFileExtension = (filename) => {
  * @returns {Object} Preview state
  */
 export const createPreviewState = (originalSize, processedSize, fileName = 'output.pdf') => {
-  const savings = calculateSavings(originalSize, processedSize)
-  
-  return {
-    originalSize,
-    processedSize,
-    fileName,
-    savings,
-    originalFormatted: formatFileSize(originalSize),
-    processedFormatted: formatFileSize(processedSize),
-    show: true
-  }
+    const savings = calculateSavings(originalSize, processedSize)
+
+    return {
+        originalSize,
+        processedSize,
+        fileName,
+        savings,
+        originalFormatted: formatFileSize(originalSize),
+        processedFormatted: formatFileSize(processedSize),
+        show: true
+    }
 }
 
 /**
@@ -134,70 +134,70 @@ export const createPreviewState = (originalSize, processedSize, fileName = 'outp
  * Returns helpers to manage preview state
  */
 export class FileSizePreviewManager {
-  constructor() {
-    this.originalSize = 0
-    this.processedSize = null
-    this.fileName = 'output.pdf'
-    this.isProcessing = false
-  }
-
-  setOriginalFile(file) {
-    this.originalSize = getFileSize(file)
-    if (file.name) {
-      this.fileName = file.name.replace(/\.[^/.]+$/, '_processed.pdf')
+    constructor() {
+        this.originalSize = 0
+        this.processedSize = null
+        this.fileName = 'output.pdf'
+        this.isProcessing = false
     }
-  }
 
-  setOriginalFiles(files) {
-    this.originalSize = getTotalFilesSize(files)
-  }
-
-  setOriginalSize(size) {
-    this.originalSize = size
-  }
-
-  setProcessedBytes(pdfBytes) {
-    this.processedSize = getPdfBytesSize(pdfBytes)
-    this.isProcessing = false
-  }
-
-  setProcessing(isProcessing) {
-    this.isProcessing = isProcessing
-  }
-
-  setFileName(fileName) {
-    this.fileName = fileName
-  }
-
-  getPreviewData() {
-    return {
-      originalSize: this.originalSize,
-      processedSize: this.processedSize,
-      fileName: this.fileName,
-      isProcessing: this.isProcessing
+    setOriginalFile(file) {
+        this.originalSize = getFileSize(file)
+        if (file.name) {
+            this.fileName = file.name.replace(/\.[^/.]+$/, '_processed.pdf')
+        }
     }
-  }
 
-  getSavings() {
-    return calculateSavings(this.originalSize, this.processedSize)
-  }
+    setOriginalFiles(files) {
+        this.originalSize = getTotalFilesSize(files)
+    }
 
-  reset() {
-    this.originalSize = 0
-    this.processedSize = null
-    this.fileName = 'output.pdf'
-    this.isProcessing = false
-  }
+    setOriginalSize(size) {
+        this.originalSize = size
+    }
+
+    setProcessedBytes(pdfBytes) {
+        this.processedSize = getPdfBytesSize(pdfBytes)
+        this.isProcessing = false
+    }
+
+    setProcessing(isProcessing) {
+        this.isProcessing = isProcessing
+    }
+
+    setFileName(fileName) {
+        this.fileName = fileName
+    }
+
+    getPreviewData() {
+        return {
+            originalSize: this.originalSize,
+            processedSize: this.processedSize,
+            fileName: this.fileName,
+            isProcessing: this.isProcessing
+        }
+    }
+
+    getSavings() {
+        return calculateSavings(this.originalSize, this.processedSize)
+    }
+
+    reset() {
+        this.originalSize = 0
+        this.processedSize = null
+        this.fileName = 'output.pdf'
+        this.isProcessing = false
+    }
 }
 
 export default {
-  getFileSize,
-  getPdfBytesSize,
-  getTotalFilesSize,
-  formatFileSize,
-  calculateSavings,
-  estimateCompressedSize,
-  getFileExtension,
-  createPreviewState,
-  FileSizePreviewManager
+    getFileSize,
+    getPdfBytesSize,
+    getTotalFilesSize,
+    formatFileSize,
+    calculateSavings,
+    estimateCompressedSize,
+    getFileExtension,
+    createPreviewState,
+    FileSizePreviewManager
 }

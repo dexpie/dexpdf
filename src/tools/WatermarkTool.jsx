@@ -269,7 +269,7 @@ export default function WatermarkTool() {
   return (
     <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
       <h2 style={{ textAlign: 'center', marginBottom: 16 }}>Watermark PDF</h2>
-      
+
       {/* Mode Toggle */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 16, borderBottom: '2px solid var(--border)', paddingBottom: 8 }}>
         <button
@@ -310,7 +310,7 @@ export default function WatermarkTool() {
       {successMsg && (
         <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
       )}
-      
+
       {batchMode ? (
         <div>
           <div style={{ marginTop: 12, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -346,7 +346,7 @@ export default function WatermarkTool() {
               <input type="checkbox" checked={tiling} onChange={e => setTiling(e.target.checked)} disabled={busy} /> Tiling
             </label>
           </div>
-          
+
           <div style={{ marginTop: 12, padding: 12, border: '1px solid var(--border)', borderRadius: 4, background: 'var(--paper)' }}>
             <strong>Watermark Settings:</strong>
             <ul style={{ marginTop: 8, marginBottom: 0, paddingLeft: 20 }}>

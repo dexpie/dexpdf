@@ -21,7 +21,7 @@ export default function PDFInfoTool() {
       const { PDFDocument } = await import('pdf-lib')
       const arr = await f.arrayBuffer()
       const pdf = await PDFDocument.load(arr)
-      
+
       // Get metadata correctly from pdf-lib
       const title = pdf.getTitle() || 'No title'
       const author = pdf.getAuthor() || 'Unknown author'
@@ -30,8 +30,8 @@ export default function PDFInfoTool() {
       const producer = pdf.getProducer() || 'Unknown producer'
       const creationDate = pdf.getCreationDate()
       const modificationDate = pdf.getModificationDate()
-      
-      setInfo({ 
+
+      setInfo({
         pages: pdf.getPageCount(),
         title,
         author,
@@ -82,39 +82,39 @@ export default function PDFInfoTool() {
               <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: '#1f2937', borderBottom: '2px solid #e5e7eb', paddingBottom: 8 }}>
                 📄 PDF Information
               </h3>
-              
+
               <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', gap: 8, fontSize: 14 }}>
                 <div style={{ fontWeight: 600, color: '#6b7280' }}>File Name:</div>
                 <div style={{ color: '#1f2937', wordBreak: 'break-word' }}>{info.fileName}</div>
-                
+
                 <div style={{ fontWeight: 600, color: '#6b7280' }}>File Size:</div>
                 <div style={{ color: '#1f2937' }}>
                   {(info.fileSize / 1024).toFixed(2)} KB ({(info.fileSize / (1024 * 1024)).toFixed(2)} MB)
                 </div>
-                
+
                 <div style={{ fontWeight: 600, color: '#6b7280' }}>Total Pages:</div>
                 <div style={{ color: '#1f2937', fontWeight: 600 }}>{info.pages}</div>
-                
+
                 <div style={{ fontWeight: 600, color: '#6b7280', paddingTop: 8, borderTop: '1px solid #e5e7eb' }}>Title:</div>
                 <div style={{ color: '#1f2937', paddingTop: 8, borderTop: '1px solid #e5e7eb' }}>{info.title}</div>
-                
+
                 <div style={{ fontWeight: 600, color: '#6b7280' }}>Author:</div>
                 <div style={{ color: '#1f2937' }}>{info.author}</div>
-                
+
                 <div style={{ fontWeight: 600, color: '#6b7280' }}>Subject:</div>
                 <div style={{ color: '#1f2937' }}>{info.subject}</div>
-                
+
                 <div style={{ fontWeight: 600, color: '#6b7280' }}>Creator:</div>
                 <div style={{ color: '#1f2937' }}>{info.creator}</div>
-                
+
                 <div style={{ fontWeight: 600, color: '#6b7280' }}>Producer:</div>
                 <div style={{ color: '#1f2937' }}>{info.producer}</div>
-                
+
                 <div style={{ fontWeight: 600, color: '#6b7280', paddingTop: 8, borderTop: '1px solid #e5e7eb' }}>Created:</div>
                 <div style={{ color: '#1f2937', paddingTop: 8, borderTop: '1px solid #e5e7eb', fontSize: 13 }}>
                   {info.creationDate === 'Unknown' ? 'Unknown' : new Date(info.creationDate).toLocaleString('id-ID')}
                 </div>
-                
+
                 <div style={{ fontWeight: 600, color: '#6b7280' }}>Modified:</div>
                 <div style={{ color: '#1f2937', fontSize: 13 }}>
                   {info.modificationDate === 'Unknown' ? 'Unknown' : new Date(info.modificationDate).toLocaleString('id-ID')}

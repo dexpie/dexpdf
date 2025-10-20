@@ -51,7 +51,7 @@ export default function CSVToPdfTool() {
 
   async function processBatchFile(file) {
     const data = await parseCSV(file)
-    
+
     // Create a temporary table in memory
     const table = document.createElement('table')
     const tbody = document.createElement('tbody')
@@ -69,14 +69,14 @@ export default function CSVToPdfTool() {
     table.appendChild(tbody)
     table.style.borderCollapse = 'collapse'
     table.style.width = '100%'
-    
+
     // Render to canvas off-screen
     const wrapper = document.createElement('div')
     wrapper.style.position = 'absolute'
     wrapper.style.left = '-9999px'
     wrapper.appendChild(table)
     document.body.appendChild(wrapper)
-    
+
     try {
       const canvas = await html2canvas(table, { scale: 2 })
       const imgData = canvas.toDataURL('image/png')

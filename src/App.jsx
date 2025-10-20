@@ -63,7 +63,7 @@ function App() {
         setShowHotkeyHint(true)
         setTimeout(() => setShowHotkeyHint(false), 1200)
       }
-      
+
       // Cmd+K / Ctrl+K - Open Command Palette
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
@@ -133,16 +133,16 @@ function App() {
           {/* Hero Header */}
           <header className="hero-header">
             {/* Background Video */}
-            <video 
+            <video
               className="hero-background-video"
-              autoPlay 
-              loop 
-              muted 
+              autoPlay
+              loop
+              muted
               playsInline
             >
               <source src="/assets/city-pop-gradient.mp4" type="video/mp4" />
             </video>
-            
+
             <div className="hero-container">
               <div className="hero-nav">
                 <div className="hero-logo">

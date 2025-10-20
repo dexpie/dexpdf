@@ -86,7 +86,7 @@ export default function PptToPdfTool() {
       onProgress(20)
       const zip = await JSZip.loadAsync(data)
       const mediaFiles = Object.keys(zip.files).filter(k => k.startsWith('ppt/media/'))
-      
+
       onProgress(40)
       const images = []
       for (const m of mediaFiles) {
@@ -101,7 +101,7 @@ export default function PptToPdfTool() {
       onProgress(60)
       const { jsPDF } = await import('jspdf')
       const doc = new jsPDF({ unit: 'px', format: 'a4' })
-      
+
       for (let i = 0; i < images.length; i++) {
         const blob = images[i]
         const imgUrl = URL.createObjectURL(blob)
@@ -113,7 +113,7 @@ export default function PptToPdfTool() {
         URL.revokeObjectURL(imgUrl)
         onProgress(60 + (i / images.length) * 30)
       }
-      
+
       onProgress(90)
       const pdfBlob = doc.output('blob')
       onProgress(100)
@@ -126,7 +126,7 @@ export default function PptToPdfTool() {
   return (
     <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
       <h2 style={{ textAlign: 'center', marginBottom: 16 }}>PPTX → PDF</h2>
-      
+
       {/* Mode Toggle */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 16, borderBottom: '2px solid var(--border)', paddingBottom: 8 }}>
         <button
@@ -167,13 +167,13 @@ export default function PptToPdfTool() {
       {successMsg && (
         <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
       )}
-      
+
       {batchMode ? (
         <div>
           <p style={{ marginBottom: 16, padding: 12, background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 4 }}>
             <strong>Batch Mode:</strong> Convert multiple PowerPoint (.pptx) presentations to PDF. Slide images will be converted to PDF pages.
           </p>
-          
+
           <UniversalBatchProcessor
             processFile={processBatchFile}
             outputFilenameSuffix=""

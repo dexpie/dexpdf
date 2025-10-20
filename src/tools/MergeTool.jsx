@@ -162,17 +162,17 @@ export default function MergeTool() {
   return (
     <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
       <h2 style={{ textAlign: 'center', marginBottom: 16 }}>Merge PDF</h2>
-      
+
       {/* Mode Toggle */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
-        <button 
+        <button
           className={!batchMode ? 'btn-primary' : 'btn-outline'}
           onClick={() => setBatchMode(false)}
           style={{ minWidth: 120 }}
         >
           📄 Merge Multiple
         </button>
-        <button 
+        <button
           className={batchMode ? 'btn-primary' : 'btn-outline'}
           onClick={() => setBatchMode(true)}
           style={{ minWidth: 120 }}
@@ -207,49 +207,49 @@ export default function MergeTool() {
       {/* Single Merge Mode */}
       {!batchMode && (
         <div>
-      {errorMsg && (
-        <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
-      )}
-      {successMsg && (
-        <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
-      )}
-      {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
-      <div className="dropzone" style={{ opacity: busy ? 0.6 : 1, pointerEvents: busy ? 'none' : 'auto', border: '2px dashed #3b82f6', borderRadius: 16, padding: 24, marginBottom: 16, background: '#f8fafc' }}>
-        <input type="file" accept="application/pdf" multiple onChange={handleFiles} disabled={busy} />
-        <div className="muted">Pilih beberapa file PDF. Urutan file bisa diubah sebelum digabung.</div>
-      </div>
-      <div className="file-list">
-        {files.map((entry, i) => (
-          <div className="file-item" key={i} draggable={!busy} onDragStart={e => !busy && onDragStart(e, i)} onDragOver={onDragOver} onDrop={e => !busy && onDrop(e, i)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, background: '#f9fafb', borderRadius: 8, marginBottom: 8, padding: 8, opacity: busy ? 0.7 : 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
-              <div style={{ width: 56, height: 40, flex: 'none', background: '#f4f6fb', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}>
-                {entry.thumb ? <img src={entry.thumb} style={{ maxWidth: '100%', maxHeight: '100%' }} alt="thumb" /> : <div className="muted">PDF</div>}
-              </div>
-              <div style={{ minWidth: 120, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>{entry.file.name}</div>
-              <div style={{ color: '#888', fontSize: 13 }}>{(entry.file.size / 1024).toFixed(1)} KB</div>
-              <div style={{ color: '#888', fontSize: 13 }}>{entry.file.lastModified ? new Date(entry.file.lastModified).toLocaleDateString() : ''}</div>
-            </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button className="btn" onClick={() => moveUp(i)} disabled={i === 0 || busy}>↑</button>
-              <button className="btn" onClick={() => moveDown(i)} disabled={i === files.length - 1 || busy}>↓</button>
-              <button className="btn" onClick={() => remove(i)} disabled={busy}>Remove</button>
-            </div>
+          {errorMsg && (
+            <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
+          )}
+          {successMsg && (
+            <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
+          )}
+          {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
+          <div className="dropzone" style={{ opacity: busy ? 0.6 : 1, pointerEvents: busy ? 'none' : 'auto', border: '2px dashed #3b82f6', borderRadius: 16, padding: 24, marginBottom: 16, background: '#f8fafc' }}>
+            <input type="file" accept="application/pdf" multiple onChange={handleFiles} disabled={busy} />
+            <div className="muted">Pilih beberapa file PDF. Urutan file bisa diubah sebelum digabung.</div>
           </div>
-        ))}
-      </div>
-      {files.length > 0 && (
-        <FilenameInput 
-          value={outputFileName}
-          onChange={(e) => setOutputFileName(e.target.value)}
-          disabled={busy}
-          placeholder="merged"
-        />
-      )}
-      <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <button className="btn-primary" onClick={merge} disabled={busy || files.length === 0}>{busy ? 'Working...' : 'Merge & Download'}</button>
-        <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFiles([]); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || files.length === 0}>Reset</button>
-      </div>
-      </div>
+          <div className="file-list">
+            {files.map((entry, i) => (
+              <div className="file-item" key={i} draggable={!busy} onDragStart={e => !busy && onDragStart(e, i)} onDragOver={onDragOver} onDrop={e => !busy && onDrop(e, i)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, background: '#f9fafb', borderRadius: 8, marginBottom: 8, padding: 8, opacity: busy ? 0.7 : 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
+                  <div style={{ width: 56, height: 40, flex: 'none', background: '#f4f6fb', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}>
+                    {entry.thumb ? <img src={entry.thumb} style={{ maxWidth: '100%', maxHeight: '100%' }} alt="thumb" /> : <div className="muted">PDF</div>}
+                  </div>
+                  <div style={{ minWidth: 120, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>{entry.file.name}</div>
+                  <div style={{ color: '#888', fontSize: 13 }}>{(entry.file.size / 1024).toFixed(1)} KB</div>
+                  <div style={{ color: '#888', fontSize: 13 }}>{entry.file.lastModified ? new Date(entry.file.lastModified).toLocaleDateString() : ''}</div>
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="btn" onClick={() => moveUp(i)} disabled={i === 0 || busy}>↑</button>
+                  <button className="btn" onClick={() => moveDown(i)} disabled={i === files.length - 1 || busy}>↓</button>
+                  <button className="btn" onClick={() => remove(i)} disabled={busy}>Remove</button>
+                </div>
+              </div>
+            ))}
+          </div>
+          {files.length > 0 && (
+            <FilenameInput
+              value={outputFileName}
+              onChange={(e) => setOutputFileName(e.target.value)}
+              disabled={busy}
+              placeholder="merged"
+            />
+          )}
+          <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button className="btn-primary" onClick={merge} disabled={busy || files.length === 0}>{busy ? 'Working...' : 'Merge & Download'}</button>
+            <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFiles([]); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || files.length === 0}>Reset</button>
+          </div>
+        </div>
       )}
     </div>
   )

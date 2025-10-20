@@ -99,25 +99,25 @@ export default function PageNumbersTool() {
       ) : (
         <>
           <input type="file" accept="application/pdf" onChange={onFile} />
-      <div style={{ marginTop: 8 }}>
-        <label>Position</label>
-        <select value={position} onChange={e => setPosition(e.target.value)}>
-          <option value="bottom-right">Bottom Right</option>
-          <option value="bottom-left">Bottom Left</option>
-          <option value="top-right">Top Right</option>
-          <option value="top-left">Top Left</option>
-        </select>
-        <label style={{ marginLeft: 8 }}>Start</label>
-        <input type="number" value={start} onChange={e => setStart(e.target.value)} style={{ width: 80, marginLeft: 6 }} />
-      </div>
-      {file && (
-        <FilenameInput
-          value={outputFileName}
-          onChange={(e) => setOutputFileName(e.target.value)}
-          disabled={busy}
-          placeholder="output_pagenums"
-        />
-      )}
+          <div style={{ marginTop: 8 }}>
+            <label>Position</label>
+            <select value={position} onChange={e => setPosition(e.target.value)}>
+              <option value="bottom-right">Bottom Right</option>
+              <option value="bottom-left">Bottom Left</option>
+              <option value="top-right">Top Right</option>
+              <option value="top-left">Top Left</option>
+            </select>
+            <label style={{ marginLeft: 8 }}>Start</label>
+            <input type="number" value={start} onChange={e => setStart(e.target.value)} style={{ width: 80, marginLeft: 6 }} />
+          </div>
+          {file && (
+            <FilenameInput
+              value={outputFileName}
+              onChange={(e) => setOutputFileName(e.target.value)}
+              disabled={busy}
+              placeholder="output_pagenums"
+            />
+          )}
           <div style={{ marginTop: 12 }}>
             <button className="btn-primary" onClick={applyNumbers} disabled={busy}>{busy ? 'Working...' : 'Add Page Numbers'}</button>
           </div>

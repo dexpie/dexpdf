@@ -72,7 +72,7 @@ export default function PdfToPptTool() {
 
       const PPTX = (await import('pptxgenjs')).default
       const pres = new PPTX()
-      
+
       for (let i = 1; i <= numPages; i++) {
         const page = await pdf.getPage(i)
         const viewport = page.getViewport({ scale: 1.5 })
@@ -82,13 +82,13 @@ export default function PdfToPptTool() {
         const ctx = canvas.getContext('2d')
         await page.render({ canvasContext: ctx, viewport }).promise
         const dataUrl = canvas.toDataURL('image/png')
-        
+
         const slide = pres.addSlide()
         slide.addImage({ data: dataUrl, x: 0, y: 0, w: '100%', h: '100%' })
-        
+
         onProgress(30 + (i / numPages) * 60)
       }
-      
+
       onProgress(90)
       const blob = await pres.write({ outputType: 'blob' })
       onProgress(100)
@@ -101,7 +101,7 @@ export default function PdfToPptTool() {
   return (
     <div>
       <h2>PDF → PPTX</h2>
-      
+
       {/* Mode Toggle */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 16, borderBottom: '2px solid var(--border)', paddingBottom: 8 }}>
         <button
@@ -143,7 +143,7 @@ export default function PdfToPptTool() {
             <br />
             <em style={{ fontSize: '0.9em', color: 'var(--muted)' }}>Note: Slides are exported as images — text isn't editable in PowerPoint.</em>
           </p>
-          
+
           <UniversalBatchProcessor
             processFile={processBatchFile}
             outputFilenameSuffix=""

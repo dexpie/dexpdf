@@ -272,7 +272,7 @@ export default function CompressTool() {
       // Prepare form data
       const formData = new FormData()
       formData.append('pdf', file)
-      
+
       onProgress(30)
 
       // Send to backend
@@ -300,17 +300,17 @@ export default function CompressTool() {
   return (
     <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
       <h2 style={{ textAlign: 'center', marginBottom: 16 }}>Compress PDF</h2>
-      
+
       {/* Mode Toggle */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
-        <button 
+        <button
           className={!batchMode ? 'btn-primary' : 'btn-outline'}
           onClick={() => setBatchMode(false)}
           style={{ minWidth: 120 }}
         >
           📄 Single File
         </button>
-        <button 
+        <button
           className={batchMode ? 'btn-primary' : 'btn-outline'}
           onClick={() => setBatchMode(true)}
           style={{ minWidth: 120 }}
@@ -345,132 +345,132 @@ export default function CompressTool() {
       {/* Single File Mode */}
       {!batchMode && (
         <div>
-      {/* Error & Success messages with aria-live for accessibility */}
-      {errorMsg && (
-        <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
-      )}
-      {successMsg && (
-        <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
-      )}
-      {backendStatus === 'sleeping' && <div style={{ color: '#b45309', marginBottom: 8, background: '#fef3c7', padding: 8, borderRadius: 6 }}>Backend sedang bangun (sleeping), mohon tunggu beberapa detik lalu coba lagi.</div>}
-      {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
-      <div className={`dropzone big-dropzone ${dragging ? 'dragover' : ''}`} onDragEnter={onDragEnter} onDragOver={onDragOverZone} onDragLeave={onDragLeave} onDrop={onDropZone} style={{
-        border: '2px dashed #3b82f6',
-        borderRadius: 16,
-        padding: 32,
-        textAlign: 'center',
-        background: dragging ? '#e0f2fe' : '#f8fafc',
-        position: 'relative',
-        marginBottom: 16,
-        transition: 'background 0.2s',
-        opacity: busy ? 0.6 : 1,
-        pointerEvents: busy ? 'none' : 'auto',
-      }}>
-        <input type="file" accept="application/pdf" onChange={onFile} style={{ display: 'none' }} id="pdf-upload-input" disabled={busy} />
-        <label htmlFor="pdf-upload-input" style={{ cursor: busy ? 'not-allowed' : 'pointer', display: 'block' }}>
-          <div style={{ fontSize: 48, color: '#3b82f6', marginBottom: 8 }}>
-            <svg width="48" height="48" fill="none" viewBox="0 0 24 24"><path fill="#3b82f6" d="M12 16V4m0 0-4 4m4-4 4 4" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><rect x="4" y="16" width="16" height="4" rx="2" fill="#3b82f6" opacity=".15" /></svg>
-          </div>
-          <div style={{ fontSize: 20, fontWeight: 600, color: '#222' }}>Drop PDF here or click to upload</div>
-          <div className="muted" style={{ marginTop: 6, color: '#555' }}>
-            Kompres PDF: <b>Ukuran kecil, kualitas tetap tinggi</b>.<br />
-            <b>Tips:</b> Pilih kualitas tinggi untuk hasil tajam, atau turunkan untuk file lebih kecil.<br />
-            {imgFormat === 'webp' ? 'WebP mode aktif (hasil lebih kecil & tajam)' : 'JPEG mode (WebP tidak didukung browser)'}
-          </div>
-        </label>
-        <div style={{ marginTop: 8, display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button className="btn-ghost" style={{ minWidth: 110 }} onClick={() => { setQuality(0.95); setScale(1); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy}>High Quality</button>
-          <button className="btn-ghost" style={{ minWidth: 110 }} onClick={() => { setQuality(0.8); setScale(0.9); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy}>Balanced</button>
-          <button className="btn-ghost" style={{ minWidth: 110 }} onClick={() => { setQuality(0.5); setScale(0.7); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy}>Smallest Size</button>
-        </div>
-        {dropped && <div className="drop-overlay" style={{
-          position: 'absolute',
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(59,130,246,0.1)',
-          color: '#2563eb',
-          fontSize: 32,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 16
-        }}>✓ Uploaded</div>}
-      </div>
-
-      {file && (
-        <div style={{ marginTop: 12, background: '#f9fafb', borderRadius: 12, padding: 16, boxShadow: '0 1px 4px #0001' }}>
-          <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4, wordBreak: 'break-all' }}>
-            <span style={{ color: '#3b82f6' }}>{file.name}</span> — {pages} pages
-          </div>
-          <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
-            <span style={{ color: '#888' }}>Original:</span> <span style={{ fontWeight: 500 }}>{formatBytes(originalSize)}</span>
-            <span style={{ color: '#888' }}>Type:</span> <span style={{ fontWeight: 500 }}>{file.type || 'application/pdf'}</span>
-            <span style={{ color: '#888' }}>Last modified:</span> <span style={{ fontWeight: 500 }}>{file.lastModified ? new Date(file.lastModified).toLocaleString() : '-'}</span>
-            {estimateSize && typeof estimateSize === 'object' && estimateSize.cur && (
-              <>
-                <span style={{ color: '#888' }}>→ Compressed:</span> <span style={{ fontWeight: 500, color: '#059669' }}>{formatBytes(estimateSize.cur)}</span>
-                <span style={{ color: '#888' }}>({originalSize ? Math.round(100 - (estimateSize.cur / originalSize) * 100) : 0}% smaller)</span>
-              </>
-            )}
-          </div>
-          {/* Estimasi hanya berlaku untuk mode browser, bukan backend */}
-          {estimateSize && (
-            <div style={{ marginTop: 8, color: '#b45309', background: '#fef3c7', padding: 8, borderRadius: 6 }}>
-              Estimasi ukuran hanya berlaku untuk mode compress di browser, bukan backend Railway.<br />
-              Hasil compress backend biasanya lebih optimal.
-            </div>
+          {/* Error & Success messages with aria-live for accessibility */}
+          {errorMsg && (
+            <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
           )}
-          {progressText && (
-            <div style={{ marginTop: 8, color: '#6b7280', width: '100%' }}>
-              <div style={{ height: 8, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden', marginBottom: 4 }}>
-                {(estimating || busy) ? (
-                  <div style={{ width: '100%', height: '100%', background: '#3b82f6', animation: 'progressBarAnim 1.2s linear infinite' }} />
-                ) : null}
+          {successMsg && (
+            <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
+          )}
+          {backendStatus === 'sleeping' && <div style={{ color: '#b45309', marginBottom: 8, background: '#fef3c7', padding: 8, borderRadius: 6 }}>Backend sedang bangun (sleeping), mohon tunggu beberapa detik lalu coba lagi.</div>}
+          {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
+          <div className={`dropzone big-dropzone ${dragging ? 'dragover' : ''}`} onDragEnter={onDragEnter} onDragOver={onDragOverZone} onDragLeave={onDragLeave} onDrop={onDropZone} style={{
+            border: '2px dashed #3b82f6',
+            borderRadius: 16,
+            padding: 32,
+            textAlign: 'center',
+            background: dragging ? '#e0f2fe' : '#f8fafc',
+            position: 'relative',
+            marginBottom: 16,
+            transition: 'background 0.2s',
+            opacity: busy ? 0.6 : 1,
+            pointerEvents: busy ? 'none' : 'auto',
+          }}>
+            <input type="file" accept="application/pdf" onChange={onFile} style={{ display: 'none' }} id="pdf-upload-input" disabled={busy} />
+            <label htmlFor="pdf-upload-input" style={{ cursor: busy ? 'not-allowed' : 'pointer', display: 'block' }}>
+              <div style={{ fontSize: 48, color: '#3b82f6', marginBottom: 8 }}>
+                <svg width="48" height="48" fill="none" viewBox="0 0 24 24"><path fill="#3b82f6" d="M12 16V4m0 0-4 4m4-4 4 4" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /><rect x="4" y="16" width="16" height="4" rx="2" fill="#3b82f6" opacity=".15" /></svg>
               </div>
-              <span>{progressText}</span>
+              <div style={{ fontSize: 20, fontWeight: 600, color: '#222' }}>Drop PDF here or click to upload</div>
+              <div className="muted" style={{ marginTop: 6, color: '#555' }}>
+                Kompres PDF: <b>Ukuran kecil, kualitas tetap tinggi</b>.<br />
+                <b>Tips:</b> Pilih kualitas tinggi untuk hasil tajam, atau turunkan untuk file lebih kecil.<br />
+                {imgFormat === 'webp' ? 'WebP mode aktif (hasil lebih kecil & tajam)' : 'JPEG mode (WebP tidak didukung browser)'}
+              </div>
+            </label>
+            <div style={{ marginTop: 8, display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button className="btn-ghost" style={{ minWidth: 110 }} onClick={() => { setQuality(0.95); setScale(1); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy}>High Quality</button>
+              <button className="btn-ghost" style={{ minWidth: 110 }} onClick={() => { setQuality(0.8); setScale(0.9); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy}>Balanced</button>
+              <button className="btn-ghost" style={{ minWidth: 110 }} onClick={() => { setQuality(0.5); setScale(0.7); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy}>Smallest Size</button>
             </div>
-          )}
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' }}>
-            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              JPEG Quality:
-              <input type="range" min="0.1" max="1" step="0.05" value={quality} onChange={e => setQuality(Number(e.target.value))} disabled={busy} />
-              <div style={{ width: 44, textAlign: 'right' }}>{Math.round(quality * 100)}%</div>
-            </label>
-            <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              Render Scale:
-              <select value={scale} onChange={e => setScale(Number(e.target.value))} disabled={busy}>
-                <option value={1}>100%</option>
-                <option value={0.9}>90%</option>
-                <option value={0.8}>80%</option>
-                <option value={0.7}>70%</option>
-                <option value={0.6}>60%</option>
-                <option value={0.5}>50%</option>
-              </select>
-            </label>
+            {dropped && <div className="drop-overlay" style={{
+              position: 'absolute',
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(59,130,246,0.1)',
+              color: '#2563eb',
+              fontSize: 32,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 16
+            }}>✓ Uploaded</div>}
           </div>
-          {/* Custom filename input */}
-          <FilenameInput 
-            value={outputFileName}
-            onChange={(e) => setOutputFileName(e.target.value)}
-            disabled={busy}
-            placeholder="compressed"
-          />
-          <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button className="btn-primary" onClick={() => compressAndDownload({ download: true })} disabled={busy}>{busy ? 'Compressing...' : 'Compress & Download'}</button>
-            {/* Preview hanya untuk mode browser, nonaktifkan jika pakai backend */}
-            <button className="btn-outline" disabled title="Preview hanya untuk mode browser">Preview</button>
-            <button className="btn-ghost" onClick={estimateSample} disabled={estimating || busy}>{estimating ? 'Estimating...' : 'Estimate size'}</button>
-            <button className="btn-ghost" onClick={estimateRange} disabled={estimating || busy}>{estimating ? 'Estimating...' : 'Estimate range (min/cur/max)'}</button>
-            <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setPages(0); setEstimateSize(null); setOriginalSize(null); setPreviewUrl(null); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy}>Reset</button>
-          </div>
-          {previewUrl && (
-            <div style={{ marginTop: 12 }}>
-              <div className="muted">Preview (close tab/window to dismiss):</div>
-              <iframe title="compress-preview" src={previewUrl} style={{ width: '100%', height: 400, border: '1px solid #ddd' }} />
+
+          {file && (
+            <div style={{ marginTop: 12, background: '#f9fafb', borderRadius: 12, padding: 16, boxShadow: '0 1px 4px #0001' }}>
+              <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 4, wordBreak: 'break-all' }}>
+                <span style={{ color: '#3b82f6' }}>{file.name}</span> — {pages} pages
+              </div>
+              <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
+                <span style={{ color: '#888' }}>Original:</span> <span style={{ fontWeight: 500 }}>{formatBytes(originalSize)}</span>
+                <span style={{ color: '#888' }}>Type:</span> <span style={{ fontWeight: 500 }}>{file.type || 'application/pdf'}</span>
+                <span style={{ color: '#888' }}>Last modified:</span> <span style={{ fontWeight: 500 }}>{file.lastModified ? new Date(file.lastModified).toLocaleString() : '-'}</span>
+                {estimateSize && typeof estimateSize === 'object' && estimateSize.cur && (
+                  <>
+                    <span style={{ color: '#888' }}>→ Compressed:</span> <span style={{ fontWeight: 500, color: '#059669' }}>{formatBytes(estimateSize.cur)}</span>
+                    <span style={{ color: '#888' }}>({originalSize ? Math.round(100 - (estimateSize.cur / originalSize) * 100) : 0}% smaller)</span>
+                  </>
+                )}
+              </div>
+              {/* Estimasi hanya berlaku untuk mode browser, bukan backend */}
+              {estimateSize && (
+                <div style={{ marginTop: 8, color: '#b45309', background: '#fef3c7', padding: 8, borderRadius: 6 }}>
+                  Estimasi ukuran hanya berlaku untuk mode compress di browser, bukan backend Railway.<br />
+                  Hasil compress backend biasanya lebih optimal.
+                </div>
+              )}
+              {progressText && (
+                <div style={{ marginTop: 8, color: '#6b7280', width: '100%' }}>
+                  <div style={{ height: 8, background: '#e5e7eb', borderRadius: 4, overflow: 'hidden', marginBottom: 4 }}>
+                    {(estimating || busy) ? (
+                      <div style={{ width: '100%', height: '100%', background: '#3b82f6', animation: 'progressBarAnim 1.2s linear infinite' }} />
+                    ) : null}
+                  </div>
+                  <span>{progressText}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' }}>
+                <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  JPEG Quality:
+                  <input type="range" min="0.1" max="1" step="0.05" value={quality} onChange={e => setQuality(Number(e.target.value))} disabled={busy} />
+                  <div style={{ width: 44, textAlign: 'right' }}>{Math.round(quality * 100)}%</div>
+                </label>
+                <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  Render Scale:
+                  <select value={scale} onChange={e => setScale(Number(e.target.value))} disabled={busy}>
+                    <option value={1}>100%</option>
+                    <option value={0.9}>90%</option>
+                    <option value={0.8}>80%</option>
+                    <option value={0.7}>70%</option>
+                    <option value={0.6}>60%</option>
+                    <option value={0.5}>50%</option>
+                  </select>
+                </label>
+              </div>
+              {/* Custom filename input */}
+              <FilenameInput
+                value={outputFileName}
+                onChange={(e) => setOutputFileName(e.target.value)}
+                disabled={busy}
+                placeholder="compressed"
+              />
+              <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button className="btn-primary" onClick={() => compressAndDownload({ download: true })} disabled={busy}>{busy ? 'Compressing...' : 'Compress & Download'}</button>
+                {/* Preview hanya untuk mode browser, nonaktifkan jika pakai backend */}
+                <button className="btn-outline" disabled title="Preview hanya untuk mode browser">Preview</button>
+                <button className="btn-ghost" onClick={estimateSample} disabled={estimating || busy}>{estimating ? 'Estimating...' : 'Estimate size'}</button>
+                <button className="btn-ghost" onClick={estimateRange} disabled={estimating || busy}>{estimating ? 'Estimating...' : 'Estimate range (min/cur/max)'}</button>
+                <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setPages(0); setEstimateSize(null); setOriginalSize(null); setPreviewUrl(null); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy}>Reset</button>
+              </div>
+              {previewUrl && (
+                <div style={{ marginTop: 12 }}>
+                  <div className="muted">Preview (close tab/window to dismiss):</div>
+                  <iframe title="compress-preview" src={previewUrl} style={{ width: '100%', height: 400, border: '1px solid #ddd' }} />
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
-      </div>
       )}
     </div>
   )

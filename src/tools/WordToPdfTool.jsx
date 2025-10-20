@@ -88,18 +88,18 @@ export default function WordToPdfTool() {
             const result = await mammoth.convertToHtml({ arrayBuffer })
             const html = result.value
             onProgress(50)
-            
+
             const wrapper = document.createElement('div')
             wrapper.innerHTML = html
             wrapper.style.padding = '20px'
             wrapper.style.position = 'absolute'
             wrapper.style.left = '-9999px'
             document.body.appendChild(wrapper)
-            
+
             onProgress(60)
             const canvas = await html2canvas(wrapper, { scale: 2 })
             const imgData = canvas.toDataURL('image/png')
-            
+
             onProgress(70)
             const { jsPDF } = await import('jspdf')
             const pdf = new jsPDF('p', 'mm', 'a4')
@@ -107,7 +107,7 @@ export default function WordToPdfTool() {
             const pdfWidth = 210
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-            
+
             onProgress(90)
             const blob = pdf.output('blob')
             document.body.removeChild(wrapper)
@@ -181,7 +181,7 @@ export default function WordToPdfTool() {
                     <p style={{ marginBottom: 16, padding: 12, background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 4 }}>
                         <strong>Batch Mode:</strong> Convert multiple Word (.docx) documents to PDF format simultaneously.
                     </p>
-                    
+
                     <UniversalBatchProcessor
                         processFile={processBatchFile}
                         outputFilenameSuffix=""
