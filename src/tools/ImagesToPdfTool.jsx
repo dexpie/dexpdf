@@ -42,7 +42,108 @@ export default function ImagesToPdfTool() {
 		e.dataTransfer.effectAllowed = 'move'
 	}
 
-	// All stray/duplicate code outside functions removed. Only function bodies remain.
+	function onDragOver(e) {
+		e.preventDefault()
+		e.dataTransfer.dropEffect = 'move'
+	}
+
+	function onDrop(e, idx) {
+		e.preventDefault()
+		const from = Number(e.dataTransfer.getData('text/plain'))
+		if (Number.isNaN(from)) return
+		setImages(prev => {
+			const copy = prev.slice()
+			const [item] = copy.splice(from, 1)
+			copy.splice(idx, 0, item)
+			return copy
+		})
+	}
+
+	function fileToImage(file) {
+		return new Promise((resolve, reject) => {
+			const r = new FileReader()
+			r.onload = () => {
+				const img = new Image()
+				img.onload = () => resolve({ dataUrl: r.result, width: img.naturalWidth, height: img.naturalHeight })
+				img.onerror = reject
+				img.src = r.result
+			}
+			r.onerror = reject
+			r.readAsDataURL(file)
+		})
+	}
+
+	async function makePdf() {
+		if (images.length === 0) return
+		setBusy(true)
+		try {
+			const { jsPDF } = await import('jspdf')
+			const unit = 'mm'
+			const pxToMm = 25.4 / 96 // assume 96 DPI
+			const A4W = 210
+			const A4H = 297
+
+			const doc = new jsPDF({ unit, format: [A4W, A4H] })
+
+			for (let i = 0; i < images.length; i++) {
+				const entry = images[i]
+				const dataUrl = entry.dataUrl || entry.thumb
+				const width = entry.width
+				const height = entry.height
+
+				if (!dataUrl) {
+					console.warn('skip image with no dataUrl/thumb', entry)
+					continue
+				}
+
+				const pageW = A4W
+				const pageH = A4H
+				if (i > 0) doc.addPage()
+
+				const margin = 10
+				const maxW = pageW - margin * 2
+				const maxH = pageH - margin * 2
+
+				const imgWmm = width * pxToMm
+				const imgHmm = height * pxToMm
+
+				let drawW, drawH, x, y
+				if (mode === 'fit') {
+					const scale = Math.min(maxW / imgWmm, maxH / imgHmm, 1)
+					drawW = imgWmm * scale
+					drawH = imgHmm * scale
+					x = (pageW - drawW) / 2
+					y = (pageH - drawH) / 2
+				} else if (mode === 'fill') {
+					const scale = Math.max(maxW / imgWmm, maxH / imgHmm)
+					drawW = imgWmm * scale
+					drawH = imgHmm * scale
+					x = (pageW - drawW) / 2
+					y = (pageH - drawH) / 2
+				} else {
+					drawW = Math.min(imgWmm, maxW)
+					drawH = Math.min(imgHmm, maxH)
+					x = (pageW - drawW) / 2
+					y = (pageH - drawH) / 2
+				}
+
+				const imgFormat = (typeof dataUrl === 'string' && dataUrl.indexOf('image/png') >= 0) ? 'PNG' : 'JPEG'
+				try {
+					doc.addImage(dataUrl, imgFormat, x, y, drawW, drawH)
+				} catch (e) {
+					console.error('addImage failed for entry', i, e)
+				}
+			}
+
+			doc.save('images.pdf')
+			setSuccessMsg('PDF berhasil dibuat dan diunduh!')
+		} catch (err) {
+			console.error(err)
+			setErrorMsg('Gagal membuat PDF: ' + (err.message || err))
+		} finally {
+			setBusy(false)
+		}
+	}
 
 	return (
 		<div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
