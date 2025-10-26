@@ -58,6 +58,3 @@ Contributing & CI
 Changelog (recent)
 - 2025-10-15: Workerized Batch Watermark processing (inline module worker + fallback). Added worker helpers and README notes. CI workflow and badges available.
 
-Next steps (optional)
-- Add progress UI and drag/drop reordering for files.
-- Add server-side conversion endpoints for heavy workloads.
