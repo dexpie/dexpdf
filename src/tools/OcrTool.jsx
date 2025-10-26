@@ -84,7 +84,7 @@ export default function OcrTool() {
         setTotalPages(pdf.numPages)
         
         const page = await pdf.getPage(pageNum)
-        const viewport = page.getViewport({ scale: 2.0 })
+        const viewport = page.getViewport({ scale: 1.5 })
         canvas = document.createElement('canvas')
         canvas.width = viewport.width
         canvas.height = viewport.height
@@ -182,7 +182,7 @@ export default function OcrTool() {
       const data = await file.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data }).promise
       const page = await pdf.getPage(1)
-      const viewport = page.getViewport({ scale: 2 })
+      const viewport = page.getViewport({ scale: 1.5 })
       canvas = document.createElement('canvas')
       canvas.width = Math.ceil(viewport.width)
       canvas.height = Math.ceil(viewport.height)

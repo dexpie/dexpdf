@@ -1,1 +1,12 @@
 .vercel
+
+# Backup files
+*.old
+*.bak
+*.backup
+*.enhanced
+
+# Progress/Summary files
+*SUMMARY.md
+*PROGRESS.md
+*TODO.md
