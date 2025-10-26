@@ -347,233 +347,83 @@ export default function OcrTool() {
   }, [selectedPage])
 
   return (
-    <div style={{ padding: '30px', maxWidth: '1400px', margin: '0 auto' }}>
-      {/* Header with Gradient */}
-      <div style={{ 
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: '30px',
-        borderRadius: '20px',
-        marginBottom: '30px',
-        boxShadow: '0 10px 40px rgba(102, 126, 234, 0.3)',
-        color: '#fff'
-      }}>
-        <h1 style={{ margin: 0, fontSize: '32px', fontWeight: '800' }}>
-          🔍 Advanced OCR Tool
-        </h1>
-        <p style={{ margin: '10px 0 0 0', opacity: 0.9, fontSize: '16px' }}>
-          Extract text from images and PDFs with AI-powered multi-language support
-        </p>
-      </div>
+    <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
+      <h2 style={{ textAlign: 'center', marginBottom: 16 }}>OCR Text Extraction</h2>
 
-      {/* Mode Toggle - Modern Switch */}
-      <div style={{ marginBottom: '30px', display: 'flex', gap: '15px', alignItems: 'center' }}>
-        <label style={{
-          position: 'relative',
-          display: 'inline-block',
-          width: '180px',
-          height: '60px',
-          background: batchMode ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-          borderRadius: '30px',
-          cursor: 'pointer',
-          boxShadow: '0 5px 20px rgba(0,0,0,0.2)',
-          transition: 'all 0.3s ease',
-          overflow: 'hidden'
-        }}
-        onClick={() => setBatchMode(!batchMode)}>
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: batchMode ? '90px' : '10px',
-            transform: 'translateY(-50%)',
-            width: '80px',
-            height: '50px',
-            background: '#fff',
-            borderRadius: '25px',
-            transition: 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-            boxShadow: '0 3px 10px rgba(0,0,0,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '24px'
-          }}>
-            {batchMode ? '📦' : '📄'}
-          </div>
-          <span style={{
-            position: 'absolute',
-            top: '50%',
-            right: batchMode ? 'auto' : '15px',
-            left: batchMode ? '15px' : 'auto',
-            transform: 'translateY(-50%)',
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: '14px',
-            pointerEvents: 'none'
-          }}>
-            {batchMode ? 'Batch' : 'Single'}
-          </span>
-        </label>
-        <div style={{ 
-          padding: '15px 25px',
-          background: 'rgba(102, 126, 234, 0.1)',
-          borderRadius: '15px',
-          border: '2px solid rgba(102, 126, 234, 0.3)'
-        }}>
-          <span style={{ fontWeight: '600', color: '#667eea' }}>
-            {batchMode ? '📦 Batch Mode - Process multiple files' : '📄 Single Mode - Process one file'}
-          </span>
-        </div>
+      {/* Mode Toggle */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+        <button
+          className={!batchMode ? 'btn-primary' : 'btn-outline'}
+          onClick={() => setBatchMode(false)}
+          style={{ minWidth: 120 }}
+        >
+          📄 Single File
+        </button>
+        <button
+          className={batchMode ? 'btn-primary' : 'btn-outline'}
+          onClick={() => setBatchMode(true)}
+          style={{ minWidth: 120 }}
+        >
+          🔄 Batch Mode
+        </button>
       </div>
 
       {batchMode ? (
         <div>
-          {/* Batch Settings - Card Style */}
-          <div style={{ 
-            marginBottom: '30px', 
-            padding: '25px', 
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '20px',
-            border: '1px solid rgba(255,255,255,0.2)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-          }}>
-            <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#667eea', fontSize: '20px', fontWeight: '700' }}>
-              ⚙️ Batch OCR Settings
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
-              {/* OCR Engine Card */}
-              <div style={{
-                padding: '15px',
-                background: 'rgba(255,255,255,0.05)',
-                borderRadius: '12px',
-                border: '1px solid rgba(102, 126, 234, 0.3)'
-              }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#667eea' }}>
-                  🌩️ OCR Engine
-                </label>
+          {/* Batch Settings */}
+          <div style={{ marginBottom: 16, padding: 12, background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+            <h3 style={{ margin: '0 0 12px 0', fontSize: 16 }}>⚙️ Batch OCR Settings</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🌩️ OCR Engine</label>
                 <select 
                   value={ocrEngine} 
                   onChange={e => setOcrEngine(e.target.value)}
-                  style={{ 
-                    width: '100%', 
-                    padding: '12px', 
-                    borderRadius: '8px', 
-                    border: '2px solid rgba(102, 126, 234, 0.3)',
-                    background: 'rgba(255,255,255,0.9)',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s'
-                  }}>
+                  style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
+                >
                   <option value="auto">🚀 Auto (Cloud → Local)</option>
                   <option value="cloud">🌩️ Cloud Only (Faster)</option>
                   <option value="local">💻 Local Only (Private)</option>
                 </select>
               </div>
-
-              {/* Language Card */}
-              <div style={{
-                padding: '15px',
-                background: 'rgba(255,255,255,0.05)',
-                borderRadius: '12px',
-                border: '1px solid rgba(102, 126, 234, 0.3)'
-              }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#667eea' }}>
-                  🌍 Language
-                </label>
+              <div>
+                <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🌍 Language</label>
                 <select 
                   value={language} 
                   onChange={e => setLanguage(e.target.value)} 
-                  style={{ 
-                    width: '100%', 
-                    padding: '12px', 
-                    borderRadius: '8px', 
-                    border: '2px solid rgba(102, 126, 234, 0.3)',
-                    background: 'rgba(255,255,255,0.9)',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}>
+                  style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
+                >
                   {LANGUAGES.map(lang => (
                     <option key={lang.code} value={lang.code}>{lang.name}</option>
                   ))}
                 </select>
               </div>
-
-              {/* Quality Mode Card */}
-              <div style={{
-                padding: '15px',
-                background: 'rgba(255,255,255,0.05)',
-                borderRadius: '12px',
-                border: '1px solid rgba(102, 126, 234, 0.3)'
-              }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#667eea' }}>
-                  🎯 Quality Mode
-                </label>
+              <div>
+                <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🎯 Quality Mode</label>
                 <select 
                   value={ocrMode} 
                   onChange={e => setOcrMode(e.target.value)}
-                  style={{ 
-                    width: '100%', 
-                    padding: '12px', 
-                    borderRadius: '8px', 
-                    border: '2px solid rgba(102, 126, 234, 0.3)',
-                    background: 'rgba(255,255,255,0.9)',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}>
+                  style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
+                >
                   <option value="fast">⚡ Fast</option>
                   <option value="balanced">⚖️ Balanced</option>
                   <option value="accurate">🎯 Accurate</option>
                 </select>
               </div>
-
-              {/* Enhancements Card */}
-              <div style={{
-                padding: '15px',
-                background: 'rgba(255,255,255,0.05)',
-                borderRadius: '12px',
-                border: '1px solid rgba(102, 126, 234, 0.3)'
-              }}>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: '#667eea' }}>
-                  ✨ Enhancements
+              <div>
+                <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>✨ Enhancements</label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, marginBottom: 4 }}>
+                  <input type="checkbox" checked={imageEnhancement} onChange={e => setImageEnhancement(e.target.checked)} />
+                  <span>🎨 Image Enhancement</span>
                 </label>
-                <label style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '10px',
-                  cursor: 'pointer',
-                  padding: '8px',
-                  borderRadius: '6px',
-                  transition: 'background 0.2s'
-                }}>
-                  <input 
-                    type="checkbox" 
-                    checked={imageEnhancement} 
-                    onChange={e => setImageEnhancement(e.target.checked)}
-                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                  />
-                  <span style={{ fontWeight: '500' }}>🎨 Image Enhancement</span>
-                </label>
-                <label style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '10px',
-                  cursor: 'pointer',
-                  padding: '8px',
-                  borderRadius: '6px',
-                  marginTop: '8px',
-                  transition: 'background 0.2s'
-                }}>
-                  <input 
-                    type="checkbox" 
-                    checked={autoRotate} 
-                    onChange={e => setAutoRotate(e.target.checked)}
-                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                  />
-                  <span style={{ fontWeight: '500' }}>🔄 Auto-Rotate</span>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
+                  <input type="checkbox" checked={autoRotate} onChange={e => setAutoRotate(e.target.checked)} />
+                  <span>🔄 Auto-Rotate</span>
                 </label>
               </div>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 13, color: '#666', borderTop: '1px solid #e2e8f0', paddingTop: 12 }}>
+              💡 <strong>Batch Tips:</strong> Cloud OCR is 3-5x faster (25k free/month). Auto fallback to local if limit reached.
             </div>
           </div>
 
@@ -586,106 +436,54 @@ export default function OcrTool() {
         </div>
       ) : (
         <>
-          {/* Advanced Settings Toggle - Modern Button */}
-          <div style={{ marginBottom: '25px' }}>
+          {/* Error & Success messages */}
+          {errorMsg && (
+            <div style={{ color: '#dc2626', marginBottom: 12, background: '#fee2e2', padding: 8, borderRadius: 6 }}>{errorMsg}</div>
+          )}
+          {successMsg && (
+            <div style={{ color: '#059669', marginBottom: 12, background: '#d1fae5', padding: 8, borderRadius: 6 }}>{successMsg}</div>
+          )}
+
+          {/* Advanced Settings Toggle */}
+          <div style={{ marginBottom: 12, textAlign: 'center' }}>
             <button
               onClick={() => setShowAdvanced(!showAdvanced)}
-              style={{
-                padding: '14px 28px',
-                borderRadius: '12px',
-                border: 'none',
-                background: showAdvanced 
-                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                  : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                color: '#fff',
-                cursor: 'pointer',
-                fontWeight: '600',
-                fontSize: '15px',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-                transition: 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-                transform: 'scale(1)'
-              }}
-              onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
-              onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+              className="btn-outline"
+              style={{ fontSize: 13 }}
             >
               {showAdvanced ? '▼ Hide Advanced Settings' : '▶ Show Advanced Settings'}
             </button>
           </div>
 
           {showAdvanced && (
-            <div style={{ 
-              marginBottom: '30px', 
-              padding: '30px', 
-              background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
-              borderRadius: '20px',
-              border: '2px solid rgba(102, 126, 234, 0.2)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-              animation: 'slideDown 0.3s ease-out'
-            }}>
-              <h3 style={{ marginTop: 0, marginBottom: '25px', color: '#667eea', fontSize: '22px', fontWeight: '700' }}>
-                ⚙️ Advanced Settings
-              </h3>
+            <div style={{ marginBottom: 16, padding: 12, background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+              <h3 style={{ margin: '0 0 12px 0', fontSize: 16 }}>⚙️ Advanced Settings</h3>
               
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '25px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
                 {/* OCR Engine */}
-                <div style={{
-                  padding: '20px',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
-                  borderRadius: '15px',
-                  border: '2px solid rgba(102, 126, 234, 0.2)',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
-                }}>
-                  <label style={{ display: 'block', marginBottom: '12px', fontWeight: '700', color: '#667eea', fontSize: '15px' }}>
-                    🌩️ OCR Engine
-                  </label>
+                <div>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🌩️ OCR Engine</label>
                   <select 
                     value={ocrEngine} 
                     onChange={e => setOcrEngine(e.target.value)}
-                    style={{ 
-                      width: '100%', 
-                      padding: '14px', 
-                      borderRadius: '10px', 
-                      border: '2px solid rgba(102, 126, 234, 0.3)',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      background: '#fff',
-                      transition: 'all 0.3s'
-                    }}
+                    style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
                   >
-                    <option value="auto">🚀 Auto (Cloud first, then Local)</option>
-                    <option value="cloud">🌩️ Cloud Only (Faster, 25k free/month)</option>
-                    <option value="local">💻 Local Only (100% Private)</option>
+                    <option value="auto">🚀 Auto (Cloud → Local)</option>
+                    <option value="cloud">🌩️ Cloud Only (Faster)</option>
+                    <option value="local">💻 Local Only (Private)</option>
                   </select>
-                  <small style={{ color: '#888', display: 'block', marginTop: '8px', fontSize: '12px' }}>
-                    💡 Cloud OCR is 3-5x faster!
+                  <small style={{ color: '#666', display: 'block', marginTop: 4, fontSize: 12 }}>
+                    Cloud OCR is 3-5x faster!
                   </small>
                 </div>
 
                 {/* Language Selection */}
-                <div style={{
-                  padding: '20px',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
-                  borderRadius: '15px',
-                  border: '2px solid rgba(102, 126, 234, 0.2)',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
-                }}>
-                  <label style={{ display: 'block', marginBottom: '12px', fontWeight: '700', color: '#667eea', fontSize: '15px' }}>
-                    🌍 Language
-                  </label>
+                <div>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🌍 Language</label>
                   <select 
                     value={language} 
                     onChange={e => setLanguage(e.target.value)}
-                    style={{ 
-                      width: '100%', 
-                      padding: '14px', 
-                      borderRadius: '10px', 
-                      border: '2px solid rgba(102, 126, 234, 0.3)',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      background: '#fff'
-                    }}
+                    style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
                   >
                     <optgroup label="Popular Languages">
                       {LANGUAGES.filter(l => l.popular).map(lang => (
@@ -701,60 +499,26 @@ export default function OcrTool() {
                 </div>
 
                 {/* Quality Mode */}
-                <div style={{
-                  padding: '20px',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
-                  borderRadius: '15px',
-                  border: '2px solid rgba(102, 126, 234, 0.2)',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
-                }}>
-                  <label style={{ display: 'block', marginBottom: '12px', fontWeight: '700', color: '#667eea', fontSize: '15px' }}>
-                    🎯 Quality Mode
-                  </label>
+                <div>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🎯 Quality Mode</label>
                   <select 
                     value={ocrMode} 
                     onChange={e => setOcrMode(e.target.value)}
-                    style={{ 
-                      width: '100%', 
-                      padding: '14px', 
-                      borderRadius: '10px', 
-                      border: '2px solid rgba(102, 126, 234, 0.3)',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      background: '#fff'
-                    }}
+                    style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
                   >
-                    <option value="fast">⚡ Fast (Lower accuracy, faster speed)</option>
-                    <option value="balanced">⚖️ Balanced (Good balance)</option>
-                    <option value="accurate">🎯 Accurate (Best quality, slower)</option>
+                    <option value="fast">⚡ Fast</option>
+                    <option value="balanced">⚖️ Balanced</option>
+                    <option value="accurate">🎯 Accurate</option>
                   </select>
                 </div>
 
                 {/* Export Format */}
-                <div style={{
-                  padding: '20px',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
-                  borderRadius: '15px',
-                  border: '2px solid rgba(102, 126, 234, 0.2)',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.05)'
-                }}>
-                  <label style={{ display: 'block', marginBottom: '12px', fontWeight: '700', color: '#667eea', fontSize: '15px' }}>
-                    💾 Export Format
-                  </label>
+                <div>
+                  <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>💾 Export Format</label>
                   <select 
                     value={exportFormat} 
                     onChange={e => setExportFormat(e.target.value)}
-                    style={{ 
-                      width: '100%', 
-                      padding: '14px', 
-                      borderRadius: '10px', 
-                      border: '2px solid rgba(102, 126, 234, 0.3)',
-                      fontSize: '14px',
-                      fontWeight: '500',
-                      cursor: 'pointer',
-                      background: '#fff'
-                    }}
+                    style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
                   >
                     <option value="txt">📄 Plain Text (.txt)</option>
                     <option value="json">📋 JSON (.json)</option>
@@ -763,81 +527,31 @@ export default function OcrTool() {
                 </div>
               </div>
 
-              {/* Enhancement Options - Modern Toggle Switches */}
-              <div style={{ marginTop: '25px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-                <label style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '12px', 
-                  cursor: 'pointer',
-                  padding: '15px 20px',
-                  background: imageEnhancement ? 'rgba(102, 126, 234, 0.1)' : 'rgba(0,0,0,0.05)',
-                  borderRadius: '12px',
-                  border: `2px solid ${imageEnhancement ? '#667eea' : 'transparent'}`,
-                  transition: 'all 0.3s'
-                }}>
+              {/* Enhancement Options */}
+              <div style={{ marginTop: 12, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
                   <input 
                     type="checkbox" 
                     checked={imageEnhancement} 
                     onChange={e => setImageEnhancement(e.target.checked)}
-                    style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#667eea' }}
                   />
-                  <span style={{ fontSize: '15px', fontWeight: '600' }}>
-                    🎨 Image Enhancement (contrast & grayscale)
-                  </span>
+                  <span>🎨 Image Enhancement</span>
                 </label>
-                <label style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '12px', 
-                  cursor: 'pointer',
-                  padding: '15px 20px',
-                  background: autoRotate ? 'rgba(102, 126, 234, 0.1)' : 'rgba(0,0,0,0.05)',
-                  borderRadius: '12px',
-                  border: `2px solid ${autoRotate ? '#667eea' : 'transparent'}`,
-                  transition: 'all 0.3s'
-                }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
                   <input 
                     type="checkbox" 
                     checked={autoRotate} 
                     onChange={e => setAutoRotate(e.target.checked)}
-                    style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#667eea' }}
                   />
-                  <span style={{ fontSize: '15px', fontWeight: '600' }}>
-                    🔄 Auto-Rotate Detection
-                  </span>
+                  <span>🔄 Auto-Rotate Detection</span>
                 </label>
               </div>
             </div>
           )}
 
-          {/* File Input - Modern Upload Button */}
-          <div style={{ marginBottom: '30px', textAlign: 'center' }}>
-            <label 
-              htmlFor="ocr-file-input"
-              style={{
-                display: 'inline-block',
-                padding: '18px 40px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: '#fff',
-                borderRadius: '15px',
-                cursor: 'pointer',
-                fontWeight: '700',
-                fontSize: '16px',
-                boxShadow: '0 8px 25px rgba(102, 126, 234, 0.4)',
-                transition: 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-                transform: 'scale(1)',
-                border: 'none'
-              }}
-              onMouseEnter={e => {
-                e.target.style.transform = 'scale(1.08)'
-                e.target.style.boxShadow = '0 12px 35px rgba(102, 126, 234, 0.5)'
-              }}
-              onMouseLeave={e => {
-                e.target.style.transform = 'scale(1)'
-                e.target.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.4)'
-              }}
-            >
+          {/* File Input */}
+          <div style={{ marginBottom: 20, textAlign: 'center' }}>
+            <label htmlFor="ocr-file-input" className="btn-primary" style={{ cursor: 'pointer', fontSize: 14 }}>
               📁 Choose File to Extract Text
             </label>
             <input 
@@ -848,96 +562,67 @@ export default function OcrTool() {
               style={{ display: 'none' }}
             />
             {file && (
-              <div style={{ 
-                marginTop: '15px', 
-                padding: '12px 20px',
-                background: 'rgba(102, 126, 234, 0.1)',
-                borderRadius: '10px',
-                display: 'inline-block',
-                border: '2px solid rgba(102, 126, 234, 0.3)'
-              }}>
-                <span style={{ fontWeight: '600', color: '#667eea' }}>
-                  ✓ Selected: {file.name}
-                </span>
+              <div style={{ marginTop: 8, color: '#64748b', fontSize: 13 }}>
+                ✅ {file.name}
               </div>
             )}
           </div>
 
           {/* PDF Page Selector */}
           {file && file.type === 'application/pdf' && totalPages > 1 && (
-            <div style={{ marginBottom: 20, padding: 15, background: 'var(--bg-secondary)', borderRadius: 8 }}>
-              <label style={{ fontWeight: 'bold', marginRight: 10 }}>📄 Page:</label>
+            <div style={{ marginBottom: 16, textAlign: 'center', fontSize: 13 }}>
+              <label style={{ marginRight: 8 }}>📄 Page:</label>
               <input 
                 type="number" 
                 min="1" 
                 max={totalPages} 
                 value={selectedPage}
                 onChange={e => setSelectedPage(Math.min(totalPages, Math.max(1, parseInt(e.target.value) || 1)))}
-                style={{ width: 80, padding: 8, borderRadius: 4, border: '1px solid var(--border)', marginRight: 10 }}
+                style={{ width: 80, padding: 6, borderRadius: 4, border: '1px solid #d1d5db' }}
               />
-              <span style={{ color: 'var(--text-muted)' }}>of {totalPages} pages</span>
-            </div>
-          )}
-
-          {/* Messages */}
-          {errorMsg && (
-            <div style={{ marginBottom: 20, padding: 15, background: '#fee', border: '1px solid #fcc', borderRadius: 8, color: '#c00' }}>
-              {errorMsg}
-            </div>
-          )}
-          {successMsg && (
-            <div style={{ marginBottom: 20, padding: 15, background: '#efe', border: '1px solid #cfc', borderRadius: 8, color: '#090' }}>
-              {successMsg}
+              <span style={{ marginLeft: 8, color: '#64748b' }}>of {totalPages}</span>
             </div>
           )}
 
           {/* Preview & Progress */}
           {busy && (
-            <div style={{ marginBottom: 20, padding: 20, background: 'var(--bg-secondary)', borderRadius: 8, textAlign: 'center' }}>
-              <div style={{ marginBottom: 15 }}>
+            <div style={{ marginBottom: 16, padding: 16, background: '#f8fafc', borderRadius: 8, textAlign: 'center', border: '1px solid #e2e8f0' }}>
+              <div style={{ marginBottom: 12 }}>
                 <div style={{ 
-                  width: 50, 
-                  height: 50, 
-                  border: '4px solid var(--border)', 
-                  borderTop: '4px solid var(--primary)', 
+                  width: 40, 
+                  height: 40, 
+                  border: '3px solid #e2e8f0', 
+                  borderTop: '3px solid var(--primary)', 
                   borderRadius: '50%', 
                   margin: '0 auto',
                   animation: 'spin 1s linear infinite'
                 }} />
               </div>
-              <div style={{ fontWeight: 'bold', marginBottom: 10 }}>{progressText}</div>
-              <div style={{ width: '100%', background: 'var(--bg)', borderRadius: 10, overflow: 'hidden', height: 20 }}>
+              <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 14 }}>{progressText}</div>
+              <div style={{ width: '100%', background: '#e2e8f0', borderRadius: 8, overflow: 'hidden', height: 16 }}>
                 <div style={{ 
                   width: `${progress}%`, 
                   height: '100%', 
-                  background: 'linear-gradient(90deg, var(--primary), #60a5fa)', 
-                  transition: 'width 0.3s',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#fff',
-                  fontSize: 12,
-                  fontWeight: 'bold'
-                }}>
-                  {progress > 10 && `${progress}%`}
-                </div>
+                  background: 'var(--primary)', 
+                  transition: 'width 0.3s'
+                }} />
               </div>
+              <div style={{ marginTop: 6, fontSize: 12, color: '#64748b' }}>{progress}%</div>
             </div>
           )}
 
           {/* Preview */}
           {previewUrl && !busy && (
-            <div style={{ marginBottom: 20 }}>
-              <h3>📷 Preview {imageEnhancement && '(Enhanced)'}</h3>
+            <div style={{ marginBottom: 16 }}>
+              <h3 style={{ fontSize: 15, marginBottom: 8 }}>📷 Preview {imageEnhancement && '(Enhanced)'}</h3>
               <img 
                 src={previewUrl} 
                 alt="Preview" 
                 style={{ 
                   maxWidth: '100%', 
                   height: 'auto', 
-                  border: '2px solid var(--border)', 
-                  borderRadius: 8,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                  border: '1px solid #e2e8f0', 
+                  borderRadius: 8
                 }} 
               />
             </div>
@@ -945,74 +630,61 @@ export default function OcrTool() {
 
           {/* Result */}
           {text && !busy && (
-            <div style={{ marginTop: 20 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                <h3 style={{ margin: 0 }}>
+            <div style={{ marginTop: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <h3 style={{ margin: 0, fontSize: 15 }}>
                   📝 Extracted Text 
                   {confidence && (
                     <span style={{ 
-                      marginLeft: 15, 
-                      fontSize: 14, 
-                      color: confidence > 80 ? '#0a0' : confidence > 60 ? '#fa0' : '#f00',
-                      fontWeight: 'bold'
+                      marginLeft: 10, 
+                      fontSize: 13, 
+                      color: confidence > 80 ? '#059669' : confidence > 60 ? '#f59e0b' : '#dc2626',
+                      fontWeight: 600
                     }}>
-                      Confidence: {confidence}%
+                      ({confidence}% confident)
                     </span>
                   )}
                 </h3>
-                <button
-                  onClick={exportText}
-                  style={{
-                    padding: '10px 20px',
-                    background: 'var(--primary)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 6,
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
-                    transition: 'transform 0.2s'
-                  }}
-                  onMouseEnter={e => e.target.style.transform = 'scale(1.05)'}
-                  onMouseLeave={e => e.target.style.transform = 'scale(1)'}
-                >
-                  💾 Export as {exportFormat.toUpperCase()}
+                <button onClick={exportText} className="btn-primary" style={{ fontSize: 13 }}>
+                  💾 Export {exportFormat.toUpperCase()}
                 </button>
               </div>
               <pre style={{ 
                 whiteSpace: 'pre-wrap', 
-                background: 'var(--bg-secondary)', 
-                padding: 20, 
+                background: '#f8fafc', 
+                padding: 16, 
                 borderRadius: 8,
-                border: '1px solid var(--border)',
-                maxHeight: 500,
+                border: '1px solid #e2e8f0',
+                maxHeight: 400,
                 overflow: 'auto',
-                lineHeight: 1.6
+                lineHeight: 1.6,
+                fontSize: 13
               }}>
                 {text}
               </pre>
-              <div style={{ marginTop: 10, fontSize: 12, color: 'var(--text-muted)' }}>
-                📊 Characters: {text.length} | Words: {text.split(/\s+/).filter(Boolean).length} | Lines: {text.split('\n').length}
+              <div style={{ marginTop: 8, fontSize: 12, color: '#64748b' }}>
+                📊 {text.length} chars · {text.split(/\s+/).filter(Boolean).length} words · {text.split('\n').length} lines
               </div>
             </div>
           )}
 
-          {/* Info */}
+          {/* Tips */}
           {!file && (
             <div style={{ 
-              marginTop: 30, 
-              padding: 20, 
-              background: 'var(--bg-secondary)', 
+              marginTop: 20, 
+              padding: 16, 
+              background: '#f8fafc', 
               borderRadius: 8,
-              border: '1px solid var(--border)'
+              border: '1px solid #e2e8f0'
             }}>
-              <h3>💡 Tips for Best Results</h3>
-              <ul style={{ lineHeight: 2 }}>
-                <li>✅ Use high-resolution images (300 DPI or higher)</li>
-                <li>✅ Ensure good contrast between text and background</li>
-                <li>✅ Avoid skewed or rotated images (or enable Auto-Rotate)</li>
-                <li>✅ Select the correct language for better accuracy</li>
-                <li>✅ Use "Accurate" mode for important documents</li>
-                <li>✅ Enable Image Enhancement for scanned documents</li>
+              <h3 style={{ fontSize: 15, marginBottom: 12 }}>💡 Tips for Best Results</h3>
+              <ul style={{ lineHeight: 1.8, fontSize: 13, color: '#475569', paddingLeft: 20 }}>
+                <li>Use high-resolution images (300 DPI or higher)</li>
+                <li>Ensure good contrast between text and background</li>
+                <li>Avoid skewed images or enable Auto-Rotate</li>
+                <li>Select the correct language for better accuracy</li>
+                <li>Use "Accurate" mode for important documents</li>
+                <li>Enable Image Enhancement for scanned documents</li>
               </ul>
             </div>
           )}
@@ -1023,32 +695,6 @@ export default function OcrTool() {
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
-        }
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.5;
-          }
-        }
-        @keyframes shimmer {
-          0% {
-            background-position: -1000px 0;
-          }
-          100% {
-            background-position: 1000px 0;
-          }
         }
       `}</style>
     </div>
