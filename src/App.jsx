@@ -233,20 +233,20 @@ function App() {
                   </div>
                 ) : (
                   filtered.map((tool) => {
-                    const colors = {
-                      merge: '#DC2626',
-                      split: '#2563EB',
-                      compress: '#059669',
-                      'pdf-to-word': '#7C3AED',
-                      'pdf-to-text': '#EA580C',
-                      'images-to-pdf': '#DB2777',
-                      watermark: '#0891B2',
-                      'extract-images': '#CA8A04',
-                      'ppt-to-pdf': '#DC2626',
-                      'pdf-info': '#4F46E5',
-                      reorder: '#16A34A'
+                    // Color mapping based on tool.color from tools.json
+                    const colorMap = {
+                      red: '#DC2626',
+                      blue: '#2563EB',
+                      green: '#16A34A',
+                      gray: '#6B7280',
+                      purple: '#7C3AED',
+                      orange: '#EA580C',
+                      pink: '#DB2777',
+                      teal: '#0891B2',
+                      indigo: '#4F46E5',
+                      yellow: '#CA8A04'
                     }
-                    const bgColor = colors[tool.id] || '#6B7280'
+                    const bgColor = colorMap[tool.color] || colorMap.gray
 
                     return (
                       <a
