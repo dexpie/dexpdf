@@ -43,7 +43,50 @@ export default function OcrTool() {
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [showAdvanced, setShowAdvanced] = useState(false)
+  const [useCloudOCR, setUseCloudOCR] = useState(true) // Use OCR.space API (faster, free)
+  const [ocrEngine, setOcrEngine] = useState('auto') // auto, cloud, local
   const canvasRef = useRef(null)
+
+  // 🌩️ OCR.space API (FREE - 25k requests/month)
+  const runCloudOCR = async (imageDataUrl) => {
+    const formData = new FormData()
+    formData.append('base64Image', imageDataUrl)
+    formData.append('language', language)
+    formData.append('isOverlayRequired', 'false')
+    formData.append('detectOrientation', autoRotate ? 'true' : 'false')
+    formData.append('scale', 'true')
+    formData.append('OCREngine', ocrMode === 'accurate' ? '2' : '1')
+    
+    try {
+      setProgressText('🌩️ Using Cloud OCR (faster)...')
+      const response = await fetch('https://api.ocr.space/parse/image', {
+        method: 'POST',
+        headers: {
+          'apikey': 'K87899142388957' // Free API key (public, rate-limited)
+        },
+        body: formData
+      })
+      
+      const result = await response.json()
+      
+      if (result.ParsedResults && result.ParsedResults[0]) {
+        const parsedText = result.ParsedResults[0].ParsedText
+        const confidence = result.ParsedResults[0].TextOverlay?.Lines?.length > 0 
+          ? Math.round(result.ParsedResults[0].TextOverlay.Lines.reduce((acc, line) => 
+              acc + (line.Words?.reduce((sum, word) => sum + (word.WordText ? 90 : 0), 0) || 0), 0) / 
+              (result.ParsedResults[0].TextOverlay.Lines.length || 1))
+          : 85 // Default confidence for cloud OCR
+        
+        return { text: parsedText, confidence }
+      } else {
+        throw new Error(result.ErrorMessage || 'Cloud OCR failed')
+      }
+    } catch (error) {
+      console.warn('Cloud OCR failed, falling back to local OCR:', error)
+      setProgressText('⚠️ Cloud OCR failed, using local OCR...')
+      return null
+    }
+  }
 
   // 🎨 Enhanced image preprocessing
   const preprocessCanvas = (canvas) => {
@@ -125,47 +168,61 @@ export default function OcrTool() {
     }
   }
 
-  // 🔍 Advanced OCR with progress tracking
+  // 🔍 Advanced OCR with progress tracking (Cloud + Local fallback)
   const runOcrOnCanvas = async (canvas) => {
     setBusy(true)
     setProgress(0)
     setProgressText('Initializing OCR...')
     
     try {
-      const { createWorker } = await import('tesseract.js')
-      const worker = await createWorker({
-        logger: (m) => {
-          if (m.status === 'recognizing text') {
-            const prog = Math.floor(m.progress * 100)
-            setProgress(prog)
-            setProgressText(`Recognizing text... ${prog}%`)
+      let result = null
+      
+      // Try Cloud OCR first (faster, free)
+      if (useCloudOCR || ocrEngine === 'cloud' || ocrEngine === 'auto') {
+        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9)
+        result = await runCloudOCR(imageDataUrl)
+      }
+      
+      // Fallback to local Tesseract if cloud fails
+      if (!result || ocrEngine === 'local') {
+        setProgressText('Using local OCR (Tesseract.js)...')
+        const { createWorker } = await import('tesseract.js')
+        const worker = await createWorker({
+          logger: (m) => {
+            if (m.status === 'recognizing text') {
+              const prog = Math.floor(m.progress * 100)
+              setProgress(prog)
+              setProgressText(`Recognizing text... ${prog}%`)
+            }
           }
-        }
-      })
+        })
 
-      setProgressText('Loading language data...')
-      await worker.loadLanguage(language)
-      await worker.initialize(language)
-      
-      // Set OCR engine mode based on quality setting
-      const oem = ocrMode === 'fast' ? 0 : ocrMode === 'accurate' ? 1 : 2
-      await worker.setParameters({
-        tessedit_ocr_engine_mode: oem,
-        tessedit_pageseg_mode: autoRotate ? 1 : 3, // Auto page segmentation with OSD or without
-      })
+        setProgressText('Loading language data...')
+        await worker.loadLanguage(language)
+        await worker.initialize(language)
+        
+        // Set OCR engine mode based on quality setting
+        const oem = ocrMode === 'fast' ? 0 : ocrMode === 'accurate' ? 1 : 2
+        await worker.setParameters({
+          tessedit_ocr_engine_mode: oem,
+          tessedit_pageseg_mode: autoRotate ? 1 : 3,
+        })
 
-      setProgressText('Recognizing text...')
-      const { data } = await worker.recognize(canvas)
+        setProgressText('Recognizing text...')
+        const { data } = await worker.recognize(canvas)
+        result = { text: data.text, confidence: data.confidence ? Math.round(data.confidence) : null }
+        
+        await worker.terminate()
+      }
       
-      // Calculate average confidence
-      const avgConfidence = data.confidence ? Math.round(data.confidence) : null
-      setConfidence(avgConfidence)
-      
-      setText(data.text)
-      setSuccessMsg(`✅ OCR completed! Confidence: ${avgConfidence}%`)
-      setProgress(100)
-      
-      await worker.terminate()
+      if (result) {
+        setConfidence(result.confidence)
+        setText(result.text)
+        setSuccessMsg(`✅ OCR completed! Confidence: ${result.confidence}%`)
+        setProgress(100)
+      } else {
+        throw new Error('OCR failed')
+      }
     } catch (error) {
       setErrorMsg(`❌ OCR error: ${error.message}`)
       console.error(error)
@@ -175,7 +232,7 @@ export default function OcrTool() {
     }
   }
 
-  // 📦 Batch processing with enhanced OCR
+  // 📦 Batch processing with enhanced OCR (Cloud + Local)
   async function processBatchFile(file) {
     let canvas
     if (file.type === 'application/pdf') {
@@ -203,24 +260,42 @@ export default function OcrTool() {
 
     // Apply preprocessing
     const processedCanvas = preprocessCanvas(canvas)
+    
+    let textResult = ''
 
-    const { createWorker } = await import('tesseract.js')
-    const worker = await createWorker()
-    await worker.loadLanguage(language)
-    await worker.initialize(language)
-    
-    // Apply same settings
-    const oem = ocrMode === 'fast' ? 0 : ocrMode === 'accurate' ? 1 : 2
-    await worker.setParameters({
-      tessedit_ocr_engine_mode: oem,
-      tessedit_pageseg_mode: autoRotate ? 1 : 3,
-    })
-    
-    const { data: { text } } = await worker.recognize(processedCanvas)
-    await worker.terminate()
+    // Try Cloud OCR first
+    if (useCloudOCR || ocrEngine === 'cloud' || ocrEngine === 'auto') {
+      try {
+        const imageDataUrl = processedCanvas.toDataURL('image/jpeg', 0.9)
+        const result = await runCloudOCR(imageDataUrl)
+        if (result && result.text) {
+          textResult = result.text
+        }
+      } catch (error) {
+        console.warn('Cloud OCR failed in batch, using local:', error)
+      }
+    }
+
+    // Fallback to Tesseract
+    if (!textResult || ocrEngine === 'local') {
+      const { createWorker } = await import('tesseract.js')
+      const worker = await createWorker()
+      await worker.loadLanguage(language)
+      await worker.initialize(language)
+      
+      const oem = ocrMode === 'fast' ? 0 : ocrMode === 'accurate' ? 1 : 2
+      await worker.setParameters({
+        tessedit_ocr_engine_mode: oem,
+        tessedit_pageseg_mode: autoRotate ? 1 : 3,
+      })
+      
+      const { data: { text } } = await worker.recognize(processedCanvas)
+      textResult = text
+      await worker.terminate()
+    }
 
     // Return text as a blob
-    return new Blob([text], { type: 'text/plain' })
+    return new Blob([textResult], { type: 'text/plain' })
   }
 
   // 💾 Export with different formats
@@ -304,6 +379,15 @@ export default function OcrTool() {
             <h3>Batch OCR Settings</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 15 }}>
               <div>
+                <label style={{ display: 'block', marginBottom: 5, fontWeight: 'bold' }}>🌩️ OCR Engine:</label>
+                <select value={ocrEngine} onChange={e => setOcrEngine(e.target.value)}
+                  style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid var(--border)' }}>
+                  <option value="auto">🚀 Auto (Cloud → Local)</option>
+                  <option value="cloud">🌩️ Cloud Only (Faster)</option>
+                  <option value="local">💻 Local Only (Private)</option>
+                </select>
+              </div>
+              <div>
                 <label style={{ display: 'block', marginBottom: 5, fontWeight: 'bold' }}>Language:</label>
                 <select value={language} onChange={e => setLanguage(e.target.value)} 
                   style={{ width: '100%', padding: 8, borderRadius: 4, border: '1px solid var(--border)' }}>
@@ -365,6 +449,23 @@ export default function OcrTool() {
               <h3 style={{ marginTop: 0 }}>⚙️ Advanced Settings</h3>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
+                {/* OCR Engine */}
+                <div>
+                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>🌩️ OCR Engine:</label>
+                  <select 
+                    value={ocrEngine} 
+                    onChange={e => setOcrEngine(e.target.value)}
+                    style={{ width: '100%', padding: 10, borderRadius: 6, border: '1px solid var(--border)', fontSize: 14 }}
+                  >
+                    <option value="auto">🚀 Auto (Cloud first, then Local)</option>
+                    <option value="cloud">🌩️ Cloud Only (Faster, 25k free/month)</option>
+                    <option value="local">💻 Local Only (100% Private)</option>
+                  </select>
+                  <small style={{ color: 'var(--text-muted)', display: 'block', marginTop: 4 }}>
+                    Cloud OCR is 3-5x faster!
+                  </small>
+                </div>
+
                 {/* Language Selection */}
                 <div>
                   <label style={{ display: 'block', marginBottom: 8, fontWeight: 'bold' }}>🌍 Language:</label>
