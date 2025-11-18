@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import './CommandPalette.css'
 
 export default function CommandPalette({ tools, onSelect, onClose, isOpen }) {
@@ -7,22 +7,25 @@ export default function CommandPalette({ tools, onSelect, onClose, isOpen }) {
     const inputRef = useRef(null)
     const listRef = useRef(null)
 
-    // Filter tools based on query
-    const filtered = tools.filter(t => {
-        const q = query.toLowerCase().trim()
-        if (!q) return true
-        const inName = t.name?.toLowerCase().includes(q)
-        const inDesc = t.desc?.toLowerCase().includes(q)
-        const inTags = Array.isArray(t.tags) && t.tags.join(' ').toLowerCase().includes(q)
-        return inName || inDesc || inTags
-    })
+    // Memoize filtered tools to avoid recalculating on every render
+    const filtered = useMemo(() => {
+        return tools.filter(t => {
+            const q = query.toLowerCase().trim()
+            if (!q) return true
+            const inName = t.name?.toLowerCase().includes(q)
+            const inDesc = t.desc?.toLowerCase().includes(q)
+            const inTags = Array.isArray(t.tags) && t.tags.join(' ').toLowerCase().includes(q)
+            return inName || inDesc || inTags
+        })
+    }, [tools, query])
 
-    // Recent tools from localStorage
-    const recentTools = JSON.parse(localStorage.getItem('recent-tools') || '[]')
-    const recentFiltered = tools.filter(t => recentTools.includes(t.id))
-
-    const displayList = query.trim() ? filtered : [...recentFiltered, ...filtered]
-    const uniqueList = Array.from(new Map(displayList.map(t => [t.id, t])).values()).slice(0, 8)
+    // Memoize recent tools filtering
+    const uniqueList = useMemo(() => {
+        const recentTools = JSON.parse(localStorage.getItem('recent-tools') || '[]')
+        const recentFiltered = tools.filter(t => recentTools.includes(t.id))
+        const displayList = query.trim() ? filtered : [...recentFiltered, ...filtered]
+        return Array.from(new Map(displayList.map(t => [t.id, t])).values()).slice(0, 8)
+    }, [tools, filtered, query])
 
     useEffect(() => {
         if (isOpen && inputRef.current) {
