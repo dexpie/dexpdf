@@ -41,7 +41,7 @@ function App() {
     }
     window.addEventListener('open-tool', handleToolOpen)
     return () => window.removeEventListener('open-tool', handleToolOpen)
-  }, [])
+  }, [tools])
 
   // First useEffect is enough for tool opening handler
 

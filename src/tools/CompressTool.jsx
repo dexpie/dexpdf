@@ -70,8 +70,7 @@ export default function CompressTool() {
     setOutputFileName(getDefaultFilename(f, '_compressed'))
     try {
       const data = await f.arrayBuffer()
-      // always use a fresh copy for pdfjsLib
-      const pdf = await pdfjsLib.getDocument({ data: data.slice(0) }).promise
+      const pdf = await pdfjsLib.getDocument({ data }).promise
       setPages(pdf.numPages)
     } catch (err) { console.error(err); setErrorMsg('Unable to read PDF: ' + (err.message || err)) }
   }
@@ -91,7 +90,7 @@ export default function CompressTool() {
       setProgressText('');
       setPreviewUrl(null);
       const data = await f.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: data.slice(0) }).promise;
+      const pdf = await pdfjsLib.getDocument({ data }).promise;
       setPages(pdf.numPages);
       setDropped(true);
       setTimeout(() => setDropped(false), 1500);
@@ -151,7 +150,7 @@ export default function CompressTool() {
     setProgressText('Preparing...')
     try {
       const data = await file.arrayBuffer()
-      const pdf = await pdfjsLib.getDocument({ data: data.slice(0) }).promise
+      const pdf = await pdfjsLib.getDocument({ data }).promise
       const num = pdf.numPages
       setPages(num)
       setProgressText('Rendering sample page...')
@@ -178,9 +177,8 @@ export default function CompressTool() {
 
   // Render first page at specific settings and return estimated total size
   async function estimateForSettings(q, s) {
-    // try to reuse cached pdf/doc
     const data = await file.arrayBuffer()
-    const pdf = await pdfjsLib.getDocument({ data: data.slice(0) }).promise
+    const pdf = await pdfjsLib.getDocument({ data }).promise
     const num = pdf.numPages
     const page = await pdf.getPage(1)
     const viewport = page.getViewport({ scale: s })
@@ -202,9 +200,8 @@ export default function CompressTool() {
     setEstimating(true)
     setProgressText('Estimating range...')
     try {
-      // reuse cached PDF when available
       const data = await file.arrayBuffer()
-      const pdf = await pdfjsLib.getDocument({ data: data.slice(0) }).promise
+      const pdf = await pdfjsLib.getDocument({ data }).promise
       const num = pdf.numPages
       setPages(num)
 

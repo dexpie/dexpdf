@@ -97,8 +97,15 @@ export default function OcrTool() {
     const data = imageData.data
     
     // Convert to grayscale and enhance contrast
-    for (let i = 0; i < data.length; i += 4) {
-      const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
+    // Cache length for faster loop
+    const len = data.length
+    for (let i = 0; i < len; i += 4) {
+      // Use integer operations for better performance
+      const r = data[i]
+      const g = data[i + 1]
+      const b = data[i + 2]
+      // Fast grayscale approximation: (r + r + r + b + g + g + g + g) >> 3
+      const gray = ((r << 1) + r + b + (g << 2)) >> 3
       // Enhance contrast (adaptive threshold)
       const enhanced = gray < 128 ? Math.max(0, gray - 30) : Math.min(255, gray + 30)
       data[i] = data[i + 1] = data[i + 2] = enhanced

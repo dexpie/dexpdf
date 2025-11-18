@@ -22,7 +22,9 @@ export default function MergeTool() {
   async function handleFiles(e) {
     setErrorMsg(''); setSuccessMsg('');
     const list = Array.from(e.target.files)
-    const loaded = []
+    const validFiles = []
+    
+    // Validate files first
     for (const f of list) {
       if (!f.name.toLowerCase().endsWith('.pdf')) {
         setErrorMsg('Semua file harus PDF.');
@@ -32,9 +34,17 @@ export default function MergeTool() {
         setErrorMsg('Ukuran file terlalu besar (maks 50MB).');
         continue;
       }
-      const thumb = await generatePdfThumbnail(f)
-      loaded.push({ file: f, thumb })
+      validFiles.push(f)
     }
+    
+    // Generate thumbnails in parallel for better performance
+    const loaded = await Promise.all(
+      validFiles.map(async (f) => ({
+        file: f,
+        thumb: await generatePdfThumbnail(f)
+      }))
+    )
+    
     setFiles(prev => prev.concat(loaded))
   }
 
