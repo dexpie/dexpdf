@@ -23,7 +23,8 @@ export default function UniversalBatchProcessor({
     maxFiles = 100,
     showPreview = false,
     customOptions = null, // Component for tool-specific options
-    onComplete = null
+    onComplete = null,
+    concurrency = 3 // Process up to 3 files in parallel for better performance
 }) {
     const [files, setFiles] = useState([])
     const [processing, setProcessing] = useState(false)
@@ -60,7 +61,7 @@ export default function UniversalBatchProcessor({
         setResults(prev => prev.filter((_, i) => i !== index))
     }
 
-    // Process all files
+    // Process all files with controlled concurrency for better performance
     const processAll = async () => {
         if (files.length === 0) {
             setError('Please add files first')
@@ -70,57 +71,83 @@ export default function UniversalBatchProcessor({
         setProcessing(true)
         setIsPaused(false)
         pauseRef.current = false
-        const newResults = []
+        const newResults = new Array(files.length)
+        let completedCount = 0
 
-        for (let i = 0; i < files.length; i++) {
-            // Check if paused
-            while (pauseRef.current) {
-                await new Promise(resolve => setTimeout(resolve, 100))
-            }
+        // Process files with concurrency control
+        const processWithConcurrency = async () => {
+            const queue = files.map((file, index) => ({ file, index }))
+            const active = []
 
-            try {
-                // Update status to processing
-                setProgress(prev => {
-                    const updated = [...prev]
-                    updated[i] = { status: 'processing', progress: 0, error: null }
-                    return updated
-                })
+            while (queue.length > 0 || active.length > 0) {
+                // Check if paused
+                while (pauseRef.current) {
+                    await new Promise(resolve => setTimeout(resolve, 100))
+                }
 
-                // Process file with progress callback
-                const result = await processFile(files[i], i, (percent) => {
+                // Start new tasks up to concurrency limit
+                while (active.length < concurrency && queue.length > 0) {
+                    const { file, index } = queue.shift()
+
+                    // Update status to processing
                     setProgress(prev => {
                         const updated = [...prev]
-                        updated[i] = { ...updated[i], progress: percent }
+                        updated[index] = { status: 'processing', progress: 0, error: null }
                         return updated
                     })
-                })
 
-                // Success
-                newResults[i] = result
-                setResults(newResults)
-                setProgress(prev => {
-                    const updated = [...prev]
-                    updated[i] = { status: 'completed', progress: 100, error: null }
-                    return updated
-                })
+                    // Create processing promise
+                    const processPromise = processFile(file, index, (percent) => {
+                        setProgress(prev => {
+                            const updated = [...prev]
+                            updated[index] = { ...updated[index], progress: percent }
+                            return updated
+                        })
+                    }).then(
+                        (result) => {
+                            // Success
+                            newResults[index] = result
+                            setResults([...newResults])
+                            setProgress(prev => {
+                                const updated = [...prev]
+                                updated[index] = { status: 'completed', progress: 100, error: null }
+                                return updated
+                            })
+                            completedCount++
+                            setGlobalProgress(Math.round((completedCount / files.length) * 100))
+                        },
+                        (err) => {
+                            // Error
+                            console.error(`Error processing file ${index}:`, err)
+                            setProgress(prev => {
+                                const updated = [...prev]
+                                updated[index] = {
+                                    status: 'error',
+                                    progress: 0,
+                                    error: err.message || 'Processing failed'
+                                }
+                                return updated
+                            })
+                            completedCount++
+                            setGlobalProgress(Math.round((completedCount / files.length) * 100))
+                        }
+                    )
 
-            } catch (err) {
-                console.error(`Error processing file ${i}:`, err)
-                setProgress(prev => {
-                    const updated = [...prev]
-                    updated[i] = {
-                        status: 'error',
-                        progress: 0,
-                        error: err.message || 'Processing failed'
+                    active.push(processPromise)
+                }
+
+                // Wait for at least one task to complete
+                if (active.length > 0) {
+                    const completed = await Promise.race(active)
+                    const index = active.findIndex(p => p === completed)
+                    if (index !== -1) {
+                        active.splice(index, 1)
                     }
-                    return updated
-                })
+                }
             }
-
-            // Update global progress
-            setGlobalProgress(Math.round(((i + 1) / files.length) * 100))
         }
 
+        await processWithConcurrency()
         setProcessing(false)
 
         if (onComplete) {

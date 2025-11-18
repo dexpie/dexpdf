@@ -71,8 +71,9 @@ export default function PdfToImagesTool() {
     try {
       const data = await file.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data }).promise
-      const toZip = []
-      for (const pnum of indices) {
+      
+      // Parallelize page rendering for better performance
+      const renderPage = async (pnum) => {
         const page = await pdf.getPage(pnum)
         const viewport = page.getViewport({ scale: 2 })
         const canvas = document.createElement('canvas')
@@ -84,8 +85,10 @@ export default function PdfToImagesTool() {
         const blob = await new Promise(res =>
           format === 'png' ? canvas.toBlob(res, 'image/png') : canvas.toBlob(res, mimeType, quality)
         )
-        toZip.push({ pnum, blob })
+        return { pnum, blob }
       }
+      
+      const toZip = await Promise.all(indices.map(renderPage))
 
       const ext = format === 'png' ? '.png' : format === 'webp' ? '.webp' : '.jpg'
 

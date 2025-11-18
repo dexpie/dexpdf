@@ -4,7 +4,7 @@ import Fade from '@mui/material/Fade'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 
-export default function ProgressBar() {
+function ProgressBar() {
   const [loading, setLoading] = React.useState(false)
   const [query, setQuery] = React.useState('idle')
   const [message, setMessage] = React.useState('')
@@ -61,3 +61,6 @@ export default function ProgressBar() {
     </Box>
   )
 }
+
+// Memoize to prevent unnecessary re-renders
+export default React.memo(ProgressBar)
