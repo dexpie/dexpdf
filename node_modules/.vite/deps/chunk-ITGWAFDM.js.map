@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../@mui/utils/esm/chainPropTypes/chainPropTypes.js"],
-  "sourcesContent": ["export default function chainPropTypes(propType1, propType2) {\n  if (process.env.NODE_ENV === 'production') {\n    return () => null;\n  }\n  return function validate(...args) {\n    return propType1(...args) || propType2(...args);\n  };\n}"],
-  "mappings": ";AAAe,SAAR,eAAgC,WAAW,WAAW;AAC3D,MAAI,OAAuC;AACzC,WAAO,MAAM;AAAA,EACf;AACA,SAAO,SAAS,YAAY,MAAM;AAChC,WAAO,UAAU,GAAG,IAAI,KAAK,UAAU,GAAG,IAAI;AAAA,EAChD;AACF;",
-  "names": []
-}

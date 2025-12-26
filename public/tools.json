@@ -1,5 +1,11 @@
 [
   {
+    "id": "chat-pdf",
+    "name": "Chat with PDF",
+    "desc": "Ask questions and get answers from your document using AI",
+    "color": "indigo"
+  },
+  {
     "id": "merge",
     "name": "Merge PDF",
     "desc": "Combine multiple PDFs into one",
@@ -10,6 +16,12 @@
     "name": "Split PDF",
     "desc": "Extract pages or split by ranges",
     "color": "blue"
+  },
+  {
+    "id": "organize",
+    "name": "Organize PDF",
+    "desc": "Sort, rotate, and delete pages",
+    "color": "indigo"
   },
   {
     "id": "imgs2pdf",
@@ -36,6 +48,18 @@
     "color": "indigo"
   },
   {
+    "id": "pdf2excel",
+    "name": "PDF → Excel",
+    "desc": "Extract PDF tables to CSV/Excel",
+    "color": "green"
+  },
+  {
+    "id": "flatten",
+    "name": "Flatten PDF",
+    "desc": "Make PDF read-only (convert to images)",
+    "color": "gray"
+  },
+  {
     "id": "pdf2ppt",
     "name": "PDF → PPTX",
     "desc": "Export each PDF page as a PPTX slide",
@@ -52,18 +76,6 @@
     "name": "PPTX → PDF",
     "desc": "Convert PPTX slides (images) to PDF",
     "color": "orange"
-  },
-  {
-    "id": "rotate",
-    "name": "Rotate Pages",
-    "desc": "Rotate selected pages clockwise or counterclockwise",
-    "color": "teal"
-  },
-  {
-    "id": "reorder",
-    "name": "Reorder Pages",
-    "desc": "Drag to reorder PDF pages and export",
-    "color": "green"
   },
   {
     "id": "annotate",
@@ -108,12 +120,6 @@
     "color": "green"
   },
   {
-    "id": "batch-watermark",
-    "name": "Batch Watermark",
-    "desc": "Apply a text watermark to multiple PDFs and download a ZIP",
-    "color": "teal"
-  },
-  {
     "id": "pdf-info",
     "name": "PDF Info",
     "desc": "Display page count and basic metadata",
@@ -124,5 +130,17 @@
     "name": "Extract Images",
     "desc": "Extract images from PDFs (best-effort)",
     "color": "yellow"
+  },
+  {
+    "id": "protect",
+    "name": "Protect PDF",
+    "desc": "Encrypt PDF with password",
+    "color": "gray"
+  },
+  {
+    "id": "unlock",
+    "name": "Unlock PDF",
+    "desc": "Remove PDF password security",
+    "color": "teal"
   }
 ]

@@ -3,14 +3,14 @@ import React, { useEffect, useState } from 'react'
 const THEME_KEY = 'dexpdf:theme'
 
 export default function ThemeToggle({ className }) {
-  const [theme, setTheme] = useState(() => {
+  const [theme, setTheme] = useState('light')
+
+  useEffect(() => {
     try {
       const v = localStorage.getItem(THEME_KEY)
-      return v || 'light'
-    } catch (e) {
-      return 'light'
-    }
-  })
+      if (v) setTheme(v)
+    } catch (e) { }
+  }, [])
 
   useEffect(() => {
     try { localStorage.setItem(THEME_KEY, theme) } catch (e) { }

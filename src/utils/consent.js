@@ -2,6 +2,7 @@ const CONSENT_KEY = 'dexpdf:ad_consent'
 
 export function getAdConsent() {
   try {
+    if (typeof window === 'undefined') return null
     const raw = localStorage.getItem(CONSENT_KEY)
     if (!raw) return null
     return JSON.parse(raw)

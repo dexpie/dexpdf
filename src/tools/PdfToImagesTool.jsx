@@ -4,13 +4,18 @@ import JSZip from 'jszip'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
+import ToolLayout from '../components/common/ToolLayout'
+import FileDropZone from '../components/common/FileDropZone'
+import ActionButtons from '../components/common/ActionButtons'
+import { useTranslation } from 'react-i18next'
+import { configurePdfWorker } from '../utils/pdfWorker'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FileImage, Settings, Check, Download, RefreshCcw } from 'lucide-react'
 
-// Ensure worker is set from pdfjs-dist
-try {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
-} catch (e) { console.warn('pdfjs worker not set', e) }
+configurePdfWorker()
 
 export default function PdfToImagesTool() {
+  const { t } = useTranslation()
   const [batchMode, setBatchMode] = useState(false)
   const [file, setFile] = useState(null)
   const [pages, setPages] = useState([])
@@ -21,39 +26,37 @@ export default function PdfToImagesTool() {
   const [quality, setQuality] = useState(0.92)
   const [outputFileName, setOutputFileName] = useState('')
 
-  async function loadFile(e) {
-    const f = e.target.files[0]
+  async function handleFiles(files) {
+    const f = files[0]
     if (!f) return
-
+    setFile(f)
+    setOutputFileName(getDefaultFilename(f))
     setErrorMsg('')
     setSuccessMsg('')
-
-    if (!f.type.includes('pdf')) {
-      setErrorMsg('Please select a PDF file.')
-      return
-    }
-
-    if (f.size > 50 * 1024 * 1024) {
-      setErrorMsg('File too large (max 50MB).')
-      return
-    }
+    setBusy(true)
 
     try {
-      setFile(f)
-      setOutputFileName(getDefaultFilename(f))
       const data = await f.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data }).promise
-      setPages(new Array(pdf.numPages).fill(false))
+      setPages(new Array(pdf.numPages).fill(false)) // Default all unselected
       setSuccessMsg(`Loaded ${pdf.numPages} pages. Select pages to export.`)
     } catch (err) {
       console.error(err)
-      setErrorMsg('Failed to load PDF: ' + err.message)
+      setErrorMsg(t('common.error_load', 'Failed to load PDF'))
       setFile(null)
-      setPages([])
+    } finally {
+      setBusy(false)
     }
   }
 
-  function toggle(i) { setPages(prev => prev.map((v, idx) => idx === i ? !v : v)) }
+  function toggle(i) {
+    setPages(prev => prev.map((v, idx) => idx === i ? !v : v))
+  }
+
+  function toggleAll() {
+    const allSelected = pages.every(p => p)
+    setPages(new Array(pages.length).fill(!allSelected))
+  }
 
   async function renderAndDownload() {
     if (!file) return
@@ -64,14 +67,15 @@ export default function PdfToImagesTool() {
       return
     }
 
+    setBusy(true)
     setErrorMsg('')
     setSuccessMsg('')
-    setBusy(true)
 
     try {
       const data = await file.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data }).promise
       const toZip = []
+
       for (const pnum of indices) {
         const page = await pdf.getPage(pnum)
         const viewport = page.getViewport({ scale: 2 })
@@ -80,6 +84,7 @@ export default function PdfToImagesTool() {
         canvas.height = Math.ceil(viewport.height)
         const ctx = canvas.getContext('2d')
         await page.render({ canvasContext: ctx, viewport }).promise
+
         const mimeType = format === 'png' ? 'image/png' : format === 'webp' ? 'image/webp' : 'image/jpeg'
         const blob = await new Promise(res =>
           format === 'png' ? canvas.toBlob(res, 'image/png') : canvas.toBlob(res, mimeType, quality)
@@ -90,7 +95,6 @@ export default function PdfToImagesTool() {
       const ext = format === 'png' ? '.png' : format === 'webp' ? '.webp' : '.jpg'
 
       if (indices.length === 1) {
-        // single file: download directly
         const b = toZip[0].blob
         const url = URL.createObjectURL(b)
         const a = document.createElement('a')
@@ -100,7 +104,6 @@ export default function PdfToImagesTool() {
         URL.revokeObjectURL(url)
         setSuccessMsg(`Exported 1 page as ${format.toUpperCase()}!`)
       } else {
-        // multiple: create zip
         const zip = new JSZip()
         for (const item of toZip) {
           const arr = await item.blob.arrayBuffer()
@@ -113,7 +116,7 @@ export default function PdfToImagesTool() {
         a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_pages', '.zip')
         a.click()
         URL.revokeObjectURL(url)
-        setSuccessMsg(`Exported ${indices.length} pages as ${format.toUpperCase()} in ZIP!`)
+        setSuccessMsg(`Exported ${indices.length} pages as ZIP!`)
       }
     } catch (err) {
       console.error(err)
@@ -123,15 +126,14 @@ export default function PdfToImagesTool() {
     }
   }
 
-  async function processBatchFile(f, onProgress) {
+  // Same batch logic as before, just wrapped
+  const processBatchFile = async (f, onProgress) => {
     try {
       onProgress(10)
       const data = await f.arrayBuffer()
       onProgress(20)
       const pdf = await pdfjsLib.getDocument({ data }).promise
       const numPages = pdf.numPages
-      onProgress(30)
-
       const zip = new JSZip()
       const ext = format === 'png' ? '.png' : format === 'webp' ? '.webp' : '.jpg'
 
@@ -143,213 +145,142 @@ export default function PdfToImagesTool() {
         canvas.height = Math.ceil(viewport.height)
         const ctx = canvas.getContext('2d')
         await page.render({ canvasContext: ctx, viewport }).promise
-
         const mimeType = format === 'png' ? 'image/png' : format === 'webp' ? 'image/webp' : 'image/jpeg'
         const blob = await new Promise(res =>
           format === 'png' ? canvas.toBlob(res, 'image/png') : canvas.toBlob(res, mimeType, quality)
         )
-
-        const arr = await blob.arrayBuffer()
-        zip.file(`page_${pnum}${ext}`, arr)
-
+        zip.file(`page_${pnum}${ext}`, await blob.arrayBuffer())
         onProgress(30 + (pnum / numPages) * 60)
       }
-
       onProgress(90)
-      const content = await zip.generateAsync({ type: 'blob' })
-      onProgress(100)
-      return content
-    } catch (err) {
-      throw new Error(`Failed to convert PDF to images: ${err.message || err}`)
-    }
-  }
-
-  function handleReset() {
-    setFile(null)
-    setPages([])
-    setErrorMsg('')
-    setSuccessMsg('')
-    setBatchMode(false)
+      return await zip.generateAsync({ type: 'blob' })
+    } catch (err) { throw new Error(err.message) }
   }
 
   return (
-    <div>
-      <h2>PDF → Images</h2>
-      <p className="muted">Convert PDF pages to image files (PNG, JPEG, or WEBP).</p>
+    <ToolLayout title="PDF to Images" description={t('tool.pdf2imgs_desc', 'Convert PDF pages to high-quality images')}>
 
-      {/* Mode Toggle */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16, borderBottom: '2px solid var(--border)', paddingBottom: 8 }}>
+      {/* Mode Switcher */}
+      <div className="flex justify-center gap-4 mb-8">
         <button
+          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
           onClick={() => setBatchMode(false)}
-          disabled={busy}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: !batchMode ? 'var(--primary)' : 'transparent',
-            color: !batchMode ? 'white' : 'var(--text)',
-            border: !batchMode ? 'none' : '1px solid var(--border)',
-            borderRadius: 4,
-            cursor: 'pointer',
-            fontWeight: !batchMode ? 'bold' : 'normal'
-          }}
         >
-          📄 Single File
+          Single File
         </button>
         <button
+          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
           onClick={() => setBatchMode(true)}
-          disabled={busy}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: batchMode ? 'var(--primary)' : 'transparent',
-            color: batchMode ? 'white' : 'var(--text)',
-            border: batchMode ? 'none' : '1px solid var(--border)',
-            borderRadius: 4,
-            cursor: 'pointer',
-            fontWeight: batchMode ? 'bold' : 'normal'
-          }}
         >
-          📚 Batch Process
+          Batch Mode
         </button>
       </div>
 
-      {errorMsg && (
-        <div className="error-message" role="alert">
-          ⚠️ {errorMsg}
-        </div>
-      )}
+      <div className="flex flex-col gap-6">
+        {errorMsg && (
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center">
+            ⚠️ {errorMsg}
+          </div>
+        )}
+        {successMsg && (
+          <div className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center">
+            ✅ {successMsg}
+          </div>
+        )}
 
-      {successMsg && (
-        <div className="success-message" role="status">
-          ✅ {successMsg}
-        </div>
-      )}
-
-      {batchMode ? (
-        <div>
-          <div style={{ marginBottom: 16 }}>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 300 }}>
-              <strong>Output Format:</strong>
-              <select value={format} onChange={(e) => setFormat(e.target.value)} disabled={busy} className="select">
-                <option value="png">PNG (Lossless, larger file)</option>
-                <option value="jpeg">JPEG (Compressed, smaller file)</option>
-                <option value="webp">WEBP (Modern, best quality/size)</option>
+        {/* Settings Card */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm max-w-2xl mx-auto w-full">
+          <div className="flex items-center gap-2 mb-4 text-slate-800 font-semibold">
+            <Settings className="w-5 h-5 text-orange-500" />
+            <span>Output Settings</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1">Format</label>
+              <select value={format} onChange={(e) => setFormat(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 transition-all outline-none">
+                <option value="png">PNG (Best Quality)</option>
+                <option value="jpeg">JPEG (Smaller Size)</option>
+                <option value="webp">WEBP (Modern)</option>
               </select>
-            </label>
-
+            </div>
             {format !== 'png' && (
-              <label style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 12, maxWidth: 300 }}>
-                <strong>Quality: {Math.round(quality * 100)}%</strong>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="1"
-                  step="0.05"
-                  value={quality}
-                  onChange={(e) => setQuality(Number(e.target.value))}
-                  disabled={busy}
-                />
-              </label>
+              <div>
+                <label className="block text-sm font-medium text-slate-600 mb-1">Quality: {Math.round(quality * 100)}%</label>
+                <input type="range" min="0.5" max="1" step="0.05" value={quality} onChange={(e) => setQuality(Number(e.target.value))} className="w-full accent-orange-500" />
+              </div>
             )}
           </div>
+        </div>
 
-          <div style={{ marginBottom: 16, padding: 12, background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 4 }}>
-            <strong>Batch Mode Settings:</strong>
-            <ul style={{ marginTop: 8, marginBottom: 0, paddingLeft: 20 }}>
-              <li>Format: {format.toUpperCase()}</li>
-              {format !== 'png' && <li>Quality: {Math.round(quality * 100)}%</li>}
-              <li>All pages from each PDF will be converted</li>
-              <li>Each PDF's images will be saved as a separate ZIP file</li>
-            </ul>
-          </div>
-
+        {batchMode ? (
           <UniversalBatchProcessor
+            toolName="PDF to Images"
             processFile={processBatchFile}
-            outputFilenameSuffix={`_${format}_images`}
-            acceptedFileTypes="application/pdf"
-            description="Convert multiple PDFs to images"
-            outputFileExtension=".zip"
+            outputExtension=".zip"
+            acceptedTypes=".pdf"
           />
-        </div>
-      ) : (
-        <div>
-          <div className="dropzone">
-            <input type="file" accept="application/pdf" onChange={loadFile} disabled={busy} />
-            <div className="muted">Select a PDF, then choose pages and format to export.</div>
-          </div>
-
-          {file && (
-            <div className="file-info">
-              <strong>📄 File:</strong> {file.name} ({(file.size / 1024).toFixed(1)} KB)
-            </div>
-          )}
-
-          {pages.length > 0 && (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ marginBottom: 12 }}>
-                <label style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 300 }}>
-                  <strong>Output Format:</strong>
-                  <select value={format} onChange={(e) => setFormat(e.target.value)} disabled={busy} className="select">
-                    <option value="png">PNG (Lossless, larger file)</option>
-                    <option value="jpeg">JPEG (Compressed, smaller file)</option>
-                    <option value="webp">WEBP (Modern, best quality/size)</option>
-                  </select>
-                </label>
-
-                {format !== 'png' && (
-                  <label style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 12, maxWidth: 300 }}>
-                    <strong>Quality: {Math.round(quality * 100)}%</strong>
-                    <input
-                      type="range"
-                      min="0.5"
-                      max="1"
-                      step="0.05"
-                      value={quality}
-                      onChange={(e) => setQuality(Number(e.target.value))}
-                      disabled={busy}
-                    />
-                  </label>
-                )}
-              </div>
-
-              <div className="muted" style={{ marginBottom: 8 }}>
-                Click pages to select. Selected: {pages.filter(p => p).length} / {pages.length}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(90px,1fr))', gap: 8, marginBottom: 16 }}>
-                {pages.map((s, i) => (
-                  <div
-                    key={i}
-                    className="file-item"
-                    onClick={() => toggle(i)}
-                    style={{
-                      cursor: 'pointer',
-                      background: s ? '#eef2ff' : '',
-                      border: s ? '2px solid #4f46e5' : '1px solid var(--border)',
-                      fontWeight: s ? '600' : '400'
-                    }}
-                  >
-                    📄 {i + 1}
+        ) : (
+          <div>
+            {!file ? (
+              <FileDropZone onFiles={handleFiles} accept="application/pdf" hint="Upload PDF to convert" />
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col gap-6"
+              >
+                <div className="bg-white rounded-2xl border border-slate-200 p-4 flex justify-between items-center shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
+                      <FileImage className="w-6 h-6" />
+                    </div>
+                    <h3 className="font-semibold text-slate-800">{file.name}</h3>
                   </div>
-                ))}
-              </div>
-              {file && (
-                <FilenameInput
-                  value={outputFileName}
-                  onChange={(e) => setOutputFileName(e.target.value)}
-                  disabled={busy}
-                  placeholder="output"
-                />
-              )}
-              <div style={{ display: 'flex', gap: 12 }}>
-                <button className="btn-primary" onClick={renderAndDownload} disabled={busy || pages.filter(p => p).length === 0}>
-                  {busy ? '⏳ Rendering...' : `📥 Export as ${format.toUpperCase()}`}
-                </button>
-                <button className="btn-ghost" style={{ color: '#dc2626' }} onClick={handleReset} disabled={busy}>
-                  Reset
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+                  <button onClick={() => setFile(null)} className="text-red-500 hover:text-red-700 font-medium text-sm">Change File</button>
+                </div>
+
+                <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="text-sm font-medium text-slate-600">Select pages to export</span>
+                    <button onClick={toggleAll} className="text-blue-600 text-sm font-medium hover:text-blue-800 flex items-center gap-1">
+                      <RefreshCcw className="w-3 h-3" /> Toggle All
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 max-h-[400px] overflow-y-auto p-2">
+                    {pages.map((s, i) => (
+                      <motion.button
+                        key={i}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => toggle(i)}
+                        className={`aspect-[3/4] flex items-center justify-center rounded-lg border-2 transition-all font-medium text-sm relative ${s ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-white border-slate-200 text-slate-400 hover:border-blue-300'}`}
+                      >
+                        {i + 1}
+                        {s && (
+                          <div className="absolute top-1 right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                            <Check className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-lg flex flex-col gap-4 max-w-2xl mx-auto w-full sticky bottom-4 z-10">
+                  <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="images_extracted" />
+                  <ActionButtons
+                    primaryText={`Export as ${format.toUpperCase()}`}
+                    onPrimary={renderAndDownload}
+                    loading={busy}
+                    disabled={pages.filter(p => p).length === 0}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </div>
+        )}
+      </div>
+    </ToolLayout>
   )
 }

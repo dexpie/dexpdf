@@ -1,22 +1,20 @@
 import React from 'react'
 
-// Simple configurable ad spot component.
-// Props:
-// - image: src for an image banner
-// - href: optional link
-// - alt: alt text
-// - children: fallback HTML (e.g., text)
 export default function AdSpot({ image, href, alt = 'Advertisement', children }) {
+    if (!image && !children) return null
+
     const inner = image ? (
-        <img className="ad-spot-img" src={image} alt={alt} />
+        <img className="w-full h-auto rounded-xl shadow-md border border-slate-200 hover:opacity-95 transition-opacity" src={image} alt={alt} />
     ) : (
-        <div className="ad-spot-fallback">{children || 'Your ad here'}</div>
+        <div className="w-full h-32 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 text-sm font-medium">
+            {children || 'Sponsored Content'}
+        </div>
     )
 
     return (
-        <div className="ad-spot" role="region" aria-label="Advertisement">
+        <div className="w-full max-w-4xl mx-auto my-8 px-4" role="region" aria-label="Advertisement">
             {href ? (
-                <a href={href} target="_blank" rel="noopener noreferrer">
+                <a href={href} target="_blank" rel="noopener noreferrer" className="block">
                     {inner}
                 </a>
             ) : (

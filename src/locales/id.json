@@ -1,0 +1,63 @@
+{
+    "app": {
+        "title": "DexPDF",
+        "description": "Toolkit PDF Lengkap untuk Produktivitas Modern"
+    },
+    "hero": {
+        "title": "Toolkit PDF Lengkap untuk Produktivitas Modern",
+        "subtitle": "DexPDF membawa alat PDF canggih langsung ke browser Anda. Cepat, aman, dan gratis untuk gabung, pisah, kompres, konversi, dan edit PDF tanpa upload file ke server. Privasi terjaga.",
+        "search_placeholder": "Cari alat PDF...",
+        "hotkey_hint": "Tekan / untuk cari"
+    },
+    "nav": {
+        "github": "GitHub",
+        "share": "Bagikan",
+        "share_success": "Link disalin!",
+        "share_fail": "Gagal membagikan"
+    },
+    "recent": {
+        "title": "Terbaru",
+        "clear": "Hapus"
+    },
+    "ads": {
+        "sponsored": "Disponsori"
+    },
+    "common": {
+        "back": "Kembali",
+        "drop_title": "Klik atau Tarik file di sini",
+        "drop_hint": "File PDF maksimal 50MB",
+        "clear": "Hapus",
+        "cancel": "Batal",
+        "add": "Tambah",
+        "download": "Unduh",
+        "reset": "Mulai Ulang"
+    },
+    "signature": {
+        "title": "Tanda Tangan PDF",
+        "desc": "Tambahkan tanda tangan digital ke dokumen PDF Anda",
+        "draw_title": "Gambar Tanda Tangan",
+        "draw": "Gambar",
+        "upload": "Upload Gambar",
+        "signature_source": "Sumber Tanda Tangan",
+        "drop_hint": "Upload PDF untuk ditandatangani",
+        "upload_first": "Silakan upload atau gambar tanda tangan terlebih dahulu."
+    },
+    "search": {
+        "no_results_title": "Alat tidak ditemukan",
+        "no_results_desc": "Tidak ada alat yang cocok dengan \"{{query}}\". Coba kata kunci lain.",
+        "results_title": "Hasil Pencarian ({{count}})"
+    },
+    "features": {
+        "title": "Semua yang Anda butuhkan",
+        "subtitle": "Alat PDF kelas profesional langsung di browser Anda",
+        "secure_title": "100% Aman",
+        "secure_desc": "Semua file diproses secara lokal di perangkat Anda. Tidak ada data yang diunggah ke server.",
+        "free_title": "Gratis Selamanya",
+        "free_desc": "Tanpa batas, tanpa daftar, tanpa biaya tersembunyi. Murni utilitas.",
+        "fast_title": "Super Cepat",
+        "fast_desc": "Ditenagai oleh WebAssembly untuk performa secepat aplikasi native."
+    },
+    "footer": {
+        "copyright": "© {{year}} DEXPDF alat PDF client-side ringan"
+    }
+}

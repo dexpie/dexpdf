@@ -4,6 +4,7 @@ const MAX_ITEMS = 8
 
 export function getRecent() {
     try {
+        if (typeof window === 'undefined') return []
         const raw = localStorage.getItem(RECENT_KEY)
         if (!raw) return []
         return JSON.parse(raw)

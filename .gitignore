@@ -1,12 +1,40 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+ts-debug.log*
+
+# Local Env Files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
 .vercel
 
-# Backup files
+# Project specific
 *.old
 *.bak
 *.backup
-*.enhanced
-
-# Progress/Summary files
 *SUMMARY.md
 *PROGRESS.md
 *TODO.md

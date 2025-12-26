@@ -1,8 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
+import { triggerConfetti } from '../utils/confetti'
 import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
+import { configurePdfWorker } from '../utils/pdfWorker'
+import ToolLayout from '../components/common/ToolLayout'
+import FileDropZone from '../components/common/FileDropZone'
+import ActionButtons from '../components/common/ActionButtons'
+import { useTranslation } from 'react-i18next'
+import { Settings, Cloud, Laptop, Zap, CheckCircle, AlertTriangle, Languages, ChevronLeft, ChevronRight, Download, FileText, Monitor } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) {/*ignore*/ }
+configurePdfWorker()
 
 // 🌍 Advanced OCR Languages
 const LANGUAGES = [
@@ -12,19 +20,17 @@ const LANGUAGES = [
   { code: 'fra', name: '🇫🇷 French', popular: true },
   { code: 'deu', name: '🇩🇪 German', popular: true },
   { code: 'chi_sim', name: '🇨🇳 Chinese Simplified', popular: true },
-  { code: 'chi_tra', name: '🇹🇼 Chinese Traditional', popular: false },
   { code: 'jpn', name: '🇯🇵 Japanese', popular: true },
   { code: 'kor', name: '🇰🇷 Korean', popular: true },
   { code: 'ara', name: '🇸🇦 Arabic', popular: true },
-  { code: 'rus', name: '🇷🇺 Russian', popular: false },
   { code: 'por', name: '🇵🇹 Portuguese', popular: true },
-  { code: 'ita', name: '🇮🇹 Italian', popular: false },
-  { code: 'nld', name: '🇳🇱 Dutch', popular: false },
+  { code: 'rus', name: '🇷🇺 Russian', popular: false },
   { code: 'tha', name: '🇹🇭 Thai', popular: true },
   { code: 'vie', name: '🇻🇳 Vietnamese', popular: true },
 ]
 
 export default function OcrTool() {
+  const { t } = useTranslation()
   const [file, setFile] = useState(null)
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
@@ -42,10 +48,7 @@ export default function OcrTool() {
   const [totalPages, setTotalPages] = useState(1)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
-  const [showAdvanced, setShowAdvanced] = useState(false)
-  const [useCloudOCR, setUseCloudOCR] = useState(true) // Use OCR.space API (faster, free)
   const [ocrEngine, setOcrEngine] = useState('auto') // auto, cloud, local
-  const canvasRef = useRef(null)
 
   // 🌩️ OCR.space API (FREE - 25k requests/month)
   const runCloudOCR = async (imageDataUrl) => {
@@ -56,27 +59,24 @@ export default function OcrTool() {
     formData.append('detectOrientation', autoRotate ? 'true' : 'false')
     formData.append('scale', 'true')
     formData.append('OCREngine', ocrMode === 'accurate' ? '2' : '1')
-    
+
     try {
       setProgressText('🌩️ Using Cloud OCR (faster)...')
-      const response = await fetch('https://api.ocr.space/parse/image', {
+      const response = await fetch('/api/ocr', {
         method: 'POST',
-        headers: {
-          'apikey': 'K87899142388957' // Free API key (public, rate-limited)
-        },
         body: formData
       })
-      
+
       const result = await response.json()
-      
+
       if (result.ParsedResults && result.ParsedResults[0]) {
         const parsedText = result.ParsedResults[0].ParsedText
-        const confidence = result.ParsedResults[0].TextOverlay?.Lines?.length > 0 
-          ? Math.round(result.ParsedResults[0].TextOverlay.Lines.reduce((acc, line) => 
-              acc + (line.Words?.reduce((sum, word) => sum + (word.WordText ? 90 : 0), 0) || 0), 0) / 
-              (result.ParsedResults[0].TextOverlay.Lines.length || 1))
+        const confidence = result.ParsedResults[0].TextOverlay?.Lines?.length > 0
+          ? Math.round(result.ParsedResults[0].TextOverlay.Lines.reduce((acc, line) =>
+            acc + (line.Words?.reduce((sum, word) => sum + (word.WordText ? 90 : 0), 0) || 0), 0) /
+            (result.ParsedResults[0].TextOverlay.Lines.length || 1))
           : 85 // Default confidence for cloud OCR
-        
+
         return { text: parsedText, confidence }
       } else {
         throw new Error(result.ErrorMessage || 'Cloud OCR failed')
@@ -91,19 +91,15 @@ export default function OcrTool() {
   // 🎨 Enhanced image preprocessing
   const preprocessCanvas = (canvas) => {
     if (!imageEnhancement) return canvas
-    
     const ctx = canvas.getContext('2d')
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     const data = imageData.data
-    
     // Convert to grayscale and enhance contrast
     for (let i = 0; i < data.length; i += 4) {
       const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
-      // Enhance contrast (adaptive threshold)
       const enhanced = gray < 128 ? Math.max(0, gray - 30) : Math.min(255, gray + 30)
       data[i] = data[i + 1] = data[i + 2] = enhanced
     }
-    
     ctx.putImageData(imageData, 0, 0)
     return canvas
   }
@@ -112,11 +108,9 @@ export default function OcrTool() {
   const loadImageOrPdf = async (inputFile, pageNum = 1) => {
     const targetFile = inputFile || file
     if (!targetFile) return
-    
-    setErrorMsg('')
-    setSuccessMsg('')
-    setBusy(true)
-    
+
+    setErrorMsg(''); setSuccessMsg(''); setBusy(true)
+
     try {
       const isPdf = targetFile.type === 'application/pdf'
       let canvas
@@ -125,66 +119,44 @@ export default function OcrTool() {
         const arrayBuffer = await targetFile.arrayBuffer()
         const pdf = await pdfjsLib.getDocument(arrayBuffer).promise
         setTotalPages(pdf.numPages)
-        
         const page = await pdf.getPage(pageNum)
         const viewport = page.getViewport({ scale: 1.5 })
         canvas = document.createElement('canvas')
         canvas.width = viewport.width
         canvas.height = viewport.height
-        
         const ctx = canvas.getContext('2d')
         await page.render({ canvasContext: ctx, viewport }).promise
       } else {
-        // Image file
         setTotalPages(1)
         canvas = document.createElement('canvas')
         const img = new Image()
-        
         await new Promise((resolve, reject) => {
-          img.onload = resolve
-          img.onerror = reject
-          img.src = URL.createObjectURL(targetFile)
+          img.onload = resolve; img.onerror = reject; img.src = URL.createObjectURL(targetFile)
         })
-        
-        canvas.width = img.width
-        canvas.height = img.height
+        canvas.width = img.width; canvas.height = img.height
         const ctx = canvas.getContext('2d')
         ctx.drawImage(img, 0, 0)
       }
 
-      // Apply preprocessing
       const processedCanvas = preprocessCanvas(canvas)
-      
-      // Show preview
       setPreviewUrl(processedCanvas.toDataURL())
-      
-      // Run OCR
       await runOcrOnCanvas(processedCanvas)
     } catch (error) {
       setErrorMsg(`❌ Error loading file: ${error.message}`)
       console.error(error)
-    } finally {
-      setBusy(false)
-    }
+    } finally { setBusy(false) }
   }
 
   // 🔍 Advanced OCR with progress tracking (Cloud + Local fallback)
   const runOcrOnCanvas = async (canvas) => {
-    setBusy(true)
-    setProgress(0)
-    setProgressText('Initializing OCR...')
-    
+    setBusy(true); setProgress(0); setProgressText('Initializing OCR...')
     try {
       let result = null
-      
-      // Try Cloud OCR first (faster, free)
-      if (useCloudOCR || ocrEngine === 'cloud' || ocrEngine === 'auto') {
+      if (ocrEngine === 'cloud' || ocrEngine === 'auto') {
         const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9)
         result = await runCloudOCR(imageDataUrl)
       }
-      
-      // Fallback to local Tesseract if cloud fails
-      if (!result || ocrEngine === 'local') {
+      if ((!result && ocrEngine === 'auto') || ocrEngine === 'local') {
         setProgressText('Using local OCR (Tesseract.js)...')
         const { createWorker } = await import('tesseract.js')
         const worker = await createWorker({
@@ -196,43 +168,31 @@ export default function OcrTool() {
             }
           }
         })
-
         setProgressText('Loading language data...')
         await worker.loadLanguage(language)
         await worker.initialize(language)
-        
-        // Set OCR engine mode based on quality setting
         const oem = ocrMode === 'fast' ? 0 : ocrMode === 'accurate' ? 1 : 2
-        await worker.setParameters({
-          tessedit_ocr_engine_mode: oem,
-          tessedit_pageseg_mode: autoRotate ? 1 : 3,
-        })
-
+        await worker.setParameters({ tessedit_ocr_engine_mode: oem, tessedit_pageseg_mode: autoRotate ? 1 : 3 })
         setProgressText('Recognizing text...')
         const { data } = await worker.recognize(canvas)
         result = { text: data.text, confidence: data.confidence ? Math.round(data.confidence) : null }
-        
         await worker.terminate()
       }
-      
+
       if (result) {
         setConfidence(result.confidence)
         setText(result.text)
         setSuccessMsg(`✅ OCR completed! Confidence: ${result.confidence}%`)
+        triggerConfetti()
         setProgress(100)
-      } else {
-        throw new Error('OCR failed')
-      }
+      } else { throw new Error('All OCR engines failed') }
     } catch (error) {
       setErrorMsg(`❌ OCR error: ${error.message}`)
       console.error(error)
-    } finally {
-      setBusy(false)
-      setProgressText('')
-    }
+    } finally { setBusy(false); setProgressText('') }
   }
 
-  // 📦 Batch processing with enhanced OCR (Cloud + Local)
+  // 📦 Batch processing
   async function processBatchFile(file) {
     let canvas
     if (file.type === 'application/pdf') {
@@ -257,80 +217,43 @@ export default function OcrTool() {
       ctx.drawImage(img, 0, 0)
       URL.revokeObjectURL(url)
     }
-
-    // Apply preprocessing
     const processedCanvas = preprocessCanvas(canvas)
-    
     let textResult = ''
-
-    // Try Cloud OCR first
-    if (useCloudOCR || ocrEngine === 'cloud' || ocrEngine === 'auto') {
+    if (ocrEngine === 'cloud' || ocrEngine === 'auto') {
       try {
         const imageDataUrl = processedCanvas.toDataURL('image/jpeg', 0.9)
         const result = await runCloudOCR(imageDataUrl)
-        if (result && result.text) {
-          textResult = result.text
-        }
-      } catch (error) {
-        console.warn('Cloud OCR failed in batch, using local:', error)
-      }
+        if (result && result.text) textResult = result.text
+      } catch (error) { console.warn('Cloud OCR failed in batch, using local:', error) }
     }
-
-    // Fallback to Tesseract
-    if (!textResult || ocrEngine === 'local') {
+    if ((!textResult && ocrEngine === 'auto') || ocrEngine === 'local') {
       const { createWorker } = await import('tesseract.js')
       const worker = await createWorker()
       await worker.loadLanguage(language)
       await worker.initialize(language)
-      
       const oem = ocrMode === 'fast' ? 0 : ocrMode === 'accurate' ? 1 : 2
-      await worker.setParameters({
-        tessedit_ocr_engine_mode: oem,
-        tessedit_pageseg_mode: autoRotate ? 1 : 3,
-      })
-      
+      await worker.setParameters({ tessedit_ocr_engine_mode: oem, tessedit_pageseg_mode: autoRotate ? 1 : 3 })
       const { data: { text } } = await worker.recognize(processedCanvas)
       textResult = text
       await worker.terminate()
     }
-
-    // Return text as a blob
     return new Blob([textResult], { type: 'text/plain' })
   }
 
-  // 💾 Export with different formats
   const exportText = () => {
     if (!text) return
-    
     let blob
     let filename = `ocr_result.${exportFormat}`
-    
     switch (exportFormat) {
-      case 'txt':
-        blob = new Blob([text], { type: 'text/plain' })
-        break
-      case 'json':
-        blob = new Blob([JSON.stringify({ text, confidence, language, timestamp: new Date().toISOString() }, null, 2)], { type: 'application/json' })
-        break
-      case 'csv':
-        const csv = `"Text","Confidence","Language"\n"${text.replace(/"/g, '""')}","${confidence}%","${language}"`
-        blob = new Blob([csv], { type: 'text/csv' })
-        break
-      default:
-        blob = new Blob([text], { type: 'text/plain' })
+      case 'json': blob = new Blob([JSON.stringify({ text, confidence, language, timestamp: new Date().toISOString() }, null, 2)], { type: 'application/json' }); break;
+      case 'csv': const csv = `"Text","Confidence","Language"\n"${text.replace(/"/g, '""')}","${confidence}%","${language}"`; blob = new Blob([csv], { type: 'text/csv' }); break;
+      default: blob = new Blob([text], { type: 'text/plain' });
     }
-    
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    a.click()
-    URL.revokeObjectURL(url)
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url)
   }
 
-  // 📝 Handle file input
-  const handleFileChange = (e) => {
-    const f = e.target.files[0]
+  const handleFileChange = (files) => {
+    const f = files[0]
     if (!f) return
     setFile(f)
     setText('')
@@ -339,364 +262,207 @@ export default function OcrTool() {
     loadImageOrPdf(f, selectedPage)
   }
 
-  // 📄 Change page for PDF
   useEffect(() => {
-    if (file && file.type === 'application/pdf' && selectedPage > 0) {
-      loadImageOrPdf(file, selectedPage)
-    }
+    if (file && file.type === 'application/pdf' && selectedPage > 0) loadImageOrPdf(file, selectedPage)
   }, [selectedPage])
 
   return (
-    <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
-      <h2 style={{ textAlign: 'center', marginBottom: 16 }}>OCR Text Extraction</h2>
+    <ToolLayout title="OCR Text Extraction" description={t('tool.ocr_desc', 'Convert scanned documents and images into editable text')}>
 
-      {/* Mode Toggle */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+      {/* Mode Switcher */}
+      <div className="flex justify-center gap-4 mb-8">
         <button
-          className={!batchMode ? 'btn-primary' : 'btn-outline'}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
           onClick={() => setBatchMode(false)}
-          style={{ minWidth: 120 }}
         >
-          📄 Single File
+          Single File
         </button>
         <button
-          className={batchMode ? 'btn-primary' : 'btn-outline'}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
           onClick={() => setBatchMode(true)}
-          style={{ minWidth: 120 }}
         >
-          🔄 Batch Mode
+          Batch Mode
         </button>
       </div>
 
-      {batchMode ? (
-        <div>
-          {/* Batch Settings */}
-          <div style={{ marginBottom: 16, padding: 12, background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 12px 0', fontSize: 16 }}>⚙️ Batch OCR Settings</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🌩️ OCR Engine</label>
-                <select 
-                  value={ocrEngine} 
-                  onChange={e => setOcrEngine(e.target.value)}
-                  style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
-                >
-                  <option value="auto">🚀 Auto (Cloud → Local)</option>
-                  <option value="cloud">🌩️ Cloud Only (Faster)</option>
-                  <option value="local">💻 Local Only (Private)</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🌍 Language</label>
-                <select 
-                  value={language} 
-                  onChange={e => setLanguage(e.target.value)} 
-                  style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
-                >
-                  {LANGUAGES.map(lang => (
-                    <option key={lang.code} value={lang.code}>{lang.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🎯 Quality Mode</label>
-                <select 
-                  value={ocrMode} 
-                  onChange={e => setOcrMode(e.target.value)}
-                  style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
-                >
-                  <option value="fast">⚡ Fast</option>
-                  <option value="balanced">⚖️ Balanced</option>
-                  <option value="accurate">🎯 Accurate</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>✨ Enhancements</label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, marginBottom: 4 }}>
-                  <input type="checkbox" checked={imageEnhancement} onChange={e => setImageEnhancement(e.target.checked)} />
-                  <span>🎨 Image Enhancement</span>
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-                  <input type="checkbox" checked={autoRotate} onChange={e => setAutoRotate(e.target.checked)} />
-                  <span>🔄 Auto-Rotate</span>
-                </label>
-              </div>
-            </div>
-            <div style={{ marginTop: 12, fontSize: 13, color: '#666', borderTop: '1px solid #e2e8f0', paddingTop: 12 }}>
-              💡 <strong>Batch Tips:</strong> Cloud OCR is 3-5x faster (25k free/month). Auto fallback to local if limit reached.
-            </div>
-          </div>
-
-          <UniversalBatchProcessor
-            accept=".png,.jpg,.jpeg,.webp,.bmp,.tiff,application/pdf"
-            processFile={processBatchFile}
-            outputNameSuffix="_ocr.txt"
-            taskName="OCR Text Extraction"
-          />
+      {/* Settings Panel */}
+      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm max-w-4xl mx-auto w-full mb-8">
+        <div className="flex items-center gap-2 mb-4 text-slate-800 font-semibold">
+          <Settings className="w-5 h-5 text-blue-500" />
+          <span>Extraction Settings</span>
         </div>
-      ) : (
-        <>
-          {/* Error & Success messages */}
-          {errorMsg && (
-            <div style={{ color: '#dc2626', marginBottom: 12, background: '#fee2e2', padding: 8, borderRadius: 6 }}>{errorMsg}</div>
-          )}
-          {successMsg && (
-            <div style={{ color: '#059669', marginBottom: 12, background: '#d1fae5', padding: 8, borderRadius: 6 }}>{successMsg}</div>
-          )}
 
-          {/* Advanced Settings Toggle */}
-          <div style={{ marginBottom: 12, textAlign: 'center' }}>
-            <button
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className="btn-outline"
-              style={{ fontSize: 13 }}
-            >
-              {showAdvanced ? '▼ Hide Advanced Settings' : '▶ Show Advanced Settings'}
-            </button>
-          </div>
-
-          {showAdvanced && (
-            <div style={{ marginBottom: 16, padding: 12, background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-              <h3 style={{ margin: '0 0 12px 0', fontSize: 16 }}>⚙️ Advanced Settings</h3>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-                {/* OCR Engine */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🌩️ OCR Engine</label>
-                  <select 
-                    value={ocrEngine} 
-                    onChange={e => setOcrEngine(e.target.value)}
-                    style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
-                  >
-                    <option value="auto">🚀 Auto (Cloud → Local)</option>
-                    <option value="cloud">🌩️ Cloud Only (Faster)</option>
-                    <option value="local">💻 Local Only (Private)</option>
-                  </select>
-                  <small style={{ color: '#666', display: 'block', marginTop: 4, fontSize: 12 }}>
-                    Cloud OCR is 3-5x faster!
-                  </small>
-                </div>
-
-                {/* Language Selection */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🌍 Language</label>
-                  <select 
-                    value={language} 
-                    onChange={e => setLanguage(e.target.value)}
-                    style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
-                  >
-                    <optgroup label="Popular Languages">
-                      {LANGUAGES.filter(l => l.popular).map(lang => (
-                        <option key={lang.code} value={lang.code}>{lang.name}</option>
-                      ))}
-                    </optgroup>
-                    <optgroup label="Other Languages">
-                      {LANGUAGES.filter(l => !l.popular).map(lang => (
-                        <option key={lang.code} value={lang.code}>{lang.name}</option>
-                      ))}
-                    </optgroup>
-                  </select>
-                </div>
-
-                {/* Quality Mode */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>🎯 Quality Mode</label>
-                  <select 
-                    value={ocrMode} 
-                    onChange={e => setOcrMode(e.target.value)}
-                    style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
-                  >
-                    <option value="fast">⚡ Fast</option>
-                    <option value="balanced">⚖️ Balanced</option>
-                    <option value="accurate">🎯 Accurate</option>
-                  </select>
-                </div>
-
-                {/* Export Format */}
-                <div>
-                  <label style={{ display: 'block', marginBottom: 4, fontSize: 13, fontWeight: 600 }}>💾 Export Format</label>
-                  <select 
-                    value={exportFormat} 
-                    onChange={e => setExportFormat(e.target.value)}
-                    style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #d1d5db', fontSize: 14 }}
-                  >
-                    <option value="txt">📄 Plain Text (.txt)</option>
-                    <option value="json">📋 JSON (.json)</option>
-                    <option value="csv">📊 CSV (.csv)</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Enhancement Options */}
-              <div style={{ marginTop: 12, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-                  <input 
-                    type="checkbox" 
-                    checked={imageEnhancement} 
-                    onChange={e => setImageEnhancement(e.target.checked)}
-                  />
-                  <span>🎨 Image Enhancement</span>
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
-                  <input 
-                    type="checkbox" 
-                    checked={autoRotate} 
-                    onChange={e => setAutoRotate(e.target.checked)}
-                  />
-                  <span>🔄 Auto-Rotate Detection</span>
-                </label>
-              </div>
-            </div>
-          )}
-
-          {/* File Input */}
-          <div style={{ marginBottom: 20, textAlign: 'center' }}>
-            <label htmlFor="ocr-file-input" className="btn-primary" style={{ cursor: 'pointer', fontSize: 14 }}>
-              📁 Choose File to Extract Text
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Language */}
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-2">
+              <Languages className="w-4 h-4" /> Language
             </label>
-            <input 
-              id="ocr-file-input"
-              type="file" 
-              accept=".png,.jpg,.jpeg,.webp,.bmp,.tiff,application/pdf" 
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-            />
-            {file && (
-              <div style={{ marginTop: 8, color: '#64748b', fontSize: 13 }}>
-                ✅ {file.name}
-              </div>
-            )}
+            <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
+              {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.name}</option>)}
+            </select>
           </div>
 
-          {/* PDF Page Selector */}
-          {file && file.type === 'application/pdf' && totalPages > 1 && (
-            <div style={{ marginBottom: 16, textAlign: 'center', fontSize: 13 }}>
-              <label style={{ marginRight: 8 }}>📄 Page:</label>
-              <input 
-                type="number" 
-                min="1" 
-                max={totalPages} 
-                value={selectedPage}
-                onChange={e => setSelectedPage(Math.min(totalPages, Math.max(1, parseInt(e.target.value) || 1)))}
-                style={{ width: 80, padding: 6, borderRadius: 4, border: '1px solid #d1d5db' }}
-              />
-              <span style={{ marginLeft: 8, color: '#64748b' }}>of {totalPages}</span>
+          {/* Engine */}
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-2">
+              <Monitor className="w-4 h-4" /> processing Engine
+            </label>
+            <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl">
+              <button
+                onClick={() => setOcrEngine('auto')}
+                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all ${ocrEngine === 'auto' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200'}`}
+              >
+                Auto (Smart)
+              </button>
+              <button
+                onClick={() => setOcrEngine('cloud')}
+                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'cloud' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200'}`}
+              >
+                <Cloud className="w-3 h-3" /> Cloud
+              </button>
+              <button
+                onClick={() => setOcrEngine('local')}
+                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'local' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200'}`}
+              >
+                <Laptop className="w-3 h-3" /> Local
+              </button>
             </div>
-          )}
+          </div>
 
-          {/* Preview & Progress */}
-          {busy && (
-            <div style={{ marginBottom: 16, padding: 16, background: '#f8fafc', borderRadius: 8, textAlign: 'center', border: '1px solid #e2e8f0' }}>
-              <div style={{ marginBottom: 12 }}>
-                <div style={{ 
-                  width: 40, 
-                  height: 40, 
-                  border: '3px solid #e2e8f0', 
-                  borderTop: '3px solid var(--primary)', 
-                  borderRadius: '50%', 
-                  margin: '0 auto',
-                  animation: 'spin 1s linear infinite'
-                }} />
-              </div>
-              <div style={{ fontWeight: 600, marginBottom: 8, fontSize: 14 }}>{progressText}</div>
-              <div style={{ width: '100%', background: '#e2e8f0', borderRadius: 8, overflow: 'hidden', height: 16 }}>
-                <div style={{ 
-                  width: `${progress}%`, 
-                  height: '100%', 
-                  background: 'var(--primary)', 
-                  transition: 'width 0.3s'
-                }} />
-              </div>
-              <div style={{ marginTop: 6, fontSize: 12, color: '#64748b' }}>{progress}%</div>
-            </div>
-          )}
+          {/* Mode */}
+          <div>
+            <label className="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-2">
+              <Zap className="w-4 h-4" /> Speed vs Accuracy
+            </label>
+            <select value={ocrMode} onChange={e => setOcrMode(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
+              <option value="fast">⚡ Fast (Draft)</option>
+              <option value="balanced">⚖️ Balanced</option>
+              <option value="accurate">🎯 High Accuracy (Slower)</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-          {/* Preview */}
-          {previewUrl && !busy && (
-            <div style={{ marginBottom: 16 }}>
-              <h3 style={{ fontSize: 15, marginBottom: 8 }}>📷 Preview {imageEnhancement && '(Enhanced)'}</h3>
-              <img 
-                src={previewUrl} 
-                alt="Preview" 
-                style={{ 
-                  maxWidth: '100%', 
-                  height: 'auto', 
-                  border: '1px solid #e2e8f0', 
-                  borderRadius: 8
-                }} 
-              />
-            </div>
-          )}
+      {batchMode ? (
+        <UniversalBatchProcessor
+          toolName="OCR Extraction"
+          processFile={processBatchFile}
+          acceptedTypes=".png,.jpg,.jpeg,.webp,.pdf"
+          outputExtension="_ocr.txt"
+          maxFiles={20}
+        />
+      ) : (
+        <div className="flex flex-col gap-6">
+          <AnimatePresence>
+            {errorMsg && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5" /> {errorMsg}
+              </motion.div>
+            )}
+            {successMsg && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2">
+                <CheckCircle className="w-5 h-5" /> {successMsg}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* Result */}
-          {text && !busy && (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <h3 style={{ margin: 0, fontSize: 15 }}>
-                  📝 Extracted Text 
-                  {confidence && (
-                    <span style={{ 
-                      marginLeft: 10, 
-                      fontSize: 13, 
-                      color: confidence > 80 ? '#059669' : confidence > 60 ? '#f59e0b' : '#dc2626',
-                      fontWeight: 600
-                    }}>
-                      ({confidence}% confident)
+          {!file ? (
+            <FileDropZone
+              onFiles={handleFileChange}
+              accept=".png,.jpg,.jpeg,.webp,.pdf"
+              disabled={busy}
+              hint="Upload image or PDF to extract text"
+            />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col gap-6"
+            >
+              {/* Progress Bar */}
+              {busy && (
+                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center animate-pulse">
+                  <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+                  <p className="text-slate-600 font-medium mb-1">{progressText}</p>
+                  <p className="text-sm text-slate-400 font-mono">{progress}%</p>
+                  <div className="w-full bg-slate-200 h-1.5 rounded-full mt-4 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress}%` }}
+                      className="h-full bg-blue-500 rounded-full"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${busy ? 'opacity-50 pointer-events-none' : ''}`}>
+                {/* Left: Preview */}
+                <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px]">
+                  <div className="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center text-sm font-semibold text-slate-700">
+                    <span>Original View</span>
+                    <div className="flex gap-2">
+                      {file.type === 'application/pdf' && totalPages > 1 && (
+                        <div className="flex items-center gap-1 bg-white rounded-lg border border-slate-200 px-1">
+                          <button disabled={selectedPage <= 1} onClick={() => setSelectedPage(p => p - 1)} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30"><ChevronLeft className="w-4 h-4" /></button>
+                          <span className="text-xs px-2">{selectedPage}/{totalPages}</span>
+                          <button disabled={selectedPage >= totalPages} onClick={() => setSelectedPage(p => p + 1)} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30"><ChevronRight className="w-4 h-4" /></button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex-1 overflow-auto p-4 bg-slate-100 flex items-center justify-center">
+                    {previewUrl ? (
+                      <img src={previewUrl} alt="Preview" className="max-w-full max-h-full object-contain shadow-lg rounded" />
+                    ) : (
+                      <div className="text-slate-400 flex flex-col items-center">
+                        <FileText className="w-12 h-12 mb-2 opacity-20" />
+                        <span>No preview available</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right: Result */}
+                <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px]">
+                  <div className="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                    <span className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                      Extracted Text
+                      {confidence && <span className={`text-[10px] px-2 py-0.5 rounded-full ${confidence > 80 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{confidence}% Score</span>}
                     </span>
-                  )}
-                </h3>
-                <button onClick={exportText} className="btn-primary" style={{ fontSize: 13 }}>
-                  💾 Export {exportFormat.toUpperCase()}
-                </button>
+                    <div className="flex gap-2">
+                      <select value={exportFormat} onChange={e => setExportFormat(e.target.value)} className="text-xs p-1.5 rounded border border-slate-300 bg-white">
+                        <option value="txt">.txt</option>
+                        <option value="json">.json</option>
+                        <option value="csv">.csv</option>
+                      </select>
+                    </div>
+                  </div>
+                  <textarea
+                    value={text}
+                    onChange={e => setText(e.target.value)}
+                    className="flex-1 w-full p-4 resize-none outline-none font-mono text-sm text-slate-700 bg-white"
+                    placeholder="Text will appear here after processing..."
+                  />
+                </div>
               </div>
-              <pre style={{ 
-                whiteSpace: 'pre-wrap', 
-                background: '#f8fafc', 
-                padding: 16, 
-                borderRadius: 8,
-                border: '1px solid #e2e8f0',
-                maxHeight: 400,
-                overflow: 'auto',
-                lineHeight: 1.6,
-                fontSize: 13
-              }}>
-                {text}
-              </pre>
-              <div style={{ marginTop: 8, fontSize: 12, color: '#64748b' }}>
-                📊 {text.length} chars · {text.split(/\s+/).filter(Boolean).length} words · {text.split('\n').length} lines
-              </div>
-            </div>
-          )}
 
-          {/* Tips */}
-          {!file && (
-            <div style={{ 
-              marginTop: 20, 
-              padding: 16, 
-              background: '#f8fafc', 
-              borderRadius: 8,
-              border: '1px solid #e2e8f0'
-            }}>
-              <h3 style={{ fontSize: 15, marginBottom: 12 }}>💡 Tips for Best Results</h3>
-              <ul style={{ lineHeight: 1.8, fontSize: 13, color: '#475569', paddingLeft: 20 }}>
-                <li>Use high-resolution images (300 DPI or higher)</li>
-                <li>Ensure good contrast between text and background</li>
-                <li>Avoid skewed images or enable Auto-Rotate</li>
-                <li>Select the correct language for better accuracy</li>
-                <li>Use "Accurate" mode for important documents</li>
-                <li>Enable Image Enhancement for scanned documents</li>
-              </ul>
-            </div>
+              {/* Action Footer */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-lg flex justify-between items-center max-w-4xl mx-auto w-full sticky bottom-4 z-10">
+                <button onClick={() => setFile(null)} className="font-semibold text-slate-500 hover:text-slate-800 transition-colors">Start Over</button>
+                <ActionButtons
+                  primaryText="Download Result"
+                  onPrimary={exportText}
+                  loading={busy}
+                  disabled={!text}
+                  icon={Download}
+                />
+              </div>
+
+            </motion.div>
           )}
-        </>
+        </div>
       )}
-
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
+    </ToolLayout>
   )
 }

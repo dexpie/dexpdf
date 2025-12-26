@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import './CommandPalette.css'
 
 export default function CommandPalette({ tools, onSelect, onClose, isOpen }) {
@@ -6,6 +7,7 @@ export default function CommandPalette({ tools, onSelect, onClose, isOpen }) {
     const [selected, setSelected] = useState(0)
     const inputRef = useRef(null)
     const listRef = useRef(null)
+    const router = useRouter()
 
     // Filter tools based on query
     const filtered = tools.filter(t => {
@@ -18,7 +20,15 @@ export default function CommandPalette({ tools, onSelect, onClose, isOpen }) {
     })
 
     // Recent tools from localStorage
-    const recentTools = JSON.parse(localStorage.getItem('recent-tools') || '[]')
+    const [recentTools, setRecentTools] = useState([])
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const saved = JSON.parse(localStorage.getItem('recent-tools') || '[]')
+            setRecentTools(saved)
+        }
+    }, [isOpen]) // Refresh when opened
+
     const recentFiltered = tools.filter(t => recentTools.includes(t.id))
 
     const displayList = query.trim() ? filtered : [...recentFiltered, ...filtered]
@@ -78,7 +88,8 @@ export default function CommandPalette({ tools, onSelect, onClose, isOpen }) {
         const newRecent = [tool.id, ...recent.filter(id => id !== tool.id)].slice(0, 5)
         localStorage.setItem('recent-tools', JSON.stringify(newRecent))
 
-        onSelect(tool)
+        router.push(`/${tool.id}`)
+        if (onSelect) onSelect(tool)
         onClose()
     }
 

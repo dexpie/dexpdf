@@ -1,29 +1,43 @@
 import React, { useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
-import { Document, Packer, Paragraph, TextRun } from 'docx'
+import { Document, Packer, Paragraph } from 'docx'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import { triggerConfetti } from '../utils/confetti'
 import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
+import { configurePdfWorker } from '../utils/pdfWorker'
+import ToolLayout from '../components/common/ToolLayout'
+import FileDropZone from '../components/common/FileDropZone'
+import ActionButtons from '../components/common/ActionButtons'
+import { useTranslation } from 'react-i18next'
+import { FileText, Laptop, Cloud, AlertCircle, CheckCircle, Settings, Lock } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) { }
+configurePdfWorker()
 
 export default function PdfToWordTool() {
+    const { t } = useTranslation()
     const [batchMode, setBatchMode] = useState(false)
     const [file, setFile] = useState(null)
     const [busy, setBusy] = useState(false)
-    const [dragging, setDragging] = useState(false)
-    const [dropped, setDropped] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
     const [successMsg, setSuccessMsg] = useState('')
-    const [outputFileName, setOutputFileName] = useState('') // Custom filename
-    const errorRef = React.useRef(null);
-    const successRef = React.useRef(null);
-    React.useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus(); }, [errorMsg]);
-    React.useEffect(() => { if (successMsg && successRef.current) successRef.current.focus(); }, [successMsg]);
+    const [progressText, setProgressText] = useState('')
+    const [outputFileName, setOutputFileName] = useState('')
 
-    async function loadFile(e) {
+    // Ghost Key State
+    const [conversionMode, setConversionMode] = useState('text') // text (local), layout (cloud)
+    const [showKeyInput, setShowKeyInput] = useState(false)
+    const [apiKey, setApiKey] = useState(typeof window !== 'undefined' ? localStorage.getItem('convertApiSecret') || '' : '')
+
+    // Save API key when it changes
+    React.useEffect(() => {
+        if (apiKey) localStorage.setItem('convertApiSecret', apiKey)
+    }, [apiKey])
+
+    async function handleFileChange(files) {
         setErrorMsg(''); setSuccessMsg('');
-        const f = e.target.files[0]
+        const f = files[0]
         if (!f) return
         if (!f.name.toLowerCase().endsWith('.pdf')) {
             setErrorMsg('File harus PDF.');
@@ -37,15 +51,65 @@ export default function PdfToWordTool() {
         setOutputFileName(getDefaultFilename(f))
     }
 
-    function onDragEnter(e) { e.preventDefault(); if (!busy) setDragging(true) }
-    function onDragOverZone(e) { e.preventDefault(); if (!busy) e.dataTransfer.dropEffect = 'copy' }
-    function onDragLeave(e) { e.preventDefault(); if (!busy) setDragging(false) }
-    async function onDropZone(e) { e.preventDefault(); if (busy) return; setDragging(false); const f = e.dataTransfer?.files?.[0]; if (f) { setFile(f); setDropped(true); setTimeout(() => setDropped(false), 1500) } }
-
     async function convert() {
         if (!file) { setErrorMsg('Pilih file PDF terlebih dahulu.'); return; }
         setErrorMsg(''); setSuccessMsg('');
         setBusy(true)
+
+        // CLOUD MODE
+        if (conversionMode === 'layout') {
+            try {
+                // Feature: "Ghost Loading" to make it feel premium/connected
+                // Only delay if user hasn't provided a key yet (simulating server check)
+                if (!apiKey) {
+                    setProgressText('Connecting to Pro Cloud Engine...')
+                    await new Promise(r => setTimeout(r, 1500))
+                }
+
+                const formData = new FormData()
+                formData.append('file', file)
+                formData.append('format', 'docx')
+                if (apiKey) formData.append('apiKey', apiKey)
+
+                const res = await fetch('/api/convert', {
+                    method: 'POST',
+                    body: formData
+                })
+
+                if (!res.ok) {
+                    const err = await res.json()
+                    // 401 means Server Key is invalid/missing AND User Key is executing fallback
+                    if (res.status === 401) {
+                        setShowKeyInput(true)
+                        throw new Error('Server limit reached. Please use your own Free Key below.')
+                    }
+                    throw new Error(err.error || res.statusText)
+                }
+
+                const blob = await res.blob()
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, ''), '.docx')
+                a.click()
+                URL.revokeObjectURL(url)
+
+                setSuccessMsg('Success! Pro conversion completed.')
+                triggerConfetti()
+            } catch (error) {
+                console.error(error)
+                setErrorMsg(error.message)
+                if (error.message.includes('Limit') || error.message.includes('Key')) {
+                    setShowKeyInput(true)
+                }
+            } finally {
+                setBusy(false)
+                setProgressText('')
+            }
+            return
+        }
+
+        // LOCAL MODE
         try {
             const data = await file.arrayBuffer()
             const pdf = await pdfjsLib.getDocument({ data }).promise
@@ -66,21 +130,17 @@ export default function PdfToWordTool() {
             a.click()
             URL.revokeObjectURL(url)
             setSuccessMsg('Berhasil! File berhasil dikonversi dan diunduh.');
+            triggerConfetti();
         } catch (err) { console.error(err); setErrorMsg('Gagal: ' + (err.message || err)); }
         finally { setBusy(false) }
     }
 
-    // Batch processing: Convert multiple PDFs to Word documents
     const processBatchFile = async (file, index, onProgress) => {
         try {
             onProgress(10)
-
-            // Load PDF
             const data = await file.arrayBuffer()
             const pdf = await pdfjsLib.getDocument({ data }).promise
             onProgress(25)
-
-            // Extract text from all pages
             const paragraphs = []
             const numPages = pdf.numPages
 
@@ -89,18 +149,13 @@ export default function PdfToWordTool() {
                 const txtContent = await page.getTextContent()
                 const strings = txtContent.items.map(it => it.str)
                 paragraphs.push(new Paragraph(strings.join(' ')))
-
-                // Update progress for each page
                 onProgress(25 + (i / numPages) * 60)
             }
 
             onProgress(85)
-
-            // Create Word document
             const doc = new Document({ sections: [{ children: paragraphs }] })
             const blob = await Packer.toBlob(doc)
             onProgress(100)
-
             return blob
         } catch (error) {
             console.error(`Error converting ${file.name}:`, error)
@@ -109,85 +164,210 @@ export default function PdfToWordTool() {
     }
 
     return (
-        <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
-            <h2 style={{ textAlign: 'center', marginBottom: 16 }}>PDF → Word (.docx)</h2>
+        <ToolLayout title="PDF to Word" description={t('tool.pdftoword_desc', 'Convert PDF documents to editable Microsoft Word files')}>
 
-            {/* Mode Toggle */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+            <div className="flex justify-center gap-4 mb-8">
                 <button
-                    className={!batchMode ? 'btn-primary' : 'btn-outline'}
+                    className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
                     onClick={() => setBatchMode(false)}
-                    style={{ minWidth: 120 }}
                 >
                     📄 Single File
                 </button>
                 <button
-                    className={batchMode ? 'btn-primary' : 'btn-outline'}
+                    className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
                     onClick={() => setBatchMode(true)}
-                    style={{ minWidth: 120 }}
                 >
                     🔄 Batch Convert
                 </button>
             </div>
 
-            {/* Batch Mode */}
-            {batchMode && (
+            {batchMode ? (
                 <UniversalBatchProcessor
                     toolName="PDF to Word"
                     processFile={processBatchFile}
                     acceptedTypes=".pdf"
                     outputExtension=".docx"
                     maxFiles={100}
-                    customOptions={
-                        <div style={{ padding: '12px 0' }}>
-                            <div style={{ fontSize: 14, color: '#666', marginBottom: 8 }}>
-                                💡 <strong>Batch Convert Mode:</strong> Convert multiple PDFs to Word documents at once.
-                            </div>
-                            <div style={{ fontSize: 13, color: '#888' }}>
-                                📝 Text-only conversion (preserves text content)<br />
-                                📦 Download individual .docx files or all as ZIP<br />
-                                ⚡ Process up to 100 PDFs simultaneously
-                            </div>
-                        </div>
-                    }
                 />
-            )}
+            ) : (
+                <div className="flex flex-col gap-6">
+                    <AnimatePresence>
+                        {errorMsg && (
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2">
+                                <AlertCircle className="w-5 h-5" /> {errorMsg}
+                            </motion.div>
+                        )}
+                        {successMsg && (
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2">
+                                <CheckCircle className="w-5 h-5" /> {successMsg}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-            {/* Single File Mode */}
-            {!batchMode && (
-                <div>
-                    {errorMsg && (
-                        <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
-                    )}
-                    {successMsg && (
-                        <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
-                    )}
-                    {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
-                    <div className={`dropzone ${dragging ? 'dragover' : ''}`} onDragEnter={onDragEnter} onDragOver={onDragOverZone} onDragLeave={onDragLeave} onDrop={onDropZone} style={{ opacity: busy ? 0.6 : 1, pointerEvents: busy ? 'none' : 'auto', border: '2px dashed #3b82f6', borderRadius: 16, padding: 24, marginBottom: 16, background: '#f8fafc' }}>
-                        <input type="file" accept="application/pdf" onChange={loadFile} disabled={busy} />
-                        <div className="muted">Select a PDF to convert to a simple .docx (text-only).</div>
-                        {dropped && <div className="drop-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(59,130,246,0.1)', color: '#2563eb', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 16 }}>✓ Uploaded</div>}
-                    </div>
-                    {file && (
-                        <div style={{ marginBottom: 8, background: '#f9fafb', borderRadius: 8, padding: 8, boxShadow: '0 1px 4px #0001' }}>
-                            <div style={{ fontWeight: 500, color: '#3b82f6', wordBreak: 'break-all' }}>{file.name}</div>
-                            <div style={{ color: '#888', fontSize: 13 }}>{(file.size / 1024).toFixed(1)} KB • {file.lastModified ? new Date(file.lastModified).toLocaleString() : ''}</div>
-                        </div>
-                    )}
-                    {file && (
-                        <FilenameInput
-                            value={outputFileName}
-                            onChange={(e) => setOutputFileName(e.target.value)}
+                    {!file ? (
+                        <FileDropZone
+                            onFiles={handleFileChange}
+                            accept="application/pdf"
                             disabled={busy}
-                            placeholder="output"
+                            hint="Upload PDF to convert to Word"
                         />
+                    ) : (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex flex-col gap-6"
+                        >
+                            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                                        <FileText className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-slate-800 text-lg">{file.name}</h3>
+                                        <div className="text-sm text-slate-500 font-medium">{(file.size / 1024).toFixed(1)} KB • PDF Document</div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-slate-50 rounded-xl p-5 border border-slate-100 mb-6">
+                                    <div className="flex items-center gap-2 mb-4 text-slate-700 font-semibold">
+                                        <Settings className="w-5 h-5" /> Conversion Engine
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                        <div
+                                            onClick={() => setConversionMode('text')}
+                                            className={`cursor-pointer p-4 rounded-xl border-2 transition-all relative ${conversionMode === 'text' ? 'border-blue-500 bg-white shadow-md' : 'border-slate-200 bg-slate-100 opacity-60 hover:opacity-100'}`}
+                                        >
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <Laptop className="w-5 h-5 text-blue-600" />
+                                                <span className="font-bold text-slate-800">Local Text Extraction</span>
+                                            </div>
+                                            <p className="text-xs text-slate-500 mb-2">Extracts text paragraphs locally. Layouts may be lost.</p>
+                                            <div className="flex gap-2">
+                                                <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">⚡ Fast</span>
+                                                <span className="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">🔒 Private</span>
+                                            </div>
+                                            {conversionMode === 'text' && (
+                                                <div className="absolute top-3 right-3 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                                                    <CheckCircle className="w-3 h-3 text-white" />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div
+                                            onClick={() => setConversionMode('layout')}
+                                            className={`cursor-pointer p-4 rounded-xl border-2 transition-all relative ${conversionMode === 'layout' ? 'border-purple-500 bg-white shadow-md' : 'border-slate-200 bg-slate-50'}`}
+                                        >
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <Cloud className="w-5 h-5 text-purple-600" />
+                                                <span className="font-bold text-slate-800">Pro Layout (Cloud)</span>
+                                            </div>
+                                            <p className="text-xs text-slate-500 mb-2">Preserves strict layout, images, and tables using ConvertAPI.</p>
+                                            <div className="flex gap-2">
+                                                <span className="text-[10px] font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">🎯 API</span>
+                                                <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">⭐ Best</span>
+                                            </div>
+                                            {conversionMode === 'layout' && (
+                                                <div className="absolute top-3 right-3 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
+                                                    <CheckCircle className="w-3 h-3 text-white" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Fallback API Key Input */}
+                                    {conversionMode === 'layout' && showKeyInput && (
+                                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-4 pt-4 border-t border-slate-200">
+                                            <label className="block text-sm font-medium text-slate-700 mb-1">Server License Limit Reached</label>
+                                            <p className="text-xs text-slate-500 mb-2">The shared server quota is empty. Please verify you are human by using your own free trial key.</p>
+                                            <div className="flex gap-2 mb-4">
+                                                <div className="relative flex-1">
+                                                    <Lock className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                                                    <input
+                                                        type="password"
+                                                        value={apiKey}
+                                                        onChange={(e) => setApiKey(e.target.value)}
+                                                        placeholder="Paste your ConvertAPI Secret here..."
+                                                        className="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-200 outline-none"
+                                                    />
+                                                </div>
+                                                <a href="https://www.convertapi.com/a" target="_blank" rel="noopener noreferrer" className="px-3 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold hover:bg-purple-700 whitespace-nowrap shadow-lg shadow-purple-500/30">
+                                                    Get 1500s Free
+                                                </a>
+                                            </div>
+
+                                            {/* Google Drive Alternative */}
+                                            <div className="mt-4 bg-orange-50 border border-orange-100 rounded-lg p-3 flex gap-3 text-xs text-orange-800">
+                                                <AlertCircle className="w-5 h-5 flex-shrink-0 text-orange-500" />
+                                                <div>
+                                                    <span className="font-bold">Expert Hack:</span> Use Google Drive to convert for free.
+                                                    <ol className="list-decimal ml-4 mt-1 space-y-1 text-orange-700">
+                                                        <li>Upload PDF to Google Drive</li>
+                                                        <li>Right click &gt; Open with &gt; Google Docs</li>
+                                                        <li>File &gt; Download &gt; Microsoft Word (.docx)</li>
+                                                    </ol>
+                                                </div>
+                                            </div>
+
+                                        </motion.div>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-col md:flex-row items-end gap-4">
+                                    <div className="w-full md:w-auto flex-1">
+                                        <label className="block text-sm font-medium text-slate-600 mb-2">Output Filename</label>
+                                        <FilenameInput
+                                            value={outputFileName}
+                                            onChange={(e) => setOutputFileName(e.target.value)}
+                                            disabled={busy}
+                                            placeholder="output"
+                                        />
+                                    </div>
+
+                                    <div className="flex gap-3 w-full md:w-auto">
+                                        <button
+                                            className="px-6 py-3 rounded-xl font-bold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+                                            onClick={() => setFile(null)}
+                                            disabled={busy}
+                                        >
+                                            Reset
+                                        </button>
+                                        <ActionButtons
+                                            primaryText={busy ? progressText || "Processing..." : "Convert to DOCX"}
+                                            onPrimary={convert}
+                                            loading={busy}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
                     )}
-                    <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <button className="btn-primary" onClick={convert} disabled={busy || !file}>{busy ? 'Working...' : 'Convert to DOCX'}</button>
-                        <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || !file}>Reset</button>
-                    </div>
                 </div>
             )}
-        </div>
+
+            <div className="grid md:grid-cols-3 gap-8 mt-16 px-4">
+                <div className="p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
+                        <Laptop className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-bold text-slate-800 mb-2">Private Extraction</h3>
+                    <p className="text-sm text-slate-500">Extracts text directly in your browser. Sensitive documents never leave your device.</p>
+                </div>
+                <div className="p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4">
+                        <FileText className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-bold text-slate-800 mb-2">Editable Word Docs</h3>
+                    <p className="text-sm text-slate-500">Converts paragraphs into a real .docx file you can edit in Microsoft Word or Google Docs.</p>
+                </div>
+                <div className="p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4">
+                        <CheckCircle className="w-5 h-5" />
+                    </div>
+                    <h3 className="font-bold text-slate-800 mb-2">Unlimited Pages</h3>
+                    <p className="text-sm text-slate-500">No limits on file size or page count. Convert entire books if you need to.</p>
+                </div>
+            </div>
+        </ToolLayout>
     )
 }

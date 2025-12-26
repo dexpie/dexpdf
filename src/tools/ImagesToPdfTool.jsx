@@ -1,20 +1,24 @@
 import React, { useState } from 'react'
 // jsPDF will be dynamically imported when creating the PDF to avoid inflating initial bundle
+import { triggerConfetti } from '../utils/confetti'
+import ToolLayout from '../components/common/ToolLayout'
+import FileDropZone from '../components/common/FileDropZone'
+import ActionButtons from '../components/common/ActionButtons'
+import { useTranslation } from 'react-i18next'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Image as ImageIcon, X, GripVertical, FileText, CheckCircle, AlertTriangle, Maximize, Minimize, Expand } from 'lucide-react'
 
 export default function ImagesToPdfTool() {
+	const { t } = useTranslation()
 	const [images, setImages] = useState([])
 	const [busy, setBusy] = useState(false)
 	const [mode, setMode] = useState('fit') // fit | fill | actual
 	const [errorMsg, setErrorMsg] = useState('')
 	const [successMsg, setSuccessMsg] = useState('')
-	const errorRef = React.useRef(null);
-	const successRef = React.useRef(null);
-	React.useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus(); }, [errorMsg]);
-	React.useEffect(() => { if (successMsg && successRef.current) successRef.current.focus(); }, [successMsg]);
 
-	async function onFiles(e) {
+	async function handleFileChange(files) {
 		setErrorMsg(''); setSuccessMsg('');
-		const list = Array.from(e.target.files)
+		const list = Array.from(files)
 		const loaded = []
 		for (const f of list) {
 			if (!f.type.startsWith('image/')) {
@@ -137,6 +141,7 @@ export default function ImagesToPdfTool() {
 
 			doc.save('images.pdf')
 			setSuccessMsg('PDF berhasil dibuat dan diunduh!')
+			triggerConfetti()
 		} catch (err) {
 			console.error(err)
 			setErrorMsg('Gagal membuat PDF: ' + (err.message || err))
@@ -146,42 +151,119 @@ export default function ImagesToPdfTool() {
 	}
 
 	return (
-		<div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
-			<h2 style={{ textAlign: 'center', marginBottom: 16 }}>Images → PDF</h2>
-			{errorMsg && (
-				<div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
-			)}
-			{successMsg && (
-				<div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
-			)}
-			{busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
-			<div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8 }}>
-				<label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>Mode:</label>
-				<select value={mode} onChange={e => setMode(e.target.value)} disabled={busy}>
-					<option value="fit">Fit (contain)</option>
-					<option value="fill">Fill (cover)</option>
-					<option value="actual">Actual size (max page)</option>
-				</select>
+		<ToolLayout title="Images to PDF" description={t('tool.imagestopdf_desc', 'Convert images to PDF document')}>
+			<div className="max-w-6xl mx-auto">
+				<AnimatePresence>
+					{errorMsg && (
+						<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
+							<AlertTriangle className="w-5 h-5" /> {errorMsg}
+						</motion.div>
+					)}
+					{successMsg && (
+						<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
+							<CheckCircle className="w-5 h-5" /> {successMsg}
+						</motion.div>
+					)}
+				</AnimatePresence>
+
+				<FileDropZone
+					onFiles={handleFileChange}
+					accept="image/*"
+					multiple
+					disabled={busy}
+					hint="Upload images to convert to PDF"
+				/>
+
+				{images.length > 0 && (
+					<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
+						<div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-8">
+							<div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+								<h3 className="font-bold text-slate-700 flex items-center gap-2">
+									<ImageIcon className="w-5 h-5 text-blue-500" />
+									{images.length} Images Selected
+								</h3>
+
+								<div className="flex bg-slate-100 p-1 rounded-xl">
+									{[
+										{ id: 'fit', label: 'Fit Page', icon: Minimize },
+										{ id: 'fill', label: 'Fill Page', icon: Maximize },
+										{ id: 'actual', label: 'Actual Size', icon: Expand }
+									].map(m => (
+										<button
+											key={m.id}
+											onClick={() => setMode(m.id)}
+											className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${mode === m.id ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200'}`}
+										>
+											<m.icon className="w-4 h-4" />
+											{m.label}
+										</button>
+									))}
+								</div>
+							</div>
+						</div>
+
+						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-8">
+							{images.map((entry, i) => (
+								<motion.div
+									layout
+									initial={{ opacity: 0, scale: 0.9 }}
+									animate={{ opacity: 1, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.9 }}
+									className="group relative bg-white p-2 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-move hover:border-blue-300"
+									key={i}
+									draggable={!busy}
+									onDragStart={e => !busy && onDragStart(e, i)}
+									onDragOver={onDragOver}
+									onDrop={e => !busy && onDrop(e, i)}
+								>
+									<div className="absolute top-2 left-2 z-10 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
+										{i + 1}
+									</div>
+
+									<div className="aspect-[3/4] bg-slate-50 rounded-lg overflow-hidden mb-2 relative flex items-center justify-center">
+										<img src={entry.thumb} className="w-full h-full object-cover" alt="thumb" />
+
+										<div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+											<GripVertical className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 drop-shadow-lg" />
+										</div>
+
+										<button
+											className="absolute top-2 right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-red-50 transform hover:scale-110"
+											onClick={() => remove(i)}
+											disabled={busy}
+										>
+											<X className="w-4 h-4" />
+										</button>
+									</div>
+									<div className="text-xs text-center truncate text-slate-600 font-medium px-1">{entry.file.name}</div>
+								</motion.div>
+							))}
+
+							<div className="flex flex-col items-center justify-center aspect-[3/4] bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer text-slate-400 hover:text-blue-500" onClick={() => document.querySelector('input[type=file]').click()}>
+								<ImageIcon className="w-8 h-8 mb-2" />
+								<span className="text-xs font-semibold">Add More</span>
+							</div>
+						</div>
+
+						<div className="flex justify-end sticky bottom-6 z-10">
+							<div className="bg-white p-4 rounded-2xl shadow-xl border border-slate-200 flex gap-4">
+								<button
+									className="px-6 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+									onClick={() => { setImages([]); setErrorMsg(''); setSuccessMsg(''); }}
+								>
+									Reset
+								</button>
+								<ActionButtons
+									primaryText="Create PDF"
+									onPrimary={makePdf}
+									loading={busy}
+									icon={FileText}
+								/>
+							</div>
+						</div>
+					</motion.div>
+				)}
 			</div>
-			<div className="dropzone" style={{ opacity: busy ? 0.6 : 1, pointerEvents: busy ? 'none' : 'auto', border: '2px dashed #3b82f6', borderRadius: 16, padding: 24, marginBottom: 16, background: '#f8fafc' }}>
-				<input type="file" accept="image/*" multiple onChange={onFiles} disabled={busy} />
-				<div className="muted">Select images in the order you want them to appear.</div>
-			</div>
-			<div className="file-list">
-				{images.map((entry, i) => (
-					<div className="file-item" key={i} draggable={!busy} onDragStart={e => !busy && onDragStart(e, i)} onDragOver={onDragOver} onDrop={e => !busy && onDrop(e, i)} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#f9fafb', borderRadius: 8, marginBottom: 8, padding: 8, opacity: busy ? 0.7 : 1 }}>
-						<img src={entry.thumb} style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 4 }} alt="thumb" />
-						<div style={{ minWidth: 120, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>{entry.file.name}</div>
-						<div style={{ color: '#888', fontSize: 13 }}>{(entry.file.size / 1024).toFixed(1)} KB</div>
-						<button className="btn" onClick={() => remove(i)} disabled={busy}>Remove</button>
-					</div>
-				))}
-			</div>
-			<div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-				<button className="btn-primary" onClick={makePdf} disabled={busy || images.length === 0}>{busy ? 'Working...' : 'Create PDF'}</button>
-				<button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setImages([]); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || images.length === 0}>Reset</button>
-			</div>
-		</div>
+		</ToolLayout>
 	)
 }
-

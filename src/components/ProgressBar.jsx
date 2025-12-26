@@ -1,14 +1,15 @@
+'use client'
+
 import * as React from 'react'
-import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
-import CircularProgress from '@mui/material/CircularProgress'
-import Typography from '@mui/material/Typography'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Loader2, CheckCircle2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export default function ProgressBar() {
   const [loading, setLoading] = React.useState(false)
-  const [query, setQuery] = React.useState('idle')
+  const [status, setStatus] = React.useState('idle') // idle, progress, success
   const [message, setMessage] = React.useState('')
-  const timerRef = React.useRef(undefined)
+  const timerRef = React.useRef(null)
 
   React.useEffect(() => {
     return () => {
@@ -21,14 +22,17 @@ export default function ProgressBar() {
       const d = e.detail || {}
       if (d && typeof d === 'object') {
         if (d.end) {
-          setQuery('success')
+          setStatus('success')
           setMessage(d.message || 'Done')
-          timerRef.current = setTimeout(() => setQuery('idle'), 1000)
+          timerRef.current = setTimeout(() => {
+            setStatus('idle')
+            setLoading(false)
+          }, 2000)
           return
         }
         // show progress state
         setLoading(true)
-        setQuery('progress')
+        setStatus('progress')
         if (d.message) setMessage(d.message)
       }
     }
@@ -37,27 +41,31 @@ export default function ProgressBar() {
     return () => window.removeEventListener('pdf-progress', onProgress)
   }, [])
 
-  // Render nothing when idle
-  if (query === 'idle') return null
-
   return (
-    <Box sx={{ position: 'fixed', top: 8, left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 1400 }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Box sx={{ height: 40 }}>
-          <Fade in={loading} style={{ transitionDelay: loading ? '200ms' : '0ms' }} unmountOnExit>
-            <CircularProgress />
-          </Fade>
-        </Box>
-        <Box sx={{ mt: 0.5 }}>
-          {query === 'success' ? (
-            <Typography variant="caption">{message || 'Success'}</Typography>
-          ) : (
-            <Fade in={query === 'progress'} style={{ transitionDelay: query === 'progress' ? '200ms' : '0ms' }} unmountOnExit>
-              <Typography variant="caption">{message || 'Working...'}</Typography>
-            </Fade>
+    <AnimatePresence>
+      {(status !== 'idle') && (
+        <motion.div
+          initial={{ opacity: 0, y: -50, x: '-50%' }}
+          animate={{ opacity: 1, y: 0, x: '-50%' }}
+          exit={{ opacity: 0, y: -50, x: '-50%' }}
+          className={cn(
+            "fixed top-4 left-1/2 z-[1400] flex items-center gap-3 px-6 py-3 rounded-full shadow-lg border backdrop-blur-md",
+            status === 'success'
+              ? "bg-green-50/90 border-green-200 text-green-700"
+              : "bg-white/90 border-slate-200 text-slate-700"
           )}
-        </Box>
-      </Box>
-    </Box>
+        >
+          {status === 'progress' ? (
+            <Loader2 className="w-5 h-5 animate-spin text-primary" />
+          ) : (
+            <CheckCircle2 className="w-5 h-5 text-green-600" />
+          )}
+
+          <span className="font-medium text-sm">
+            {message || (status === 'progress' ? 'Processing...' : 'Success')}
+          </span>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
