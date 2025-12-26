@@ -1,60 +1,96 @@
+# DexPDF - The Ultimate PDF Ecosystem 🚀
 
-# dexpdf
+![DexPDF Banner](/public/assets/hero-bg.png)
 
-![CI](https://github.com/dexpie/dexpdf/actions/workflows/ci.yml/badge.svg)
+**DexPDF** is a premium, open-source PDF utility suite built for the modern web. 
+It combines **SaaS-level aesthetics** with **privacy-first architecture**, processing files directly in your browser using WebAssembly and bleeding-edge web technologies.
 
-dexpdf is a small client-side PDF toolkit built with React + Vite. It provides basic tools similar to small PDF services: merge PDFs, extract pages, and create PDFs from images — all in the browser (no server required).
+> **World No. 1 Requirement:** Created to rival iLovePDF/SmallPDF in both functionality and design, but 100% Free.
 
-Features
-- Merge multiple PDFs into one
-- Split / extract selected pages from a PDF
-- Convert images into a single PDF
+## ✨ Key Features
 
-Quickstart (locally)
+### 🛠️ Professional Tool Suite
+-   **Merge & Split**: Combine or separate PDFs with drag-and-drop ease.
+-   **Compress**: Squeeze file sizes without losing quality.
+-   **Convert**: PDF to Word, Images to PDF, and more.
+-   **Organize**: Visual page reordering and rotation.
+-   **OCR**: Extract text from scanned documents (Image/PDF) with multi-language support.
 
-1. Install dependencies
+### 🤖 AI Intelligence (New!)
+-   **Chat with PDF**: "Talk" to your documents. Local AI searches and summarizes content instantly without API keys.
+-   **Smart Inputs**: Auto-detects emails and phone numbers from CVs/Resumes.
 
-```powershell
+### 🛡️ Privacy & Performance
+-   **100% Client-Side**: Files mostly stay on your device (processed via `pdf-lib` and `pdf.js`).
+-   **PWA Ready**: Install as a desktop/mobile app for offline use.
+-   **Local History**: "My Documents" feature keeps track of your work without a database.
+
+### 🎨 Premium Experience
+-   **Glassmorphism UI**: Beautiful, responsive design containing rich animations.
+-   **Dark Mode**: Fully supported system-wide theme.
+-   **Multi-language**: Native support for English (EN) and Indonesian (ID).
+
+## 🏗️ Tech Stack
+
+-   **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+-   **Language**: TypeScript
+-   **Styling**: Tailwind CSS + Shadcn/UI
+-   **Animations**: Framer Motion
+-   **PDF Engine**: `pdf-lib`, `pdfjs-dist`
+-   **OCR**: `tesseract.js`
+-   **PWA**: `next-pwa`
+
+## 🚀 Getting Started
+
+### Prerequisites
+-   Node.js 18+
+-   npm or yarn
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/dexpie/dexpdf.git
+
+# Navigate to directory
+cd dexpdf
+
+# Install dependencies
 npm install
-```
 
-2. Run dev server
-
-```powershell
+# Run development server
 npm run dev
 ```
 
-3. Build for production
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-```powershell
+## 📦 Building for Production
+
+```bash
 npm run build
+npm start
 ```
 
-Deploy to Vercel
+## 📱 PWA Features
+DexPDF is a Progressive Web App.
+-   **Installable**: Click the "Install App" button in the navbar.
+-   **Offline**: Works without internet (for local tools).
+-   **Native Feel**: Launch from dock/taskbar.
 
-1. Sign in to Vercel and create a new project.
-2. Import this repository (or push it to GitHub and import there).
-3. Set framework to "Other" or auto-detected. Build command: `npm run build`. Output directory: `dist`.
-4. Deploy. The app is a static site and will be served from the generated `dist` folder.
+## 🤝 Contributing
 
-Notes and limitations
-- All processing happens client-side. Large files may be slow or memory-heavy in the browser.
-- Use modern browsers for best PDF API support.
+We welcome contributions! Please fork the repo and submit a Pull Request.
 
-Workerized processing (Batch Watermark)
-- The Batch Watermark tool performs CPU-bound PDF edits using an inline Web Worker so the UI remains responsive during processing.
-- Cancellation: pressing "Cancel" sends an abort message to the worker; the worker cooperatively stops and the UI is updated.
-- Fallback: if the browser or build environment cannot create the worker, the tool falls back to in-thread processing.
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
 
-How to test
-- Start the dev server: `npm run dev` and open the app.
-- Open the "Batch Watermark" tool from the tools list, select multiple small PDF files, set the watermark text and click "Apply Watermark & Download ZIP".
-- Observe the global progress bar and per-file progress. Try clicking Cancel to ensure processing stops.
+## 📄 License
 
-Contributing & CI
-- Contributions welcome. Please fork and open a PR against `main`.
-- This repository includes a GitHub Actions workflow `.github/workflows/ci.yml` which runs `npm ci` and `npm run build` on pushes and PRs — the badge near the top of this README shows CI status.
+Distributed under the MIT License. See `LICENSE` for more information.
 
-Changelog (recent)
-- 2025-10-15: Workerized Batch Watermark processing (inline module worker + fallback). Added worker helpers and README notes. CI workflow and badges available.
+---
 
+**Built with ❤️ by DexPie Team**
