@@ -46,6 +46,9 @@ const features = [
     { id: 'smart-organize', title: "Smart Organizer", description: "AI Auto-Rename & Sort (Invoices, Contracts).", icon: Wand2, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/smart-organize" },
     { id: 'redact', title: "Redact PDF", description: "Permanently blackout & remove sensitive text.", icon: ShieldAlert, color: "text-red-500", iconBg: "bg-red-50", href: "/redact" },
     { id: 'scrub', title: "Scrub Metadata", description: "Clean hidden data (Author, Creator) for privacy.", icon: Eraser, color: "text-gray-500", iconBg: "bg-gray-50", href: "/scrub" },
+    { id: 'invoice-generator', title: "Invoice Generator", description: "Create professional invoices instantly.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/invoice-generator" },
+    { id: 'resume-builder', title: "Resume Builder", description: "Build ATS-friendly resumes.", icon: LayoutTemplate, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/resume-builder" },
+    { id: 'certificate-maker', title: "Certificate Maker", description: "Design awards & certificates.", icon: Wand2, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/certificate-maker" },
 ]
 
 export default function LandingPage() {
