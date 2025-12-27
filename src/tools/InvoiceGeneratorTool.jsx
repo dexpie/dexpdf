@@ -278,7 +278,7 @@ export default function InvoiceGeneratorTool() {
                     <div className="border border-slate-200 rounded-lg overflow-hidden bg-slate-500/10 p-4">
                         <div className="uppercase text-xs font-bold text-slate-500 mb-2 text-center">Preview</div>
                         <div className="origin-top transform scale-[0.6] sm:scale-[0.8] xl:scale-[0.55]" style={{ height: 600 }}> {/* Fixed height container to crop overflow */}
-                            <div ref={previewRef} className="bg-white shadow-2xl mx-auto text-slate-800"
+                            <div className="bg-white shadow-2xl mx-auto text-slate-800"
                                 style={{
                                     width: '210mm',
                                     minHeight: '297mm',
@@ -375,6 +375,105 @@ export default function InvoiceGeneratorTool() {
                     </div>
                 </div>
             </div>
-        </ToolLayout>
+
+            {/* --- Ghost Print Area (Hidden) --- */}
+            <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+                <div ref={previewRef} className="bg-white text-slate-800"
+                    style={{
+                        width: '210mm',
+                        minHeight: '297mm',
+                        padding: '20mm',
+                        fontFamily: 'sans-serif'
+                    }}
+                >
+                    {/* Header */}
+                    <div className="flex justify-between items-start mb-12">
+                        <div>
+                            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">INVOICE</h1>
+                            <p className="text-slate-500 mt-2 font-medium">#{data.number}</p>
+                        </div>
+                        <div className="text-right">
+                            <h2 className="font-bold text-lg">{data.from.name}</h2>
+                            <p className="text-sm text-slate-500 whitespace-pre-wrap">{data.from.address}</p>
+                            <p className="text-sm text-slate-500">{data.from.email}</p>
+                            <p className="text-sm text-slate-500">{data.from.phone}</p>
+                        </div>
+                    </div>
+
+                    {/* Bill To & Date */}
+                    <div className="flex justify-between mb-12">
+                        <div>
+                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Bill To</h3>
+                            <div className="font-bold text-lg">{data.to.name}</div>
+                            <div className="text-sm text-slate-600 whitespace-pre-wrap max-w-[250px]">{data.to.address}</div>
+                        </div>
+                        <div className="text-right space-y-2">
+                            <div>
+                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Date</div>
+                                <div className="font-medium">{data.date}</div>
+                            </div>
+                            <div>
+                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Due Date</div>
+                                <div className="font-medium">{data.dueDate}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Items Table */}
+                    <table className="w-full mb-12">
+                        <thead className="border-b-2 border-slate-100">
+                            <tr>
+                                <th className="text-left py-3 text-sm font-bold text-slate-500 uppercase">Item</th>
+                                <th className="text-center py-3 text-sm font-bold text-slate-500 uppercase">Qty</th>
+                                <th className="text-right py-3 text-sm font-bold text-slate-500 uppercase">Rate</th>
+                                <th className="text-right py-3 text-sm font-bold text-slate-500 uppercase">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                            {data.items.map(item => (
+                                <tr key={item.id}>
+                                    <td className="py-4 font-medium">{item.desc || 'Item'}</td>
+                                    <td className="py-4 text-center text-slate-500">{item.qty}</td>
+                                    <td className="py-4 text-right text-slate-500">{data.currency}{item.rate.toLocaleString()}</td>
+                                    <td className="py-4 text-right font-bold">{data.currency}{(item.qty * item.rate).toLocaleString()}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                    {/* Totals */}
+                    <div className="flex justify-end mb-12">
+                        <div className="w-1/2 space-y-3">
+                            <div className="flex justify-between text-slate-500">
+                                <span>Subtotal</span>
+                                <span>{data.currency}{subtotal.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between text-slate-500">
+                                <span>Tax ({data.taxRate}%)</span>
+                                <span>{data.currency}{taxAmount.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between font-extrabold text-2xl text-slate-900 border-t-2 border-slate-100 pt-3">
+                                <span>Total</span>
+                                <span>{data.currency}{total.toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Notes */}
+                    {data.notes && (
+                        <div className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
+                            <h4 className="font-bold text-sm text-blue-700 mb-1">Notes</h4>
+                            <p className="text-sm text-blue-600 italic">{data.notes}</p>
+                        </div>
+                    )}
+
+                    <div className="mt-20 text-center text-xs text-slate-300 font-medium">
+                        Created with DexPDF
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        </ToolLayout >
     )
 }

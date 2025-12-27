@@ -219,7 +219,7 @@ export default function ResumeBuilderTool() {
                     {/* Preview Area (Scaled) */}
                     <div className="border border-slate-200 rounded-lg overflow-hidden bg-slate-500/10 p-4">
                         <div className="origin-top transform scale-[0.55]" style={{ height: 600 }}>
-                            <div ref={previewRef} className="bg-white shadow-2xl mx-auto text-slate-800"
+                            <div className="bg-white shadow-2xl mx-auto text-slate-800"
                                 style={{
                                     width: '210mm',
                                     minHeight: '297mm',
@@ -235,6 +235,24 @@ export default function ResumeBuilderTool() {
                         </div>
                     </div>
                 </div>
+
+                {/* --- Ghost Print Area (Hidden) --- */}
+                <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+                    <div ref={previewRef} className="bg-white text-slate-800"
+                        style={{
+                            width: '210mm',
+                            minHeight: '297mm',
+                            // padding: '20mm', // Inner padding handled by layouts
+                        }}
+                    >
+                        {layout === 'modern' ? (
+                            <ModernLayout data={data} />
+                        ) : (
+                            <ClassicLayout data={data} />
+                        )}
+                    </div>
+                </div>
+
             </div>
         </ToolLayout>
     )
