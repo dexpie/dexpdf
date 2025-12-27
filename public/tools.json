@@ -142,5 +142,11 @@
     "name": "Unlock PDF",
     "desc": "Remove PDF password security",
     "color": "teal"
+  },
+  {
+    "id": "smart-organize",
+    "name": "Smart Organizer",
+    "desc": "Resume, Invoice, & Contract AI Sorter",
+    "color": "indigo"
   }
 ]
