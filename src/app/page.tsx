@@ -9,7 +9,7 @@ import {
     FileText, Download, Shield, Zap, Image, FileOutput, Scissors,
     Layers, Lock, Unlock, PenTool, Type, FileSignature,
     FileImage, RefreshCcw, LayoutTemplate, Search, Settings, Upload, X, ArrowRight,
-    CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert
+    CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser
 } from 'lucide-react'
 import Features from '@/components/Features'
 import FAQ from '@/components/FAQ'
@@ -45,6 +45,7 @@ const features = [
     { id: 'ocr_text', title: "OCR PDF", description: "Make scanned documents searchable.", icon: Type, color: "text-blue-500", iconBg: "bg-blue-50", href: "/ocr" },
     { id: 'smart-organize', title: "Smart Organizer", description: "AI Auto-Rename & Sort (Invoices, Contracts).", icon: Wand2, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/smart-organize" },
     { id: 'redact', title: "Redact PDF", description: "Permanently blackout & remove sensitive text.", icon: ShieldAlert, color: "text-red-500", iconBg: "bg-red-50", href: "/redact" },
+    { id: 'scrub', title: "Scrub Metadata", description: "Clean hidden data (Author, Creator) for privacy.", icon: Eraser, color: "text-gray-500", iconBg: "bg-gray-50", href: "/scrub" },
 ]
 
 export default function LandingPage() {
