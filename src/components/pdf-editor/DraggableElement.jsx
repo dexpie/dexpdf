@@ -76,6 +76,16 @@ export default function DraggableElement({ element, isSelected, onSelect, onUpda
                                 style={{ width: element.width || 100, height: 'auto' }}
                             />
                         </div>
+                    ) : element.type === 'rectangle' ? (
+                        <div
+                            className="pointer-events-none"
+                            style={{
+                                width: element.width || 100,
+                                height: element.height || 50,
+                                backgroundColor: element.color || 'black',
+                                opacity: element.opacity || 1
+                            }}
+                        />
                     ) : null}
 
                 </div>

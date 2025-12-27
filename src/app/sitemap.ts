@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'imgs2pdf', 'pdf2imgs', 'annotate', 'edit', 'ocr',
         'pagenums', 'pdf2ppt', 'ppt2pdf', 'csv2pdf', 'signature',
         'watermark', 'pdf-info', 'extract-images', 'word2pdf',
-        'organize', 'protect', 'unlock', 'smart-organize'
+        'organize', 'protect', 'unlock', 'smart-organize', 'redact'
     ]
 
     const toolUrls = tools.map((tool) => ({

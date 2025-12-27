@@ -148,5 +148,11 @@
     "name": "Smart Organizer",
     "desc": "Resume, Invoice, & Contract AI Sorter",
     "color": "indigo"
+  },
+  {
+    "id": "redact",
+    "name": "Redact PDF",
+    "desc": "Permanently remove sensitive info",
+    "color": "red"
   }
 ]
