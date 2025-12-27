@@ -93,4 +93,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-**Built with ❤️ by DexPie Team**
+**Built with ❤️ by DexPie**

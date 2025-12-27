@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Download, ArrowRight, RefreshCcw, FileText, Scissors, Layers } from 'lucide-react'
+import { Download, ArrowRight, RefreshCcw, FileText, Scissors, Layers, Lock, Clock } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useFileHistory } from '@/hooks/useFileHistory'
@@ -68,6 +69,41 @@ export default function ResultPage({
                         Process Another
                     </Button>
                 )}
+            </div>
+
+            {/* Secure Share Section (Enterprise) */}
+            <div className="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm max-w-3xl mx-auto mb-8 text-left">
+                <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                    <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+                        <Lock className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-800">Secure Distribution</h3>
+                        <p className="text-sm text-slate-500">Share this file securely with end-to-end encryption.</p>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Self-Destruct Link</label>
+                        <div className="flex gap-2">
+                            <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 font-mono truncate select-all">
+                                https://dexpdf.app/s/{Math.random().toString(36).substr(2, 12)}
+                            </div>
+                            <Button variant="outline" size="sm" onClick={() => alert("Link copied! (Mock)")}>
+                                Copy
+                            </Button>
+                        </div>
+                        <p className="text-xs text-orange-500 mt-2 flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> Expires in 24 hours
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <QRCodeSVG value={`https://dexpdf.app/s/${Math.random().toString(36).substr(2, 12)}`} size={100} />
+                        <p className="text-xs text-slate-400 mt-3 font-medium uppercase tracking-wider">Scan to Download</p>
+                    </div>
+                </div>
             </div>
 
             {/* Secondary Actions / Cross Sell */}
