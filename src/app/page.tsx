@@ -176,7 +176,7 @@ export default function LandingPage() {
             {/* Hero Section */}
             <section
                 {...getRootProps()}
-                className="relative pt-32 pb-36 text-white overflow-hidden outline-none"
+                className="relative pt-24 pb-24 md:pt-32 md:pb-36 text-white overflow-hidden outline-none"
                 style={{
                     backgroundImage: `url(${heroBg})`,
                     backgroundSize: 'cover',
@@ -194,7 +194,7 @@ export default function LandingPage() {
                             className="absolute inset-0 z-40 bg-blue-600/90 flex flex-col items-center justify-center backdrop-blur-sm border-4 border-white/30 border-dashed m-4 rounded-3xl"
                         >
                             <Upload className="w-20 h-20 mb-6 text-white animate-bounce" />
-                            <h2 className="text-4xl font-bold text-white">Drop files here to begin</h2>
+                            <h2 className="text-3xl md:text-4xl font-bold text-white text-center px-4">Drop files here to begin</h2>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -218,7 +218,7 @@ export default function LandingPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="text-5xl font-extrabold tracking-tight md:text-7xl mb-6 drop-shadow-sm"
+                            className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight mb-6 drop-shadow-sm leading-tight"
                         >
                             Every tool you need to <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300">work with PDFs</span>
@@ -228,7 +228,7 @@ export default function LandingPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="max-w-3xl mx-auto mb-12 text-xl text-slate-200 font-light leading-relaxed"
+                            className="max-w-3xl mx-auto mb-10 md:mb-12 text-lg md:text-xl text-slate-200 font-light leading-relaxed px-4"
                         >
                             Merge, split, compress, convert, rotate, unlock and watermark PDFs with just a few clicks.
                             <br className="hidden md:block" /> 100% FREE, secure, and easy to use.
