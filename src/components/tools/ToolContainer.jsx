@@ -42,6 +42,9 @@ const TOOL_COMPONENTS = {
   'scrub': loadTool(() => import('../../tools/ScrubTool')),
   'excel2pdf': loadTool(() => import('../../tools/ExcelToPdfTool')),
   'html2pdf': loadTool(() => import('../../tools/HtmlToPdfTool')),
+  'invoice-generator': loadTool(() => import('../../tools/InvoiceGeneratorTool')),
+  'resume-builder': loadTool(() => import('../../tools/ResumeBuilderTool')),
+  'certificate-maker': loadTool(() => import('../../tools/CertificateMakerTool')),
   // 'ai-summary': loadTool(() => import('../../tools/SummarizeTool')), // Phase 8b
 }
 

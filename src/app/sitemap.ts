@@ -9,7 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         'pagenums', 'pdf2ppt', 'ppt2pdf', 'csv2pdf', 'signature',
         'watermark', 'pdf-info', 'extract-images', 'word2pdf',
         'organize', 'protect', 'unlock', 'smart-organize', 'redact', 'scrub',
-        'excel2pdf', 'html2pdf'
+        'excel2pdf', 'html2pdf', 'invoice-generator', 'resume-builder', 'certificate-maker'
     ]
 
     const toolUrls = tools.map((tool) => ({

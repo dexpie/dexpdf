@@ -172,5 +172,23 @@
     "name": "HTML to PDF",
     "desc": "Convert webpages to PDF",
     "color": "gray"
+  },
+  {
+    "id": "invoice-generator",
+    "name": "Invoice Generator",
+    "desc": "Create professional invoices instantly",
+    "color": "blue"
+  },
+  {
+    "id": "resume-builder",
+    "name": "Resume Builder",
+    "desc": "Build ATS-friendly resumes",
+    "color": "indigo"
+  },
+  {
+    "id": "certificate-maker",
+    "name": "Certificate Maker",
+    "desc": "Design awards & certificates",
+    "color": "yellow"
   }
 ]
