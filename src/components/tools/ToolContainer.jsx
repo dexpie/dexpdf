@@ -39,6 +39,9 @@ const TOOL_COMPONENTS = {
   'chat-pdf': loadTool(() => import('../../tools/ChatPdfTool')),
   'smart-organize': loadTool(() => import('../../tools/SmartOrganizeTool')),
   'redact': loadTool(() => import('../../tools/RedactTool')),
+  'scrub': loadTool(() => import('../../tools/ScrubTool')),
+  'excel2pdf': loadTool(() => import('../../tools/ExcelToPdfTool')),
+  'html2pdf': loadTool(() => import('../../tools/HtmlToPdfTool')),
   // 'ai-summary': loadTool(() => import('../../tools/SummarizeTool')), // Phase 8b
 }
 

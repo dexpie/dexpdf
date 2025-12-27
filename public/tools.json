@@ -154,5 +154,23 @@
     "name": "Redact PDF",
     "desc": "Permanently remove sensitive info",
     "color": "red"
+  },
+  {
+    "id": "scrub",
+    "name": "Scrub Metadata",
+    "desc": "Clean hidden data (Author, Creator) for privacy",
+    "color": "gray"
+  },
+  {
+    "id": "excel2pdf",
+    "name": "Excel to PDF",
+    "desc": "Convert spreadsheets to PDF",
+    "color": "green"
+  },
+  {
+    "id": "html2pdf",
+    "name": "HTML to PDF",
+    "desc": "Convert webpages to PDF",
+    "color": "gray"
   }
 ]
