@@ -526,4 +526,4 @@ export default function InvoiceGeneratorTool() {
 
         </ToolLayout>
     )
-
+}
