@@ -147,7 +147,8 @@ export default function CertificateMakerTool() {
                     {/* Preview Area (Scaled) */}
                     <div className="border border-slate-200 rounded-lg overflow-hidden bg-slate-500/10 p-4 flex justify-center">
                         <div className="origin-top transform scale-[0.45] sm:scale-[0.6] xl:scale-[0.65]" style={{ height: 500, width: '297mm' }}>
-                            <div ref={previewRef} className={`bg-white shadow-2xl mx-auto text-slate-800 relative flex flex-col justify-center items-center text-center p-20
+                            {/* Visible Preview (Not captured) */}
+                            <div className={`bg-white shadow-2xl mx-auto text-slate-800 relative flex flex-col justify-center items-center text-center p-20
                                 ${theme === 'gold' ? 'border-[20px] border-double border-yellow-600' : ''}
                                 ${theme === 'blue' ? 'border-[20px] border-solid border-blue-900' : ''}
                                 ${theme === 'classic' ? 'border-[2px] border-black outline outline-4 outline-offset-4 outline-black' : ''}
@@ -215,6 +216,79 @@ export default function CertificateMakerTool() {
                         </div>
                     </div>
                 </div>
+
+                {/* --- Ghost Print Area (Hidden) --- */}
+                {/* We render a full-scale, un-transformed version off-screen for html2canvas */}
+                <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
+                    <div ref={previewRef} className={`bg-white text-slate-800 relative flex flex-col justify-center items-center text-center p-20
+                        ${theme === 'gold' ? 'border-[20px] border-double border-yellow-600' : ''}
+                        ${theme === 'blue' ? 'border-[20px] border-solid border-blue-900' : ''}
+                        ${theme === 'classic' ? 'border-[2px] border-black outline outline-4 outline-offset-4 outline-black' : ''}
+                        `}
+                        style={{
+                            width: '1123px', // 297mm at ~96dpi
+                            height: '794px', // 210mm at ~96dpi
+                            // Force standard fonts fallback to avoid layout shifts if google fonts fail, 
+                            // but ideally they work.
+                        }}
+                    >
+                        {/* Watermark/BG Decoration */}
+                        <div className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
+                            <Award className="w-96 h-96" />
+                        </div>
+
+                        <div className="relative z-10 w-full max-w-4xl space-y-6">
+                            <h1 className="text-6xl text-slate-900" style={{ fontFamily: '"Cinzel", serif' }}>
+                                {data.title}
+                            </h1>
+
+                            <div className="text-xl text-slate-500 italic font-light" style={{ fontFamily: '"Lato", sans-serif' }}>
+                                {data.subtitle}
+                            </div>
+
+                            <div className="py-8">
+                                <div className="text-7xl text-blue-600" style={{ fontFamily: '"Great Vibes", cursive' }}>
+                                    {data.recipient}
+                                </div>
+                                <div className="h-0.5 w-2/3 max-w-lg bg-slate-200 mx-auto mt-4"></div>
+                            </div>
+
+                            <div className="text-2xl font-bold text-slate-800 uppercase tracking-widest" style={{ fontFamily: '"Cinzel", serif' }}>
+                                {data.course}
+                            </div>
+
+                            <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: '"Lato", sans-serif' }}>
+                                {data.description}
+                            </p>
+
+                            <div className="flex justify-between items-end mt-16 px-16">
+                                <div className="text-center">
+                                    <div className="text-xl font-bold text-slate-800 mb-2">{data.date}</div>
+                                    <div className="h-px w-48 bg-slate-400 mb-2"></div>
+                                    <div className="text-sm text-slate-500 uppercase tracking-wider">Date</div>
+                                </div>
+
+                                {/* Seal */}
+                                <div className="mb-4">
+                                    <div className={`w-24 h-24 rounded-full flex items-center justify-center border-4 border-dashed
+                                        ${theme === 'gold' ? 'bg-yellow-100 border-yellow-600 text-yellow-700' : ''}
+                                        ${theme === 'blue' ? 'bg-blue-100 border-blue-900 text-blue-900' : ''}
+                                        ${theme === 'classic' ? 'bg-gray-100 border-gray-800 text-gray-800' : ''}
+                                        `}>
+                                        <Award className="w-12 h-12" />
+                                    </div>
+                                </div>
+
+                                <div className="text-center">
+                                    <div className="text-3xl text-slate-800 mb-0" style={{ fontFamily: '"Great Vibes", cursive' }}>{data.signature}</div>
+                                    <div className="h-px w-48 bg-slate-400 mb-2 mt-2"></div>
+                                    <div className="text-sm text-slate-500 uppercase tracking-wider">{data.signatureTitle}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </ToolLayout>
     )

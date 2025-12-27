@@ -190,5 +190,11 @@
     "name": "Certificate Maker",
     "desc": "Design awards & certificates",
     "color": "yellow"
+  },
+  {
+    "id": "summarize-pdf",
+    "name": "AI Summarizer",
+    "desc": "Extract key points & summary",
+    "color": "indigo"
   }
 ]

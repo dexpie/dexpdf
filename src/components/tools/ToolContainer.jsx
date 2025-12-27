@@ -45,7 +45,7 @@ const TOOL_COMPONENTS = {
   'invoice-generator': loadTool(() => import('../../tools/InvoiceGeneratorTool')),
   'resume-builder': loadTool(() => import('../../tools/ResumeBuilderTool')),
   'certificate-maker': loadTool(() => import('../../tools/CertificateMakerTool')),
-  // 'ai-summary': loadTool(() => import('../../tools/SummarizeTool')), // Phase 8b
+  'summarize-pdf': loadTool(() => import('../../tools/SummarizePdfTool')),
 }
 
 export default function ToolContainer({ toolId, onClose }) {

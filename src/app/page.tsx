@@ -9,7 +9,7 @@ import {
     FileText, Download, Shield, Zap, Image, FileOutput, Scissors,
     Layers, Lock, Unlock, PenTool, Type, FileSignature,
     FileImage, RefreshCcw, LayoutTemplate, Search, Settings, Upload, X, ArrowRight,
-    CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser
+    CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser, BrainCircuit
 } from 'lucide-react'
 import Features from '@/components/Features'
 import FAQ from '@/components/FAQ'
@@ -43,6 +43,7 @@ const features = [
     { id: 'pagenums', title: "Page Numbers", description: "Add page numbers to your PDF document.", icon: Type, color: "text-red-500", iconBg: "bg-red-50", href: "/pagenums" },
     { id: 'ocr', title: "Scan to PDF", description: "Capture documents from scanner or mobile.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/ocr" },
     { id: 'ocr_text', title: "OCR PDF", description: "Make scanned documents searchable.", icon: Type, color: "text-blue-500", iconBg: "bg-blue-50", href: "/ocr" },
+    { id: 'summarize-pdf', title: "AI Summarizer", description: "Extract key insights & summaries instantly.", icon: BrainCircuit, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/summarize-pdf" },
     { id: 'smart-organize', title: "Smart Organizer", description: "AI Auto-Rename & Sort (Invoices, Contracts).", icon: Wand2, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/smart-organize" },
     { id: 'redact', title: "Redact PDF", description: "Permanently blackout & remove sensitive text.", icon: ShieldAlert, color: "text-red-500", iconBg: "bg-red-50", href: "/redact" },
     { id: 'scrub', title: "Scrub Metadata", description: "Clean hidden data (Author, Creator) for privacy.", icon: Eraser, color: "text-gray-500", iconBg: "bg-gray-50", href: "/scrub" },

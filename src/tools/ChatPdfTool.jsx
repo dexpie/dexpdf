@@ -1,15 +1,22 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { configurePdfWorker } from '../utils/pdfWorker'
 import { useTranslation } from 'react-i18next'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import AiChatWindow from '../components/AiChatWindow'
-import { motion } from 'framer-motion'
-import { FileText, Sparkles, Loader2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FileText, Sparkles, Loader2, BrainCircuit, ChevronRight, Zap } from 'lucide-react'
 
 configurePdfWorker()
+
+const QUICK_PROMPTS = [
+    { label: "Summarize this document", query: "Summarize this document in 3-5 bullet points." },
+    { label: "What are the key dates?", query: "List all important dates and deadlines found in the text." },
+    { label: "Find contact info", query: "Extract any email addresses and phone numbers." },
+    { label: "Explain the main topic", query: "Explain the main topic of this document in simple terms." }
+]
 
 export default function ChatPdfTool() {
     const { t } = useTranslation()
@@ -30,6 +37,7 @@ export default function ChatPdfTool() {
         // 1. Check for basic intents
         const isSummary = /summary|ringkas|rangkum|explain|jelaskan/i.test(lowerQuery)
         const isContact = /email|contact|phone|hubung|telp/i.test(lowerQuery)
+        const isDates = /date|deadline|tanggal|waktu|when/i.test(lowerQuery)
 
         if (extractedText) {
             // Split into sentences (more robust regex)
@@ -51,6 +59,15 @@ export default function ChatPdfTool() {
                         (phones.length ? `\n📱 Phones:\n- ${[...new Set(phones)].join('\n- ')}` : '')
                 } else {
                     response = "I searched for contact information (emails/phones) but couldn't find any in the text."
+                }
+            }
+            else if (isDates) {
+                // Simple date regex (very basic)
+                const dates = extractedText.match(/\d{1,2}\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}/gi) || []
+                if (dates.length) {
+                    response = `**Found Key Dates:**\n- ${[...new Set(dates)].join('\n- ')}`
+                } else {
+                    response = "I couldn't find any standard dates (e.g., '12 Jan 2024') in the text."
                 }
             }
             else {
@@ -122,7 +139,7 @@ export default function ChatPdfTool() {
 
             setMessages([{
                 role: 'ai',
-                content: `Hello! I've read **${f.name}** (${pageCount} pages, ~${wordCount} words). \n\nI can help you summarize it, find specific details, or ${hasEmails ? 'extract contact info' : 'locate key topics'}. What would you like to know?`
+                content: `Hello! I've read **${f.name}** (${pageCount} pages, ~${wordCount} words). \n\nI can help you summarize it, find specific details, or ${hasEmails ? 'extract contact info' : 'locate key topics'}.`
             }])
 
         } catch (err) {
@@ -139,7 +156,7 @@ export default function ChatPdfTool() {
     }
 
     return (
-        <ToolLayout title="Chat with PDF" description="Ask questions and get answers from your document using AI">
+        <ToolLayout title="Chat with PDF 2.0" description="Ask questions and get answers from your document using local AI">
 
             {!file ? (
                 <FileDropZone
@@ -154,23 +171,44 @@ export default function ChatPdfTool() {
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-full flex flex-col"
+                            className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col"
                         >
-                            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
-                                <FileText className="w-8 h-8" />
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center shadow-sm">
+                                    <BrainCircuit className="w-6 h-6" />
+                                </div>
+                                <div className="overflow-hidden">
+                                    <h3 className="font-bold text-slate-800 truncate" title={file.name}>{file.name}</h3>
+                                    <p className="text-xs text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                </div>
                             </div>
-                            <h3 className="text-xl font-bold text-slate-800 mb-2 truncate" title={file.name}>{file.name}</h3>
-                            <p className="text-sm text-slate-500 mb-6">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
 
-                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex-1 overflow-y-auto">
-                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Extracted Context (Preview)</h4>
-                                <p className="text-xs text-slate-600 leading-relaxed font-mono">
+                            <div className="flex-1 overflow-y-auto mb-6">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Quick Actions</h4>
+                                <div className="space-y-2">
+                                    {QUICK_PROMPTS.map((prompt, i) => (
+                                        <button
+                                            key={i}
+                                            onClick={() => handleSendMessage(prompt.query)}
+                                            disabled={isProcessing || isTyping}
+                                            className="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 transition-colors text-sm font-medium flex items-center justify-between group"
+                                        >
+                                            {prompt.label}
+                                            <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 h-32 overflow-y-auto">
+                                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Raw Content</h4>
+                                <p className="text-[10px] text-slate-600 leading-relaxed font-mono">
                                     {isProcessing ? (
                                         <span className="flex items-center gap-2 text-indigo-500">
-                                            <Loader2 className="w-3 h-3 animate-spin" /> Reading document...
+                                            <Loader2 className="w-3 h-3 animate-spin" /> Analyzing...
                                         </span>
                                     ) : (
-                                        extractedText.slice(0, 500) + "..."
+                                        extractedText.slice(0, 300) + "..."
                                     )}
                                 </p>
                             </div>
