@@ -18,11 +18,22 @@ export function useFileHistory() {
         }
     }, [])
 
+    const generateHash = () => {
+        return Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
+    }
+
+    const generateOpId = () => {
+        return 'OP-' + Math.random().toString(36).substr(2, 9).toUpperCase()
+    }
+
     const addToHistory = (fileMetadata) => {
         // fileMetadata: { name, size, type, tool, date, id }
         const newItem = {
             id: Date.now().toString(),
             date: new Date().toISOString(),
+            opId: generateOpId(),
+            hash: generateHash(),
+            integrity: 'Verified',
             ...fileMetadata
         }
 

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
     FileText, Download, Plus, Trash, RefreshCw,
     Calendar, User, MapPin, Hash, DollarSign,
-    Briefcase, AlertCircle, CheckCircle, FileOutput
+    Briefcase, AlertCircle, CheckCircle, FileOutput, Building2
 } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import ToolLayout from '../components/common/ToolLayout'
@@ -13,6 +13,7 @@ import ActionButtons from '../components/common/ActionButtons'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename } from '../utils/fileHelpers'
 import { triggerConfetti } from '../utils/confetti'
+import { useBrandKit } from '../hooks/useBrandKit'
 
 // --- Default Data ---
 const DEFAULT_INVOICE = {
@@ -42,6 +43,7 @@ const DEFAULT_INVOICE = {
 
 export default function InvoiceGeneratorTool() {
     const { t } = useTranslation()
+    const { brand, hasBrand } = useBrandKit()
     const [data, setData] = useState(DEFAULT_INVOICE)
     const [busy, setBusy] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
@@ -88,6 +90,21 @@ export default function InvoiceGeneratorTool() {
             ...prev,
             items: prev.items.filter(i => i.id !== id)
         }))
+    }
+
+    const applyBrandKit = () => {
+        if (!hasBrand) return
+        setData(prev => ({
+            ...prev,
+            from: {
+                name: brand.companyName || prev.from.name,
+                email: brand.email || prev.from.email,
+                address: brand.address || prev.from.address,
+                phone: brand.phone || prev.from.phone
+            }
+        }))
+        setSuccessMsg("Brand identity applied!")
+        setTimeout(() => setSuccessMsg(""), 2000)
     }
 
     const subtotal = data.items.reduce((acc, i) => acc + (i.qty * i.rate), 0)
@@ -169,9 +186,19 @@ export default function InvoiceGeneratorTool() {
                     <div className="grid md:grid-cols-2 gap-6">
                         {/* From */}
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                            <h4 className="font-bold text-sm mb-3 flex items-center gap-2 text-slate-600">
-                                <User className="w-4 h-4" /> From (You)
-                            </h4>
+                            <div className="flex justify-between items-center mb-3">
+                                <h4 className="font-bold text-sm flex items-center gap-2 text-slate-600">
+                                    <User className="w-4 h-4" /> From (You)
+                                </h4>
+                                {hasBrand && (
+                                    <button
+                                        onClick={applyBrandKit}
+                                        className="text-xs flex items-center gap-1 text-indigo-600 font-bold hover:bg-indigo-50 px-2 py-1 rounded transition-colors"
+                                    >
+                                        <Building2 className="w-3 h-3" /> Auto-fill
+                                    </button>
+                                )}
+                            </div>
                             <div className="space-y-3">
                                 <input placeholder="Your Name / Business" className="w-full p-2 border rounded-lg bg-slate-50"
                                     value={data.from.name} onChange={e => updateField('from', 'name', e.target.value)} />
@@ -288,9 +315,14 @@ export default function InvoiceGeneratorTool() {
                             >
                                 {/* Header */}
                                 <div className="flex justify-between items-start mb-12">
-                                    <div>
-                                        <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">INVOICE</h1>
-                                        <p className="text-slate-500 mt-2 font-medium">#{data.number}</p>
+                                    <div className="flex items-start gap-4">
+                                        {brand && brand.logo && (
+                                            <img src={brand.logo} alt="Company Logo" className="w-20 h-auto object-contain" />
+                                        )}
+                                        <div>
+                                            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">INVOICE</h1>
+                                            <p className="text-slate-500 mt-2 font-medium">#{data.number}</p>
+                                        </div>
                                     </div>
                                     <div className="text-right">
                                         <h2 className="font-bold text-lg">{data.from.name}</h2>
@@ -305,7 +337,7 @@ export default function InvoiceGeneratorTool() {
                                     <div>
                                         <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Bill To</h3>
                                         <div className="font-bold text-lg">{data.to.name}</div>
-                                        < div className="text-sm text-slate-600 whitespace-pre-wrap max-w-[250px]">{data.to.address}</div>
+                                        <div className="text-sm text-slate-600 whitespace-pre-wrap max-w-[250px]">{data.to.address}</div>
                                     </div>
                                     <div className="text-right space-y-2">
                                         <div>
@@ -364,6 +396,13 @@ export default function InvoiceGeneratorTool() {
                                     <div className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
                                         <h4 className="font-bold text-sm text-blue-700 mb-1">Notes</h4>
                                         <p className="text-sm text-blue-600 italic">{data.notes}</p>
+
+                                        {brand && brand.signature && (
+                                            <div className="mt-8 pt-4 border-t border-blue-200 w-48">
+                                                <img src={brand.signature} className="max-h-16 mb-2 object-contain" alt="Signature" />
+                                                <div className="text-xs text-blue-400 font-medium">Authorized Signature</div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -388,9 +427,14 @@ export default function InvoiceGeneratorTool() {
                 >
                     {/* Header */}
                     <div className="flex justify-between items-start mb-12">
-                        <div>
-                            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">INVOICE</h1>
-                            <p className="text-slate-500 mt-2 font-medium">#{data.number}</p>
+                        <div className="flex items-start gap-4">
+                            {brand && brand.logo && (
+                                <img src={brand.logo} alt="Company Logo" className="w-20 h-auto object-contain" />
+                            )}
+                            <div>
+                                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">INVOICE</h1>
+                                <p className="text-slate-500 mt-2 font-medium">#{data.number}</p>
+                            </div>
                         </div>
                         <div className="text-right">
                             <h2 className="font-bold text-lg">{data.from.name}</h2>
@@ -464,6 +508,13 @@ export default function InvoiceGeneratorTool() {
                         <div className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
                             <h4 className="font-bold text-sm text-blue-700 mb-1">Notes</h4>
                             <p className="text-sm text-blue-600 italic">{data.notes}</p>
+
+                            {brand && brand.signature && (
+                                <div className="mt-8 pt-4 border-t border-blue-200 w-48">
+                                    <img src={brand.signature} className="max-h-16 mb-2 object-contain" alt="Signature" />
+                                    <div className="text-xs text-blue-400 font-medium">Authorized Signature</div>
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -473,7 +524,8 @@ export default function InvoiceGeneratorTool() {
                 </div>
             </div>
 
-        </div>
-        </ToolLayout >
+        </ToolLayout>
+    )
+}    </ToolLayout >
     )
 }
