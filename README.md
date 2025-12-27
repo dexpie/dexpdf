@@ -16,18 +16,25 @@ It combines **SaaS-level aesthetics** with **privacy-first architecture**, proce
 -   **Organize**: Visual page reordering and rotation.
 -   **OCR**: Extract text from scanned documents (Image/PDF) with multi-language support.
 
-### 🤖 AI Intelligence (New!)
--   **Chat with PDF**: "Talk" to your documents. Local AI searches and summarizes content instantly without API keys.
+### 🤖 AI Intelligence (Phase 15 - The Oracle)
+-   **Chat PDF 2.0**: "Talk" to your documents. Local AI searches and summarizes content instantly without API keys.
+-   **AI Summarizer**: Get concise bullet points or paragraphs from any PDF interactively.
 -   **Smart Inputs**: Auto-detects emails and phone numbers from CVs/Resumes.
 
-### 🛡️ Privacy & Performance
--   **100% Client-Side**: Files mostly stay on your device (processed via `pdf-lib` and `pdf.js`).
--   **PWA Ready**: Install as a desktop/mobile app for offline use.
--   **Local History**: "My Documents" feature keeps track of your work without a database.
+### 👑 Enterprise Grade (Phase 16 - The Sovereign)
+-   **Brand Identity Suite**: Centralized logo and signature management applied across tools.
+-   **Audit Trail**: Immutable cryptographic logs (SHA-256) of every file operation.
+-   **Secure Distribution**: Share files via self-destructing links and dynamic QR codes.
+
+### 🏭 Professional Generators
+-   **Invoice Generator**: Auto-calculating invoices with tax and currency support.
+-   **Resume Builder**: Create ATS-friendly resumes in minutes.
+-   **Certificate Maker**: Bulk generate certificates for events.
 
 ### 🎨 Premium Experience
 -   **Glassmorphism UI**: Beautiful, responsive design containing rich animations.
--   **Dark Mode**: Fully supported system-wide theme.
+-   **Voice Control**: Navigate the app using voice commands ("Go to Merge").
+-   **Command Palette**: Quick access to any tool via `Cmd/Ctrl + K`.
 -   **Multi-language**: Native support for English (EN) and Indonesian (ID).
 
 ## 🏗️ Tech Stack
@@ -37,7 +44,9 @@ It combines **SaaS-level aesthetics** with **privacy-first architecture**, proce
 -   **Styling**: Tailwind CSS + Shadcn/UI
 -   **Animations**: Framer Motion
 -   **PDF Engine**: `pdf-lib`, `pdfjs-dist`
--   **OCR**: `tesseract.js`
+-   **AI/OCR**: `tesseract.js`, Local Heuristics
+-   **Enterprise**: `qrcode.react`, Crypto Web API
+-   **Interaction**: `cmdk` (Command Palette), `react-speech-recognition`
 -   **PWA**: `next-pwa`
 
 ## 🚀 Getting Started
