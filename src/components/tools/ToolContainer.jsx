@@ -37,6 +37,7 @@ const TOOL_COMPONENTS = {
   'repair': loadTool(() => import('../../tools/RepairTool')),
   'pdf2pdfa': loadTool(() => import('../../tools/PdfToPdfATool')),
   'chat-pdf': loadTool(() => import('../../tools/ChatPdfTool')),
+  'smart-organize': loadTool(() => import('../../tools/SmartOrganizeTool')),
   // 'ai-summary': loadTool(() => import('../../tools/SummarizeTool')), // Phase 8b
 }
 
