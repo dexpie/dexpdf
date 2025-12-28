@@ -232,5 +232,101 @@
     "name": "Repair PDF",
     "desc": "Fix corrupted or broken files",
     "color": "red"
+  },
+  {
+    "id": "page-number",
+    "name": "Page Numbers",
+    "desc": "Add pagination to PDF",
+    "color": "blue"
+  },
+  {
+    "id": "image-resizer",
+    "name": "Image Resizer",
+    "desc": "Resize JPG/PNG images",
+    "color": "cyan"
+  },
+  {
+    "id": "password-generator",
+    "name": "Password Gen",
+    "desc": "Create secure passwords",
+    "color": "slate"
+  },
+  {
+    "id": "json-formatter",
+    "name": "JSON Tool",
+    "desc": "Prettify and Minify JSON",
+    "color": "yellow"
+  },
+  {
+    "id": "base64-tool",
+    "name": "Base64",
+    "desc": "Encode/Decode Base64",
+    "color": "orange"
+  },
+  {
+    "id": "unit-converter",
+    "name": "Unit Converter",
+    "desc": "Convert Measure & Data",
+    "color": "teal"
+  },
+  {
+    "id": "qr-code",
+    "name": "QR Generator",
+    "desc": "Create Custom QRs",
+    "color": "pink"
+  },
+  {
+    "id": "lorem-ipsum",
+    "name": "Lorem Ipsum",
+    "desc": "Placeholder Text",
+    "color": "grey"
+  },
+  {
+    "id": "markdown-preview",
+    "name": "Markdown",
+    "desc": "Editor & Preview",
+    "color": "purple"
+  },
+  {
+    "id": "text-analyzer",
+    "name": "Text Analyzer",
+    "desc": "Word Count & Case",
+    "color": "rose"
+  },
+  {
+    "id": "calculator",
+    "name": "Calculator",
+    "desc": "Scientific Math",
+    "color": "indigo"
+  },
+  {
+    "id": "stopwatch-tool",
+    "name": "Stopwatch",
+    "desc": "Timer & Laps",
+    "color": "green"
+  },
+  {
+    "id": "color-converter",
+    "name": "Color Picker",
+    "desc": "HEX/RGB/HSL/CMYK",
+    "color": "rose"
+  },
+  {
+    "id": "gradient-generator",
+    "name": "Gradient Maker",
+    "desc": "CSS Gradients",
+    "color": "cyan"
+  },
+  {
+    "id": "data-converter",
+    "name": "Data Converter",
+    "desc": "CSV <-> JSON",
+    "color": "amber"
+  },
+  {
+    "id": "excel-to-json",
+    "name": "Excel to JSON",
+    "desc": "XLSX to Data",
+    "color": "emerald"
   }
 ]

@@ -16,14 +16,27 @@ It combines **SaaS-level aesthetics** with **privacy-first architecture**, proce
 -   **Organize**: Visual page reordering and rotation.
 -   **OCR**: Extract text from scanned documents (Image/PDF) with multi-language support.
 
-### 🤖 AI Intelligence (Phase 15 - The Oracle)
--   **Chat PDF 2.0**: "Talk" to your documents. Local AI searches and summarizes content instantly without API keys.
--   **AI Summarizer**: Get concise bullet points or paragraphs from any PDF interactively.
--   **Smart Inputs**: Auto-detects emails and phone numbers from CVs/Resumes.
+### 🤖 AI Intelligence (Phase 19 - The Artificial Mind)
+-   **Neural Translator**: Translates PDFs while preserving layout.
+-   **Quiz Master**: Auto-generates study quizzes from PDF content.
+-   **Smart Redact 2.0**: Auto-detects emails/phones using Regex.
+-   **Chat PDF 2.0**: Talk to your documents.
+
+### 🌟 God Mode (Phase 21 - The Final Evolution)
+-   **Omni-Command**: `Cmd+K` global command palette for instant navigation.
+-   **Global Smart Drop**: Drag files anywhere to trigger elemental zones (Merge, Compress, Edit).
+-   **Dex AI Assistant**: Voice-enabled floating AI companion.
+-   **PWA**: Installable native-like app with offline capabilities.
+
+### 🛠️ The Infinite Arsenal (All Tools)
+-   **Core**: Merge, Split, Compress, Convert, Edit, Sign, Protect, Unlock.
+-   **Visual**: Organize, Crop, Compare (Diff), Image Studio.
+-   **Utility**: Scan to PDF (Webcam), Repair PDF, Flatten, Metadata.
+-   **Generators**: Invoice, Resume, Certificate, QR Code.
 
 ### 👑 Enterprise Grade (Phase 16 - The Sovereign)
--   **Brand Identity Suite**: Centralized logo and signature management applied across tools.
--   **Audit Trail**: Immutable cryptographic logs (SHA-256) of every file operation.
+-   **Brand Identity Suite**: Centralized logo and signature management.
+-   **Audit Trail**: Immutable cryptographic logs (SHA-256).
 -   **Secure Distribution**: Share files via self-destructing links and dynamic QR codes.
 
 ### 🏭 Professional Generators

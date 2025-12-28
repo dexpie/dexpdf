@@ -7,10 +7,13 @@ import { Share2, Download, Building2 } from 'lucide-react'
 import ThemeToggle from '@/components/ThemeToggle'
 import BrandKit from '@/components/BrandKit'
 
+import { useSound } from '@/hooks/useSound'
+
 export default function NavBar() {
   const { t, i18n } = useTranslation()
   const router = useRouter()
   const { isInstallable, promptInstall } = usePWA()
+  const { playClick, playHover } = useSound()
   const [mounted, setMounted] = React.useState(false)
   const [brandKitOpen, setBrandKitOpen] = React.useState(false)
 
@@ -48,7 +51,11 @@ export default function NavBar() {
         {/* Brand */}
         <div
           className="cursor-pointer font-bold text-xl md:text-2xl text-white flex items-center gap-2"
-          onClick={() => router.push('/')}
+          onClick={() => {
+            playClick()
+            router.push('/')
+          }}
+          onMouseEnter={playHover}
         >
           <span>DexPDF</span>
         </div>

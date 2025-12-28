@@ -52,6 +52,22 @@ const TOOL_COMPONENTS = {
   'scan-pdf': loadTool(() => import('../../tools/ScanTool')),
   'crop-pdf': loadTool(() => import('../../tools/CropPdfTool')),
   'repair-pdf': loadTool(() => import('../../tools/RepairTool')),
+  'page-number': loadTool(() => import('../../tools/PageNumberTool')),
+  'image-resizer': loadTool(() => import('../../tools/ImageResizerTool')),
+  'password-generator': loadTool(() => import('../../tools/PasswordGeneratorTool')),
+  'json-formatter': loadTool(() => import('../../tools/JsonFormatterTool')),
+  'base64-tool': loadTool(() => import('../../tools/Base64Tool')),
+  'unit-converter': loadTool(() => import('../../tools/UnitConverterTool')),
+  'qr-code': loadTool(() => import('../../tools/QrCodeTool')),
+  'lorem-ipsum': loadTool(() => import('../../tools/LoremIpsumTool')),
+  'markdown-preview': loadTool(() => import('../../tools/MarkdownPreviewTool')),
+  'text-analyzer': loadTool(() => import('../../tools/TextAnalyzerTool')),
+  'calculator': loadTool(() => import('../../tools/CalculatorTool')),
+  'stopwatch-tool': loadTool(() => import('../../tools/StopwatchTool')),
+  'color-converter': loadTool(() => import('../../tools/ColorConverterTool')),
+  'gradient-generator': loadTool(() => import('../../tools/GradientGeneratorTool')),
+  'data-converter': loadTool(() => import('../../tools/DataConverterTool')),
+  'excel-to-json': loadTool(() => import('../../tools/ExcelToJsonTool')),
 }
 
 export default function ToolContainer({ toolId, onClose }) {
