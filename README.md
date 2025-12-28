@@ -44,6 +44,14 @@ It combines **SaaS-level aesthetics** with **privacy-first architecture**, proce
 -   **Resume Builder**: Create ATS-friendly resumes in minutes.
 -   **Certificate Maker**: Bulk generate certificates for events.
 
+### 🧭 The Universal Toolset (Phases 32-38)
+-   **DevOps**: UUID, JWT Debugger, Cron Parser, Base64, JSON Formatter.
+-   **NetOps**: Subnet Calculator, DNS Lookup, Latency Tester, User Agent, URL Parser.
+-   **Optimization**: HTML/CSS/JS Minifiers.
+-   **System**: Device Info, Battery Status, Network Speed.
+-   **Time**: World Clock, Timezone Converter, Unix Timestamp.
+-   **Text**: Diff Checker, Regex Tester, Case Converter, Word Density.
+
 ### 🎨 Premium Experience
 -   **Glassmorphism UI**: Beautiful, responsive design containing rich animations.
 -   **Voice Control**: Navigate the app using voice commands ("Go to Merge").

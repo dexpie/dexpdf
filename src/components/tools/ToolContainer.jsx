@@ -89,6 +89,10 @@ const TOOL_COMPONENTS = {
   'world-clock': loadTool(() => import('../../tools/WorldClockTool')),
   'timezone-converter': loadTool(() => import('../../tools/TimezoneConverterTool')),
   'unix-timestamp': loadTool(() => import('../../tools/UnixTimestampTool')),
+  'text-diff': loadTool(() => import('../../tools/TextDiffTool')),
+  'regex-tester': loadTool(() => import('../../tools/RegexTesterTool')),
+  'case-converter': loadTool(() => import('../../tools/CaseConverterTool')),
+  'word-density': loadTool(() => import('../../tools/WordDensityTool')),
 }
 
 export default function ToolContainer({ toolId, onClose }) {

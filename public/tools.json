@@ -454,5 +454,29 @@
     "name": "Unix Time",
     "desc": "Epoch Converter",
     "color": "slate"
+  },
+  {
+    "id": "text-diff",
+    "name": "Text Diff",
+    "desc": "Compare Strings",
+    "color": "indigo"
+  },
+  {
+    "id": "regex-tester",
+    "name": "Regex Test",
+    "desc": "Debug Patterns",
+    "color": "blue"
+  },
+  {
+    "id": "case-converter",
+    "name": "Case Convert",
+    "desc": "Camel, Snake...",
+    "color": "orange"
+  },
+  {
+    "id": "word-density",
+    "name": "Word Stats",
+    "desc": "Keyword Count",
+    "color": "green"
   }
 ]

@@ -12,7 +12,7 @@ import {
     CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser, BrainCircuit,
     KeyRound, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette,
     Paintbrush, ArrowLeftRight, FileSpreadsheet, Monitor, Link as LinkIcon, Fingerprint, Volume2,
-    Keyboard, Clock, Network, FileCode, Activity, Battery, Signal, Hourglass
+    Keyboard, Clock, Network, FileCode, Activity, Battery, Signal, Hourglass, FileDiff, Type, BarChart2
 } from 'lucide-react'
 import Features from '@/components/Features'
 import FAQ from '@/components/FAQ'
@@ -91,6 +91,12 @@ const features = [
     { id: 'world-clock', title: "World Clock", description: "Multi-city display.", icon: Globe, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/world-clock" },
     { id: 'timezone-converter', title: "Timezone", description: "Meeting planner.", icon: Clock, color: "text-violet-500", iconBg: "bg-violet-50", href: "/timezone-converter" },
     { id: 'unix-timestamp', title: "Unix Time", description: "Epoch converter.", icon: Hourglass, color: "text-slate-600", iconBg: "bg-slate-100", href: "/unix-timestamp" },
+
+    // Text Phase 38
+    { id: 'text-diff', title: "Text Diff", description: "Compare text changes.", icon: FileDiff, color: "text-indigo-600", iconBg: "bg-indigo-50", href: "/text-diff" },
+    { id: 'regex-tester', title: "Regex Tester", description: "Debug patterns.", icon: FileCode, color: "text-blue-600", iconBg: "bg-blue-50", href: "/regex-tester" },
+    { id: 'case-converter', title: "Case Converter", description: "Camel, snake, kebab.", icon: Type, color: "text-orange-500", iconBg: "bg-orange-50", href: "/case-converter" },
+    { id: 'word-density', title: "Word Density", description: "Analyze keywords.", icon: BarChart2, color: "text-green-600", iconBg: "bg-green-50", href: "/word-density" },
 ]
 
 export default function LandingPage() {
