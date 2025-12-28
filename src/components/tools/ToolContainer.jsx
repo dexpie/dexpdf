@@ -68,6 +68,18 @@ const TOOL_COMPONENTS = {
   'gradient-generator': loadTool(() => import('../../tools/GradientGeneratorTool')),
   'data-converter': loadTool(() => import('../../tools/DataConverterTool')),
   'excel-to-json': loadTool(() => import('../../tools/ExcelToJsonTool')),
+  'user-agent-parser': loadTool(() => import('../../tools/UserAgentParserTool')),
+  'url-parser': loadTool(() => import('../../tools/UrlParserTool')),
+  'hash-generator': loadTool(() => import('../../tools/HashGeneratorTool')),
+  'text-to-speech': loadTool(() => import('../../tools/TextToSpeechTool')),
+  'keycode-info': loadTool(() => import('../../tools/KeycodeInfoTool')),
+  'metronome': loadTool(() => import('../../tools/MetronomeTool')),
+  'uuid-generator': loadTool(() => import('../../tools/UuidGeneratorTool')),
+  'jwt-debugger': loadTool(() => import('../../tools/JwtDebuggerTool')),
+  'cron-parser': loadTool(() => import('../../tools/CronParserTool')),
+  'subnet-calculator': loadTool(() => import('../../tools/IpSubnetCalculatorTool')),
+  'dns-lookup': loadTool(() => import('../../tools/DnsLookupTool')),
+  'latency-tester': loadTool(() => import('../../tools/LatencyTesterTool')),
 }
 
 export default function ToolContainer({ toolId, onClose }) {

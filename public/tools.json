@@ -328,5 +328,77 @@
     "name": "Excel to JSON",
     "desc": "XLSX to Data",
     "color": "emerald"
+  },
+  {
+    "id": "user-agent-parser",
+    "name": "User Agent",
+    "desc": "Browser Info",
+    "color": "sky"
+  },
+  {
+    "id": "url-parser",
+    "name": "URL Parser",
+    "desc": "Check Parameters",
+    "color": "indigo"
+  },
+  {
+    "id": "hash-generator",
+    "name": "Hasher",
+    "desc": "MD5/SHA256",
+    "color": "slate"
+  },
+  {
+    "id": "text-to-speech",
+    "name": "Text to Speech",
+    "desc": "AI Voices",
+    "color": "pink"
+  },
+  {
+    "id": "keycode-info",
+    "name": "Keycode",
+    "desc": "Keyboard Events",
+    "color": "zinc"
+  },
+  {
+    "id": "metronome",
+    "name": "Metronome",
+    "desc": "BPM Timer",
+    "color": "red"
+  },
+  {
+    "id": "uuid-generator",
+    "name": "UUID Gen",
+    "desc": "Generate V4 ID",
+    "color": "violet"
+  },
+  {
+    "id": "jwt-debugger",
+    "name": "JWT Debug",
+    "desc": "Decode Tokens",
+    "color": "pink"
+  },
+  {
+    "id": "cron-parser",
+    "name": "Cron Parser",
+    "desc": "Schedule Helper",
+    "color": "emerald"
+  },
+  {
+    "id": "subnet-calculator",
+    "name": "Subnet Calc",
+    "desc": "CIDR & IP",
+    "color": "cyan"
+  },
+  {
+    "id": "dns-lookup",
+    "name": "DNS Lookup",
+    "desc": "DoH Records",
+    "color": "blue"
+  },
+  {
+    "id": "latency-tester",
+    "name": "Latency",
+    "desc": "HTTP Ping",
+    "color": "indigo"
   }
 ]
