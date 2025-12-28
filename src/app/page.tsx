@@ -206,7 +206,7 @@ export default function LandingPage() {
                         >
                             <button
                                 onClick={() => {
-                                    document.querySelector('input[placeholder="Find a tool..."]')?.focus()
+                                    (document.querySelector('input[placeholder="Find a tool..."]') as HTMLInputElement)?.focus()
                                     // Smooth scroll to tool grid
                                     document.querySelector('section.relative.z-20')?.scrollIntoView({ behavior: 'smooth' })
                                 }}

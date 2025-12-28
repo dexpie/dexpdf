@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Globe, Smartphone, Cpu, Box } from 'lucide-react'
-import UAParser from 'ua-parser-js'
+import { UAParser } from 'ua-parser-js'
 
 export default function UserAgentParserTool() {
     const [ua, setUa] = useState('')
