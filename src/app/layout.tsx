@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import Link from 'next/link'
 import ClientLayout from '@/components/ClientLayout'
 import BottomNav from '@/components/BottomNav'
+import { ThemeProvider } from '@/components/ThemeProvider'
 import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
@@ -63,10 +65,12 @@ export default function RootLayout({
                         }}
                     />
                 )}
-                <ClientLayout>
-                    {children}
-                    <BottomNav />
-                </ClientLayout>
+                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                    <ClientLayout>
+                        {children}
+                        <BottomNav />
+                    </ClientLayout>
+                </ThemeProvider>
             </body>
         </html>
     )

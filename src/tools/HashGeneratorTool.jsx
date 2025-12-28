@@ -1,67 +1,68 @@
 import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
+import { Shield, Fingerprint, Copy, RefreshCw } from 'lucide-react'
 import CryptoJS from 'crypto-js'
-import { Lock, Copy, RefreshCw } from 'lucide-react'
-import { triggerConfetti } from '../utils/confetti'
 
 export default function HashGeneratorTool() {
     const [input, setInput] = useState('')
+    const [hashes, setHashes] = useState({ md5: '', sha1: '', sha256: '', sha512: '' })
 
-    // We calculate hashes on the fly
-    const md5 = CryptoJS.MD5(input).toString()
-    const sha1 = CryptoJS.SHA1(input).toString()
-    const sha256 = CryptoJS.SHA256(input).toString()
-    const sha512 = CryptoJS.SHA512(input).toString()
-
-    const copy = (txt) => {
-        navigator.clipboard.writeText(txt)
-        triggerConfetti()
+    const generate = (val) => {
+        setInput(val)
+        if (!val) {
+            setHashes({ md5: '', sha1: '', sha256: '', sha512: '' })
+            return
+        }
+        setHashes({
+            md5: CryptoJS.MD5(val).toString(),
+            sha1: CryptoJS.SHA1(val).toString(),
+            sha256: CryptoJS.SHA256(val).toString(),
+            sha512: CryptoJS.SHA512(val).toString()
+        })
     }
 
     return (
-        <ToolLayout title="Hash Generator" description="Generate MD5, SHA-1, SHA-256 for text.">
-            <div className="max-w-4xl mx-auto flex flex-col gap-8">
-                {/* Input */}
+        <ToolLayout title="Hash Generator" description="Generate MD5, SHA1, SHA256 hashes instantly.">
+            <div className="max-w-4xl mx-auto space-y-8">
+
                 <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
-                    <label className="text-sm font-bold text-slate-500 uppercase mb-2 block">Input Text</label>
+                    <label className="text-sm font-bold text-slate-500 uppercase mb-2 block">Value to Hash</label>
                     <textarea
                         value={input}
-                        onChange={e => setInput(e.target.value)}
-                        placeholder="Type something to hash..."
-                        className="w-full h-32 p-4 bg-slate-50 border border-slate-200 rounded-xl font-mono text-lg resize-none outline-none focus:ring-2 ring-blue-500"
+                        onChange={e => generate(e.target.value)}
+                        placeholder="Type something..."
+                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-blue-500 font-mono text-sm h-24 resize-none"
                     />
                 </div>
 
-                {/* Hashes */}
-                <div className="space-y-4">
-                    <HashRow label="MD5" val={md5} copy={copy} color="blue" />
-                    <HashRow label="SHA-1" val={sha1} copy={copy} color="purple" />
-                    <HashRow label="SHA-256" val={sha256} copy={copy} color="green" />
-                    <HashRow label="SHA-512" val={sha512} copy={copy} color="orange" />
+                <div className="grid grid-cols-1 gap-4">
+                    <HashRow label="MD5" value={hashes.md5} color="blue" />
+                    <HashRow label="SHA-1" value={hashes.sha1} color="green" />
+                    <HashRow label="SHA-256" value={hashes.sha256} color="purple" />
+                    <HashRow label="SHA-512" value={hashes.sha512} color="red" />
                 </div>
+
             </div>
         </ToolLayout>
     )
 }
 
-function HashRow({ label, val, copy, color }) {
-    const colors = {
-        blue: 'bg-blue-100 text-blue-600',
-        purple: 'bg-purple-100 text-purple-600',
-        green: 'bg-green-100 text-green-600',
-        orange: 'bg-orange-100 text-orange-600',
-    }
-
+function HashRow({ label, value, color }) {
     return (
-        <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-center gap-4 group hover:shadow-md transition-shadow">
-            <div className={`w-24 py-2 rounded-lg text-center font-bold text-sm ${colors[color]}`}>
+        <div className={`bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-center overflow-hidden`}>
+            <div className={`w-full md:w-32 p-4 bg-${color}-50 text-${color}-600 font-bold border-b md:border-b-0 md:border-r border-${color}-100 flex justify-between md:justify-center items-center`}>
                 {label}
+                <Fingerprint className="w-4 h-4 md:hidden" />
             </div>
-            <div className="flex-1 font-mono text-sm text-slate-600 break-all">
-                {val}
+            <div className="flex-1 p-4 font-mono text-xs break-all text-slate-600 w-full text-center md:text-left">
+                {value || <span className="text-slate-300 italic">Waiting...</span>}
             </div>
-            <button onClick={() => copy(val)} className="p-2 text-slate-300 hover:text-blue-500">
-                <Copy className="w-5 h-5" />
+            <button
+                onClick={() => navigator.clipboard.writeText(value)}
+                disabled={!value}
+                className="w-full md:w-auto p-4 text-slate-400 hover:text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+            >
+                <Copy className="w-5 h-5 mx-auto" />
             </button>
         </div>
     )

@@ -62,7 +62,7 @@ export default function DexAssistant() {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-2xl flex items-center justify-center text-white z-50 hover:shadow-blue-500/50"
+                className="fixed bottom-24 md:bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-2xl flex items-center justify-center text-white z-50 hover:shadow-blue-500/50"
             >
                 {isOpen ? <X className="w-6 h-6" /> : <Bot className="w-8 h-8" />}
             </motion.button>
@@ -74,7 +74,7 @@ export default function DexAssistant() {
                         initial={{ opacity: 0, scale: 0.8, y: 20, x: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 20, x: 20 }}
-                        className="fixed bottom-24 right-6 w-80 md:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden z-50 flex flex-col max-h-[500px]"
+                        className="fixed bottom-40 md:bottom-24 right-6 w-80 md:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden z-50 flex flex-col max-h-[500px]"
                     >
                         {/* Header */}
                         <div className="bg-slate-900 p-4 text-white flex items-center gap-3">

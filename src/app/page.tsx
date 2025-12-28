@@ -6,114 +6,23 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDropzone } from 'react-dropzone'
 import {
-    FileText, Download, Shield, Zap, Image, FileOutput, Scissors,
-    Layers, Lock, Unlock, PenTool, FileSignature,
-    FileImage, RefreshCcw, LayoutTemplate, Search, Settings, Upload, X, ArrowRight,
-    CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser, BrainCircuit,
-    KeyRound, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette,
-    Paintbrush, ArrowLeftRight, FileSpreadsheet, Monitor, Link as LinkIcon, Fingerprint, Volume2,
-    Keyboard, Clock, Network, FileCode, Activity, Battery, Signal, Hourglass, FileDiff, BarChart2,
-    Hash, Dices, Sigma, Divide, Type
+    FileText, Upload, X, ArrowRight,
+    CheckCircle, ShieldCheck, Users, Globe, Settings, Search
 } from 'lucide-react'
 import Features from '@/components/Features'
 import FAQ from '@/components/FAQ'
 import HowItWorks from '@/components/HowItWorks'
-
-// Feature configuration
-const features = [
-    { id: 'chat-pdf', title: "Chat with PDF", description: "Use AI to analyze and chat with your documents.", icon: Zap, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/chat-pdf" },
-    { id: 'merge', title: "Merge PDF", description: "Combine multiple PDFs into one unified document.", icon: Layers, color: "text-red-500", iconBg: "bg-red-50", href: "/merge" },
-    { id: 'split', title: "Split PDF", description: "Separate pages or extract ranges from your PDF.", icon: Scissors, color: "text-red-500", iconBg: "bg-red-50", href: "/split" },
-    { id: 'compress', title: "Compress PDF", description: "Reduce file size while maintaining visual quality.", icon: Download, color: "text-green-500", iconBg: "bg-green-50", href: "/compress" },
-    { id: 'pdf2word', title: "PDF to Word", description: "Convert PDF documents to editable Word files.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/pdf2word" },
-    { id: 'pdf2ppt', title: "PDF to PowerPoint", description: "Convert PDFs to editable PowerPoint slides.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/pdf2ppt" },
-    { id: 'pdf2excel', title: "PDF to Excel", description: "Convert PDF data to Excel spreadsheets.", icon: FileText, color: "text-green-500", iconBg: "bg-green-50", href: "/pdf2excel" },
-    { id: 'flatten', title: "Flatten PDF", description: "Convert editable content to images.", icon: Layers, color: "text-purple-500", iconBg: "bg-purple-50", href: "/flatten" },
-    { id: 'word2pdf', title: "Word to PDF", description: "Convert DOC and DOCX files to PDF.", icon: FileOutput, color: "text-blue-500", iconBg: "bg-blue-50", href: "/word2pdf" },
-    { id: 'ppt2pdf', title: "PowerPoint to PDF", description: "Convert PPT and PPTX slideshows to PDF.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/ppt2pdf" },
-    { id: 'excel2pdf', title: "Excel to PDF", description: "Convert Excel spreadsheets to PDF documents.", icon: FileText, color: "text-green-500", iconBg: "bg-green-50", href: "/excel2pdf" },
-    { id: 'edit', title: "Edit PDF", description: "Add text, shapes, images and comments to PDF.", icon: PenTool, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/edit" },
-    { id: 'pdf2imgs', title: "PDF to JPG", description: "Extract images or save each page as JPG.", icon: FileImage, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/pdf2imgs" },
-    { id: 'imgs2pdf', title: "JPG to PDF", description: "Convert JPG, PNG, BMP images to PDF.", icon: Image, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/imgs2pdf" },
-    { id: 'signature', title: "Sign PDF", description: "Sign yourself or request electronic signatures.", icon: FileSignature, color: "text-red-500", iconBg: "bg-red-50", href: "/signature" },
-    { id: 'watermark', title: "Watermark", description: "Stamp an image or text over your PDF files.", icon: FileImage, color: "text-red-500", iconBg: "bg-red-50", href: "/watermark" },
-    { id: 'rotate', title: "Rotate PDF", description: "Rotate your PDF pages to the correct orientation.", icon: RefreshCcw, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/organize" },
-    { id: 'html2pdf', title: "HTML to PDF", description: "Convert webpages to PDF documents.", icon: FileText, color: "text-gray-500", iconBg: "bg-gray-50", href: "/html2pdf" },
-    { id: 'unlock', title: "Unlock PDF", description: "Remove password styling from PDF files.", icon: Unlock, color: "text-slate-500", iconBg: "bg-slate-50", href: "/unlock" },
-    { id: 'protect', title: "Protect PDF", description: "Encrypt your PDF with a secure password.", icon: Lock, color: "text-slate-500", iconBg: "bg-slate-50", href: "/protect" },
-    { id: 'organize', title: "Organize PDF", description: "Sort, add and delete PDF pages.", icon: Layers, color: "text-red-500", iconBg: "bg-red-50", href: "/organize" },
-    { id: 'pdf2pdfa', title: "PDF to PDF/A", description: "Convert PDF documents to PDF/A for archiving.", icon: FileText, color: "text-red-500", iconBg: "bg-red-50", href: "/pdf2pdfa" },
-    { id: 'repair', title: "Repair PDF", description: "Repair damaged or corrupted PDF files.", icon: Zap, color: "text-gray-500", iconBg: "bg-gray-50", href: "/repair" },
-    { id: 'pagenums', title: "Page Numbers", description: "Add page numbers to your PDF document.", icon: Type, color: "text-red-500", iconBg: "bg-red-50", href: "/pagenums" },
-    { id: 'ocr', title: "Scan to PDF", description: "Capture documents from scanner or mobile.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/ocr" },
-    { id: 'ocr_text', title: "OCR PDF", description: "Make scanned documents searchable.", icon: Type, color: "text-blue-500", iconBg: "bg-blue-50", href: "/ocr" },
-    { id: 'summarize-pdf', title: "AI Summarizer", description: "Extract key insights & summaries instantly.", icon: BrainCircuit, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/summarize-pdf" },
-    { id: 'smart-organize', title: "Smart Organizer", description: "AI Auto-Rename & Sort (Invoices, Contracts).", icon: Wand2, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/smart-organize" },
-    { id: 'redact', title: "Redact PDF", description: "Permanently blackout & remove sensitive text.", icon: ShieldAlert, color: "text-red-500", iconBg: "bg-red-50", href: "/redact" },
-    { id: 'scrub', title: "Scrub Metadata", description: "Clean hidden data (Author, Creator) for privacy.", icon: Eraser, color: "text-gray-500", iconBg: "bg-gray-50", href: "/scrub" },
-    { id: 'invoice-generator', title: "Invoice Generator", description: "Create professional invoices instantly.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/invoice-generator" },
-    { id: 'resume-builder', title: "Resume Builder", description: "Build ATS-friendly resumes.", icon: LayoutTemplate, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/resume-builder" },
-    { id: 'certificate-maker', title: "Certificate Maker", description: "Design awards & certificates.", icon: Wand2, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/certificate-maker" },
-
-    // Non-PDF Tools
-    { id: 'image-resizer', title: "Image Resizer", description: "Resize images by width, height.", icon: Image, color: "text-blue-500", iconBg: "bg-blue-50", href: "/image-resizer" },
-    { id: 'password-generator', title: "Password Gen", description: "Create strong passwords.", icon: KeyRound, color: "text-green-500", iconBg: "bg-green-50", href: "/password-generator" },
-    { id: 'json-formatter', title: "JSON Formatter", description: "Validate and beautify JSON.", icon: Braces, color: "text-orange-500", iconBg: "bg-orange-50", href: "/json-formatter" },
-    { id: 'base64-tool', title: "Base64 Tool", description: "Encode/Decode Base64.", icon: Binary, color: "text-purple-500", iconBg: "bg-purple-50", href: "/base64-tool" },
-    { id: 'unit-converter', title: "Unit Converter", description: "Convert common units.", icon: Scale, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/unit-converter" },
-    { id: 'qr-code', title: "QR Generator", description: "Create QR codes instantly.", icon: QrCode, color: "text-slate-800", iconBg: "bg-slate-100", href: "/qr-code" },
-    { id: 'lorem-ipsum', title: "Lorem Ipsum", description: "Generate placeholder text.", icon: AlignLeft, color: "text-gray-500", iconBg: "bg-gray-50", href: "/lorem-ipsum" },
-    { id: 'markdown-preview', title: "Markdown Editor", description: "Live Markdown preview.", icon: FileText, color: "text-slate-700", iconBg: "bg-slate-100", href: "/markdown-preview" },
-    { id: 'text-analyzer', title: "Text Analyzer", description: "Word count and transformations.", icon: Type, color: "text-blue-600", iconBg: "bg-blue-50", href: "/text-analyzer" },
-    { id: 'calculator', title: "Scientific Calc", description: "Advanced math functions.", icon: Calculator, color: "text-indigo-600", iconBg: "bg-indigo-50", href: "/calculator" },
-    { id: 'stopwatch-tool', title: "Stopwatch", description: "Timer with laps.", icon: Timer, color: "text-green-600", iconBg: "bg-green-50", href: "/stopwatch-tool" },
-    { id: 'color-converter', title: "Color Picker", description: "HEX, RGB, HSL, CMYK.", icon: Palette, color: "text-pink-500", iconBg: "bg-pink-50", href: "/color-converter" },
-    { id: 'gradient-generator', title: "Gradient Maker", description: "Visual CSS gradients.", icon: Paintbrush, color: "text-purple-500", iconBg: "bg-purple-50", href: "/gradient-generator" },
-    { id: 'data-converter', title: "CSV <-> JSON", description: "Convert data formats.", icon: ArrowLeftRight, color: "text-orange-500", iconBg: "bg-orange-50", href: "/data-converter" },
-    { id: 'excel-to-json', title: "Excel to JSON", description: "Extract XLSX data.", icon: FileSpreadsheet, color: "text-green-600", iconBg: "bg-green-50", href: "/excel-to-json" },
-    { id: 'user-agent-parser', title: "User Agent", description: "Analyze browser info.", icon: Monitor, color: "text-blue-500", iconBg: "bg-blue-50", href: "/user-agent-parser" },
-    { id: 'url-parser', title: "URL Parser", description: "Explode URL components.", icon: LinkIcon, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/url-parser" },
-    { id: 'hash-generator', title: "Hash Generator", description: "MD5, SHA1, SHA256.", icon: Fingerprint, color: "text-slate-600", iconBg: "bg-slate-100", href: "/hash-generator" },
-    { id: 'text-to-speech', title: "Text to Speech", description: "Browser text synthesis.", icon: Volume2, color: "text-pink-600", iconBg: "bg-pink-50", href: "/text-to-speech" },
-    { id: 'keycode-info', title: "Keycode Info", description: "View keyboard events.", icon: Keyboard, color: "text-slate-700", iconBg: "bg-slate-100", href: "/keycode-info" },
-    { id: 'metronome', title: "Metronome", description: "BPM beat generator.", icon: Activity, color: "text-red-500", iconBg: "bg-red-50", href: "/metronome" },
-    { id: 'uuid-generator', title: "UUID Gen", description: "Bulk V4 UUIDs.", icon: Fingerprint, color: "text-violet-500", iconBg: "bg-violet-50", href: "/uuid-generator" },
-    { id: 'jwt-debugger', title: "JWT Debugger", description: "Decode tokens.", icon: ShieldCheck, color: "text-pink-500", iconBg: "bg-pink-50", href: "/jwt-debugger" },
-    { id: 'cron-parser', title: "Cron Parser", description: "Explain cron schedules.", icon: Clock, color: "text-green-500", iconBg: "bg-green-50", href: "/cron-parser" },
-    { id: 'subnet-calculator', title: "Subnet Calc", description: "CIDR and Hosts.", icon: Network, color: "text-blue-600", iconBg: "bg-blue-50", href: "/subnet-calculator" },
-    { id: 'dns-lookup', title: "DNS Lookup", description: "DoH Record query.", icon: Globe, color: "text-cyan-500", iconBg: "bg-cyan-50", href: "/dns-lookup" },
-    { id: 'latency-tester', title: "Latency Test", description: "Check server ping.", icon: Activity, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/latency-tester" },
-    { id: 'html-minifier', title: "HTML Minify", description: "Compress HTML.", icon: FileCode, color: "text-orange-600", iconBg: "bg-orange-50", href: "/html-minifier" },
-    { id: 'css-minifier', title: "CSS Minify", description: "Compress CSS.", icon: FileCode, color: "text-blue-600", iconBg: "bg-blue-50", href: "/css-minifier" },
-    { id: 'js-minifier', title: "JS Minify", description: "Compress JavaScript.", icon: FileCode, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/js-minifier" },
-    { id: 'device-info', title: "Device Info", description: "Screen & Hardware specs.", icon: Monitor, color: "text-slate-700", iconBg: "bg-slate-100", href: "/device-info" },
-    { id: 'battery-status', title: "Battery Status", description: "Power level & charging.", icon: Battery, color: "text-green-600", iconBg: "bg-green-50", href: "/battery-status" },
-    { id: 'network-info', title: "Network Info", description: "Connection speed & type.", icon: Signal, color: "text-blue-600", iconBg: "bg-blue-50", href: "/network-info" },
-    { id: 'world-clock', title: "World Clock", description: "Multi-city display.", icon: Globe, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/world-clock" },
-    { id: 'timezone-converter', title: "Timezone", description: "Meeting planner.", icon: Clock, color: "text-violet-500", iconBg: "bg-violet-50", href: "/timezone-converter" },
-    { id: 'unix-timestamp', title: "Unix Time", description: "Epoch converter.", icon: Hourglass, color: "text-slate-600", iconBg: "bg-slate-100", href: "/unix-timestamp" },
-
-    // Text Phase 38
-    { id: 'text-diff', title: "Text Diff", description: "Compare text changes.", icon: FileDiff, color: "text-indigo-600", iconBg: "bg-indigo-50", href: "/text-diff" },
-    { id: 'regex-tester', title: "Regex Tester", description: "Debug patterns.", icon: FileCode, color: "text-blue-600", iconBg: "bg-blue-50", href: "/regex-tester" },
-    { id: 'case-converter', title: "Case Converter", description: "Camel, snake, kebab.", icon: Type, color: "text-orange-500", iconBg: "bg-orange-50", href: "/case-converter" },
-    { id: 'word-density', title: "Word Density", description: "Analyze keywords.", icon: BarChart2, color: "text-green-600", iconBg: "bg-green-50", href: "/word-density" },
-
-    // Math Phase 39
-    { id: 'base-converter', title: "Base Converter", description: "Hex, Bin, Dec.", icon: Hash, color: "text-purple-600", iconBg: "bg-purple-50", href: "/base-converter" },
-    { id: 'number-generator', title: "Num Generator", description: "Random sequences.", icon: Dices, color: "text-pink-500", iconBg: "bg-pink-50", href: "/number-generator" },
-    { id: 'statistics-tool', title: "Statistics", description: "Mean, Median, StdDev.", icon: Sigma, color: "text-blue-600", iconBg: "bg-blue-50", href: "/statistics-tool" },
-    { id: 'prime-factor', title: "Prime Factor", description: "Find factors.", icon: Divide, color: "text-indigo-600", iconBg: "bg-indigo-50", href: "/prime-factor" },
-]
+import ToolGrid from '@/components/ToolGrid'
+import { TOOLS } from '@/config/tools'
 
 export default function LandingPage() {
     const router = useRouter()
-    const [searchQuery, setSearchQuery] = useState('')
     const [heroBg, setHeroBg] = useState('/assets/hero-bg.png')
     const [recentTools, setRecentTools] = useState([])
     const [smartModalOpen, setSmartModalOpen] = useState(false)
     const [droppedFiles, setDroppedFiles] = useState([])
     const [suggestedActions, setSuggestedActions] = useState([])
+    const [heroSearch, setHeroSearch] = useState('')
 
     useEffect(() => {
         // Load settings and recents
@@ -121,7 +30,7 @@ export default function LandingPage() {
         if (storedBg) setHeroBg(storedBg)
 
         const recentIds = JSON.parse(localStorage.getItem('dexpdf_recent_tools') || '[]')
-        const recentToolObjects = recentIds.map(id => features.find(f => f.id === id)).filter(Boolean)
+        const recentToolObjects = recentIds.map(id => TOOLS.find(f => f.id === id)).filter(Boolean)
         setRecentTools(recentToolObjects.slice(0, 4))
     }, [])
 
@@ -136,17 +45,17 @@ export default function LandingPage() {
         const actions = []
 
         if (pdfCount > 1) {
-            actions.push({ ...features.find(f => f.id === 'merge'), label: 'Merge PDFs' })
-            actions.push({ ...features.find(f => f.id === 'organize'), label: 'Organize Pages' })
+            actions.push({ ...TOOLS.find(f => f.id === 'merge'), label: 'Merge PDFs' })
+            actions.push({ ...TOOLS.find(f => f.id === 'organize'), label: 'Organize Pages' })
         } else if (pdfCount === 1) {
-            actions.push({ ...features.find(f => f.id === 'edit'), label: 'Edit PDF' })
-            actions.push({ ...features.find(f => f.id === 'compress'), label: 'Compress PDF' })
-            actions.push({ ...features.find(f => f.id === 'pdf2word'), label: 'Convert to Word' })
-            actions.push({ ...features.find(f => f.id === 'organize'), label: 'Organize/Rotate' })
+            actions.push({ ...TOOLS.find(f => f.id === 'edit'), label: 'Edit PDF' })
+            actions.push({ ...TOOLS.find(f => f.id === 'compress'), label: 'Compress PDF' })
+            actions.push({ ...TOOLS.find(f => f.id === 'pdf2word'), label: 'Convert to Word' })
+            actions.push({ ...TOOLS.find(f => f.id === 'organize'), label: 'Organize/Rotate' })
         }
 
         if (imgCount > 0) {
-            actions.push({ ...features.find(f => f.id === 'imgs2pdf'), label: 'Convert Images to PDF' })
+            actions.push({ ...TOOLS.find(f => f.id === 'imgs2pdf'), label: 'Convert Images to PDF' })
         }
 
         if (actions.length > 0) {
@@ -169,11 +78,6 @@ export default function LandingPage() {
         const newRecents = [toolId, ...currentRecents.filter(id => id !== toolId)].slice(0, 4)
         localStorage.setItem('dexpdf_recent_tools', JSON.stringify(newRecents))
     }
-
-    const filteredFeatures = features.filter(feature =>
-        feature.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        feature.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
 
     const handleBgChange = () => {
         const url = prompt("Enter new background image URL:")
@@ -293,29 +197,31 @@ export default function LandingPage() {
                             <br className="hidden md:block" /> 100% FREE, secure, and easy to use.
                         </motion.p>
 
-                        {/* Search Bar */}
+                        {/* Search Bar (Hero) - Scrolls to Grid */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.3 }}
                             className="max-w-xl mx-auto relative group z-20 w-full"
                         >
-                            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                                <Search className="h-6 w-6 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-                            </div>
-                            <input
-                                type="text"
-                                placeholder="Search for a PDF tool..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-14 pr-6 py-4 md:py-5 rounded-2xl bg-white/95 backdrop-blur-xl text-slate-900 shadow-2xl focus:ring-4 focus:ring-blue-500/30 focus:outline-none transition-all placeholder:text-slate-400 text-base md:text-lg border border-white/20"
-                            />
+                            <button
+                                onClick={() => {
+                                    document.querySelector('input[placeholder="Find a tool..."]')?.focus()
+                                    // Smooth scroll to tool grid
+                                    document.querySelector('section.relative.z-20')?.scrollIntoView({ behavior: 'smooth' })
+                                }}
+                                className="w-full pl-6 pr-6 py-4 md:py-5 rounded-2xl bg-white/95 backdrop-blur-xl text-slate-500 text-left shadow-2xl hover:bg-white transition-all text-base md:text-lg border border-white/20 flex items-center justify-between"
+                            >
+                                <span>I want to...</span>
+                                <Search className="w-6 h-6 text-slate-400" />
+                            </button>
+
                             <button
                                 onClick={handleBgChange}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 hover:opacity-50 text-slate-400 p-2"
+                                className="absolute -right-12 top-1/2 -translate-y-1/2 opacity-0 hover:opacity-100 text-white p-2 transition-all"
                                 title="Change Background"
                             >
-                                <Settings className="w-4 h-4" />
+                                <Settings className="w-5 h-5" />
                             </button>
                         </motion.div>
 
@@ -326,34 +232,11 @@ export default function LandingPage() {
                             transition={{ delay: 0.4 }}
                             className="flex flex-wrap justify-center gap-3 md:gap-4 mt-8"
                         >
-                            <button
-                                onClick={() => alert("Google Drive integration coming soon to DexPDF Pro!")}
-                                className="flex items-center gap-3 px-4 py-2 md:px-5 md:py-2.5 bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 backdrop-blur-md border border-white/20 rounded-xl transition-all duration-300 group"
-                            >
-                                <div className="p-1.5 bg-white rounded-lg group-hover:shadow-lg transition-shadow">
-                                    <svg viewBox="0 0 87.3 78" className="w-5 h-5">
-                                        <path d="M6.6 66.85l25.3-43.8 23.2 40.2H6.6v3.6zm25.3-43.8L53.6 6.3l-24-3.3-23 39.8L6.6 66.85z" fill="none" />
-                                        <path d="M29.9 23.05L8.6 60.15h56.3L44.8 23.05H29.9z" fill="#0066da" opacity="0" />
-                                        <path d="M87.3 26.35H55.8L44.2 6.3H31.9l20.4 35.5L40 63.25h15.8l31.5-54.5v17.6z" fill="#00AC47" />
-                                        <path d="M57.6 71.7H13.8l11.4-19.8H6.5L0 63.25l9.7 14.75h47.9l11.4-19.8-11.4 13.5z" fill="#EA4335" />
-                                        <path d="M25.2 6.3L6.6 42.8h17.6L44.2 8.7 54.3 26.35H87.3L54.3 6.3H25.2z" fill="#FFC107" />
-                                        <path d="M29.9 23.05h14.9l8.6 14.9L37.1 66.85h-7.2L8.6 23.05H29.9z" fill="#188038" />
-                                    </svg>
-                                </div>
-                                <span className="text-white/90 font-medium text-sm group-hover:text-white">Google Drive</span>
-                            </button>
-
-                            <button
-                                onClick={() => alert("Dropbox integration coming soon to DexPDF Pro!")}
-                                className="flex items-center gap-3 px-4 py-2 md:px-5 md:py-2.5 bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 backdrop-blur-md border border-white/20 rounded-xl transition-all duration-300 group"
-                            >
-                                <div className="p-1.5 bg-white rounded-lg group-hover:shadow-lg transition-shadow">
-                                    <svg viewBox="0 0 43 40" className="w-5 h-5">
-                                        <path d="M12.5 0L0 8.3l8.6 7.4L21.3 7.8 12.5 0zM30.5 0L21.3 7.8l12.7 7.9 8.6-7.4L30.5 0zM0 24.3l12.5 8.3 8.8-7.8-12.7-7.9-8.6 7.4zM42.6 24.3l-8.6-7.4-12.7 7.9 8.8 7.8 12.5-8.3zM21.3 27.2l-8.8 7.8L21.3 40l8.8-4.9-8.8-7.9z" fill="#0061FF" />
-                                    </svg>
-                                </div>
-                                <span className="text-white/90 font-medium text-sm group-hover:text-white">Dropbox</span>
-                            </button>
+                            <div className="flex items-center gap-2 text-white/50 text-sm font-medium">
+                                <CheckCircle className="w-4 h-4 text-green-400" /> Free
+                                <CheckCircle className="w-4 h-4 text-green-400 ml-2" /> Private
+                                <CheckCircle className="w-4 h-4 text-green-400 ml-2" /> No Limits
+                            </div>
                         </motion.div>
                     </div>
                 </div>
@@ -363,7 +246,7 @@ export default function LandingPage() {
             </section>
 
             {/* Recent Tools Section */}
-            {recentTools.length > 0 && !searchQuery && (
+            {recentTools.length > 0 && (
                 <section className="relative z-20 -mt-10 px-4 pb-8 pointer-events-none">
                     <div className="container mx-auto pointer-events-auto">
                         <div className="flex flex-col items-center">
@@ -389,33 +272,8 @@ export default function LandingPage() {
                 </section>
             )}
 
-            {/* Tools Grid */}
-            <section className="relative z-20 px-4 pb-24 -mt-10 pt-10">
-                <div className="container mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {filteredFeatures.map((feature, idx) => (
-                            <motion.div
-                                key={idx}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.4, delay: idx * 0.03 }}
-                            >
-                                <Link href={feature.href} onClick={() => handleToolClick(feature.id)}>
-                                    <div className="glass-card rounded-2xl p-6 h-full flex flex-col items-start hover:-translate-y-2 hover:shadow-2xl hover:border-blue-400/30 group">
-                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 ${feature.iconBg} ${feature.color} group-hover:scale-110 transition-transform duration-300 shadow-inner`}>
-                                            <feature.icon className="w-8 h-8" />
-                                        </div>
-                                        <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">{feature.title}</h3>
-                                        <p className="text-sm text-slate-500 leading-relaxed font-medium">
-                                            {feature.description}
-                                        </p>
-                                    </div>
-                                </Link>
-                            </motion.div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+            {/* Tools Grid (Replaced) */}
+            <ToolGrid />
 
             {/* How It Works Section */}
             <HowItWorks />
@@ -423,8 +281,8 @@ export default function LandingPage() {
             {/* AdSpot Placement 1 */}
             {/* <AdSpot /> can go here if needed */}
 
-            {/* Features Section */}
-            <Features />
+            {/* Features Section - Keep as legacy or marketing content */}
+            {/* <Features /> */}
 
             {/* FAQ Section */}
             <FAQ />

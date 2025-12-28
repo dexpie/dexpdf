@@ -502,5 +502,209 @@
     "name": "Prime Factor",
     "desc": "Number Breakdown",
     "color": "indigo"
+  },
+  {
+    "id": "sql-formatter",
+    "name": "SQL Format",
+    "desc": "Prettify Queries",
+    "color": "blue"
+  },
+  {
+    "id": "json-diff",
+    "name": "JSON Diff",
+    "desc": "Compare JSON",
+    "color": "green"
+  },
+  {
+    "id": "url-encoder",
+    "name": "URL Enc/Dec",
+    "desc": "Safe Strings",
+    "color": "orange"
+  },
+  {
+    "id": "html-entity",
+    "name": "HTML Entity",
+    "desc": "Escape Chars",
+    "color": "red"
+  },
+  {
+    "id": "color-contrast",
+    "name": "Contrast",
+    "desc": "WCAG Checker",
+    "color": "slate"
+  },
+  {
+    "id": "palette-generator",
+    "name": "Palette Gen",
+    "desc": "Color Harmonies",
+    "color": "pink"
+  },
+  {
+    "id": "image-color-picker",
+    "name": "Img Picker",
+    "desc": "Extract Hex/RGB",
+    "color": "blue"
+  },
+  {
+    "id": "blindness-simulator",
+    "name": "Colorblind",
+    "desc": "Vision Sim",
+    "color": "indigo"
+  },
+  {
+    "id": "hash-generator",
+    "name": "Hash Gen",
+    "desc": "MD5, SHA",
+    "color": "slate"
+  },
+  {
+    "id": "token-generator",
+    "name": "Token Gen",
+    "desc": "UUID, Keys",
+    "color": "purple"
+  },
+  {
+    "id": "xml-json",
+    "name": "XML<>JSON",
+    "desc": "Format Convert",
+    "color": "blue"
+  },
+  {
+    "id": "yaml-json",
+    "name": "YAML<>JSON",
+    "desc": "Format Convert",
+    "color": "orange"
+  },
+  {
+    "id": "user-agent-parser",
+    "name": "UA Parser",
+    "desc": "Browser Info",
+    "color": "indigo"
+  },
+  {
+    "id": "meta-tag-generator",
+    "name": "Meta Tags",
+    "desc": "SEO Gen",
+    "color": "pink"
+  },
+  {
+    "id": "subnet-calculator",
+    "name": "Subnet Calc",
+    "desc": "CIDR/IP",
+    "color": "cyan"
+  },
+  {
+    "id": "ip-validator",
+    "name": "IP Check",
+    "desc": "Valid IPv4/6",
+    "color": "green"
+  },
+  {
+    "id": "lorem-ipsum",
+    "name": "Lorem Ipsum",
+    "desc": "Dummy Text",
+    "color": "purple"
+  },
+  {
+    "id": "text-cleaner",
+    "name": "Text Cleaner",
+    "desc": "Dedup, Trim",
+    "color": "slate"
+  },
+  {
+    "id": "slug-generator",
+    "name": "Slugify",
+    "desc": "URL Friendly",
+    "color": "blue"
+  },
+  {
+    "id": "string-obfuscator",
+    "name": "Obfuscator",
+    "desc": "ROT13, B64",
+    "color": "indigo"
+  },
+  {
+    "id": "image-resizer",
+    "name": "Img Resize",
+    "desc": "Scale/Resize",
+    "color": "blue"
+  },
+  {
+    "id": "image-filter",
+    "name": "CSS Filters",
+    "desc": "Blur, Sepia",
+    "color": "pink"
+  },
+  {
+    "id": "qr-reader",
+    "name": "QR Reader",
+    "desc": "Scan Codes",
+    "color": "green"
+  },
+  {
+    "id": "date-diff",
+    "name": "Date Diff",
+    "desc": "Calc Duration",
+    "color": "orange"
+  },
+  {
+    "id": "stopwatch",
+    "name": "Stopwatch",
+    "desc": "Timer/Laps",
+    "color": "red"
+  },
+  {
+    "id": "countdown-timer",
+    "name": "Countdown",
+    "desc": "Focus Timer",
+    "color": "cyan"
+  },
+  {
+    "id": "loan-calculator",
+    "name": "Loan Calc",
+    "desc": "Mortgage/Auto",
+    "color": "blue"
+  },
+  {
+    "id": "interest-calculator",
+    "name": "Interest",
+    "desc": "Compound Growth",
+    "color": "green"
+  },
+  {
+    "id": "salary-calculator",
+    "name": "Salary Calc",
+    "desc": "Income Conv",
+    "color": "slate"
+  },
+  {
+    "id": "discount-calculator",
+    "name": "Discount",
+    "desc": "Sale Price",
+    "color": "orange"
+  },
+  {
+    "id": "reaction-tester",
+    "name": "Reaction",
+    "desc": "Reflex Test",
+    "color": "red"
+  },
+  {
+    "id": "typing-test",
+    "name": "Typing Test",
+    "desc": "WPM Check",
+    "color": "purple"
+  },
+  {
+    "id": "decision-maker",
+    "name": "Decide",
+    "desc": "Coin/Wheel",
+    "color": "indigo"
+  },
+  {
+    "id": "meme-generator",
+    "name": "Meme Gen",
+    "desc": "Caption Img",
+    "color": "pink"
   }
 ]

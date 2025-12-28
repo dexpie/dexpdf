@@ -1,31 +1,24 @@
-import React, { useEffect, useState } from 'react'
+'use client'
 
-const THEME_KEY = 'dexpdf:theme'
+import React, { useEffect, useState } from 'react'
+import { useTheme } from 'next-themes'
+import { Moon, Sun } from 'lucide-react'
 
 export default function ThemeToggle({ className }) {
-  const [theme, setTheme] = useState('light')
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    try {
-      const v = localStorage.getItem(THEME_KEY)
-      if (v) setTheme(v)
-    } catch (e) { }
-  }, [])
+  useEffect(() => setMounted(true), [])
 
-  useEffect(() => {
-    try { localStorage.setItem(THEME_KEY, theme) } catch (e) { }
-    if (theme === 'dark') document.documentElement.classList.add('dark')
-    else document.documentElement.classList.remove('dark')
-  }, [theme])
+  if (!mounted) return null
 
   return (
     <button
-      aria-label="Toggle theme"
-      className={`theme-toggle ${className || ''}`}
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent' }}
+      className={`p-2 rounded-lg transition-all hover:bg-white/10 ${className || ''}`}
+      aria-label="Toggle Theme"
     >
-      {theme === 'dark' ? '🌙 Dark' : '☀️ Light'}
+      {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
     </button>
   )
 }

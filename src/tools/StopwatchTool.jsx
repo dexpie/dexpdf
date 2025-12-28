@@ -1,106 +1,96 @@
 import React, { useState, useEffect, useRef } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
-import { Play, Pause, RotateCcw, Flag, Timer } from 'lucide-react'
+import { Timer, Play, Pause, RefreshCw, Flag } from 'lucide-react'
 
 export default function StopwatchTool() {
     const [time, setTime] = useState(0)
-    const [isRunning, setIsRunning] = useState(false)
+    const [running, setRunning] = useState(false)
     const [laps, setLaps] = useState([])
-    const intervalRef = useRef(null)
+    const timerRef = useRef(null)
 
     useEffect(() => {
-        if (isRunning) {
-            intervalRef.current = setInterval(() => {
-                setTime(prev => prev + 10)
+        if (running) {
+            timerRef.current = setInterval(() => {
+                setTime(t => t + 10)
             }, 10)
         } else {
-            clearInterval(intervalRef.current)
+            clearInterval(timerRef.current)
         }
-        return () => clearInterval(intervalRef.current)
-    }, [isRunning])
+        return () => clearInterval(timerRef.current)
+    }, [running])
 
     const formatTime = (ms) => {
-        const minutes = Math.floor(ms / 60000)
-        const seconds = Math.floor((ms % 60000) / 1000)
-        const centiseconds = Math.floor((ms % 1000) / 10)
-        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${centiseconds.toString().padStart(2, '0')}`
+        const min = Math.floor(ms / 60000)
+        const sec = Math.floor((ms % 60000) / 1000)
+        const centi = Math.floor((ms % 1000) / 10)
+        return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}.${centi.toString().padStart(2, '0')}`
     }
 
-    const handleLap = () => {
-        setLaps(prev => [time, ...prev])
+    const lap = () => {
+        setLaps([...laps, time])
     }
 
-    const handleReset = () => {
-        setIsRunning(false)
+    const reset = () => {
+        setRunning(false)
         setTime(0)
         setLaps([])
     }
 
     return (
-        <ToolLayout title="Stopwatch" description="Precision timer with lap recording.">
-            <div className="max-w-xl mx-auto">
-                <div className="bg-slate-900 rounded-full aspect-square flex flex-col items-center justify-center shadow-2xl border-8 border-slate-800 relative mb-8">
-                    <div className="text-slate-500 font-bold uppercase tracking-widest text-xs mb-2">Chronometer</div>
-                    <div className="text-6xl md:text-8xl font-mono font-bold text-white tabular-nums tracking-tighter">
+        <ToolLayout title="Stopwatch" description="Track time with millisecond precision and laps.">
+            <div className="max-w-2xl mx-auto space-y-8">
+
+                <div className="bg-slate-900 text-white rounded-full h-80 w-80 mx-auto flex flex-col items-center justify-center shadow-2xl border-8 border-slate-800 relative">
+                    <div className="text-6xl font-black font-mono tracking-wider tabular-nums">
                         {formatTime(time)}
                     </div>
-                    <div className="absolute top-8 text-blue-500 animate-pulse">
-                        {isRunning && <Timer className="w-6 h-6" />}
+                    <div className="text-slate-500 font-bold uppercase mt-2 text-sm tracking-widest">
+                        {running ? 'Running' : 'Stopped'}
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-8">
-                    {!isRunning ? (
+                <div className="flex justify-center gap-4">
+                    <button
+                        onClick={() => setRunning(!running)}
+                        className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 active:scale-95 ${running ? 'bg-orange-500' : 'bg-green-500'
+                            }`}
+                    >
+                        {running ? <Pause className="fill-current" /> : <Play className="fill-current ml-1" />}
+                    </button>
+
+                    {running && (
                         <button
-                            onClick={() => setIsRunning(true)}
-                            className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-95"
+                            onClick={lap}
+                            className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
                         >
-                            <Play className="w-6 h-6" /> Start
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => setIsRunning(false)}
-                            className="bg-red-500 hover:bg-red-600 text-white p-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all active:scale-95"
-                        >
-                            <Pause className="w-6 h-6" /> Stop
+                            <Flag className="fill-current" />
                         </button>
                     )}
 
-                    <div className="grid grid-cols-2 gap-2">
+                    {!running && time > 0 && (
                         <button
-                            onClick={handleLap}
-                            disabled={!isRunning}
-                            className="bg-slate-200 hover:bg-slate-300 text-slate-700 p-4 rounded-2xl font-bold flex items-center justify-center gap-2 disabled:opacity-50 transition-all active:scale-95"
+                            onClick={reset}
+                            className="w-16 h-16 rounded-full bg-slate-500 flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
                         >
-                            <Flag className="w-5 h-5" /> Lap
+                            <RefreshCw />
                         </button>
-                        <button
-                            onClick={handleReset}
-                            className="bg-slate-800 hover:bg-slate-700 text-white p-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95"
-                        >
-                            <RotateCcw className="w-5 h-5" /> Reset
-                        </button>
-                    </div>
+                    )}
                 </div>
 
                 {laps.length > 0 && (
-                    <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100 max-h-60 overflow-y-auto">
-                        <h3 className="font-bold text-slate-700 mb-4 border-b pb-2 flex items-center gap-2">
-                            <Flag className="w-4 h-4 text-blue-500" /> Laps
-                        </h3>
-                        <div className="space-y-2">
-                            {laps.map((lapTime, idx) => (
-                                <div key={idx} className="flex justify-between items-center font-mono text-lg p-2 hover:bg-slate-50 rounded-lg">
-                                    <span className="text-slate-400 text-sm">#{laps.length - idx}</span>
-                                    <span className="font-bold text-slate-800">{formatTime(lapTime)}</span>
-                                    <span className="text-xs text-slate-400">
-                                        {idx < laps.length - 1 ? `+${formatTime(lapTime - laps[idx + 1])}` : '-'}
-                                    </span>
+                    <div className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden">
+                        <div className="bg-slate-50 p-4 font-bold text-slate-500 text-center uppercase text-xs">Laps</div>
+                        <div className="max-h-60 overflow-auto">
+                            {laps.slice().reverse().map((l, i) => (
+                                <div key={i} className="flex justify-between p-4 border-b border-slate-100 last:border-0 font-mono font-bold text-slate-700">
+                                    <span className="text-slate-400">#{laps.length - i}</span>
+                                    <span>{formatTime(l)}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
                 )}
+
             </div>
         </ToolLayout>
     )

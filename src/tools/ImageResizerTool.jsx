@@ -1,152 +1,107 @@
 import React, { useState, useRef } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
-import { Image as ImageIcon, Download, Maximize, Lock, Unlock } from 'lucide-react'
-import { triggerConfetti } from '../utils/confetti'
+import { ArrowRight, Download, Image as ImageIcon } from 'lucide-react'
 
 export default function ImageResizerTool() {
-    const [file, setFile] = useState(null)
-    const [preview, setPreview] = useState(null)
-    const [width, setWidth] = useState(0)
-    const [height, setHeight] = useState(0)
-    const [aspectRatio, setAspectRatio] = useState(1)
-    const [lockAspect, setLockAspect] = useState(true)
-    const [quality, setQuality] = useState(0.9)
+    const [image, setImage] = useState(null)
     const [originalSize, setOriginalSize] = useState({ w: 0, h: 0 })
+    const [targetSize, setTargetSize] = useState({ w: 0, h: 0 })
+    const [keepRatio, setKeepRatio] = useState(true)
+    const canvasRef = useRef(null)
 
     const handleFile = (files) => {
-        const f = files[0]
-        if (!f) return
-        setFile(f)
-        const url = URL.createObjectURL(f)
-        setPreview(url)
-
+        if (!files[0]) return
         const img = new Image()
+        img.src = URL.createObjectURL(files[0])
         img.onload = () => {
-            setWidth(img.width)
-            setHeight(img.height)
             setOriginalSize({ w: img.width, h: img.height })
-            setAspectRatio(img.width / img.height)
+            setTargetSize({ w: img.width, h: img.height })
+            setImage(img)
         }
-        img.src = url
     }
 
-    const handleWidthChange = (val) => {
-        if (!val) { setWidth(''); return }
-        const w = parseInt(val)
-        setWidth(w)
-        if (lockAspect) setHeight(Math.round(w / aspectRatio))
-    }
-
-    const handleHeightChange = (val) => {
-        if (!val) { setHeight(''); return }
-        const h = parseInt(val)
-        setHeight(h)
-        if (lockAspect) setWidth(Math.round(h * aspectRatio))
-    }
-
-    const processImage = () => {
-        if (!file || !width || !height) return
-
-        const canvas = document.createElement('canvas')
-        canvas.width = width
-        canvas.height = height
-        const ctx = canvas.getContext('2d')
-        const img = new Image()
-        img.onload = () => {
-            // Better resizing quality
-            ctx.imageSmoothingEnabled = true
-            ctx.imageSmoothingQuality = 'high'
-            ctx.drawImage(img, 0, 0, width, height)
-
-            canvas.toBlob((blob) => {
-                const url = URL.createObjectURL(blob)
-                const a = document.createElement('a')
-                a.href = url
-                a.download = `resized_${width}x${height}_${file.name}`
-                a.click()
-                triggerConfetti()
-            }, file.type, quality)
+    const handleResize = (dim, val) => {
+        const newSize = { ...targetSize, [dim]: val }
+        if (keepRatio && originalSize.w > 0) {
+            const ratio = originalSize.w / originalSize.h
+            if (dim === 'w') newSize.h = Math.round(val / ratio)
+            if (dim === 'h') newSize.w = Math.round(val * ratio)
         }
-        img.src = preview
+        setTargetSize(newSize)
+    }
+
+    const download = () => {
+        if (!image || !canvasRef.current) return
+        const ctx = canvasRef.current.getContext('2d')
+        canvasRef.current.width = targetSize.w
+        canvasRef.current.height = targetSize.h
+        ctx.drawImage(image, 0, 0, targetSize.w, targetSize.h)
+        const url = canvasRef.current.toDataURL('image/png')
+
+        const link = document.createElement('a')
+        link.download = `resized-${targetSize.w}x${targetSize.h}.png`
+        link.href = url
+        link.click()
     }
 
     return (
-        <ToolLayout title="Image Resizer" description="Resize images to exact dimensions.">
-            <div className="max-w-4xl mx-auto">
-                {!file ? (
-                    <FileDropZone onFiles={handleFile} accept="image/*" />
+        <ToolLayout title="Image Resizer" description="Resize images quickly without uploading to server.">
+            <div className="max-w-4xl mx-auto space-y-8">
+
+                {!image ? (
+                    <FileDropZone onFiles={handleFile} accept="image/*" hint="Upload image to resize" />
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="bg-slate-100 p-4 rounded-3xl flex items-center justify-center border border-slate-200">
-                            <img src={preview} className="max-w-full max-h-[400px] object-contain shadow-lg rounded-lg" />
+                        <div className="bg-white p-6 rounded-3xl shadow flex flex-col items-center">
+                            <h3 className="font-bold text-slate-500 mb-4">Preview</h3>
+                            <img src={image.src} className="max-w-full max-h-64 object-contain rounded" alt="Original" />
+                            <p className="mt-2 text-xs text-slate-400 font-bold">{originalSize.w} x {originalSize.h}</p>
+                            <button onClick={() => setImage(null)} className="mt-4 text-red-500 text-sm font-bold hover:underline">Remove</button>
                         </div>
 
-                        <div className="space-y-6 bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-bold text-lg">Dimensions</h3>
-                                <button
-                                    onClick={() => setLockAspect(!lockAspect)}
-                                    className={`p-2 rounded-lg ${lockAspect ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400'}`}
-                                >
-                                    {lockAspect ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
-                                </button>
-                            </div>
+                        <div className="bg-white p-6 rounded-3xl shadow space-y-6">
+                            <h3 className="font-bold text-slate-700 text-lg flex items-center gap-2">
+                                <ImageIcon className="w-5 h-5 text-blue-500" /> Resize Options
+                            </h3>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Width (px)</label>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase">Width</label>
                                     <input
-                                        type="number"
-                                        value={width}
-                                        onChange={e => handleWidthChange(e.target.value)}
-                                        className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                                        type="number" value={targetSize.w} onChange={e => handleResize('w', Number(e.target.value))}
+                                        className="w-full p-3 bg-slate-50 rounded-xl font-bold"
                                     />
                                 </div>
-                                <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Height (px)</label>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-bold text-slate-400 uppercase">Height</label>
                                     <input
-                                        type="number"
-                                        value={height}
-                                        onChange={e => handleHeightChange(e.target.value)}
-                                        className="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                                        type="number" value={targetSize.h} onChange={e => handleResize('h', Number(e.target.value))}
+                                        className="w-full p-3 bg-slate-50 rounded-xl font-bold"
                                     />
                                 </div>
                             </div>
 
-                            {originalSize.w > 0 && (
-                                <p className="text-xs text-slate-400 text-center">
-                                    Original: {originalSize.w} x {originalSize.h}
-                                </p>
-                            )}
-
-                            <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase flex justify-between">
-                                    <span>Quality</span>
-                                    <span>{Math.round(quality * 100)}%</span>
-                                </label>
+                            <div className="flex items-center gap-2">
                                 <input
-                                    type="range"
-                                    min="0.1" max="1" step="0.1"
-                                    value={quality}
-                                    onChange={e => setQuality(parseFloat(e.target.value))}
-                                    className="w-full mt-2 accent-blue-600"
+                                    type="checkbox" checked={keepRatio} onChange={e => setKeepRatio(e.target.checked)}
+                                    className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500"
                                 />
+                                <label className="text-sm font-bold text-slate-600">Maintain Aspect Ratio</label>
                             </div>
 
                             <button
-                                onClick={processImage}
-                                className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:scale-105 transition-all shadow-xl flex items-center justify-center gap-2"
+                                onClick={download}
+                                className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex justify-center items-center gap-2"
                             >
                                 <Download className="w-5 h-5" /> Download Resized
-                            </button>
-
-                            <button onClick={() => setFile(null)} className="w-full py-2 text-slate-400 hover:text-red-500 text-sm font-bold">
-                                Cancel
                             </button>
                         </div>
                     </div>
                 )}
+
+                <canvas ref={canvasRef} className="hidden" />
+
             </div>
         </ToolLayout>
     )
