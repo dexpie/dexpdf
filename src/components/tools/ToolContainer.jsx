@@ -80,6 +80,9 @@ const TOOL_COMPONENTS = {
   'subnet-calculator': loadTool(() => import('../../tools/IpSubnetCalculatorTool')),
   'dns-lookup': loadTool(() => import('../../tools/DnsLookupTool')),
   'latency-tester': loadTool(() => import('../../tools/LatencyTesterTool')),
+  'html-minifier': loadTool(() => import('../../tools/HtmlMinifierTool')),
+  'css-minifier': loadTool(() => import('../../tools/CssMinifierTool')),
+  'js-minifier': loadTool(() => import('../../tools/JsMinifierTool')),
 }
 
 export default function ToolContainer({ toolId, onClose }) {

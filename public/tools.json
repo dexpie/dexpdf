@@ -400,5 +400,23 @@
     "name": "Latency",
     "desc": "HTTP Ping",
     "color": "indigo"
+  },
+  {
+    "id": "html-minifier",
+    "name": "HTML Minify",
+    "desc": "Compress Code",
+    "color": "orange"
+  },
+  {
+    "id": "css-minifier",
+    "name": "CSS Minify",
+    "desc": "Compress Styles",
+    "color": "sky"
+  },
+  {
+    "id": "js-minifier",
+    "name": "JS Minify",
+    "desc": "Compress Script",
+    "color": "yellow"
   }
 ]

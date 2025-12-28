@@ -9,7 +9,10 @@ import {
     FileText, Download, Shield, Zap, Image, FileOutput, Scissors,
     Layers, Lock, Unlock, PenTool, Type, FileSignature,
     FileImage, RefreshCcw, LayoutTemplate, Search, Settings, Upload, X, ArrowRight,
-    CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser, BrainCircuit
+    CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser, BrainCircuit,
+    KeyRound, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette,
+    Paintbrush, ArrowLeftRight, FileSpreadsheet, Monitor, Link as LinkIcon, Fingerprint, Volume2,
+    Keyboard, Clock, Network, FileCode, Activity
 } from 'lucide-react'
 import Features from '@/components/Features'
 import FAQ from '@/components/FAQ'
@@ -50,6 +53,38 @@ const features = [
     { id: 'invoice-generator', title: "Invoice Generator", description: "Create professional invoices instantly.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/invoice-generator" },
     { id: 'resume-builder', title: "Resume Builder", description: "Build ATS-friendly resumes.", icon: LayoutTemplate, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/resume-builder" },
     { id: 'certificate-maker', title: "Certificate Maker", description: "Design awards & certificates.", icon: Wand2, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/certificate-maker" },
+
+    // Non-PDF Tools
+    { id: 'image-resizer', title: "Image Resizer", description: "Resize images by width, height.", icon: Image, color: "text-blue-500", iconBg: "bg-blue-50", href: "/image-resizer" },
+    { id: 'password-generator', title: "Password Gen", description: "Create strong passwords.", icon: KeyRound, color: "text-green-500", iconBg: "bg-green-50", href: "/password-generator" },
+    { id: 'json-formatter', title: "JSON Formatter", description: "Validate and beautify JSON.", icon: Braces, color: "text-orange-500", iconBg: "bg-orange-50", href: "/json-formatter" },
+    { id: 'base64-tool', title: "Base64 Tool", description: "Encode/Decode Base64.", icon: Binary, color: "text-purple-500", iconBg: "bg-purple-50", href: "/base64-tool" },
+    { id: 'unit-converter', title: "Unit Converter", description: "Convert common units.", icon: Scale, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/unit-converter" },
+    { id: 'qr-code', title: "QR Generator", description: "Create QR codes instantly.", icon: QrCode, color: "text-slate-800", iconBg: "bg-slate-100", href: "/qr-code" },
+    { id: 'lorem-ipsum', title: "Lorem Ipsum", description: "Generate placeholder text.", icon: AlignLeft, color: "text-gray-500", iconBg: "bg-gray-50", href: "/lorem-ipsum" },
+    { id: 'markdown-preview', title: "Markdown Editor", description: "Live Markdown preview.", icon: FileText, color: "text-slate-700", iconBg: "bg-slate-100", href: "/markdown-preview" },
+    { id: 'text-analyzer', title: "Text Analyzer", description: "Word count and transformations.", icon: Type, color: "text-blue-600", iconBg: "bg-blue-50", href: "/text-analyzer" },
+    { id: 'calculator', title: "Scientific Calc", description: "Advanced math functions.", icon: Calculator, color: "text-indigo-600", iconBg: "bg-indigo-50", href: "/calculator" },
+    { id: 'stopwatch-tool', title: "Stopwatch", description: "Timer with laps.", icon: Timer, color: "text-green-600", iconBg: "bg-green-50", href: "/stopwatch-tool" },
+    { id: 'color-converter', title: "Color Picker", description: "HEX, RGB, HSL, CMYK.", icon: Palette, color: "text-pink-500", iconBg: "bg-pink-50", href: "/color-converter" },
+    { id: 'gradient-generator', title: "Gradient Maker", description: "Visual CSS gradients.", icon: Paintbrush, color: "text-purple-500", iconBg: "bg-purple-50", href: "/gradient-generator" },
+    { id: 'data-converter', title: "CSV <-> JSON", description: "Convert data formats.", icon: ArrowLeftRight, color: "text-orange-500", iconBg: "bg-orange-50", href: "/data-converter" },
+    { id: 'excel-to-json', title: "Excel to JSON", description: "Extract XLSX data.", icon: FileSpreadsheet, color: "text-green-600", iconBg: "bg-green-50", href: "/excel-to-json" },
+    { id: 'user-agent-parser', title: "User Agent", description: "Analyze browser info.", icon: Monitor, color: "text-blue-500", iconBg: "bg-blue-50", href: "/user-agent-parser" },
+    { id: 'url-parser', title: "URL Parser", description: "Explode URL components.", icon: LinkIcon, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/url-parser" },
+    { id: 'hash-generator', title: "Hash Generator", description: "MD5, SHA1, SHA256.", icon: Fingerprint, color: "text-slate-600", iconBg: "bg-slate-100", href: "/hash-generator" },
+    { id: 'text-to-speech', title: "Text to Speech", description: "Browser text synthesis.", icon: Volume2, color: "text-pink-600", iconBg: "bg-pink-50", href: "/text-to-speech" },
+    { id: 'keycode-info', title: "Keycode Info", description: "View keyboard events.", icon: Keyboard, color: "text-slate-700", iconBg: "bg-slate-100", href: "/keycode-info" },
+    { id: 'metronome', title: "Metronome", description: "BPM beat generator.", icon: Activity, color: "text-red-500", iconBg: "bg-red-50", href: "/metronome" },
+    { id: 'uuid-generator', title: "UUID Gen", description: "Bulk V4 UUIDs.", icon: Fingerprint, color: "text-violet-500", iconBg: "bg-violet-50", href: "/uuid-generator" },
+    { id: 'jwt-debugger', title: "JWT Debugger", description: "Decode tokens.", icon: ShieldCheck, color: "text-pink-500", iconBg: "bg-pink-50", href: "/jwt-debugger" },
+    { id: 'cron-parser', title: "Cron Parser", description: "Explain cron schedules.", icon: Clock, color: "text-green-500", iconBg: "bg-green-50", href: "/cron-parser" },
+    { id: 'subnet-calculator', title: "Subnet Calc", description: "CIDR and Hosts.", icon: Network, color: "text-blue-600", iconBg: "bg-blue-50", href: "/subnet-calculator" },
+    { id: 'dns-lookup', title: "DNS Lookup", description: "DoH Record query.", icon: Globe, color: "text-cyan-500", iconBg: "bg-cyan-50", href: "/dns-lookup" },
+    { id: 'latency-tester', title: "Latency Test", description: "Check server ping.", icon: Activity, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/latency-tester" },
+    { id: 'html-minifier', title: "HTML Minify", description: "Compress HTML.", icon: FileCode, color: "text-orange-600", iconBg: "bg-orange-50", href: "/html-minifier" },
+    { id: 'css-minifier', title: "CSS Minify", description: "Compress CSS.", icon: FileCode, color: "text-blue-600", iconBg: "bg-blue-50", href: "/css-minifier" },
+    { id: 'js-minifier', title: "JS Minify", description: "Compress JavaScript.", icon: FileCode, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/js-minifier" },
 ]
 
 export default function LandingPage() {
