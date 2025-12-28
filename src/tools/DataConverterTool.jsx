@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
-import { Filejson, FileSpreadsheet, ArrowLeftRight, Download, Copy, Trash2 } from 'lucide-react'
+import { FileJson, FileSpreadsheet, ArrowLeftRight, Download, Copy, Trash2 } from 'lucide-react'
 import Papa from 'papaparse'
 import { triggerConfetti } from '../utils/confetti'
 
@@ -71,7 +71,7 @@ export default function DataConverterTool() {
                     <div className="flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
                         <div className="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
                             <label className="font-bold text-slate-600 flex items-center gap-2">
-                                {mode === 'csv2json' ? <FileSpreadsheet className="w-4 h-4" /> : <Filejson className="w-4 h-4" />}
+                                {mode === 'csv2json' ? <FileSpreadsheet className="w-4 h-4" /> : <FileJson className="w-4 h-4" />}
                                 Input
                             </label>
                             <button onClick={() => setInput('')} className="text-slate-400 hover:text-red-500">
@@ -90,7 +90,7 @@ export default function DataConverterTool() {
                     <div className="flex flex-col bg-slate-900 rounded-3xl shadow-lg border border-slate-800 overflow-hidden relative">
                         <div className="bg-slate-800 p-4 border-b border-slate-700 flex justify-between items-center">
                             <label className="font-bold text-slate-300 flex items-center gap-2">
-                                {mode === 'json2csv' ? <FileSpreadsheet className="w-4 h-4" /> : <Filejson className="w-4 h-4" />}
+                                {mode === 'json2csv' ? <FileSpreadsheet className="w-4 h-4" /> : <FileJson className="w-4 h-4" />}
                                 Output
                             </label>
                             <div className="flex gap-2">

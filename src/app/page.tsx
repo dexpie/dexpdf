@@ -11,6 +11,7 @@ import {
     FileImage, RefreshCcw, LayoutTemplate, Search, Settings, Upload, X, ArrowRight,
     CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser, BrainCircuit,
     KeyRound, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette,
+    Paintbrush, ArrowLeftRight, FileSpreadsheet, Monitor, Link as LinkIcon, Fingerprint, Volume2,
     Keyboard, Clock, Network, FileCode, Activity, Battery, Signal, Hourglass
 } from 'lucide-react'
 import Features from '@/components/Features'
