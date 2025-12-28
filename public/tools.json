@@ -418,5 +418,23 @@
     "name": "JS Minify",
     "desc": "Compress Script",
     "color": "yellow"
+  },
+  {
+    "id": "device-info",
+    "name": "Device Info",
+    "desc": "Screen & HW",
+    "color": "slate"
+  },
+  {
+    "id": "battery-status",
+    "name": "Battery",
+    "desc": "Power Level",
+    "color": "green"
+  },
+  {
+    "id": "network-info",
+    "name": "Network Info",
+    "desc": "Speed & Type",
+    "color": "blue"
   }
 ]

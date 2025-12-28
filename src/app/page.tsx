@@ -11,8 +11,7 @@ import {
     FileImage, RefreshCcw, LayoutTemplate, Search, Settings, Upload, X, ArrowRight,
     CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser, BrainCircuit,
     KeyRound, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette,
-    Paintbrush, ArrowLeftRight, FileSpreadsheet, Monitor, Link as LinkIcon, Fingerprint, Volume2,
-    Keyboard, Clock, Network, FileCode, Activity
+    Keyboard, Clock, Network, FileCode, Activity, Battery, Signal
 } from 'lucide-react'
 import Features from '@/components/Features'
 import FAQ from '@/components/FAQ'
@@ -85,6 +84,9 @@ const features = [
     { id: 'html-minifier', title: "HTML Minify", description: "Compress HTML.", icon: FileCode, color: "text-orange-600", iconBg: "bg-orange-50", href: "/html-minifier" },
     { id: 'css-minifier', title: "CSS Minify", description: "Compress CSS.", icon: FileCode, color: "text-blue-600", iconBg: "bg-blue-50", href: "/css-minifier" },
     { id: 'js-minifier', title: "JS Minify", description: "Compress JavaScript.", icon: FileCode, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/js-minifier" },
+    { id: 'device-info', title: "Device Info", description: "Screen & Hardware specs.", icon: Monitor, color: "text-slate-700", iconBg: "bg-slate-100", href: "/device-info" },
+    { id: 'battery-status', title: "Battery Status", description: "Power level & charging.", icon: Battery, color: "text-green-600", iconBg: "bg-green-50", href: "/battery-status" },
+    { id: 'network-info', title: "Network Info", description: "Connection speed & type.", icon: Signal, color: "text-blue-600", iconBg: "bg-blue-50", href: "/network-info" },
 ]
 
 export default function LandingPage() {

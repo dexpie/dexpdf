@@ -83,6 +83,9 @@ const TOOL_COMPONENTS = {
   'html-minifier': loadTool(() => import('../../tools/HtmlMinifierTool')),
   'css-minifier': loadTool(() => import('../../tools/CssMinifierTool')),
   'js-minifier': loadTool(() => import('../../tools/JsMinifierTool')),
+  'device-info': loadTool(() => import('../../tools/DeviceInfoTool')),
+  'battery-status': loadTool(() => import('../../tools/BatteryStatusTool')),
+  'network-info': loadTool(() => import('../../tools/NetworkInfoTool')),
 }
 
 export default function ToolContainer({ toolId, onClose }) {
