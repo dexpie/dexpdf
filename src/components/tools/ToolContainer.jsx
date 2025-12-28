@@ -86,6 +86,9 @@ const TOOL_COMPONENTS = {
   'device-info': loadTool(() => import('../../tools/DeviceInfoTool')),
   'battery-status': loadTool(() => import('../../tools/BatteryStatusTool')),
   'network-info': loadTool(() => import('../../tools/NetworkInfoTool')),
+  'world-clock': loadTool(() => import('../../tools/WorldClockTool')),
+  'timezone-converter': loadTool(() => import('../../tools/TimezoneConverterTool')),
+  'unix-timestamp': loadTool(() => import('../../tools/UnixTimestampTool')),
 }
 
 export default function ToolContainer({ toolId, onClose }) {

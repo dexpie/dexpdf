@@ -11,7 +11,7 @@ import {
     FileImage, RefreshCcw, LayoutTemplate, Search, Settings, Upload, X, ArrowRight,
     CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser, BrainCircuit,
     KeyRound, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette,
-    Keyboard, Clock, Network, FileCode, Activity, Battery, Signal
+    Keyboard, Clock, Network, FileCode, Activity, Battery, Signal, Hourglass
 } from 'lucide-react'
 import Features from '@/components/Features'
 import FAQ from '@/components/FAQ'
@@ -87,6 +87,9 @@ const features = [
     { id: 'device-info', title: "Device Info", description: "Screen & Hardware specs.", icon: Monitor, color: "text-slate-700", iconBg: "bg-slate-100", href: "/device-info" },
     { id: 'battery-status', title: "Battery Status", description: "Power level & charging.", icon: Battery, color: "text-green-600", iconBg: "bg-green-50", href: "/battery-status" },
     { id: 'network-info', title: "Network Info", description: "Connection speed & type.", icon: Signal, color: "text-blue-600", iconBg: "bg-blue-50", href: "/network-info" },
+    { id: 'world-clock', title: "World Clock", description: "Multi-city display.", icon: Globe, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/world-clock" },
+    { id: 'timezone-converter', title: "Timezone", description: "Meeting planner.", icon: Clock, color: "text-violet-500", iconBg: "bg-violet-50", href: "/timezone-converter" },
+    { id: 'unix-timestamp', title: "Unix Time", description: "Epoch converter.", icon: Hourglass, color: "text-slate-600", iconBg: "bg-slate-100", href: "/unix-timestamp" },
 ]
 
 export default function LandingPage() {

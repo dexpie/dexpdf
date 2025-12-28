@@ -56,16 +56,6 @@ export default function QuizGeneratorTool() {
         triggerConfetti()
     }
 
-    const check answers = () => {
-        let correctCount = 0
-        quiz.questions.forEach((q, i) => {
-            if (selectedAnswers[i] === q.correct) correctCount++
-        })
-        setScore({ correct: correctCount, total: quiz.questions.length })
-        if (correctCount === quiz.questions.length) triggerConfetti()
-    }
-
-    // Fix syntax error in check answers definition above (space issues)
     const checkAnswers = () => {
         let correctCount = 0
         quiz.questions.forEach((q, i) => {
@@ -74,6 +64,7 @@ export default function QuizGeneratorTool() {
         setScore({ correct: correctCount, total: quiz.questions.length })
         if (correctCount === quiz.questions.length) triggerConfetti()
     }
+
 
     return (
         <ToolLayout title="Quiz Generator" description="Turn any PDF into a study quiz instantly with AI.">

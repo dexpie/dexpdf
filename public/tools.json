@@ -436,5 +436,23 @@
     "name": "Network Info",
     "desc": "Speed & Type",
     "color": "blue"
+  },
+  {
+    "id": "world-clock",
+    "name": "World Clock",
+    "desc": "Global Time",
+    "color": "indigo"
+  },
+  {
+    "id": "timezone-converter",
+    "name": "Timezone",
+    "desc": "Meeting Planner",
+    "color": "violet"
+  },
+  {
+    "id": "unix-timestamp",
+    "name": "Unix Time",
+    "desc": "Epoch Converter",
+    "color": "slate"
   }
 ]
