@@ -46,6 +46,12 @@ const TOOL_COMPONENTS = {
   'resume-builder': loadTool(() => import('../../tools/ResumeBuilderTool')),
   'certificate-maker': loadTool(() => import('../../tools/CertificateMakerTool')),
   'summarize-pdf': loadTool(() => import('../../tools/SummarizePdfTool')),
+  'translate-pdf': loadTool(() => import('../../tools/TranslatePdfTool')),
+  'quiz-generator': loadTool(() => import('../../tools/QuizGeneratorTool')),
+  'compare-pdf': loadTool(() => import('../../tools/ComparePdfTool')),
+  'scan-pdf': loadTool(() => import('../../tools/ScanTool')),
+  'crop-pdf': loadTool(() => import('../../tools/CropPdfTool')),
+  'repair-pdf': loadTool(() => import('../../tools/RepairTool')),
 }
 
 export default function ToolContainer({ toolId, onClose }) {

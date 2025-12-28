@@ -196,5 +196,41 @@
     "name": "AI Summarizer",
     "desc": "Extract key points & summary",
     "color": "indigo"
+  },
+  {
+    "id": "translate-pdf",
+    "name": "Brain Translator",
+    "desc": "AI Translate PDF (Preserves Layout)",
+    "color": "blue"
+  },
+  {
+    "id": "quiz-generator",
+    "name": "Quiz Master",
+    "desc": "Generate Study Quizzes from PDF",
+    "color": "purple"
+  },
+  {
+    "id": "compare-pdf",
+    "name": "Compare PDF",
+    "desc": "Visually diff two PDF versions",
+    "color": "pink"
+  },
+  {
+    "id": "scan-pdf",
+    "name": "Scan to PDF",
+    "desc": "Turn camera photos into PDF",
+    "color": "indigo"
+  },
+  {
+    "id": "crop-pdf",
+    "name": "Crop PDF",
+    "desc": "Trim margins and crop pages",
+    "color": "green"
+  },
+  {
+    "id": "repair-pdf",
+    "name": "Repair PDF",
+    "desc": "Fix corrupted or broken files",
+    "color": "red"
   }
 ]

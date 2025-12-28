@@ -7,6 +7,8 @@ import Footer from '@/components/Footer'
 import Analytics from '@/components/Analytics'
 import ProgressBar from '@/components/ProgressBar'
 import CommandPalette from '@/components/CommandPalette'
+import GlobalDropZone from '@/components/GlobalDropZone'
+import DexAssistant from '@/components/DexAssistant'
 import KeyboardShortcuts from '@/components/KeyboardShortcuts'
 // Tools loading logic is usually in App.jsx but now tools.json fetching 
 // might need to happen here or passed down. We'll fetch here for simplicity.
@@ -61,6 +63,9 @@ export default function ClientLayout({ children }) {
             <Analytics />
             <ProgressBar />
             <NavBar />
+            <GlobalDropZone />
+            <DexAssistant />
+
 
             <CommandPalette
                 tools={tools}

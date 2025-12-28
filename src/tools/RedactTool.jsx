@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { Eraser, Save, X, Trash2, Check, ShieldAlert, AlertTriangle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { configurePdfWorker } from '../utils/pdfWorker'
+import { scanPageForSensitiveData } from '../utils/pdfScanner'
 
 configurePdfWorker()
 
@@ -31,6 +32,29 @@ export default function RedactTool() {
     const [sanitizeMode, setSanitizeMode] = useState(true) // Default to Secure (Rasterize)
 
     const [pageIndex, setPageIndex] = useState(1)
+    const [isScanning, setIsScanning] = useState(false)
+
+    async function handleAutoRedact() {
+        if (!file) return
+        setIsScanning(true)
+        setErrorMsg('')
+        setSuccessMsg('')
+        try {
+            const matches = await scanPageForSensitiveData(file, pageIndex, 1.5) // Scale 1.5 matches EditorCanvas
+            if (matches.length > 0) {
+                setRegions(prev => [...prev, ...matches])
+                setSuccessMsg(`🤖 AI found & redacted ${matches.length} sensitive items!`)
+                triggerConfetti()
+            } else {
+                setSuccessMsg('✅ No emails or phone numbers found on this page.')
+            }
+        } catch (err) {
+            console.error(err)
+            setErrorMsg('Scan failed: ' + err.message)
+        } finally {
+            setIsScanning(false)
+        }
+    }
 
     async function handleFileChange(files) {
         const f = files[0]
@@ -175,8 +199,23 @@ export default function RedactTool() {
                         {/* Toolbar */}
                         <div className="flex items-center justify-between bg-white p-3 rounded-2xl shadow-xl sticky top-4 z-40 border border-slate-200">
                             <div className="flex gap-4 items-center">
-                                <button onClick={addRedactionBox} className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-700 font-bold">
-                                    <Eraser className="w-4 h-4" /> Add Redaction Box
+                                <button onClick={addRedactionBox} className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-700 font-bold transition-all shadow-lg shadow-slate-900/20">
+                                    <Eraser className="w-4 h-4" /> Add Box
+                                </button>
+
+                                <button
+                                    onClick={handleAutoRedact}
+                                    disabled={isScanning}
+                                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl hover:shadow-lg hover:shadow-purple-500/30 font-bold transition-all disabled:opacity-70"
+                                >
+                                    {isScanning ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            Scanning...
+                                        </>
+                                    ) : (
+                                        <>✨ Auto Redact</>
+                                    )}
                                 </button>
 
                                 <label className="flex items-center gap-2 cursor-pointer select-none">
