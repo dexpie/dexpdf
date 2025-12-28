@@ -67,12 +67,16 @@
 }
 
 @layer base {
+    html {
+        @apply overflow-x-hidden;
+    }
+
     * {
         @apply border-border;
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground overflow-x-hidden w-full relative;
     }
 }
 
@@ -91,4 +95,10 @@
 
 .hero-gradient {
     background: radial-gradient(circle at top center, #f8fafc 0%, #e2e8f0 100%);
+}
+
+@layer utilities {
+    .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
 }

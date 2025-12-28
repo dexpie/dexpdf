@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import ClientLayout from '@/components/ClientLayout'
+import BottomNav from '@/components/BottomNav'
 import { cn } from '@/lib/utils'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
@@ -47,6 +48,7 @@ export default function RootLayout({
                 )}
                 <ClientLayout>
                     {children}
+                    <BottomNav />
                 </ClientLayout>
             </body>
         </html>

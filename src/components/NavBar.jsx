@@ -61,26 +61,24 @@ export default function NavBar() {
 
               <button
                 onClick={() => setBrandKitOpen(true)}
-                className="bg-white/20 border-none text-white px-2 md:px-3 py-2 md:py-1.5 rounded-lg md:rounded-md cursor-pointer text-sm font-semibold backdrop-blur-sm hover:bg-white/30 transition-colors flex items-center justify-center"
+                className="hidden md:flex bg-white/20 border-none text-white px-2 md:px-3 py-2 md:py-1.5 rounded-lg md:rounded-md cursor-pointer text-sm font-semibold backdrop-blur-sm hover:bg-white/30 transition-colors items-center justify-center"
                 title="Brand Kit"
               >
-                <Building2 className="w-4 h-4 md:mr-1.5" />
-                <span className="hidden md:inline">Brand Kit</span>
+                <Building2 className="w-4 h-4 mr-1.5" />
+                <span>Brand Kit</span>
               </button>
 
-              {/* Mobile: Icon, Desktop: Text */}
               <button
                 onClick={() => router.push('/my-documents')}
-                className="bg-white/20 border-none text-white px-2 md:px-3 py-2 md:py-1.5 rounded-lg md:rounded-md cursor-pointer text-sm font-semibold backdrop-blur-sm hover:bg-white/30 transition-colors flex items-center justify-center"
+                className="hidden md:flex bg-white/20 border-none text-white px-2 md:px-3 py-2 md:py-1.5 rounded-lg md:rounded-md cursor-pointer text-sm font-semibold backdrop-blur-sm hover:bg-white/30 transition-colors items-center justify-center"
                 title="My Documents"
               >
-                <span className="hidden md:inline">My Docs</span>
-                <span className="md:hidden">📂</span>
+                <span>My Docs</span>
               </button>
 
               <button
                 onClick={toggleLanguage}
-                className="bg-white/20 border-none text-white px-2 md:px-3 py-2 md:py-1.5 rounded-lg md:rounded-md cursor-pointer text-sm font-semibold backdrop-blur-sm hover:bg-white/30 transition-colors uppercase"
+                className="hidden md:block bg-white/20 border-none text-white px-2 md:px-3 py-2 md:py-1.5 rounded-lg md:rounded-md cursor-pointer text-sm font-semibold backdrop-blur-sm hover:bg-white/30 transition-colors uppercase"
               >
                 {i18n.language === 'en' ? 'ID' : 'EN'}
               </button>

@@ -223,7 +223,7 @@ export default function LandingPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="text-4xl md:text-5xl lg:text-7xl font-extrabold tracking-tight mb-6 drop-shadow-sm leading-tight"
+                            className="text-3xl md:text-5xl lg:text-7xl font-extrabold tracking-tight mb-6 drop-shadow-sm leading-tight"
                         >
                             Every tool you need to <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300">work with PDFs</span>
@@ -244,7 +244,7 @@ export default function LandingPage() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.3 }}
-                            className="max-w-xl mx-auto relative group z-20"
+                            className="max-w-xl mx-auto relative group z-20 w-full"
                         >
                             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                                 <Search className="h-6 w-6 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
@@ -254,7 +254,7 @@ export default function LandingPage() {
                                 placeholder="Search for a PDF tool..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-14 pr-6 py-5 rounded-2xl bg-white/95 backdrop-blur-xl text-slate-900 shadow-2xl focus:ring-4 focus:ring-blue-500/30 focus:outline-none transition-all placeholder:text-slate-400 text-lg border border-white/20"
+                                className="w-full pl-14 pr-6 py-4 md:py-5 rounded-2xl bg-white/95 backdrop-blur-xl text-slate-900 shadow-2xl focus:ring-4 focus:ring-blue-500/30 focus:outline-none transition-all placeholder:text-slate-400 text-base md:text-lg border border-white/20"
                             />
                             <button
                                 onClick={handleBgChange}
@@ -270,11 +270,11 @@ export default function LandingPage() {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
-                            className="flex justify-center gap-4 mt-8"
+                            className="flex flex-wrap justify-center gap-3 md:gap-4 mt-8"
                         >
                             <button
                                 onClick={() => alert("Google Drive integration coming soon to DexPDF Pro!")}
-                                className="flex items-center gap-3 px-5 py-2.5 bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 backdrop-blur-md border border-white/20 rounded-xl transition-all duration-300 group"
+                                className="flex items-center gap-3 px-4 py-2 md:px-5 md:py-2.5 bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 backdrop-blur-md border border-white/20 rounded-xl transition-all duration-300 group"
                             >
                                 <div className="p-1.5 bg-white rounded-lg group-hover:shadow-lg transition-shadow">
                                     <svg viewBox="0 0 87.3 78" className="w-5 h-5">
@@ -291,7 +291,7 @@ export default function LandingPage() {
 
                             <button
                                 onClick={() => alert("Dropbox integration coming soon to DexPDF Pro!")}
-                                className="flex items-center gap-3 px-5 py-2.5 bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 backdrop-blur-md border border-white/20 rounded-xl transition-all duration-300 group"
+                                className="flex items-center gap-3 px-4 py-2 md:px-5 md:py-2.5 bg-white/10 hover:bg-white/20 hover:scale-105 active:scale-95 backdrop-blur-md border border-white/20 rounded-xl transition-all duration-300 group"
                             >
                                 <div className="p-1.5 bg-white rounded-lg group-hover:shadow-lg transition-shadow">
                                     <svg viewBox="0 0 43 40" className="w-5 h-5">
