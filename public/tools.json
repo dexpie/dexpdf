@@ -478,5 +478,29 @@
     "name": "Word Stats",
     "desc": "Keyword Count",
     "color": "green"
+  },
+  {
+    "id": "base-converter",
+    "name": "Base Convert",
+    "desc": "Hex, Bin, Dec",
+    "color": "purple"
+  },
+  {
+    "id": "number-generator",
+    "name": "Num Generator",
+    "desc": "RNG & Sequences",
+    "color": "pink"
+  },
+  {
+    "id": "statistics-tool",
+    "name": "Statistics",
+    "desc": "Mean, Median",
+    "color": "blue"
+  },
+  {
+    "id": "prime-factor",
+    "name": "Prime Factor",
+    "desc": "Number Breakdown",
+    "color": "indigo"
   }
 ]

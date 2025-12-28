@@ -7,12 +7,13 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useDropzone } from 'react-dropzone'
 import {
     FileText, Download, Shield, Zap, Image, FileOutput, Scissors,
-    Layers, Lock, Unlock, PenTool, Type, FileSignature,
+    Layers, Lock, Unlock, PenTool, FileSignature,
     FileImage, RefreshCcw, LayoutTemplate, Search, Settings, Upload, X, ArrowRight,
     CheckCircle, ShieldCheck, Users, Globe, Wand2, ShieldAlert, Eraser, BrainCircuit,
     KeyRound, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette,
     Paintbrush, ArrowLeftRight, FileSpreadsheet, Monitor, Link as LinkIcon, Fingerprint, Volume2,
-    Keyboard, Clock, Network, FileCode, Activity, Battery, Signal, Hourglass, FileDiff, Type, BarChart2
+    Keyboard, Clock, Network, FileCode, Activity, Battery, Signal, Hourglass, FileDiff, BarChart2,
+    Hash, Dices, Sigma, Divide, Type
 } from 'lucide-react'
 import Features from '@/components/Features'
 import FAQ from '@/components/FAQ'
@@ -97,6 +98,12 @@ const features = [
     { id: 'regex-tester', title: "Regex Tester", description: "Debug patterns.", icon: FileCode, color: "text-blue-600", iconBg: "bg-blue-50", href: "/regex-tester" },
     { id: 'case-converter', title: "Case Converter", description: "Camel, snake, kebab.", icon: Type, color: "text-orange-500", iconBg: "bg-orange-50", href: "/case-converter" },
     { id: 'word-density', title: "Word Density", description: "Analyze keywords.", icon: BarChart2, color: "text-green-600", iconBg: "bg-green-50", href: "/word-density" },
+
+    // Math Phase 39
+    { id: 'base-converter', title: "Base Converter", description: "Hex, Bin, Dec.", icon: Hash, color: "text-purple-600", iconBg: "bg-purple-50", href: "/base-converter" },
+    { id: 'number-generator', title: "Num Generator", description: "Random sequences.", icon: Dices, color: "text-pink-500", iconBg: "bg-pink-50", href: "/number-generator" },
+    { id: 'statistics-tool', title: "Statistics", description: "Mean, Median, StdDev.", icon: Sigma, color: "text-blue-600", iconBg: "bg-blue-50", href: "/statistics-tool" },
+    { id: 'prime-factor', title: "Prime Factor", description: "Find factors.", icon: Divide, color: "text-indigo-600", iconBg: "bg-indigo-50", href: "/prime-factor" },
 ]
 
 export default function LandingPage() {

@@ -93,6 +93,10 @@ const TOOL_COMPONENTS = {
   'regex-tester': loadTool(() => import('../../tools/RegexTesterTool')),
   'case-converter': loadTool(() => import('../../tools/CaseConverterTool')),
   'word-density': loadTool(() => import('../../tools/WordDensityTool')),
+  'base-converter': loadTool(() => import('../../tools/BaseConverterTool')),
+  'number-generator': loadTool(() => import('../../tools/NumberGeneratorTool')),
+  'statistics-tool': loadTool(() => import('../../tools/StatisticsTool')),
+  'prime-factor': loadTool(() => import('../../tools/PrimeFactorTool')),
 }
 
 export default function ToolContainer({ toolId, onClose }) {
