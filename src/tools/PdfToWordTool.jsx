@@ -111,16 +111,38 @@ export default function PdfToWordTool() {
 
         // LOCAL MODE
         try {
+            setProgressText('Loading PDF...')
             const data = await file.arrayBuffer()
-            const pdf = await pdfjsLib.getDocument({ data }).promise
+            const pdf = await pdfjsLib.getDocument({ data }).promise.catch(e => {
+                if (e.name === 'PasswordException') throw new Error('PDF is password protected. Unlock it first.')
+                throw new Error('Corrupted or invalid PDF file.')
+            })
+
+            setProgressText(`Extracting text from ${pdf.numPages} pages...`)
             const paragraphs = []
+
             for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i)
-                const txtContent = await page.getTextContent()
-                const strings = txtContent.items.map(it => it.str)
-                paragraphs.push(new Paragraph(strings.join(' ')))
+                try {
+                    const page = await pdf.getPage(i)
+                    const txtContent = await page.getTextContent()
+                    const strings = txtContent.items.map(it => it.str)
+                    const text = strings.join(' ')
+                    // Only add non-empty paragraphs
+                    if (text.trim()) paragraphs.push(new Paragraph(text))
+
+                    // Update progress
+                    if (i % 5 === 0) setProgressText(`Processesing page ${i} of ${pdf.numPages}...`)
+                } catch (pageErr) {
+                    console.warn(`Skipping page ${i} due to error`, pageErr)
+                    // Continue to next page instead of failing entire document
+                }
             }
 
+            if (paragraphs.length === 0) {
+                throw new Error('No text could be extracted. The PDF might be scanned/image-only.')
+            }
+
+            setProgressText('Generating Word document...')
             const doc = new Document({ sections: [{ children: paragraphs }] })
             const blob = await Packer.toBlob(doc)
             const url = URL.createObjectURL(blob)
@@ -131,8 +153,14 @@ export default function PdfToWordTool() {
             URL.revokeObjectURL(url)
             setSuccessMsg('Berhasil! File berhasil dikonversi dan diunduh.');
             triggerConfetti();
-        } catch (err) { console.error(err); setErrorMsg('Gagal: ' + (err.message || err)); }
-        finally { setBusy(false) }
+        } catch (err) {
+            console.error(err);
+            // Better error messages
+            const msg = err.message || 'Unknown error'
+            if (msg.includes('scanned')) setErrorMsg('⚠️ Extraction Failed: This appears to be a scanned PDF (image). Use OCR Tool instead.')
+            else if (msg.includes('password')) setErrorMsg('🔒 ' + msg)
+            else setErrorMsg('❌ Conversion Failed: ' + msg);
+        } finally { setBusy(false); setProgressText(''); }
     }
 
     const processBatchFile = async (file, index, onProgress) => {
@@ -193,8 +221,21 @@ export default function PdfToWordTool() {
                 <div className="flex flex-col gap-6">
                     <AnimatePresence>
                         {errorMsg && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2">
-                                <AlertCircle className="w-5 h-5" /> {errorMsg}
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex flex-col gap-2">
+                                <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2">
+                                    <AlertCircle className="w-5 h-5 flex-shrink-0" /> <span className="font-semibold">{errorMsg}</span>
+                                </div>
+                                {errorMsg.includes('scanned') && (
+                                    <div className="bg-yellow-50 text-yellow-800 p-4 rounded-xl border border-yellow-100 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-yellow-100 p-1.5 rounded-lg">💡</div>
+                                            <span className="text-sm">For scanned documents, try our OCR Tool.</span>
+                                        </div>
+                                        <a href="/ocr" className="text-xs font-bold bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-3 py-1.5 rounded-lg transition-colors">
+                                            Go to OCR
+                                        </a>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
                         {successMsg && (

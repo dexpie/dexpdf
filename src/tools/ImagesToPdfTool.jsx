@@ -5,8 +5,8 @@ import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import ActionButtons from '../components/common/ActionButtons'
 import { useTranslation } from 'react-i18next'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Image as ImageIcon, X, GripVertical, FileText, CheckCircle, AlertTriangle, Maximize, Minimize, Expand } from 'lucide-react'
+import { motion, AnimatePresence, Reorder } from 'framer-motion'
+import { Image as ImageIcon, X, GripVertical, FileText, CheckCircle, AlertTriangle, Maximize, Minimize, Expand, RotateCw } from 'lucide-react'
 
 export default function ImagesToPdfTool() {
 	const { t } = useTranslation()
@@ -41,27 +41,7 @@ export default function ImagesToPdfTool() {
 
 	function remove(i) { setImages(prev => prev.filter((_, idx) => idx !== i)) }
 
-	function onDragStart(e, idx) {
-		e.dataTransfer.setData('text/plain', String(idx))
-		e.dataTransfer.effectAllowed = 'move'
-	}
 
-	function onDragOver(e) {
-		e.preventDefault()
-		e.dataTransfer.dropEffect = 'move'
-	}
-
-	function onDrop(e, idx) {
-		e.preventDefault()
-		const from = Number(e.dataTransfer.getData('text/plain'))
-		if (Number.isNaN(from)) return
-		setImages(prev => {
-			const copy = prev.slice()
-			const [item] = copy.splice(from, 1)
-			copy.splice(idx, 0, item)
-			return copy
-		})
-	}
 
 	function fileToImage(file) {
 		return new Promise((resolve, reject) => {
@@ -74,6 +54,37 @@ export default function ImagesToPdfTool() {
 			}
 			r.onerror = reject
 			r.readAsDataURL(file)
+		})
+	}
+
+	const rotateImage = async (index) => {
+		const imgEntry = images[index]
+		const img = new Image()
+		img.src = imgEntry.dataUrl
+		await new Promise(r => img.onload = r)
+
+		const canvas = document.createElement('canvas')
+		// Swap width and height for 90deg rotation
+		canvas.width = img.height
+		canvas.height = img.width
+		const ctx = canvas.getContext('2d')
+
+		ctx.translate(canvas.width / 2, canvas.height / 2)
+		ctx.rotate(90 * Math.PI / 180)
+		ctx.drawImage(img, -img.width / 2, -img.height / 2)
+
+		const newDataUrl = canvas.toDataURL()
+
+		setImages(prev => {
+			const copy = [...prev]
+			copy[index] = {
+				...copy[index],
+				dataUrl: newDataUrl,
+				thumb: newDataUrl,
+				width: canvas.width,
+				height: canvas.height
+			}
+			return copy
 		})
 	}
 
@@ -202,22 +213,18 @@ export default function ImagesToPdfTool() {
 							</div>
 						</div>
 
-						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-8">
-							{images.map((entry, i) => (
-								<motion.div
-									layout
+						<Reorder.Group axis="y" values={images} onReorder={setImages} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-8">
+							{images.map((entry) => (
+								<Reorder.Item
+									key={entry.dataUrl} // Use dataUrl as key for now, ideally unique ID
+									value={entry}
 									initial={{ opacity: 0, scale: 0.9 }}
 									animate={{ opacity: 1, scale: 1 }}
 									exit={{ opacity: 0, scale: 0.9 }}
 									className="group relative bg-white p-2 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-move hover:border-blue-300"
-									key={i}
-									draggable={!busy}
-									onDragStart={e => !busy && onDragStart(e, i)}
-									onDragOver={onDragOver}
-									onDrop={e => !busy && onDrop(e, i)}
 								>
 									<div className="absolute top-2 left-2 z-10 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
-										{i + 1}
+										{images.indexOf(entry) + 1}
 									</div>
 
 									<div className="aspect-[3/4] bg-slate-50 rounded-lg overflow-hidden mb-2 relative flex items-center justify-center">
@@ -227,23 +234,33 @@ export default function ImagesToPdfTool() {
 											<GripVertical className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 drop-shadow-lg" />
 										</div>
 
+										{/* Rotate Button */}
+										<button
+											className="absolute bottom-2 right-2 bg-white/90 text-slate-700 rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-white hover:text-blue-600"
+											onClick={(e) => { e.stopPropagation(); rotateImage(images.indexOf(entry)); }}
+											disabled={busy}
+											title="Rotate 90°"
+										>
+											<RotateCw className="w-4 h-4" />
+										</button>
+
 										<button
 											className="absolute top-2 right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-red-50 transform hover:scale-110"
-											onClick={() => remove(i)}
+											onClick={(e) => { e.stopPropagation(); remove(images.indexOf(entry)); }}
 											disabled={busy}
 										>
 											<X className="w-4 h-4" />
 										</button>
 									</div>
 									<div className="text-xs text-center truncate text-slate-600 font-medium px-1">{entry.file.name}</div>
-								</motion.div>
+								</Reorder.Item>
 							))}
 
 							<div className="flex flex-col items-center justify-center aspect-[3/4] bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer text-slate-400 hover:text-blue-500" onClick={() => document.querySelector('input[type=file]').click()}>
 								<ImageIcon className="w-8 h-8 mb-2" />
 								<span className="text-xs font-semibold">Add More</span>
 							</div>
-						</div>
+						</Reorder.Group>
 
 						<div className="flex justify-end sticky bottom-6 z-10">
 							<div className="bg-white p-4 rounded-2xl shadow-xl border border-slate-200 flex gap-4">

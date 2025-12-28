@@ -18,7 +18,8 @@ configurePdfWorker()
 export default function OrganizePdfTool() {
     const { t } = useTranslation()
     const [file, setFile] = useState(null)
-    const [pages, setPages] = useState([]) // { originalIndex, rotation, thumb, deleted }
+    const [pages, setPages] = useState([]) // { originalIndex, rotation, thumb, deleted, selected }
+    const [lastSelected, setLastSelected] = useState(null) // For Shift+Click range
     const [busy, setBusy] = useState(false)
     const [errorMsg, setErrorMsg] = useState('')
     const [successMsg, setSuccessMsg] = useState('')
@@ -70,6 +71,40 @@ export default function OrganizePdfTool() {
         } finally {
             setBusy(false)
         }
+    }
+
+    function toggleSelection(index, e) {
+        if (e.shiftKey && lastSelected !== null) {
+            // Range selection
+            const start = Math.min(lastSelected, index)
+            const end = Math.max(lastSelected, index)
+            setPages(prev => prev.map((p, i) => {
+                if (i >= start && i <= end) return { ...p, selected: true }
+                return p
+            }))
+        } else if (e.ctrlKey || e.metaKey) {
+            // Toggle single
+            setPages(prev => prev.map((p, i) => i === index ? { ...p, selected: !p.selected } : p))
+            setLastSelected(index)
+        } else {
+            // Single select (reset others)
+            setPages(prev => prev.map((p, i) => i === index ? { ...p, selected: true } : { ...p, selected: false }))
+            setLastSelected(index)
+        }
+    }
+
+    function rotateSelected(direction) {
+        setPages(prev => prev.map(p => {
+            if (p.selected) {
+                return { ...p, rotation: (p.rotation + (direction * 90)) % 360 }
+            }
+            return p
+        }))
+    }
+
+    function deleteSelected() {
+        setPages(prev => prev.filter(p => !p.selected))
+        setLastSelected(null)
     }
 
     function rotatePage(index, direction) {
@@ -197,7 +232,21 @@ export default function OrganizePdfTool() {
                                     <p className="text-xs text-slate-500 font-medium">{pages.length} pages remaining</p>
                                 </div>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 items-center">
+                                {pages.some(p => p.selected) && (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl mr-2"
+                                    >
+                                        <span className="text-xs font-bold text-slate-500 px-2">{pages.filter(p => p.selected).length} Selected</span>
+                                        <button onClick={() => rotateSelected(-1)} className="p-1.5 hover:bg-white rounded-lg text-slate-600 hover:text-blue-600 transition-colors" title="Rotate Selected Left"><RotateCcw className="w-4 h-4" /></button>
+                                        <button onClick={() => rotateSelected(1)} className="p-1.5 hover:bg-white rounded-lg text-slate-600 hover:text-blue-600 transition-colors" title="Rotate Selected Right"><RotateCw className="w-4 h-4" /></button>
+                                        <div className="w-px h-4 bg-slate-300 mx-1" />
+                                        <button onClick={deleteSelected} className="p-1.5 hover:bg-red-100 rounded-lg text-slate-600 hover:text-red-600 transition-colors" title="Delete Selected"><Trash2 className="w-4 h-4" /></button>
+                                        <button onClick={() => setPages(prev => prev.map(p => ({ ...p, selected: false })))} className="px-2 py-1 text-xs font-bold text-slate-500 hover:text-slate-700 ml-1">Clear</button>
+                                    </motion.div>
+                                )}
                                 <button onClick={() => setPages([]) || setFile(null)} className="px-4 py-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-red-500 transition-colors text-sm font-semibold" disabled={busy}>Cancel</button>
                             </div>
                         </div>
@@ -213,7 +262,10 @@ export default function OrganizePdfTool() {
                                     onDragStart={(e) => onDragStart(e, i)}
                                     onDragOver={(e) => onDragOver(e, i)}
                                     onDragEnd={onDragEnd}
-                                    className={`group bg-white p-2 rounded-xl border-2 transition-all cursor-move hover:shadow-lg ${draggedIndex === i ? 'border-blue-500 opacity-50 scale-95' : 'border-slate-200 hover:border-blue-400'}`}
+                                    onClick={(e) => toggleSelection(i, e)}
+                                    className={`group bg-white p-2 rounded-xl border-2 transition-all cursor-pointer hover:shadow-lg ${draggedIndex === i ? 'border-blue-500 opacity-50 scale-95' :
+                                            p.selected ? 'border-blue-500 ring-2 ring-blue-200 bg-blue-50' : 'border-slate-200 hover:border-blue-400'
+                                        }`}
                                 >
                                     <div className="aspect-[3/4] overflow-hidden bg-slate-100 relative rounded-lg border border-slate-100 mb-2">
                                         <img
