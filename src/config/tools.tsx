@@ -22,6 +22,7 @@ export const TOOLS = [
     { id: 'merge', category: 'pdf', title: "Merge PDF", description: "Combine multiple PDFs into one unified document.", icon: Layers, color: "text-red-500", iconBg: "bg-red-50", href: "/merge" },
     { id: 'split', category: 'pdf', title: "Split PDF", description: "Separate pages or extract ranges from your PDF.", icon: Scissors, color: "text-red-500", iconBg: "bg-red-50", href: "/split" },
     { id: 'compress', category: 'pdf', title: "Compress PDF", description: "Reduce file size while maintaining visual quality.", icon: Download, color: "text-green-500", iconBg: "bg-green-50", href: "/compress" },
+    { id: 'crop-pdf', category: 'pdf', title: "Crop PDF", description: "Trim margins and select content area.", icon: Scissors, color: "text-orange-500", iconBg: "bg-orange-50", href: "/crop-pdf" },
     { id: 'pdf2word', category: 'pdf', title: "PDF to Word", description: "Convert PDF documents to editable Word files.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/pdf2word" },
     { id: 'pdf2ppt', category: 'pdf', title: "PDF to PowerPoint", description: "Convert PDFs to editable PowerPoint slides.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/pdf2ppt" },
     { id: 'pdf2excel', category: 'pdf', title: "PDF to Excel", description: "Convert PDF data to Excel spreadsheets.", icon: FileText, color: "text-green-500", iconBg: "bg-green-50", href: "/pdf2excel" },

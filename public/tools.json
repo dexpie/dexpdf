@@ -228,6 +228,12 @@
     "color": "green"
   },
   {
+    "id": "crop-pdf",
+    "name": "Crop PDF",
+    "desc": "Trim margins and crop pages",
+    "color": "green"
+  },
+  {
     "id": "repair-pdf",
     "name": "Repair PDF",
     "desc": "Fix corrupted or broken files",

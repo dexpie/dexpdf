@@ -1,9 +1,12 @@
+'use client'
 import React, { useState, useRef, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
-import { Crop, Save, RotateCcw, Image as ImageIcon } from 'lucide-react'
-import { PDFDocument } from 'pdf-lib'
+import { PDFDocument, rgb } from 'pdf-lib'
 import * as pdfjsLib from 'pdfjs-dist'
+import ReactCrop from 'react-image-crop'
+import 'react-image-crop/dist/ReactCrop.css'
+import { Download, Scissors, RefreshCw, X } from 'lucide-react'
 import { configurePdfWorker } from '../utils/pdfWorker'
 import { getOutputFilename } from '../utils/fileHelpers'
 import { triggerConfetti } from '../utils/confetti'
@@ -14,118 +17,125 @@ export default function CropPdfTool() {
     const [file, setFile] = useState(null)
     const [pageIndex, setPageIndex] = useState(1)
     const [numPages, setNumPages] = useState(0)
-    const [scale, setScale] = useState(1)
-    const [cropRect, setCropRect] = useState(null) // { x, y, width, height } in percentage (0-1)
-    const containerRef = useRef(null)
-    const canvasRef = useRef(null)
-    const [isDragging, setIsDragging] = useState(false)
-    const [startPos, setStartPos] = useState({ x: 0, y: 0 })
+    const [imgSrc, setImgSrc] = useState('')
+    const [crop, setCrop] = useState()
+    const [completedCrop, setCompletedCrop] = useState()
+    const [isProcessing, setIsProcessing] = useState(false)
+    const [pdfDimensions, setPdfDimensions] = useState({ width: 0, height: 0 })
+
+    // Scale factor between the original PDF page and the displayed image
+    // We need this to map the crop coordinates back to the PDF
+    const [displayScale, setDisplayScale] = useState(1)
+
+    const imgRef = useRef(null)
 
     const handleFileChange = async (files) => {
         const f = files[0]
         if (!f) return
         setFile(f)
-        try {
-            const ab = await f.arrayBuffer()
-            const pdf = await pdfjsLib.getDocument(ab).promise
-            setNumPages(pdf.numPages)
-            setPageIndex(1)
-        } catch (e) {
-            console.error(e)
-        }
+        setPageIndex(1)
+        await renderPage(f, 1)
     }
 
-    // Render Page
-    useEffect(() => {
-        if (!file) return
+    const renderPage = async (inputFile, pageNum) => {
+        setIsProcessing(true)
+        try {
+            const arrayBuffer = await inputFile.arrayBuffer()
+            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise
+            setNumPages(pdf.numPages)
+            const page = await pdf.getPage(pageNum)
 
-        let cancelled = false
-        const render = async () => {
-            const ab = await file.arrayBuffer()
-            const pdf = await pdfjsLib.getDocument(ab).promise
-            const page = await pdf.getPage(pageIndex)
-            const viewport = page.getViewport({ scale: 1.5 })
+            // Get original dimensions
+            const viewport = page.getViewport({ scale: 2.0 }) // High res render
 
-            if (cancelled) return
+            // For crop logic, we need the UN-SCALED PDF dimensions (72 DPI usually)
+            // But Page Viewport at scale 1.0 gives points.
+            const originalViewport = page.getViewport({ scale: 1.0 })
+            setPdfDimensions({ width: originalViewport.width, height: originalViewport.height })
 
-            const canvas = canvasRef.current
-            if (!canvas) return
-
+            const canvas = document.createElement('canvas')
             canvas.width = viewport.width
             canvas.height = viewport.height
+
             const ctx = canvas.getContext('2d')
             await page.render({ canvasContext: ctx, viewport }).promise
 
-            // Reset crop rect to full page initially
-            if (!cropRect) {
-                setCropRect({ x: 0.1, y: 0.1, width: 0.8, height: 0.8 })
-            }
+            setImgSrc(canvas.toDataURL('image/jpeg'))
+            setCrop(undefined)
+            setCompletedCrop(undefined)
+        } catch (err) {
+            console.error(err)
+            alert("Error rendering PDF")
+        } finally {
+            setIsProcessing(false)
         }
-        render()
-        return () => { cancelled = true }
-    }, [file, pageIndex])
-
-    // Simple Drag Logic for Crop Box
-    // NOTE: For a real world app, use a robust library like 'react-rnd' or 'react-image-crop'.
-    // Here we implement a basic centered resizable box or just a draggable box for MVP.
-    // I will implement a simplifed "Click and Drag" to define new crop rect.
-
-    const handleMouseDown = (e) => {
-        if (!file) return
-        const rect = containerRef.current.getBoundingClientRect()
-        const x = (e.clientX - rect.left) / rect.width
-        const y = (e.clientY - rect.top) / rect.height
-        setStartPos({ x, y })
-        setIsDragging(true)
-        setCropRect({ x, y, width: 0, height: 0 })
     }
 
-    const handleMouseMove = (e) => {
-        if (!isDragging) return
-        const rect = containerRef.current.getBoundingClientRect()
-        const currentX = (e.clientX - rect.left) / rect.width
-        const currentY = (e.clientY - rect.top) / rect.height
+    const handleImageLoad = (e) => {
+        const { width, height, naturalWidth } = e.currentTarget
+        // naturalWidth is the canvas width (scale 2.0)
+        // width is the displayed width
+        // But we want to map to PDF Point dimensions.
 
-        const width = currentX - startPos.x
-        const height = currentY - startPos.y
+        // Strategy:
+        // 1. Get Crop % (x, y, w, h in percent) -> easiest for resolution independence
+        // 2. Map % to PDF Points (pdfDimensions.width, pdfDimensions.height)
 
-        setCropRect({
-            x: width > 0 ? startPos.x : currentX,
-            y: height > 0 ? startPos.y : currentY,
-            width: Math.abs(width),
-            height: Math.abs(height)
-        })
+        // ReactCrop gives pixel or percent. 
+        // If we use percent crop, we can just multiply by pdfDimensions.width/height
+        // But we need to be careful about aspect ratio.
+
+        // For UI, we just let ReactCrop handle it.
+        // We calculate 'displayScale' just in case, but percent is safer.
     }
 
-    const handleMouseUp = () => {
-        setIsDragging(false)
-    }
-
-    const applyCrop = async () => {
-        if (!file || !cropRect) return
+    const handleCrop = async () => {
+        if (!file || !completedCrop) return
+        setIsProcessing(true)
 
         try {
-            const ab = await file.arrayBuffer()
-            const pdfDoc = await PDFDocument.load(ab)
-            const pages = pdfDoc.getPages()
-            const page = pages[pageIndex - 1]
+            const arrayBuffer = await file.arrayBuffer()
+            const pdfDoc = await PDFDocument.load(arrayBuffer)
+            const page = pdfDoc.getPages()[pageIndex - 1]
 
-            const { width, height } = page.getSize()
+            const { width: pageWidth, height: pageHeight } = page.getSize()
 
-            // Calculate PDF coordinates
-            // CropRect is 0-1 relative to view.
-            // PDF: 0,0 is bottom-left? or top-left depending on usage. 
-            // setCropBox uses PDF coords (bottom-left origin usually in pdf-lib?)
+            // Rendered Image (imgRef) might be scaled via CSS.
+            // completedCrop can be in pixels (relative to displayed image) or percent.
+            // Let's assume we use Percent for robust scaling.
 
-            // Actually pdf-lib setCropBox(x, y, width, height)
+            let cropX, cropY, cropW, cropH
 
-            const x = cropRect.x * width
-            const y = (1 - (cropRect.y + cropRect.height)) * height // Invert Y
-            const w = cropRect.width * width
-            const h = cropRect.height * height
+            if (completedCrop.unit === '%') {
+                cropX = (completedCrop.x / 100) * pageWidth
+                cropY = (completedCrop.y / 100) * pageHeight
+                cropW = (completedCrop.width / 100) * pageWidth
+                cropH = (completedCrop.height / 100) * pageHeight
+            } else {
+                // Pixels relative to the displayed image
+                if (!imgRef.current) return
+                const image = imgRef.current
+                const scaleX = pageWidth / image.width
+                const scaleY = pageHeight / image.height
 
-            page.setCropBox(x, y, w, h)
-            page.setMediaBox(x, y, w, h)
+                cropX = completedCrop.x * scaleX
+                cropY = completedCrop.y * scaleY
+                cropW = completedCrop.width * scaleX
+                cropH = completedCrop.height * scaleY
+            }
+
+            // PDF Coordinates: Origin is Bottom-Left.
+            // ReactCrop/Canvas Origin is Top-Left.
+            // So Y needs inversion.
+            // CropBox Y = pageHeight - (cropY + cropH)
+
+            // Ensure bounds
+            if (cropW <= 0 || cropH <= 0) throw new Error("Invalid selection")
+
+            const pdfCropY = pageHeight - (cropY + cropH)
+
+            page.setCropBox(cropX, pdfCropY, cropW, cropH)
+            page.setMediaBox(cropX, pdfCropY, cropW, cropH)
 
             const pdfBytes = await pdfDoc.save()
 
@@ -134,88 +144,79 @@ export default function CropPdfTool() {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = getOutputFilename(file.name, '_cropped')
+            a.download = getOutputFilename(file, '_cropped')
             a.click()
+
             triggerConfetti()
 
-        } catch (e) {
-            console.error(e)
-            alert('Crop failed')
+        } catch (err) {
+            console.error(err)
+            alert("Crop failed: " + err.message)
+        } finally {
+            setIsProcessing(false)
         }
     }
 
     return (
-        <ToolLayout title="Crop PDF" description="Select an area to crop your PDF pages.">
-            <div className="max-w-5xl mx-auto flex flex-col items-center">
+        <ToolLayout title="Crop PDF" description="Trim margins and select content area.">
+            <div className="max-w-4xl mx-auto">
                 {!file ? (
                     <FileDropZone onFiles={handleFileChange} accept="application/pdf" />
                 ) : (
-                    <div className="w-full space-y-6">
+                    <div className="space-y-6">
                         {/* Toolbar */}
-                        <div className="flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                        <div className="flex bg-white p-4 rounded-2xl shadow-sm border border-slate-100 justify-between items-center sticky top-4 z-40">
                             <div className="flex items-center gap-4">
-                                <h3 className="font-bold">{file.name}</h3>
-                                <span className="text-sm bg-slate-100 px-2 py-1 rounded">Page {pageIndex} of {numPages}</span>
-                            </div>
-                            <div className="flex gap-2">
-                                <button onClick={() => setFile(null)} className="px-4 py-2 hover:bg-slate-100 rounded-lg font-bold text-slate-500">Cancel</button>
-                                <button onClick={applyCrop} className="px-6 py-2 bg-slate-900 text-white rounded-lg font-bold flex items-center gap-2 hover:bg-slate-800">
-                                    <Crop className="w-4 h-4" /> Export Cropped PDF
+                                <button onClick={() => setFile(null)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-500">
+                                    <X className="w-5 h-5" />
                                 </button>
-                            </div>
-                        </div>
-
-                        {/* Editor */}
-                        <div className="flex justify-center bg-slate-100 p-8 rounded-3xl border-2 border-slate-300 border-dashed overflow-hidden select-none">
-                            <div
-                                className="relative shadow-2xl"
-                                ref={containerRef}
-                                onMouseDown={handleMouseDown}
-                                onMouseMove={handleMouseMove}
-                                onMouseUp={handleMouseUp}
-                                onMouseLeave={handleMouseUp}
-                            >
-                                <canvas ref={canvasRef} className="block max-w-full" style={{ maxHeight: '70vh' }} />
-
-                                {/* Overlay & Crop Box */}
-                                {cropRect && (
-                                    <>
-                                        {/* Darken surrounding */}
-                                        <div className="absolute inset-0 bg-black/50 pointer-events-none">
-                                            {/* Cutout (rendering logic tricky with simple divs, so we just show the box on top) */}
-                                            {/* Actually, simple approach: just the box with border */}
-                                        </div>
-
-                                        <div
-                                            className="absolute border-2 border-white shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] cursor-move"
-                                            style={{
-                                                left: `${cropRect.x * 100}%`,
-                                                top: `${cropRect.y * 100}%`,
-                                                width: `${cropRect.width * 100}%`,
-                                                height: `${cropRect.height * 100}%`
-                                            }}
-                                        >
-                                            {/* Corners */}
-                                            <div className="absolute -top-1 -left-1 w-3 h-3 bg-white border border-slate-800" />
-                                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-white border border-slate-800" />
-                                            <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-white border border-slate-800" />
-                                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-white border border-slate-800" />
-
-                                            {/* Grid Lines */}
-                                            <div className="absolute top-1/3 left-0 right-0 h-px bg-white/30" />
-                                            <div className="absolute top-2/3 left-0 right-0 h-px bg-white/30" />
-                                            <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/30" />
-                                            <div className="absolute left-2/3 top-0 bottom-0 w-px bg-white/30" />
-                                        </div>
-                                    </>
-                                )}
-
-                                <div className="absolute top-4 left-0 right-0 text-center pointer-events-none">
-                                    <span className="bg-black/70 text-white px-3 py-1 rounded-full text-sm backdrop-blur-md">
-                                        Click and drag to select crop area
-                                    </span>
+                                <div className="text-sm font-bold text-slate-700">
+                                    Page {pageIndex} of {numPages}
+                                </div>
+                                <div className="flex gap-1">
+                                    <button
+                                        onClick={() => pageIndex > 1 && renderPage(file, pageIndex - 1) && setPageIndex(p => p - 1)}
+                                        disabled={pageIndex <= 1 || isProcessing}
+                                        className="px-3 py-1 bg-slate-100 rounded-lg text-xs font-bold disabled:opacity-50"
+                                    >Prev</button>
+                                    <button
+                                        onClick={() => pageIndex < numPages && renderPage(file, pageIndex + 1) && setPageIndex(p => p + 1)}
+                                        disabled={pageIndex >= numPages || isProcessing}
+                                        className="px-3 py-1 bg-slate-100 rounded-lg text-xs font-bold disabled:opacity-50"
+                                    >Next</button>
                                 </div>
                             </div>
+
+                            <button
+                                onClick={handleCrop}
+                                disabled={!completedCrop?.width || isProcessing}
+                                className="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-700 disabled:opacity-50 transition-all shadow-lg shadow-blue-500/30"
+                            >
+                                {isProcessing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Scissors className="w-4 h-4" />}
+                                Crop & Download
+                            </button>
+                        </div>
+
+                        {/* Editor Canvas */}
+                        <div className="bg-slate-100 p-8 rounded-3xl min-h-[500px] flex justify-center items-start overflow-auto border border-slate-200">
+                            {imgSrc && (
+                                <div className="shadow-2xl">
+                                    <ReactCrop
+                                        crop={crop}
+                                        onChange={(c) => setCrop(c)}
+                                        onComplete={(c) => setCompletedCrop(c)}
+                                    >
+                                        <img
+                                            ref={imgRef}
+                                            src={imgSrc}
+                                            onLoad={handleImageLoad}
+                                            alt="PDF Page"
+                                            className="max-w-full h-auto"
+                                            style={{ maxHeight: '80vh' }}
+                                        />
+                                    </ReactCrop>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

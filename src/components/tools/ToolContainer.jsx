@@ -16,6 +16,7 @@ const TOOL_COMPONENTS = {
   'merge': loadTool(() => import('../../tools/MergeTool')),
   'split': loadTool(() => import('../../tools/SplitTool')),
   'compress': loadTool(() => import('../../tools/CompressTool')),
+  'crop-pdf': loadTool(() => import('../../tools/CropPdfTool')),
   'pdf2word': loadTool(() => import('../../tools/PdfToWordTool')),
   'pdf2ppt': loadTool(() => import('../../tools/PdfToPptTool')),
   'pdf2excel': loadTool(() => import('../../tools/PdfToExcelTool')),
