@@ -1,5 +1,5 @@
 import {
-    Zap, Layers, Scissors, Download, FileText, LayoutTemplate, FileOutput, PenTool, FileImage, Image, FileSignature, RefreshCcw, Unlock, Lock, Type, FileSpreadsheet, BrainCircuit, Wand2, ShieldAlert, Eraser, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette, Paintbrush, ArrowLeftRight, Monitor, Link as LinkIcon, Fingerprint, Volume2, Keyboard, Activity, Battery, Signal, Hourglass, FileDiff, FileCode, BarChart2, Hash, Dices, Sigma, Divide, Terminal, Database, Link2, Code, Eye, Pipette, EyeOff, Shield, KeyRound, Globe, Tag, Network, ShieldCheck, TrendingUp, Sliders, Calendar, Play, DollarSign, Briefcase, TrendingDown, HelpCircle, User
+    Zap, Layers, Scissors, Download, FileText, LayoutTemplate, FileOutput, PenTool, FileImage, Image, FileSignature, RefreshCcw, Unlock, Lock, Type, FileSpreadsheet, BrainCircuit, Wand2, ShieldAlert, Eraser, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette, Paintbrush, ArrowLeftRight, Monitor, Link as LinkIcon, Fingerprint, Volume2, Keyboard, Activity, Battery, Signal, Hourglass, FileDiff, FileCode, BarChart2, Hash, Dices, Sigma, Divide, Terminal, Database, Link2, Code, Eye, Pipette, EyeOff, Shield, KeyRound, Globe, Tag, Network, ShieldCheck, TrendingUp, Sliders, Calendar, Play, DollarSign, Briefcase, TrendingDown, HelpCircle, User, Camera
 } from 'lucide-react'
 
 // Define categories
@@ -22,6 +22,7 @@ export const TOOLS = [
     { id: 'merge', category: 'pdf', title: "Merge PDF", description: "Combine multiple PDFs into one unified document.", icon: Layers, color: "text-red-500", iconBg: "bg-red-50", href: "/merge" },
     { id: 'split', category: 'pdf', title: "Split PDF", description: "Separate pages or extract ranges from your PDF.", icon: Scissors, color: "text-red-500", iconBg: "bg-red-50", href: "/split" },
     { id: 'compress', category: 'pdf', title: "Compress PDF", description: "Reduce file size while maintaining visual quality.", icon: Download, color: "text-green-500", iconBg: "bg-green-50", href: "/compress" },
+    { id: 'scan-pdf', category: 'pdf', title: "Scan to PDF", description: "Turn camera photos into PDF.", icon: Camera, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/scan-pdf" },
     { id: 'crop-pdf', category: 'pdf', title: "Crop PDF", description: "Trim margins and select content area.", icon: Scissors, color: "text-orange-500", iconBg: "bg-orange-50", href: "/crop-pdf" },
     { id: 'pdf2word', category: 'pdf', title: "PDF to Word", description: "Convert PDF documents to editable Word files.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/pdf2word" },
     { id: 'pdf2ppt', category: 'pdf', title: "PDF to PowerPoint", description: "Convert PDFs to editable PowerPoint slides.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/pdf2ppt" },

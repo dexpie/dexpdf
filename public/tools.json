@@ -222,6 +222,12 @@
     "color": "indigo"
   },
   {
+    "id": "scan-pdf",
+    "name": "Scan to PDF",
+    "desc": "Turn camera photos into PDF",
+    "color": "indigo"
+  },
+  {
     "id": "crop-pdf",
     "name": "Crop PDF",
     "desc": "Trim margins and crop pages",
