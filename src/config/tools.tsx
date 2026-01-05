@@ -3,16 +3,18 @@ import {
 } from 'lucide-react'
 
 // Define categories
-{ id: 'all', label: 'All Tools' },
-{ id: 'pdf', label: 'PDF Tools' },
-{ id: 'image', label: 'Image Tools' },
-{ id: 'text', label: 'Text Tools' },
-{ id: 'dev', label: 'Developer' },
-{ id: 'web', label: 'Web Tools' },
-{ id: 'finance', label: 'Finance' },
-{ id: 'math', label: 'Math & Data' },
-{ id: 'time', label: 'Date & Time' },
-{ id: 'fun', label: 'Fun & Social' },
+export const CATEGORIES = [
+    { id: 'all', label: 'All Tools' },
+    { id: 'pdf', label: 'PDF Tools' },
+    { id: 'image', label: 'Image Tools' },
+    { id: 'text', label: 'Text Tools' },
+    { id: 'dev', label: 'Developer' },
+    { id: 'web', label: 'Web Tools' },
+    { id: 'finance', label: 'Finance' },
+    { id: 'math', label: 'Math & Data' },
+    { id: 'time', label: 'Date & Time' },
+    { id: 'fun', label: 'Fun & Social' },
+]
 
 export const TOOLS = [
     // PDF Tools
