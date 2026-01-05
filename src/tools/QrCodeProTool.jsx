@@ -174,7 +174,7 @@ export default function QrCodeProTool() {
                                     value={value}
                                     onChange={e => setValue(e.target.value)}
                                     placeholder={INPUT_TYPES.find(t => t.id === inputType)?.placeholder}
-                                    className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-lg focus:outline-none focus:ring-2 ring-blue-500 text-slate-900 placeholder:text-slate-400"
+                                    className="w-full p-4 !bg-white border border-slate-200 rounded-xl text-lg focus:outline-none focus:ring-2 ring-blue-500 !text-black placeholder:!text-slate-400"
                                 />
                             )}
 
@@ -185,13 +185,13 @@ export default function QrCodeProTool() {
                                         value={value}
                                         onChange={e => setValue(e.target.value)}
                                         placeholder="Phone number"
-                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 text-slate-900 placeholder:text-slate-400"
+                                        className="w-full p-4 !bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 !text-black placeholder:!text-slate-400"
                                     />
                                     <textarea
                                         value={smsMessage}
                                         onChange={e => setSmsMessage(e.target.value)}
                                         placeholder="Message (optional)"
-                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 h-24 resize-none text-slate-900 placeholder:text-slate-400"
+                                        className="w-full p-4 !bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 h-24 resize-none !text-black placeholder:!text-slate-400"
                                     />
                                 </div>
                             )}
@@ -202,19 +202,19 @@ export default function QrCodeProTool() {
                                         value={wifiSSID}
                                         onChange={e => setWifiSSID(e.target.value)}
                                         placeholder="Network Name (SSID)"
-                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 text-slate-900 placeholder:text-slate-400"
+                                        className="w-full p-4 !bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 !text-black placeholder:!text-slate-400"
                                     />
                                     <input
                                         type="password"
                                         value={wifiPassword}
                                         onChange={e => setWifiPassword(e.target.value)}
                                         placeholder="Password"
-                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 text-slate-900 placeholder:text-slate-400"
+                                        className="w-full p-4 !bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 !text-black placeholder:!text-slate-400"
                                     />
                                     <select
                                         value={wifiEncryption}
                                         onChange={e => setWifiEncryption(e.target.value)}
-                                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 text-slate-900"
+                                        className="w-full p-4 !bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 !text-black"
                                     >
                                         <option value="WPA">WPA/WPA2</option>
                                         <option value="WEP">WEP</option>
@@ -225,10 +225,10 @@ export default function QrCodeProTool() {
 
                             {inputType === 'vcard' && (
                                 <div className="space-y-3">
-                                    <input value={vcardName} onChange={e => setVcardName(e.target.value)} placeholder="Full Name" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 text-slate-900 placeholder:text-slate-400" />
-                                    <input value={vcardPhone} onChange={e => setVcardPhone(e.target.value)} placeholder="Phone" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 text-slate-900 placeholder:text-slate-400" />
-                                    <input value={vcardEmail} onChange={e => setVcardEmail(e.target.value)} placeholder="Email" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 text-slate-900 placeholder:text-slate-400" />
-                                    <input value={vcardOrg} onChange={e => setVcardOrg(e.target.value)} placeholder="Organization" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 text-slate-900 placeholder:text-slate-400" />
+                                    <input value={vcardName} onChange={e => setVcardName(e.target.value)} placeholder="Full Name" className="w-full p-4 !bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 !text-black placeholder:!text-slate-400" />
+                                    <input value={vcardPhone} onChange={e => setVcardPhone(e.target.value)} placeholder="Phone" className="w-full p-4 !bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 !text-black placeholder:!text-slate-400" />
+                                    <input value={vcardEmail} onChange={e => setVcardEmail(e.target.value)} placeholder="Email" className="w-full p-4 !bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 !text-black placeholder:!text-slate-400" />
+                                    <input value={vcardOrg} onChange={e => setVcardOrg(e.target.value)} placeholder="Organization" className="w-full p-4 !bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 ring-blue-500 !text-black placeholder:!text-slate-400" />
                                 </div>
                             )}
                         </div>
@@ -258,14 +258,14 @@ export default function QrCodeProTool() {
                                     <label className="text-xs font-bold text-slate-400 block mb-1">Foreground</label>
                                     <div className="flex items-center gap-2">
                                         <input type="color" value={fgColor} onChange={e => setFgColor(e.target.value)} className="w-10 h-10 rounded-lg cursor-pointer border-0" />
-                                        <input type="text" value={fgColor} onChange={e => setFgColor(e.target.value)} className="flex-1 p-2 bg-slate-50 rounded-lg text-sm font-mono text-slate-900" />
+                                        <input type="text" value={fgColor} onChange={e => setFgColor(e.target.value)} className="flex-1 p-2 !bg-white rounded-lg text-sm font-mono !text-black" />
                                     </div>
                                 </div>
                                 <div>
                                     <label className="text-xs font-bold text-slate-400 block mb-1">Background</label>
                                     <div className="flex items-center gap-2">
                                         <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} className="w-10 h-10 rounded-lg cursor-pointer border-0" />
-                                        <input type="text" value={bgColor} onChange={e => setBgColor(e.target.value)} className="flex-1 p-2 bg-slate-50 rounded-lg text-sm font-mono text-slate-900" />
+                                        <input type="text" value={bgColor} onChange={e => setBgColor(e.target.value)} className="flex-1 p-2 !bg-white rounded-lg text-sm font-mono !text-black" />
                                     </div>
                                 </div>
                             </div>
