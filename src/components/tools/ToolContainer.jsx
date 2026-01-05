@@ -57,9 +57,7 @@ const TOOL_COMPONENTS = {
   'image-filter': loadTool(() => import('../../tools/ImageFilterTool')),
   'image-color-picker': loadTool(() => import('../../tools/ImageColorPickerTool')),
   'blindness-simulator': loadTool(() => import('../../tools/BlindnessSimulatorTool')),
-  'qr-code': loadTool(() => import('../../tools/QrCodeTool')), // Gen
-  'qr-reader': loadTool(() => import('../../tools/QrReaderTool')), // Read
-  'qr-code-pro': loadTool(() => import('../../tools/QrCodeProTool')), // Pro version
+  'qr-code': loadTool(() => import('../../tools/QrCodeProTool')), // The new standard
 
   // Text
   'lorem-ipsum': loadTool(() => import('../../tools/LoremIpsumGeneratorTool')), // Phase 46
