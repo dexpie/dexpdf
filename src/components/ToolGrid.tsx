@@ -26,8 +26,8 @@ export default function ToolGrid() {
         <section className="relative z-20 px-4 pb-24 -mt-10 pt-10">
             <div className="container mx-auto">
 
-                {/* Search & Filter Header */}
-                <div className="mb-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                {/* Search & Filter Header - Sticky */}
+                <div className="sticky top-20 z-30 mb-8 -mx-4 px-4 py-4 bg-slate-50/80 backdrop-blur-xl border-b border-slate-200/50 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300">
 
                     {/* Category Tabs */}
                     <div className="flex flex-wrap justify-center gap-2">
