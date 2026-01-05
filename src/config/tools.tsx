@@ -59,6 +59,7 @@ export const TOOLS = [
     { id: 'blindness-simulator', category: 'image', title: "Blindness Sim", description: "Accessibility test.", icon: EyeOff, color: "text-indigo-600", iconBg: "bg-indigo-50", href: "/blindness-simulator" },
     { id: 'qr-code', category: 'image', title: "QR Generator", description: "Create QR codes instantly.", icon: QrCode, color: "text-slate-800", iconBg: "bg-slate-100", href: "/qr-code" },
     { id: 'qr-reader', category: 'image', title: "QR Reader", description: "Scan codes.", icon: QrCode, color: "text-green-600", iconBg: "bg-green-50", href: "/qr-reader" },
+    { id: 'qr-code-pro', category: 'image', title: "QR Pro", description: "WiFi, vCard, colors, logo.", icon: QrCode, color: "text-indigo-600", iconBg: "bg-indigo-50", href: "/qr-code-pro" },
 
     // Text Tools
     { id: 'lorem-ipsum', category: 'text', title: "Lorem Ipsum", description: "Dummy text.", icon: AlignLeft, color: "text-gray-500", iconBg: "bg-gray-50", href: "/lorem-ipsum" },

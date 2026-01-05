@@ -59,6 +59,7 @@ const TOOL_COMPONENTS = {
   'blindness-simulator': loadTool(() => import('../../tools/BlindnessSimulatorTool')),
   'qr-code': loadTool(() => import('../../tools/QrCodeTool')), // Gen
   'qr-reader': loadTool(() => import('../../tools/QrReaderTool')), // Read
+  'qr-code-pro': loadTool(() => import('../../tools/QrCodeProTool')), // Pro version
 
   // Text
   'lorem-ipsum': loadTool(() => import('../../tools/LoremIpsumGeneratorTool')), // Phase 46
