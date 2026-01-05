@@ -13,13 +13,14 @@ import { useTranslation } from 'react-i18next'
 import { Eraser, Save, X, Trash2, Check, ShieldAlert, AlertTriangle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { configurePdfWorker } from '../utils/pdfWorker'
-import { scanPageForSensitiveData } from '../utils/pdfScanner'
+import { scanPageForSensitiveData, scanPageForText } from '../utils/pdfScanner'
 
 configurePdfWorker()
 
 export default function RedactTool() {
     const { t } = useTranslation()
     const [file, setFile] = useState(null)
+    const [searchText, setSearchText] = useState('')
 
     // Redaction Regions (Mocked as "elements" for EditorCanvas reuse)
     const [regions, setRegions] = useState([])
@@ -53,6 +54,28 @@ export default function RedactTool() {
             setErrorMsg('Scan failed: ' + err.message)
         } finally {
             setIsScanning(false)
+        }
+
+        async function handleTextRedact() {
+            if (!file || !searchText.trim()) return
+            setIsScanning(true)
+            setErrorMsg('')
+            setSuccessMsg('')
+            try {
+                const matches = await scanPageForText(file, pageIndex, searchText, 1.5)
+                if (matches.length > 0) {
+                    setRegions(prev => [...prev, ...matches])
+                    setSuccessMsg(`🔎 Found & redacted ${matches.length} occurrences of "${searchText}"`)
+                    triggerConfetti()
+                } else {
+                    setSuccessMsg(`❌ Text "${searchText}" not found on this page.`)
+                }
+            } catch (err) {
+                console.error(err)
+                setErrorMsg('Search failed: ' + err.message)
+            } finally {
+                setIsScanning(false)
+            }
         }
     }
 
@@ -234,7 +257,36 @@ export default function RedactTool() {
                                 </label>
                             </div>
 
-                            <div className="flex gap-2">
+                        </div>
+
+                        {/* Find & Redact Group */}
+                        <div className="flex items-center gap-2 pl-4 border-l border-slate-200">
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={searchText}
+                                    onChange={e => setSearchText(e.target.value)}
+                                    placeholder="Find text..."
+                                    className="pl-3 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl w-40 text-sm focus:ring-2 ring-purple-500 focus:outline-none"
+                                    onKeyDown={e => e.key === 'Enter' && handleTextRedact()}
+                                />
+                                {searchText && (
+                                    <button onClick={() => setSearchText('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                )}
+                            </div>
+                            <button
+                                onClick={handleTextRedact}
+                                disabled={busy || !searchText}
+                                className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition-all disabled:opacity-50"
+                            >
+                                Redact Matches
+                            </button>
+                        </div>
+
+                        <div className="flex items-center gap-2 pl-4 border-l border-slate-200">
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
                                 <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="redacted" className="w-32" />
                                 <button
                                     onClick={applyRedaction}
@@ -243,46 +295,46 @@ export default function RedactTool() {
                                 >
                                     {busy ? 'Sanitizing...' : <><Save className="w-4 h-4" /> Save Securely</>}
                                 </button>
-                            </div>
                         </div>
+                    </div>
 
                         {/* Editor Area */}
-                        <div className="relative bg-slate-100 rounded-3xl p-8 min-h-[800px] flex justify-center border border-slate-200">
-                            {/* Note: In a real implementation, we would pass 'regions' to EditorCanvas 
+                <div className="relative bg-slate-100 rounded-3xl p-8 min-h-[800px] flex justify-center border border-slate-200">
+                    {/* Note: In a real implementation, we would pass 'regions' to EditorCanvas 
                     But EditorCanvas expects specific shape types. For MVP, we can treat them as 'images' or just rectangles if supported.
                     Here I'll assume EditorCanvas can render a simple black div for type 'rectangle'.
                     If EditorCanvas doesn't support 'rectangle', we might need to patch it or use a simple HTML overlay here.
                 */}
-                            <div className="relative">
-                                {/* Reuse EditorCanvas just for rendering the PDF background */}
-                                <EditorCanvas
-                                    file={file}
-                                    pageIndex={pageIndex}
-                                    elements={regions.map(r => ({
-                                        ...r,
-                                        content: '', // No text content
-                                        // Mocking what EditorCanvas expects for style
-                                        style: { backgroundColor: 'black', opacity: 1 }
-                                    }))}
-                                    onUpdateElement={updateRegion}
-                                    onSelectElement={setSelectedId}
-                                    onDeleteElement={deleteRegion}
-                                    selectedElementId={selectedId}
-                                    isRedactionMode={true} // Hint to canvas to render black boxes
-                                />
-                            </div>
-                        </div>
-
-                        <AnimatePresence>
-                            {successMsg && (
-                                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }} className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-2xl flex items-center gap-2">
-                                    <Check className="w-5 h-5" /> {successMsg}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                    <div className="relative">
+                        {/* Reuse EditorCanvas just for rendering the PDF background */}
+                        <EditorCanvas
+                            file={file}
+                            pageIndex={pageIndex}
+                            elements={regions.map(r => ({
+                                ...r,
+                                content: '', // No text content
+                                // Mocking what EditorCanvas expects for style
+                                style: { backgroundColor: 'black', opacity: 1 }
+                            }))}
+                            onUpdateElement={updateRegion}
+                            onSelectElement={setSelectedId}
+                            onDeleteElement={deleteRegion}
+                            selectedElementId={selectedId}
+                            isRedactionMode={true} // Hint to canvas to render black boxes
+                        />
                     </div>
-                )}
+                </div>
+
+                <AnimatePresence>
+                    {successMsg && (
+                        <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }} className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-2xl flex items-center gap-2">
+                            <Check className="w-5 h-5" /> {successMsg}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-        </ToolLayout>
+                )}
+        </div>
+        </ToolLayout >
     )
 }
