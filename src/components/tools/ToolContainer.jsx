@@ -13,6 +13,7 @@ const loadTool = (importFunc) => dynamic(importFunc, {
 const TOOL_COMPONENTS = {
   // PDF
   'chat-pdf': loadTool(() => import('../../tools/ChatPdfTool')),
+  'compare-pdf': loadTool(() => import('../../tools/ComparePdfTool')),
   'merge': loadTool(() => import('../../tools/MergeTool')),
   'split': loadTool(() => import('../../tools/SplitTool')),
   'compress': loadTool(() => import('../../tools/CompressTool')),

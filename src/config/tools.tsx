@@ -1,5 +1,5 @@
 import {
-    Zap, Layers, Scissors, Download, FileText, LayoutTemplate, FileOutput, PenTool, FileImage, Image, FileSignature, RefreshCcw, Unlock, Lock, Type, FileSpreadsheet, BrainCircuit, Wand2, ShieldAlert, Eraser, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette, Paintbrush, ArrowLeftRight, Monitor, Link as LinkIcon, Fingerprint, Volume2, Keyboard, Activity, Battery, Signal, Hourglass, FileDiff, FileCode, BarChart2, Hash, Dices, Sigma, Divide, Terminal, Database, Link2, Code, Eye, Pipette, EyeOff, Shield, KeyRound, Globe, Tag, Network, ShieldCheck, TrendingUp, Sliders, Calendar, Play, DollarSign, Briefcase, TrendingDown, HelpCircle, User, Camera
+    Zap, Layers, Scissors, Download, FileText, LayoutTemplate, FileOutput, PenTool, FileImage, Image, FileSignature, RefreshCcw, Unlock, Lock, Type, FileSpreadsheet, BrainCircuit, Wand2, ShieldAlert, Eraser, Braces, Binary, Scale, QrCode, AlignLeft, Calculator, Timer, Palette, Paintbrush, ArrowLeftRight, Monitor, Link as LinkIcon, Fingerprint, Volume2, Keyboard, Activity, Battery, Signal, Hourglass, FileDiff, FileCode, BarChart2, Hash, Dices, Sigma, Divide, Terminal, Database, Link2, Code, Eye, Pipette, EyeOff, Shield, KeyRound, Globe, Tag, Network, ShieldCheck, TrendingUp, Sliders, Calendar, Play, DollarSign, Briefcase, TrendingDown, HelpCircle, User, Camera, GitCompare
 } from 'lucide-react'
 
 // Define categories
@@ -19,6 +19,7 @@ export const CATEGORIES = [
 export const TOOLS = [
     // PDF Tools
     { id: 'chat-pdf', category: 'pdf', title: "Chat with PDF", description: "Use AI to analyze and chat with your documents.", icon: Zap, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/chat-pdf" },
+    { id: 'compare-pdf', category: 'pdf', title: "Compare PDF", description: "Visually diff two PDF versions.", icon: GitCompare, color: "text-pink-500", iconBg: "bg-pink-50", href: "/compare-pdf" },
     { id: 'merge', category: 'pdf', title: "Merge PDF", description: "Combine multiple PDFs into one unified document.", icon: Layers, color: "text-red-500", iconBg: "bg-red-50", href: "/merge" },
     { id: 'split', category: 'pdf', title: "Split PDF", description: "Separate pages or extract ranges from your PDF.", icon: Scissors, color: "text-red-500", iconBg: "bg-red-50", href: "/split" },
     { id: 'compress', category: 'pdf', title: "Compress PDF", description: "Reduce file size while maintaining visual quality.", icon: Download, color: "text-green-500", iconBg: "bg-green-50", href: "/compress" },
