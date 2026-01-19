@@ -35,11 +35,18 @@ export default function RankingAnnouncementTool() {
     const [theme, setTheme] = useState('classic') // classic, gold, blue
     const [busy, setBusy] = useState(false)
     const [outputFileName, setOutputFileName] = useState('pengumuman-ranking')
+    const idCounterRef = useRef(Date.now())
 
     // Persistence
     useEffect(() => {
         const saved = localStorage.getItem('dexpdf_ranking_draft')
-        if (saved) try { setData(JSON.parse(saved)) } catch (e) { }
+        if (saved) {
+            try {
+                setData(JSON.parse(saved))
+            } catch (e) {
+                console.warn('Failed to parse saved draft:', e)
+            }
+        }
     }, [])
 
     useEffect(() => {
@@ -59,10 +66,11 @@ export default function RankingAnnouncementTool() {
 
     const addParticipant = () => {
         const maxRank = Math.max(...data.participants.map(p => p.rank), 0)
+        idCounterRef.current += 1
         setData(prev => ({
             ...prev,
             participants: [...prev.participants, {
-                id: Date.now(),
+                id: idCounterRef.current,
                 rank: maxRank + 1,
                 name: '',
                 score: 0,
@@ -101,7 +109,12 @@ export default function RankingAnnouncementTool() {
         if (!previewRef.current) return
         setBusy(true)
         try {
-            const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true })
+            const canvas = await html2canvas(previewRef.current, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: '#ffffff'
+            })
             const imgData = canvas.toDataURL('image/png')
             const { jsPDF } = await import('jspdf')
             // Portrait A4
