@@ -54,6 +54,7 @@ export const TOOLS = [
     { id: 'invoice-generator', category: 'pdf', title: "Invoice Generator", description: "Create professional invoices instantly.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/invoice-generator" },
     { id: 'resume-builder', category: 'pdf', title: "Resume Builder", description: "Build ATS-friendly resumes.", icon: LayoutTemplate, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/resume-builder" },
     { id: 'certificate-maker', category: 'pdf', title: "Certificate Maker", description: "Design awards & certificates.", icon: Wand2, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/certificate-maker" },
+    { id: 'ranking-announcement', category: 'pdf', title: "Ranking Announcement", description: "Create participant ranking announcements.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/ranking-announcement" },
 
     // Image Tools
     { id: 'image-resizer', category: 'image', title: "Image Resizer", description: "Scale & Resize.", icon: Image, color: "text-blue-600", iconBg: "bg-blue-50", href: "/image-resizer" },

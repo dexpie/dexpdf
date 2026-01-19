@@ -54,6 +54,7 @@ const TOOL_COMPONENTS = {
   'invoice-generator': loadTool(() => import('../../tools/InvoiceGeneratorTool')),
   'resume-builder': loadTool(() => import('../../tools/ResumeBuilderTool')),
   'certificate-maker': loadTool(() => import('../../tools/CertificateMakerTool')),
+  'ranking-announcement': loadTool(() => import('../../tools/RankingAnnouncementTool')),
 
   // Image
   'image-resizer': loadTool(() => import('../../tools/ImageResizerTool')),

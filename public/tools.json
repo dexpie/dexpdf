@@ -192,6 +192,12 @@
     "color": "yellow"
   },
   {
+    "id": "ranking-announcement",
+    "name": "Ranking Announcement",
+    "desc": "Create participant ranking announcements",
+    "color": "orange"
+  },
+  {
     "id": "summarize-pdf",
     "name": "AI Summarizer",
     "desc": "Extract key points & summary",
