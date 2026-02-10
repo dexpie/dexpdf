@@ -286,55 +286,54 @@ export default function RedactTool() {
                         </div>
 
                         <div className="flex items-center gap-2 pl-4 border-l border-slate-200">
-                            <label className="flex items-center gap-2 cursor-pointer select-none">
-                                <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="redacted" className="w-32" />
-                                <button
-                                    onClick={applyRedaction}
-                                    disabled={busy}
-                                    className="bg-red-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
-                                >
-                                    {busy ? 'Sanitizing...' : <><Save className="w-4 h-4" /> Save Securely</>}
-                                </button>
+                            <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="redacted" className="w-32" />
+                            <button
+                                onClick={applyRedaction}
+                                disabled={busy}
+                                className="bg-red-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-red-700 disabled:opacity-50 flex items-center gap-2"
+                            >
+                                {busy ? 'Sanitizing...' : <><Save className="w-4 h-4" /> Save Securely</>}
+                            </button>
                         </div>
-                    </div>
+
 
                         {/* Editor Area */}
-                <div className="relative bg-slate-100 rounded-3xl p-8 min-h-[800px] flex justify-center border border-slate-200">
-                    {/* Note: In a real implementation, we would pass 'regions' to EditorCanvas 
+                        <div className="relative bg-slate-100 rounded-3xl p-8 min-h-[800px] flex justify-center border border-slate-200">
+                            {/* Note: In a real implementation, we would pass 'regions' to EditorCanvas 
                     But EditorCanvas expects specific shape types. For MVP, we can treat them as 'images' or just rectangles if supported.
                     Here I'll assume EditorCanvas can render a simple black div for type 'rectangle'.
                     If EditorCanvas doesn't support 'rectangle', we might need to patch it or use a simple HTML overlay here.
                 */}
-                    <div className="relative">
-                        {/* Reuse EditorCanvas just for rendering the PDF background */}
-                        <EditorCanvas
-                            file={file}
-                            pageIndex={pageIndex}
-                            elements={regions.map(r => ({
-                                ...r,
-                                content: '', // No text content
-                                // Mocking what EditorCanvas expects for style
-                                style: { backgroundColor: 'black', opacity: 1 }
-                            }))}
-                            onUpdateElement={updateRegion}
-                            onSelectElement={setSelectedId}
-                            onDeleteElement={deleteRegion}
-                            selectedElementId={selectedId}
-                            isRedactionMode={true} // Hint to canvas to render black boxes
-                        />
-                    </div>
-                </div>
+                            <div className="relative">
+                                {/* Reuse EditorCanvas just for rendering the PDF background */}
+                                <EditorCanvas
+                                    file={file}
+                                    pageIndex={pageIndex}
+                                    elements={regions.map(r => ({
+                                        ...r,
+                                        content: '', // No text content
+                                        // Mocking what EditorCanvas expects for style
+                                        style: { backgroundColor: 'black', opacity: 1 }
+                                    }))}
+                                    onUpdateElement={updateRegion}
+                                    onSelectElement={setSelectedId}
+                                    onDeleteElement={deleteRegion}
+                                    selectedElementId={selectedId}
+                                    isRedactionMode={true} // Hint to canvas to render black boxes
+                                />
+                            </div>
+                        </div>
 
-                <AnimatePresence>
-                    {successMsg && (
-                        <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }} className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-2xl flex items-center gap-2">
-                            <Check className="w-5 h-5" /> {successMsg}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
+                        <AnimatePresence>
+                            {successMsg && (
+                                <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }} className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full font-bold shadow-2xl flex items-center gap-2">
+                                    <Check className="w-5 h-5" /> {successMsg}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 )}
-        </div>
+            </div>
         </ToolLayout >
     )
 }

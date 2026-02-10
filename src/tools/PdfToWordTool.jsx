@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
-import { Document, Packer, Paragraph } from 'docx'
+import { Document, Packer, Paragraph, HeadingLevel, TextRun } from 'docx'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 import { triggerConfetti } from '../utils/confetti'
@@ -125,16 +125,124 @@ export default function PdfToWordTool() {
                 try {
                     const page = await pdf.getPage(i)
                     const txtContent = await page.getTextContent()
-                    const strings = txtContent.items.map(it => it.str)
-                    const text = strings.join(' ')
-                    // Only add non-empty paragraphs
-                    if (text.trim()) paragraphs.push(new Paragraph(text))
+
+                    // Smart text grouping: Group items by Y position to detect lines
+                    const lineMap = new Map() // Y position -> items
+                    const tolerance = 3 // Pixels tolerance for same line
+
+                    // Collect all font heights to determine average/median for heading detection
+                    const allFontHeights = []
+
+                    txtContent.items.forEach(item => {
+                        if (!item.str || !item.str.trim()) return
+                        const y = Math.round(item.transform[5] / tolerance) * tolerance
+                        const fontHeight = Math.abs(item.transform[3]) || item.height || 12
+                        allFontHeights.push(fontHeight)
+
+                        if (!lineMap.has(y)) lineMap.set(y, [])
+                        lineMap.get(y).push({
+                            text: item.str,
+                            x: item.transform[4],
+                            width: item.width || 0,
+                            fontHeight: fontHeight,
+                            fontName: item.fontName || ''
+                        })
+                    })
+
+                    // Calculate average font height to detect headings
+                    const avgFontHeight = allFontHeights.length > 0
+                        ? allFontHeights.reduce((a, b) => a + b, 0) / allFontHeights.length
+                        : 12
+
+                    // Sort lines by Y position (top to bottom, higher Y = top)
+                    const sortedYPositions = Array.from(lineMap.keys()).sort((a, b) => b - a)
+
+                    // Build lines with proper spacing and formatting
+                    let currentLineItems = []
+                    let prevY = null
+                    let prevFontHeight = 12
+
+                    for (const y of sortedYPositions) {
+                        const items = lineMap.get(y).sort((a, b) => a.x - b.x)
+                        const lineFontHeight = items[0]?.fontHeight || 12
+
+                        // Detect paragraph break (large Y gap = new paragraph)
+                        if (prevY !== null) {
+                            const gap = prevY - y
+                            if (gap > prevFontHeight * 1.5) {
+                                // Paragraph break detected - create paragraph from accumulated lines
+                                if (currentLineItems.length > 0) {
+                                    const combinedText = currentLineItems.map(l => l.text).join(' ').trim()
+                                    const maxFontInPara = Math.max(...currentLineItems.map(l => l.fontHeight))
+                                    const isBold = currentLineItems.some(l =>
+                                        l.fontName.toLowerCase().includes('bold') ||
+                                        l.fontName.toLowerCase().includes('heavy')
+                                    )
+
+                                    // Create styled paragraph
+                                    if (maxFontInPara > avgFontHeight * 1.4) {
+                                        // Large text = Heading 1
+                                        paragraphs.push(new Paragraph({
+                                            children: [new TextRun({ text: combinedText, bold: true, size: 32 })],
+                                            heading: HeadingLevel.HEADING_1
+                                        }))
+                                    } else if (maxFontInPara > avgFontHeight * 1.2) {
+                                        // Medium-large = Heading 2
+                                        paragraphs.push(new Paragraph({
+                                            children: [new TextRun({ text: combinedText, bold: true, size: 28 })],
+                                            heading: HeadingLevel.HEADING_2
+                                        }))
+                                    } else if (isBold) {
+                                        // Bold paragraph
+                                        paragraphs.push(new Paragraph({
+                                            children: [new TextRun({ text: combinedText, bold: true })]
+                                        }))
+                                    } else {
+                                        // Normal paragraph
+                                        paragraphs.push(new Paragraph(combinedText))
+                                    }
+                                    currentLineItems = []
+                                }
+                            }
+                        }
+
+                        // Join items on same line with spaces
+                        let lineText = ''
+                        let lastX = 0
+                        for (const item of items) {
+                            if (lineText && item.x > lastX + item.width * 0.3) {
+                                lineText += ' '
+                            }
+                            lineText += item.text
+                            lastX = item.x + (item.width || item.text.length * 6)
+                        }
+
+                        if (lineText.trim()) {
+                            currentLineItems.push({
+                                text: lineText.trim(),
+                                fontHeight: lineFontHeight,
+                                fontName: items[0]?.fontName || ''
+                            })
+                            prevFontHeight = lineFontHeight
+                        }
+                        prevY = y
+                    }
+
+                    // Add remaining lines as final paragraph of this page
+                    if (currentLineItems.length > 0) {
+                        const combinedText = currentLineItems.map(l => l.text).join(' ').trim()
+                        paragraphs.push(new Paragraph(combinedText))
+                    }
+
+                    // Add page break between pages (except last)
+                    if (i < pdf.numPages && paragraphs.length > 0) {
+                        paragraphs.push(new Paragraph({ text: '', pageBreakBefore: true }))
+                    }
 
                     // Update progress
-                    if (i % 5 === 0) setProgressText(`Processesing page ${i} of ${pdf.numPages}...`)
+                    if (i % 3 === 0) setProgressText(`Processing page ${i} of ${pdf.numPages}...`)
                 } catch (pageErr) {
                     console.warn(`Skipping page ${i} due to error`, pageErr)
-                    // Continue to next page instead of failing entire document
                 }
             }
 

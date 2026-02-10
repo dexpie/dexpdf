@@ -5,7 +5,6 @@ import { configurePdfWorker } from '../utils/pdfWorker'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 import { triggerConfetti } from '../utils/confetti'
-import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import ActionButtons from '../components/common/ActionButtons'
@@ -18,7 +17,15 @@ configurePdfWorker()
 
 export default function SplitTool() {
   const { t } = useTranslation()
-  const [batchMode, setBatchMode] = useState(false)
+  const [file, setFile] = useState(null)
+  const [pages, setPages] = useState([])
+  const [rotations, setRotations] = useState([])
+  const [rangeInput, setRangeInput] = useState('')
+  const [errorMsg, setErrorMsg] = useState('')
+  const [successMsg, setSuccessMsg] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [downloadUrl, setDownloadUrl] = useState(null)
+  const [outputFileName, setOutputFileName] = useState('')
   const [thumbnails, setThumbnails] = useState([])
   const [generatingThumbnails, setGeneratingThumbnails] = useState(false)
 
@@ -27,11 +34,11 @@ export default function SplitTool() {
     const f = files[0]
     if (!f) return
     if (!f.name.toLowerCase().endsWith('.pdf')) {
-      setErrorMsg('File harus PDF.')
+      setErrorMsg('Please select a PDF file.')
       return
     }
     if (f.size > 50 * 1024 * 1024) {
-      setErrorMsg('Ukuran file terlalu besar (maks 50MB).')
+      setErrorMsg('File is too large (max 50MB).')
       return
     }
     setFile(f)
@@ -47,7 +54,7 @@ export default function SplitTool() {
       generateThumbnails(f)
     } catch (err) {
       console.error(err)
-      setErrorMsg('Gagal memuat PDF.')
+      setErrorMsg('Failed to load PDF file.')
     }
   }
 
@@ -84,35 +91,6 @@ export default function SplitTool() {
       setGeneratingThumbnails(false)
     }
   }
-
-  function toggle(i, e) {
-    if (e && e.shiftKey) {
-      // Find last selected index
-      const lastIndex = pages.findIndex(p => p === true) // This simple logic might be insufficient if multiple scattered selection.
-      // Better approach: store `lastClickedIndex` in state.
-    }
-    // Let's implement simpler range logic first.
-    // If Shift is held, we toggle everything between the last clicked index and current index.
-
-    // Actually, I need a state for lastClickedIndex for this to work properly.
-    // But since I can't add state here easily without rewriting the whole function block and hooks above...
-    // I already added `thumbnails` state above. I should have added `lastClickedIndex` there too.
-
-    // For now, let's just do single toggle. I'll add LastClickedIndex in a separate edit if needed or just use logic.
-    // Let's stick to single toggle for this step, I'll update the `task.md` plan to separate "Visual Grid" from "Range Selection" if I can't do it now.
-    // Wait, the prompt asked to "Add Select Range (Shift+Click)". I should try.
-
-    setPages(prev => {
-      // This function doesn't have access to `e` unless I pass it.
-      // And I don't have `lastClicked`.
-      return prev.map((v, idx) => idx === i ? !v : v)
-    })
-  }
-
-  // Refactoring to add lastClickedIndex state in a separate tool call would be cleaner.
-  // For this specific tool call, I am just updating the toggle signature but keeping logic simple for a moment?
-  // No, let's leave toggle as is for now and focus on Thumbnails first.
-  // I will revert this specific change description and stick to just thumb rendering improvements.
 
   function toggle(i) {
     setPages(prev => prev.map((v, idx) => idx === i ? !v : v))
@@ -158,7 +136,7 @@ export default function SplitTool() {
       const bytes = await file.arrayBuffer()
       const src = await PDFDocument.load(bytes)
       const indices = pages.flatMap((v, i) => v ? [i] : [])
-      if (indices.length === 0) { setErrorMsg('Pilih halaman yang ingin diekspor.'); setBusy(false); return }
+      if (indices.length === 0) { setErrorMsg('Please select at least one page to export.'); setBusy(false); return }
       const out = await PDFDocument.create()
       const copied = await out.copyPages(src, indices)
       copied.forEach((p, idx) => {
@@ -180,7 +158,7 @@ export default function SplitTool() {
       // URL.revokeObjectURL(url) 
       setSuccessMsg('Pages Extracted');
       triggerConfetti();
-    } catch (err) { console.error(err); setErrorMsg('Gagal: ' + (err.message || err)); }
+    } catch (err) { console.error(err); setErrorMsg('Export failed: ' + (err.message || err)); }
     finally { setBusy(false) }
   }
 
@@ -208,169 +186,144 @@ export default function SplitTool() {
   return (
     <ToolLayout title="Split PDF" description={t('tool.split_desc', 'Extract pages from your PDF documents')}>
 
-      {/* Mode Switcher */}
-      <div className="flex justify-center gap-4 mb-8">
-        <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-          onClick={() => setBatchMode(false)}
-        >
-          Single PDF
-        </button>
-        <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-          onClick={() => setBatchMode(true)}
-        >
-          Batch Split
-        </button>
-      </div>
+      {/* Main Split Interface */}
+      <div className="flex flex-col gap-6">
+        {errorMsg && (
+          <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center">
+            ⚠️ {errorMsg}
+          </div>
+        )}
 
-      {batchMode ? (
-        <UniversalBatchProcessor
-          toolName="Split PDFs"
-          processFile={processBatchFile}
-          acceptedTypes=".pdf"
-          outputExtension=".pdf"
-          maxFiles={100}
-        />
-      ) : (
-        <div className="flex flex-col gap-6">
-          {errorMsg && (
-            <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center">
-              ⚠️ {errorMsg}
+        {successMsg ? (
+          <ResultPage
+            title="Pages Extracted Successfully!"
+            description="Your separated pages are ready to download."
+            downloadUrl={downloadUrl}
+            downloadFilename={getOutputFilename(outputFileName, 'extracted')}
+            sourceFile={file}
+            toolId="split"
+            onReset={() => {
+              setFile(null);
+              setPages([]);
+              setRotations([]);
+              setThumbnails([]);
+              setOutputFileName('');
+              setSuccessMsg('');
+              setDownloadUrl(null);
+            }}
+          />
+        ) : null}
+
+        {!successMsg && !file ? (
+          <FileDropZone
+            onFiles={handleFileChange}
+            accept="application/pdf"
+            disabled={busy}
+            hint="Upload PDF to extract pages"
+          />
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col gap-6"
+          >
+            {/* File Header */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 flex justify-between items-center shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
+                  <File className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-800">{file.name}</h3>
+                  <div className="text-sm text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB • {pages.length} Pages</div>
+                </div>
+              </div>
+              <button onClick={() => { setFile(null); setPages([]); setRotations([]); setThumbnails([]); setOutputFileName(''); }} className="text-red-500 hover:text-red-700 font-medium text-sm">
+                Change File
+              </button>
             </div>
-          )}
 
-          {successMsg ? (
-            <ResultPage
-              title="Pages Extracted Successfully!"
-              description="Your separated pages are ready to download."
-              downloadUrl={downloadUrl}
-              downloadFilename={getOutputFilename(outputFileName, 'extracted')}
-              sourceFile={file}
-              toolId="split"
-              onReset={() => {
-                setFile(null);
-                setPages([]);
-                setRotations([]);
-                setThumbnails([]);
-                setOutputFileName('');
-                setSuccessMsg('');
-                setDownloadUrl(null);
-              }}
-            />
-          ) : null}
-
-          {!successMsg && !file ? (
-            <FileDropZone
-              onFiles={handleFileChange}
-              accept="application/pdf"
-              disabled={busy}
-              hint="Upload PDF to extract pages"
-            />
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col gap-6"
-            >
-              {/* File Header */}
-              <div className="bg-white rounded-2xl border border-slate-200 p-4 flex justify-between items-center shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
-                    <File className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800">{file.name}</h3>
-                    <div className="text-sm text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB • {pages.length} Pages</div>
-                  </div>
-                </div>
-                <button onClick={() => { setFile(null); setPages([]); setRotations([]); setThumbnails([]); setOutputFileName(''); }} className="text-red-500 hover:text-red-700 font-medium text-sm">
-                  Change File
-                </button>
-              </div>
-
-              {/* Selection Controls */}
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="flex items-center gap-2 w-full md:w-auto">
-                  <span className="text-sm font-semibold text-slate-700">Range:</span>
-                  <input
-                    type="text"
-                    placeholder="e.g. 1-5, 8, 11-13"
-                    value={rangeInput}
-                    onChange={(e) => setRangeInput(e.target.value)}
-                    className="border border-slate-300 rounded-lg px-3 py-2 text-sm w-full md:w-48 focus:ring-2 focus:ring-red-500 outline-none"
-                  />
-                  <button onClick={handleRangeSelect} className="bg-slate-800 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-900">Apply</button>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button onClick={selectAll} className="text-xs font-medium px-3 py-1.5 bg-slate-100 rounded-md hover:bg-slate-200 text-slate-700">All</button>
-                  <button onClick={deselectAll} className="text-xs font-medium px-3 py-1.5 bg-slate-100 rounded-md hover:bg-slate-200 text-slate-700">None</button>
-                  <button onClick={invertSelection} className="text-xs font-medium px-3 py-1.5 bg-slate-100 rounded-md hover:bg-slate-200 text-slate-700">Invert</button>
-                </div>
-              </div>
-
-              {/* Pages Grid */}
-              <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 max-h-[500px] overflow-y-auto">
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-                  {pages.map((selected, i) => (
-                    <motion.div
-                      key={i}
-                      layout
-                      onClick={() => !busy && toggle(i)}
-                      className={`aspect-[3/4] relative cursor-pointer rounded-xl border-2 transition-all group overflow-hidden ${selected ? 'border-red-500 bg-red-50 ring-2 ring-red-200' : 'border-slate-200 bg-white hover:border-red-300'}`}
-                    >
-                      <div className="absolute top-2 left-2 z-10">
-                        <div className={`w-5 h-5 rounded flex items-center justify-center border ${selected ? 'bg-red-500 border-red-500' : 'bg-white border-slate-300'}`}>
-                          {selected && <Check className="w-3 h-3 text-white" />}
-                        </div>
-                      </div>
-
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-4">
-                        <div
-                          className="w-full h-full bg-slate-50 border border-slate-100 shadow-sm flex items-center justify-center text-slate-300 relative overflow-hidden"
-                          style={{ transform: `rotate(${rotations[i]}deg)`, transition: 'transform 0.3s' }}
-                        >
-                          {thumbnails[i] ? (
-                            <img src={thumbnails[i]} alt={`Page ${i + 1}`} className="w-full h-full object-contain" />
-                          ) : (
-                            <div className="flex flex-col items-center gap-1">
-                              {generatingThumbnails ? (
-                                <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-500 rounded-full animate-spin" />
-                              ) : (
-                                <span className="text-xs font-bold">P {i + 1}</span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <button
-                        className="absolute bottom-2 right-2 p-1.5 bg-white/90 backdrop-blur rounded-lg shadow-sm hover:bg-red-50 hover:text-red-500 text-slate-400 transition-colors z-20 opacity-0 group-hover:opacity-100"
-                        onClick={(e) => { e.stopPropagation(); rotate(i); }}
-                        title="Rotate Page"
-                      >
-                        <RotateCw className="w-3 h-3" />
-                      </button>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Footer */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-lg flex flex-col gap-4 max-w-2xl mx-auto w-full sticky bottom-4 z-10">
-                <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="extracted_pages" />
-                <ActionButtons
-                  primaryText={`Export ${pages.filter(Boolean).length} Selected Pages`}
-                  onPrimary={exportSelected}
-                  loading={busy}
-                  disabled={!pages.some(Boolean)}
+            {/* Selection Controls */}
+            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="flex items-center gap-2 w-full md:w-auto">
+                <span className="text-sm font-semibold text-slate-700">Range:</span>
+                <input
+                  type="text"
+                  placeholder="e.g. 1-5, 8, 11-13"
+                  value={rangeInput}
+                  onChange={(e) => setRangeInput(e.target.value)}
+                  className="border border-slate-300 rounded-lg px-3 py-2 text-sm w-full md:w-48 focus:ring-2 focus:ring-red-500 outline-none"
                 />
+                <button onClick={handleRangeSelect} className="bg-slate-800 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-900">Apply</button>
               </div>
-            </motion.div>
-          )}
-        </div>
-      )}
+
+              <div className="flex items-center gap-2">
+                <button onClick={selectAll} className="text-xs font-medium px-3 py-1.5 bg-slate-100 rounded-md hover:bg-slate-200 text-slate-700">All</button>
+                <button onClick={deselectAll} className="text-xs font-medium px-3 py-1.5 bg-slate-100 rounded-md hover:bg-slate-200 text-slate-700">None</button>
+                <button onClick={invertSelection} className="text-xs font-medium px-3 py-1.5 bg-slate-100 rounded-md hover:bg-slate-200 text-slate-700">Invert</button>
+              </div>
+            </div>
+
+            {/* Pages Grid */}
+            <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 max-h-[500px] overflow-y-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                {pages.map((selected, i) => (
+                  <motion.div
+                    key={i}
+                    layout
+                    onClick={() => !busy && toggle(i)}
+                    className={`aspect-[3/4] relative cursor-pointer rounded-xl border-2 transition-all group overflow-hidden ${selected ? 'border-red-500 bg-red-50 ring-2 ring-red-200' : 'border-slate-200 bg-white hover:border-red-300'}`}
+                  >
+                    <div className="absolute top-2 left-2 z-10">
+                      <div className={`w-5 h-5 rounded flex items-center justify-center border ${selected ? 'bg-red-500 border-red-500' : 'bg-white border-slate-300'}`}>
+                        {selected && <Check className="w-3 h-3 text-white" />}
+                      </div>
+                    </div>
+
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-4">
+                      <div
+                        className="w-full h-full bg-slate-50 border border-slate-100 shadow-sm flex items-center justify-center text-slate-300 relative overflow-hidden"
+                        style={{ transform: `rotate(${rotations[i]}deg)`, transition: 'transform 0.3s' }}
+                      >
+                        {thumbnails[i] ? (
+                          <img src={thumbnails[i]} alt={`Page ${i + 1}`} className="w-full h-full object-contain" />
+                        ) : (
+                          <div className="flex flex-col items-center gap-1">
+                            {generatingThumbnails ? (
+                              <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-500 rounded-full animate-spin" />
+                            ) : (
+                              <span className="text-xs font-bold">P {i + 1}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <button
+                      className="absolute bottom-2 right-2 p-1.5 bg-white/90 backdrop-blur rounded-lg shadow-sm hover:bg-red-50 hover:text-red-500 text-slate-400 transition-colors z-20 opacity-0 group-hover:opacity-100"
+                      onClick={(e) => { e.stopPropagation(); rotate(i); }}
+                      title="Rotate Page"
+                    >
+                      <RotateCw className="w-3 h-3" />
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Action Footer */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-lg flex flex-col gap-4 max-w-2xl mx-auto w-full sticky bottom-4 z-10">
+              <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="extracted_pages" />
+              <ActionButtons
+                primaryText={`Export ${pages.filter(Boolean).length} Selected Pages`}
+                onPrimary={exportSelected}
+                loading={busy}
+                disabled={!pages.some(Boolean)}
+              />
+            </div>
+          </motion.div>
+        )}
+      </div>
       {/* Feature Info */}
       <div className="grid md:grid-cols-3 gap-8 mt-16 px-4">
         <div className="p-6 bg-white rounded-2xl shadow-sm border border-slate-100">

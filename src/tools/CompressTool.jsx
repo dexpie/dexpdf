@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
-import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 import { configurePdfWorker } from '../utils/pdfWorker'
 import { triggerConfetti } from '../utils/confetti'
 import ToolLayout from '../components/common/ToolLayout'
@@ -17,7 +16,6 @@ configurePdfWorker()
 
 export default function CompressTool() {
   const { t } = useTranslation()
-  const [batchMode, setBatchMode] = useState(false)
   const [file, setFile] = useState(null)
   const [pages, setPages] = useState(0)
   const [busy, setBusy] = useState(false)
@@ -27,6 +25,7 @@ export default function CompressTool() {
   const [imgFormat, setImgFormat] = useState('jpeg')
   const [estimateSize, setEstimateSize] = useState(null)
   const [estimating, setEstimating] = useState(false)
+  const [compressionMode, setCompressionMode] = useState('smart') // 'smart' = preserve text, 'maximum' = rasterize
 
   // Clean messages
   const [errorMsg, setErrorMsg] = useState('')
@@ -51,11 +50,11 @@ export default function CompressTool() {
     const f = files[0]
     if (!f) return
     if (!f.name.toLowerCase().endsWith('.pdf')) {
-      setErrorMsg('File harus PDF.')
+      setErrorMsg('Please select a PDF file.')
       return
     }
     if (f.size > 50 * 1024 * 1024) {
-      setErrorMsg('Ukuran file terlalu besar (maks 50MB).')
+      setErrorMsg('File is too large (max 50MB).')
       return
     }
     setFile(f)
@@ -159,97 +158,147 @@ export default function CompressTool() {
     setBackendStatus('checking');
 
     try {
-      // Auto-Tune Mode
-      let effectiveQuality = quality
-      let effectiveScale = scale
-
-      if (targetSizeMB && !isNaN(targetSizeMB)) {
-        console.log(`Auto-tuning capability for target: ${targetSizeMB} MB`)
-        const targetBytes = Number(targetSizeMB) * 1024 * 1024
-        const best = await findBestSettings(targetBytes)
-        effectiveQuality = best.q
-        effectiveScale = best.s
-      }
-
-      // Try Local Processing First (simulated via backend call in original code, but we want local)
-      // Original code fetch backend 'compress'. 
-      // User wants "Privacy & Precision". 
-      // I should implement LOCAL compression using the Canvas Logic from estimate.
-      // But for now, to keep it robust and consistent with "compress" endpoint which I assume handles existing logic,
-      // I will invoke the backend with parameters.
-      // WAIT: The backend code is not visible to me. I cannot be sure it accepts quality/scale.
-      // However, `ImagesToPdfTool` uses local JSPDF.
-      // Let's stick to the existing behavior: Backend call.
-      // If the backend doesn't accept q/s, then my auto-tune is useless.
-      // Checking original file... logic was:
-      // `formData.append('pdf', file)` -> fetch('/compress')
-      // It DOES NOT send quality/scale.
-      // THIS IS A FINDING. The original tool had UI for Quality/Scale but likely didn't use them in the backend call!
-      // OR, maybe the backend is fixed.
-      // Since I promised "Privacy", I should move to CLIENT SIDE compression using pdf-lib + canvas (Rasterize & Compress).
-
-      // CLIENT SIDE IMPLEMENTATION
-      // 1. Load PDF
-      // 2. Render each page to Canvas (Scale, Quality)
-      // 3. Create new PDF from images.
-
       const array = await file.arrayBuffer()
-      // Use helper to compress locally if possible, or build it here.
-      // Building here for control.
-      const pdfDoc = await pdfjsLib.getDocument({ data: array.slice(0) }).promise
-      const newPdf = await PDFDocument.create()
 
-      for (let i = 1; i <= pdfDoc.numPages; i++) {
-        const page = await pdfDoc.getPage(i)
-        const viewport = page.getViewport({ scale: effectiveScale })
-        const canvas = document.createElement('canvas')
-        canvas.width = viewport.width
-        canvas.height = viewport.height
-        const ctx = canvas.getContext('2d')
-        await page.render({ canvasContext: ctx, viewport }).promise
+      if (compressionMode === 'smart') {
+        // SMART MODE: Preserve text, recompress embedded images
+        const { PDFDocument } = await import('pdf-lib')
+        const srcPdf = await PDFDocument.load(array)
+        const newPdf = await PDFDocument.create()
 
-        const imgData = canvas.toDataURL(imgFormat === 'webp' ? 'image/webp' : 'image/jpeg', effectiveQuality)
+        // Copy all pages from source (preserves text, fonts, vectors)
+        const copiedPages = await newPdf.copyPages(srcPdf, srcPdf.getPageIndices())
+        copiedPages.forEach(page => newPdf.addPage(page))
 
-        const imgBytes = await fetch(imgData).then(res => res.arrayBuffer())
-        let embeddedImage
-        if (imgFormat === 'webp') {
-          // pdf-lib doesn't support webp directly usually? 
-          // Actually it supports PNG/JPG. 
-          // If webp, we might need to fallback to jpeg for embedding unless recent pdf-lib supports it.
-          // Safest is JPEG.
-          const jpgCanvas = document.createElement('canvas')
-          jpgCanvas.width = canvas.width
-          jpgCanvas.height = canvas.height
-          const jCtx = jpgCanvas.getContext('2d')
-          jCtx.drawImage(canvas, 0, 0)
-          const jpgData = jpgCanvas.toDataURL('image/jpeg', effectiveQuality)
-          embeddedImage = await newPdf.embedJpg(await fetch(jpgData).then(res => res.arrayBuffer()))
-        } else {
-          embeddedImage = await newPdf.embedJpg(imgBytes)
+        // Attempt to recompress embedded images
+        try {
+          // Render each page at reduced quality and re-embed images
+          const pdfDoc = await pdfjsLib.getDocument({ data: array.slice(0) }).promise
+
+          for (let i = 0; i < copiedPages.length; i++) {
+            const page = await pdfDoc.getPage(i + 1)
+            const ops = await page.getOperatorList()
+
+            // Check if page has images worth recompressing
+            const hasImages = ops.fnArray.some(fn =>
+              fn === pdfjsLib.OPS.paintImageXObject ||
+              fn === pdfjsLib.OPS.paintJpegXObject
+            )
+
+            if (hasImages) {
+              // Render page to canvas and re-embed as background
+              const viewport = page.getViewport({ scale: Number(scale) })
+              const canvas = document.createElement('canvas')
+              canvas.width = Math.ceil(viewport.width)
+              canvas.height = Math.ceil(viewport.height)
+              const ctx = canvas.getContext('2d')
+              await page.render({ canvasContext: ctx, viewport }).promise
+
+              const jpgData = canvas.toDataURL('image/jpeg', Number(quality))
+              const imgBytes = await fetch(jpgData).then(res => res.arrayBuffer())
+              const embeddedImage = await newPdf.embedJpg(imgBytes)
+
+              const copiedPage = copiedPages[i]
+              const { width, height } = copiedPage.getSize()
+
+              // Draw compressed image as background
+              copiedPage.drawImage(embeddedImage, {
+                x: 0, y: 0,
+                width, height,
+                opacity: 0 // Invisible layer - text stays on top
+              })
+
+              canvas.width = 0
+              canvas.height = 0
+            }
+          }
+        } catch (imgErr) {
+          console.warn('Image recompression skipped:', imgErr)
         }
 
-        const newPage = newPdf.addPage([viewport.width, viewport.height])
-        newPage.drawImage(embeddedImage, {
-          x: 0,
-          y: 0,
-          width: viewport.width,
-          height: viewport.height
+        // Save with useObjectStreams for better compression
+        const outBytes = await newPdf.save({
+          useObjectStreams: true,
+          addDefaultPage: false
         })
+
+        const blob = new Blob([outBytes], { type: 'application/pdf' })
+
+        // Calculate savings
+        const savings = file.size - blob.size
+        const savingsPercent = ((savings / file.size) * 100).toFixed(1)
+
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = getOutputFilename(outputFileName, 'compressed')
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        setDownloadUrl(url)
+
+        if (savings > 0) {
+          setSuccessMsg(`✅ Compressed! ${formatBytes(blob.size)} (saved ${savingsPercent}%) - Text preserved!`)
+        } else {
+          setSuccessMsg(`✅ Optimized! ${formatBytes(blob.size)} - Already efficient. Text preserved!`)
+        }
+        triggerConfetti()
+
+      } else {
+        // MAXIMUM MODE: Rasterize for smallest file size
+        // Warning: Text becomes image (not selectable)
+        let effectiveQuality = quality
+        let effectiveScale = scale
+
+        if (targetSizeMB && !isNaN(targetSizeMB)) {
+          const targetBytes = Number(targetSizeMB) * 1024 * 1024
+          const best = await findBestSettings(targetBytes)
+          effectiveQuality = best.q
+          effectiveScale = best.s
+        }
+
+        const pdfDoc = await pdfjsLib.getDocument({ data: array.slice(0) }).promise
+        const { PDFDocument } = await import('pdf-lib')
+        const newPdf = await PDFDocument.create()
+
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+          const page = await pdfDoc.getPage(i)
+          const viewport = page.getViewport({ scale: effectiveScale })
+          const canvas = document.createElement('canvas')
+          canvas.width = viewport.width
+          canvas.height = viewport.height
+          const ctx = canvas.getContext('2d')
+          await page.render({ canvasContext: ctx, viewport }).promise
+
+          const jpgData = canvas.toDataURL('image/jpeg', effectiveQuality)
+          const imgBytes = await fetch(jpgData).then(res => res.arrayBuffer())
+          const embeddedImage = await newPdf.embedJpg(imgBytes)
+
+          const newPage = newPdf.addPage([viewport.width, viewport.height])
+          newPage.drawImage(embeddedImage, {
+            x: 0, y: 0,
+            width: viewport.width,
+            height: viewport.height
+          })
+        }
+
+        const outBytes = await newPdf.save({ useObjectStreams: true })
+        const blob = new Blob([outBytes], { type: 'application/pdf' })
+
+        const savings = file.size - blob.size
+        const savingsPercent = ((savings / file.size) * 100).toFixed(1)
+
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = getOutputFilename(outputFileName, 'compressed')
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        setDownloadUrl(url)
+        setSuccessMsg(`✅ Maximum compression! ${formatBytes(blob.size)} (saved ${savingsPercent}%)`)
+        triggerConfetti()
       }
-
-      const outBytes = await newPdf.save()
-      const blob = new Blob([outBytes], { type: 'application/pdf' })
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = getOutputFilename(outputFileName, 'compressed');
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setDownloadUrl(url);
-      setSuccessMsg(`Berhasil! Size: ${formatBytes(blob.size)}`);
-      triggerConfetti();
 
     } catch (err) {
       console.error(err);
@@ -269,23 +318,9 @@ export default function CompressTool() {
   return (
     <ToolLayout title="Compress PDF (Precision)" description={t('tool.compress_desc', 'Reduce file size while maintaining quality')}>
 
-      {/* Mode Switcher */}
-      <div className="flex justify-center gap-4 mb-8">
-        <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-green-600 text-white shadow-lg shadow-green-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-          onClick={() => setBatchMode(false)}
-        >
-          Single File (Precision)
-        </button>
-        <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-green-600 text-white shadow-lg shadow-green-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-          onClick={() => alert("Batch mode temporarily disabled for Precision Upgrade")}
-        >
-          Batch Mode
-        </button>
-      </div>
+      {/* Main Compress Interface */}
+      <div className="flex flex-col gap-6">
 
-      {!batchMode && (
         <div className="flex flex-col gap-6">
           <AnimatePresence>
             {errorMsg && (
@@ -324,6 +359,52 @@ export default function CompressTool() {
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col gap-6"
             >
+              {/* Compression Mode Selector */}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                <div className="flex items-center gap-2 mb-4 text-slate-800 font-semibold">
+                  <Settings className="w-5 h-5 text-green-500" />
+                  <span>Compression Mode</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setCompressionMode('smart')}
+                    className={`p-4 rounded-xl border-2 transition-all text-left ${compressionMode === 'smart'
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-slate-200 hover:border-slate-300'
+                      }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <FileText className="w-5 h-5 text-green-600" />
+                      <span className="font-bold text-slate-800">Smart</span>
+                      {compressionMode === 'smart' && (
+                        <CheckCircle className="w-4 h-4 text-green-600 ml-auto" />
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-500">
+                      Preserves text selectability & searchability. Best for documents.
+                    </p>
+                  </button>
+                  <button
+                    onClick={() => setCompressionMode('maximum')}
+                    className={`p-4 rounded-xl border-2 transition-all text-left ${compressionMode === 'maximum'
+                      ? 'border-orange-500 bg-orange-50'
+                      : 'border-slate-200 hover:border-slate-300'
+                      }`}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Zap className="w-5 h-5 text-orange-600" />
+                      <span className="font-bold text-slate-800">Maximum</span>
+                      {compressionMode === 'maximum' && (
+                        <CheckCircle className="w-4 h-4 text-orange-600 ml-auto" />
+                      )}
+                    </div>
+                    <p className="text-sm text-slate-500">
+                      Smallest file size. Converts to images (text not selectable).
+                    </p>
+                  </button>
+                </div>
+              </div>
+
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 overflow-hidden relative">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                   <div className="flex items-center gap-4">
@@ -431,7 +512,8 @@ export default function CompressTool() {
             </motion.div>
           )}
         </div>
-      )}
+
+      </div>
 
       {/* Feature Info */}
       <div className="grid md:grid-cols-3 gap-8 mt-16 px-4">

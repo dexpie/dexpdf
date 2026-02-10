@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { triggerConfetti } from '../utils/confetti'
-import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 import { configurePdfWorker } from '../utils/pdfWorker'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
@@ -34,7 +33,6 @@ export default function OcrTool() {
   const [file, setFile] = useState(null)
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
-  const [batchMode, setBatchMode] = useState(false)
   const [language, setLanguage] = useState('eng')
   const [progress, setProgress] = useState(0)
   const [progressText, setProgressText] = useState('')
@@ -88,18 +86,76 @@ export default function OcrTool() {
     }
   }
 
-  // 🎨 Enhanced image preprocessing
+  // 🎨 Enhanced image preprocessing for better OCR accuracy
   const preprocessCanvas = (canvas) => {
     if (!imageEnhancement) return canvas
     const ctx = canvas.getContext('2d')
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     const data = imageData.data
-    // Convert to grayscale and enhance contrast
+
+    // Step 1: Convert to grayscale
+    const grayPixels = []
     for (let i = 0; i < data.length; i += 4) {
-      const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
-      const enhanced = gray < 128 ? Math.max(0, gray - 30) : Math.min(255, gray + 30)
+      const gray = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2])
+      grayPixels.push(gray)
+      data[i] = data[i + 1] = data[i + 2] = gray
+    }
+
+    // Step 2: Calculate histogram for Otsu's thresholding
+    const histogram = new Array(256).fill(0)
+    grayPixels.forEach(g => histogram[g]++)
+
+    // Find optimal threshold using Otsu's method
+    const total = grayPixels.length
+    let sum = 0
+    for (let i = 0; i < 256; i++) sum += i * histogram[i]
+
+    let sumB = 0, wB = 0, wF = 0
+    let maxVariance = 0, threshold = 128
+
+    for (let t = 0; t < 256; t++) {
+      wB += histogram[t]
+      if (wB === 0) continue
+      wF = total - wB
+      if (wF === 0) break
+
+      sumB += t * histogram[t]
+      const mB = sumB / wB
+      const mF = (sum - sumB) / wF
+      const variance = wB * wF * (mB - mF) * (mB - mF)
+
+      if (variance > maxVariance) {
+        maxVariance = variance
+        threshold = t
+      }
+    }
+
+    // Step 3: Apply adaptive contrast stretching
+    let minGray = 255, maxGray = 0
+    grayPixels.forEach(g => {
+      if (g < minGray) minGray = g
+      if (g > maxGray) maxGray = g
+    })
+
+    const range = maxGray - minGray || 1
+
+    // Step 4: Apply enhancement with contrast stretching
+    for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+      const gray = grayPixels[j]
+
+      // Contrast stretch
+      let enhanced = Math.round(((gray - minGray) / range) * 255)
+
+      // Slight sharpening for text clarity (stronger toward threshold)
+      const distFromThreshold = Math.abs(gray - threshold)
+      if (distFromThreshold < 30) {
+        // Near threshold = edge of text, sharpen
+        enhanced = gray < threshold ? Math.max(0, enhanced - 20) : Math.min(255, enhanced + 20)
+      }
+
       data[i] = data[i + 1] = data[i + 2] = enhanced
     }
+
     ctx.putImageData(imageData, 0, 0)
     return canvas
   }
@@ -269,22 +325,6 @@ export default function OcrTool() {
   return (
     <ToolLayout title="OCR Text Extraction" description={t('tool.ocr_desc', 'Convert scanned documents and images into editable text')}>
 
-      {/* Mode Switcher */}
-      <div className="flex justify-center gap-4 mb-8">
-        <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-          onClick={() => setBatchMode(false)}
-        >
-          Single File
-        </button>
-        <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-          onClick={() => setBatchMode(true)}
-        >
-          Batch Mode
-        </button>
-      </div>
-
       {/* Settings Panel */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm max-w-4xl mx-auto w-full mb-8">
         <div className="flex items-center gap-2 mb-4 text-slate-800 font-semibold">
@@ -306,14 +346,14 @@ export default function OcrTool() {
           {/* Engine */}
           <div>
             <label className="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-2">
-              <Monitor className="w-4 h-4" /> processing Engine
+              <Monitor className="w-4 h-4" /> Processing Engine
             </label>
             <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl">
               <button
                 onClick={() => setOcrEngine('auto')}
                 className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all ${ocrEngine === 'auto' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200'}`}
               >
-                Auto (Smart)
+                Auto
               </button>
               <button
                 onClick={() => setOcrEngine('cloud')}
@@ -338,131 +378,122 @@ export default function OcrTool() {
             <select value={ocrMode} onChange={e => setOcrMode(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
               <option value="fast">⚡ Fast (Draft)</option>
               <option value="balanced">⚖️ Balanced</option>
-              <option value="accurate">🎯 High Accuracy (Slower)</option>
+              <option value="accurate">🎯 High Accuracy</option>
             </select>
           </div>
         </div>
       </div>
 
-      {batchMode ? (
-        <UniversalBatchProcessor
-          toolName="OCR Extraction"
-          processFile={processBatchFile}
-          acceptedTypes=".png,.jpg,.jpeg,.webp,.pdf"
-          outputExtension="_ocr.txt"
-          maxFiles={20}
-        />
-      ) : (
-        <div className="flex flex-col gap-6">
-          <AnimatePresence>
-            {errorMsg && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5" /> {errorMsg}
-              </motion.div>
-            )}
-            {successMsg && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2">
-                <CheckCircle className="w-5 h-5" /> {successMsg}
-              </motion.div>
-            )}
-          </AnimatePresence>
+      {/* Main OCR Interface */}
+      <div className="flex flex-col gap-6">
+        <AnimatePresence>
+          {errorMsg && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5" /> {errorMsg}
+            </motion.div>
+          )}
+          {successMsg && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2">
+              <CheckCircle className="w-5 h-5" /> {successMsg}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          {!file ? (
-            <FileDropZone
-              onFiles={handleFileChange}
-              accept=".png,.jpg,.jpeg,.webp,.pdf"
-              disabled={busy}
-              hint="Upload image or PDF to extract text"
-            />
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col gap-6"
-            >
-              {/* Progress Bar */}
-              {busy && (
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center animate-pulse">
-                  <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-slate-600 font-medium mb-1">{progressText}</p>
-                  <p className="text-sm text-slate-400 font-mono">{progress}%</p>
-                  <div className="w-full bg-slate-200 h-1.5 rounded-full mt-4 overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progress}%` }}
-                      className="h-full bg-blue-500 rounded-full"
-                    />
-                  </div>
+        {!file ? (
+          <FileDropZone
+            onFiles={handleFileChange}
+            accept=".png,.jpg,.jpeg,.webp,.pdf"
+            disabled={busy}
+            hint="Upload image or PDF to extract text"
+          />
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col gap-6"
+          >
+            {/* Progress Bar */}
+            {busy && (
+              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center animate-pulse">
+                <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-slate-600 font-medium mb-1">{progressText}</p>
+                <p className="text-sm text-slate-400 font-mono">{progress}%</p>
+                <div className="w-full bg-slate-200 h-1.5 rounded-full mt-4 overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    className="h-full bg-blue-500 rounded-full"
+                  />
                 </div>
-              )}
+              </div>
+            )}
 
-              <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${busy ? 'opacity-50 pointer-events-none' : ''}`}>
-                {/* Left: Preview */}
-                <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px]">
-                  <div className="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center text-sm font-semibold text-slate-700">
-                    <span>Original View</span>
-                    <div className="flex gap-2">
-                      {file.type === 'application/pdf' && totalPages > 1 && (
-                        <div className="flex items-center gap-1 bg-white rounded-lg border border-slate-200 px-1">
-                          <button disabled={selectedPage <= 1} onClick={() => setSelectedPage(p => p - 1)} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30"><ChevronLeft className="w-4 h-4" /></button>
-                          <span className="text-xs px-2">{selectedPage}/{totalPages}</span>
-                          <button disabled={selectedPage >= totalPages} onClick={() => setSelectedPage(p => p + 1)} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30"><ChevronRight className="w-4 h-4" /></button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex-1 overflow-auto p-4 bg-slate-100 flex items-center justify-center">
-                    {previewUrl ? (
-                      <img src={previewUrl} alt="Preview" className="max-w-full max-h-full object-contain shadow-lg rounded" />
-                    ) : (
-                      <div className="text-slate-400 flex flex-col items-center">
-                        <FileText className="w-12 h-12 mb-2 opacity-20" />
-                        <span>No preview available</span>
+            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${busy ? 'opacity-50 pointer-events-none' : ''}`}>
+              {/* Left: Preview */}
+              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px]">
+                <div className="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center text-sm font-semibold text-slate-700">
+                  <span>Original View</span>
+                  <div className="flex gap-2">
+                    {file.type === 'application/pdf' && totalPages > 1 && (
+                      <div className="flex items-center gap-1 bg-white rounded-lg border border-slate-200 px-1">
+                        <button disabled={selectedPage <= 1} onClick={() => setSelectedPage(p => p - 1)} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30"><ChevronLeft className="w-4 h-4" /></button>
+                        <span className="text-xs px-2">{selectedPage}/{totalPages}</span>
+                        <button disabled={selectedPage >= totalPages} onClick={() => setSelectedPage(p => p + 1)} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30"><ChevronRight className="w-4 h-4" /></button>
                       </div>
                     )}
                   </div>
                 </div>
-
-                {/* Right: Result */}
-                <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px]">
-                  <div className="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                    <span className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                      Extracted Text
-                      {confidence && <span className={`text-[10px] px-2 py-0.5 rounded-full ${confidence > 80 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{confidence}% Score</span>}
-                    </span>
-                    <div className="flex gap-2">
-                      <select value={exportFormat} onChange={e => setExportFormat(e.target.value)} className="text-xs p-1.5 rounded border border-slate-300 bg-white">
-                        <option value="txt">.txt</option>
-                        <option value="json">.json</option>
-                        <option value="csv">.csv</option>
-                      </select>
+                <div className="flex-1 overflow-auto p-4 bg-slate-100 flex items-center justify-center">
+                  {previewUrl ? (
+                    <img src={previewUrl} alt="Preview" className="max-w-full max-h-full object-contain shadow-lg rounded" />
+                  ) : (
+                    <div className="text-slate-400 flex flex-col items-center">
+                      <FileText className="w-12 h-12 mb-2 opacity-20" />
+                      <span>No preview available</span>
                     </div>
-                  </div>
-                  <textarea
-                    value={text}
-                    onChange={e => setText(e.target.value)}
-                    className="flex-1 w-full p-4 resize-none outline-none font-mono text-sm text-slate-700 bg-white"
-                    placeholder="Text will appear here after processing..."
-                  />
+                  )}
                 </div>
               </div>
 
-              {/* Action Footer */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-lg flex justify-between items-center max-w-4xl mx-auto w-full sticky bottom-4 z-10">
-                <button onClick={() => setFile(null)} className="font-semibold text-slate-500 hover:text-slate-800 transition-colors">Start Over</button>
-                <ActionButtons
-                  primaryText="Download Result"
-                  onPrimary={exportText}
-                  loading={busy}
-                  disabled={!text}
-                  icon={Download}
+              {/* Right: Result */}
+              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px]">
+                <div className="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                  <span className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    Extracted Text
+                    {confidence && <span className={`text-[10px] px-2 py-0.5 rounded-full ${confidence > 80 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{confidence}% Score</span>}
+                  </span>
+                  <div className="flex gap-2">
+                    <select value={exportFormat} onChange={e => setExportFormat(e.target.value)} className="text-xs p-1.5 rounded border border-slate-300 bg-white">
+                      <option value="txt">.txt</option>
+                      <option value="json">.json</option>
+                      <option value="csv">.csv</option>
+                    </select>
+                  </div>
+                </div>
+                <textarea
+                  value={text}
+                  onChange={e => setText(e.target.value)}
+                  className="flex-1 w-full p-4 resize-none outline-none font-mono text-sm text-slate-700 bg-white"
+                  placeholder="Text will appear here after processing..."
                 />
               </div>
+            </div>
 
-            </motion.div>
-          )}
-        </div>
-      )}
+            {/* Action Footer */}
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-lg flex justify-between items-center max-w-4xl mx-auto w-full sticky bottom-4 z-10">
+              <button onClick={() => setFile(null)} className="font-semibold text-slate-500 hover:text-slate-800 transition-colors">Start Over</button>
+              <ActionButtons
+                primaryText="Download Result"
+                onPrimary={exportText}
+                loading={busy}
+                disabled={!text}
+                icon={Download}
+              />
+            </div>
+
+          </motion.div>
+        )}
+      </div>
     </ToolLayout>
   )
 }

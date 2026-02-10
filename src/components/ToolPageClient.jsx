@@ -7,7 +7,7 @@ export default function ToolPageClient({ toolId }) {
     const router = useRouter()
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] pb-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pb-20 transition-colors">
             <div className="container mx-auto px-4 py-8 max-w-7xl">
                 <button
                     onClick={() => router.push('/')}

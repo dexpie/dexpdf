@@ -1,9 +1,9 @@
 'use client'
 import React, { useState } from 'react'
-import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search } from 'lucide-react'
 import { TOOLS, CATEGORIES } from '../config/tools'
+import ToolCard from './ToolCard'
 
 export default function ToolGrid() {
     const [searchQuery, setSearchQuery] = useState('')
@@ -16,18 +16,12 @@ export default function ToolGrid() {
         return matchesSearch && matchesCategory
     })
 
-    const handleToolClick = (toolId) => {
-        const currentRecents = JSON.parse(localStorage.getItem('dexpdf_recent_tools') || '[]')
-        const newRecents = [toolId, ...currentRecents.filter(id => id !== toolId)].slice(0, 4)
-        localStorage.setItem('dexpdf_recent_tools', JSON.stringify(newRecents))
-    }
-
     return (
         <section className="relative z-20 px-4 pb-24 -mt-10 pt-10">
             <div className="container mx-auto">
 
                 {/* Search & Filter Header - Sticky */}
-                <div className="sticky top-20 z-30 mb-8 -mx-4 px-4 py-4 bg-slate-50/80 backdrop-blur-xl border-b border-slate-200/50 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300">
+                <div className="sticky top-16 z-30 mb-8 -mx-4 px-4 py-4 bg-slate-50/95 backdrop-blur-sm border-b border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4 transition-all duration-300 shadow-sm">
 
                     {/* Category Tabs */}
                     <div className="flex flex-wrap justify-center gap-2">
@@ -35,9 +29,9 @@ export default function ToolGrid() {
                             <button
                                 key={cat.id}
                                 onClick={() => setActiveCategory(cat.id)}
-                                className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${activeCategory === cat.id
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
-                                    : 'bg-white text-slate-500 hover:bg-slate-50'
+                                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all border ${activeCategory === cat.id
+                                    ? 'bg-red-600 text-white border-red-600 shadow-md'
+                                    : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
                                     }`}
                             >
                                 {cat.label}
@@ -53,45 +47,41 @@ export default function ToolGrid() {
                             placeholder="Find a tool..."
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 bg-white rounded-xl border border-slate-100 text-sm font-semibold outline-none focus:ring-2 ring-blue-500/20"
+                            className="w-full pl-10 pr-4 py-2 bg-white rounded-lg border border-slate-300 text-sm font-semibold outline-none focus:ring-2 ring-red-500/20 focus:border-red-500 transition-all text-slate-900 placeholder:text-slate-400"
                         />
                     </div>
                 </div>
 
                 {/* Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     <AnimatePresence mode='popLayout'>
-                        {filteredTools.map((feature) => (
+                        {filteredTools.map((tool) => (
                             <motion.div
-                                key={feature.id}
+                                key={tool.id}
                                 layout
-                                initial={{ opacity: 0, scale: 0.9 }}
+                                initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.9 }}
-                                transition={{ duration: 0.2 }}
+                                exit={{ opacity: 0, scale: 0.95 }}
+                                transition={{ duration: 0.15 }}
                             >
-                                <Link href={feature.href} onClick={() => handleToolClick(feature.id)}>
-                                    <div className="glass-card bg-white rounded-2xl p-6 h-full flex flex-col items-start hover:-translate-y-2 hover:shadow-2xl hover:border-blue-400/30 group transition-all duration-300 border border-slate-100">
-                                        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 ${feature.iconBg} ${feature.color} group-hover:scale-110 transition-transform duration-300 shadow-inner`}>
-                                            <feature.icon className="w-8 h-8" />
-                                        </div>
-                                        <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">{feature.title}</h3>
-                                        <p className="text-sm text-slate-500 leading-relaxed font-medium">
-                                            {feature.description}
-                                        </p>
-                                    </div>
-                                </Link>
+                                <ToolCard tool={tool} />
                             </motion.div>
                         ))}
                     </AnimatePresence>
                 </div>
 
+                {/* Empty State */}
                 {filteredTools.length === 0 && (
-                    <div className="text-center py-20">
-                        <div className="text-6xl mb-4">🤷‍♂️</div>
-                        <h3 className="text-xl font-bold text-slate-600">No tools found</h3>
-                        <p className="text-slate-400">Try adjusting your search or category.</p>
-                        <button onClick={() => { setSearchQuery(''); setActiveCategory('all'); }} className="mt-4 text-blue-600 font-bold hover:underline">Clear & Reset</button>
+                    <div className="text-center py-24 bg-white rounded-xl border border-slate-200 border-dashed">
+                        <div className="text-6xl mb-4 grayscale opacity-50">📂</div>
+                        <h3 className="text-xl font-bold text-slate-800">No tools found</h3>
+                        <p className="text-slate-500 mb-6">We couldn't find matches for "{searchQuery}"</p>
+                        <button
+                            onClick={() => { setSearchQuery(''); setActiveCategory('all'); }}
+                            className="px-6 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition-colors shadow-lg shadow-red-500/30"
+                        >
+                            Reset Filters
+                        </button>
                     </div>
                 )}
             </div>

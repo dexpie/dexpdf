@@ -5,7 +5,10 @@ import {
 // Define categories
 export const CATEGORIES = [
     { id: 'all', label: 'All Tools' },
-    { id: 'pdf', label: 'PDF Tools' },
+    { id: 'pdf', label: 'Organize PDF' },
+    { id: 'optimize', label: 'Optimize' },
+    { id: 'convert', label: 'Convert PDF' },
+    { id: 'security', label: 'Security' },
     { id: 'image', label: 'Image Tools' },
     { id: 'text', label: 'Text Tools' },
     { id: 'dev', label: 'Developer' },
@@ -17,51 +20,51 @@ export const CATEGORIES = [
 ]
 
 export const TOOLS = [
-    // PDF Tools
-    { id: 'chat-pdf', category: 'pdf', title: "Chat with PDF", description: "Use AI to analyze and chat with your documents.", icon: Zap, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/chat-pdf" },
-    { id: 'compare-pdf', category: 'pdf', title: "Compare PDF", description: "Visually diff two PDF versions.", icon: GitCompare, color: "text-pink-500", iconBg: "bg-pink-50", href: "/compare-pdf" },
+    // PDF Tools - Organization (Red)
     { id: 'merge', category: 'pdf', title: "Merge PDF", description: "Combine multiple PDFs into one unified document.", icon: Layers, color: "text-red-500", iconBg: "bg-red-50", href: "/merge" },
     { id: 'split', category: 'pdf', title: "Split PDF", description: "Separate pages or extract ranges from your PDF.", icon: Scissors, color: "text-red-500", iconBg: "bg-red-50", href: "/split" },
-    { id: 'compress', category: 'pdf', title: "Compress PDF", description: "Reduce file size while maintaining visual quality.", icon: Download, color: "text-green-500", iconBg: "bg-green-50", href: "/compress" },
+    { id: 'organize', category: 'pdf', title: "Organize PDF", description: "Sort, add and delete PDF pages.", icon: Layers, color: "text-red-500", iconBg: "bg-red-50", href: "/organize" },
     { id: 'scan-pdf', category: 'pdf', title: "Scan to PDF", description: "Turn camera photos into PDF.", icon: Camera, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/scan-pdf" },
     { id: 'crop-pdf', category: 'pdf', title: "Crop PDF", description: "Trim margins and select content area.", icon: Scissors, color: "text-orange-500", iconBg: "bg-orange-50", href: "/crop-pdf" },
-    { id: 'pdf2word', category: 'pdf', title: "PDF to Word", description: "Convert PDF documents to editable Word files.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/pdf2word" },
-    { id: 'pdf2ppt', category: 'pdf', title: "PDF to PowerPoint", description: "Convert PDFs to editable PowerPoint slides.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/pdf2ppt" },
-    { id: 'pdf2excel', category: 'pdf', title: "PDF to Excel", description: "Convert PDF data to Excel spreadsheets.", icon: FileText, color: "text-green-500", iconBg: "bg-green-50", href: "/pdf2excel" },
-    { id: 'flatten', category: 'pdf', title: "Flatten PDF", description: "Convert editable content to images.", icon: Layers, color: "text-purple-500", iconBg: "bg-purple-50", href: "/flatten" },
-    { id: 'word2pdf', category: 'pdf', title: "Word to PDF", description: "Convert DOC and DOCX files to PDF.", icon: FileOutput, color: "text-blue-500", iconBg: "bg-blue-50", href: "/word2pdf" },
-    { id: 'ppt2pdf', category: 'pdf', title: "PowerPoint to PDF", description: "Convert PPT and PPTX slideshows to PDF.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/ppt2pdf" },
-    { id: 'excel2pdf', category: 'pdf', title: "Excel to PDF", description: "Convert Excel spreadsheets to PDF documents.", icon: FileText, color: "text-green-500", iconBg: "bg-green-50", href: "/excel2pdf" },
-    { id: 'edit', category: 'pdf', title: "Edit PDF", description: "Add text, shapes, images and comments to PDF.", icon: PenTool, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/edit" },
-    { id: 'pdf2imgs', category: 'pdf', title: "PDF to JPG", description: "Extract images or save each page as JPG.", icon: FileImage, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/pdf2imgs" },
-    { id: 'imgs2pdf', category: 'pdf', title: "JPG to PDF", description: "Convert JPG, PNG, BMP images to PDF.", icon: Image, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/imgs2pdf" },
-    { id: 'signature', category: 'pdf', title: "Sign PDF", description: "Sign yourself or request electronic signatures.", icon: FileSignature, color: "text-red-500", iconBg: "bg-red-50", href: "/signature" },
+    { id: 'pagenums', category: 'pdf', title: "Page Numbers", description: "Add page numbers to your PDF document.", icon: Type, color: "text-red-500", iconBg: "bg-red-50", href: "/pagenums" },
     { id: 'watermark', category: 'pdf', title: "Watermark", description: "Stamp an image or text over your PDF files.", icon: FileImage, color: "text-red-500", iconBg: "bg-red-50", href: "/watermark" },
     { id: 'rotate', category: 'pdf', title: "Rotate PDF", description: "Rotate your PDF pages to the correct orientation.", icon: RefreshCcw, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/organize" },
-    { id: 'html2pdf', category: 'pdf', title: "HTML to PDF", description: "Convert webpages to PDF documents.", icon: FileText, color: "text-gray-500", iconBg: "bg-gray-50", href: "/html2pdf" },
-    { id: 'unlock', category: 'pdf', title: "Unlock PDF", description: "Remove password styling from PDF files.", icon: Unlock, color: "text-slate-500", iconBg: "bg-slate-50", href: "/unlock" },
-    { id: 'protect', category: 'pdf', title: "Protect PDF", description: "Encrypt your PDF with a secure password.", icon: Lock, color: "text-slate-500", iconBg: "bg-slate-50", href: "/protect" },
-    { id: 'organize', category: 'pdf', title: "Organize PDF", description: "Sort, add and delete PDF pages.", icon: Layers, color: "text-red-500", iconBg: "bg-red-50", href: "/organize" },
-    { id: 'pdf2pdfa', category: 'pdf', title: "PDF to PDF/A", description: "Convert PDF documents to PDF/A for archiving.", icon: FileText, color: "text-red-500", iconBg: "bg-red-50", href: "/pdf2pdfa" },
     { id: 'repair', category: 'pdf', title: "Repair PDF", description: "Repair damaged or corrupted PDF files.", icon: Zap, color: "text-gray-500", iconBg: "bg-gray-50", href: "/repair" },
-    { id: 'pagenums', category: 'pdf', title: "Page Numbers", description: "Add page numbers to your PDF document.", icon: Type, color: "text-red-500", iconBg: "bg-red-50", href: "/pagenums" },
-    { id: 'ocr', category: 'pdf', title: "Scan to PDF", description: "Capture documents from scanner or mobile.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/ocr" },
-    // { id: 'ocr_text', category: 'pdf', title: "OCR PDF", description: "Make scanned documents searchable.", icon: Type, color: "text-blue-500", iconBg: "bg-blue-50", href: "/ocr" }, // Duplicate ID conceptual
-    { id: 'summarize-pdf', category: 'pdf', title: "AI Summarizer", description: "Extract key insights & summaries instantly.", icon: BrainCircuit, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/summarize-pdf" },
-    { id: 'smart-organize', category: 'pdf', title: "Smart Organizer", description: "AI Auto-Rename & Sort (Invoices, Contracts).", icon: Wand2, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/smart-organize" },
+    { id: 'chat-pdf', category: 'pdf', title: "Chat with PDF", description: "Use AI to analyze and chat with your documents.", icon: Zap, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/chat-pdf" },
+    { id: 'compare-pdf', category: 'pdf', title: "Compare PDF", description: "Visually diff two PDF versions.", icon: GitCompare, color: "text-pink-500", iconBg: "bg-pink-50", href: "/compare-pdf" },
     { id: 'redact', category: 'pdf', title: "Redact PDF", description: "Permanently blackout & remove sensitive text.", icon: ShieldAlert, color: "text-red-500", iconBg: "bg-red-50", href: "/redact" },
-    { id: 'scrub', category: 'pdf', title: "Scrub Metadata", description: "Clean hidden data for privacy.", icon: Eraser, color: "text-gray-500", iconBg: "bg-gray-50", href: "/scrub" },
+    { id: 'edit', category: 'pdf', title: "Edit PDF", description: "Add text, shapes, images and comments to PDF.", icon: PenTool, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/edit" },
+
+    // Optimization (Green)
+    { id: 'compress', category: 'optimize', title: "Compress PDF", description: "Reduce file size while maintaining visual quality.", icon: Download, color: "text-green-500", iconBg: "bg-green-50", href: "/compress" },
+    { id: 'flatten', category: 'optimize', title: "Flatten PDF", description: "Convert editable content to images.", icon: Layers, color: "text-purple-500", iconBg: "bg-purple-50", href: "/flatten" },
+    { id: 'smart-organize', category: 'optimize', title: "Smart Organizer", description: "AI Auto-Rename & Sort (Invoices, Contracts).", icon: Wand2, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/smart-organize" },
+    { id: 'summarize-pdf', category: 'optimize', title: "AI Summarizer", description: "Extract key insights & summaries instantly.", icon: BrainCircuit, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/summarize-pdf" },
+    { id: 'scrub', category: 'optimize', title: "Scrub Metadata", description: "Clean hidden data for privacy.", icon: Eraser, color: "text-gray-500", iconBg: "bg-gray-50", href: "/scrub" },
+
+    // Conversion (Blue)
+    { id: 'pdf2word', category: 'convert', title: "PDF to Word", description: "Convert PDF documents to editable Word files.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/pdf2word" },
+    { id: 'pdf2ppt', category: 'convert', title: "PDF to PowerPoint", description: "Convert PDFs to editable PowerPoint slides.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/pdf2ppt" },
+    { id: 'pdf2excel', category: 'convert', title: "PDF to Excel", description: "Convert PDF data to Excel spreadsheets.", icon: FileText, color: "text-green-500", iconBg: "bg-green-50", href: "/pdf2excel" },
+    { id: 'word2pdf', category: 'convert', title: "Word to PDF", description: "Convert DOC and DOCX files to PDF.", icon: FileOutput, color: "text-blue-500", iconBg: "bg-blue-50", href: "/word2pdf" },
+    { id: 'ppt2pdf', category: 'convert', title: "PowerPoint to PDF", description: "Convert PPT and PPTX slideshows to PDF.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/ppt2pdf" },
+    { id: 'excel2pdf', category: 'convert', title: "Excel to PDF", description: "Convert Excel spreadsheets to PDF documents.", icon: FileText, color: "text-green-500", iconBg: "bg-green-50", href: "/excel2pdf" },
+    { id: 'pdf2imgs', category: 'convert', title: "PDF to JPG", description: "Extract images or save each page as JPG.", icon: FileImage, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/pdf2imgs" },
+    { id: 'imgs2pdf', category: 'convert', title: "JPG to PDF", description: "Convert JPG, PNG, BMP images to PDF.", icon: Image, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/imgs2pdf" },
+    { id: 'html2pdf', category: 'convert', title: "HTML to PDF", description: "Convert webpages to PDF documents.", icon: FileText, color: "text-gray-500", iconBg: "bg-gray-50", href: "/html2pdf" },
+    { id: 'pdf2pdfa', category: 'convert', title: "PDF to PDF/A", description: "Convert PDF documents to PDF/A for archiving.", icon: FileText, color: "text-red-500", iconBg: "bg-red-50", href: "/pdf2pdfa" },
+    { id: 'ocr', category: 'convert', title: "Scan to PDF", description: "Capture documents from scanner or mobile.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/ocr" },
+
+    // Security (Gray)
+    { id: 'unlock', category: 'security', title: "Unlock PDF", description: "Remove password styling from PDF files.", icon: Unlock, color: "text-slate-500", iconBg: "bg-slate-50", href: "/unlock" },
+    { id: 'protect', category: 'security', title: "Protect PDF", description: "Encrypt your PDF with a secure password.", icon: Lock, color: "text-slate-500", iconBg: "bg-slate-50", href: "/protect" },
+    { id: 'signature', category: 'security', title: "Sign PDF", description: "Sign yourself or request electronic signatures.", icon: FileSignature, color: "text-red-500", iconBg: "bg-red-50", href: "/signature" },
+
+    // Document Generation
     { id: 'invoice-generator', category: 'pdf', title: "Invoice Generator", description: "Create professional invoices instantly.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/invoice-generator" },
     { id: 'resume-builder', category: 'pdf', title: "Resume Builder", description: "Build ATS-friendly resumes.", icon: LayoutTemplate, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/resume-builder" },
     { id: 'certificate-maker', category: 'pdf', title: "Certificate Maker", description: "Design awards & certificates.", icon: Wand2, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/certificate-maker" },
 
-    // Image Tools
-    { id: 'image-resizer', category: 'image', title: "Image Resizer", description: "Scale & Resize.", icon: Image, color: "text-blue-600", iconBg: "bg-blue-50", href: "/image-resizer" },
-    { id: 'image-filter', category: 'image', title: "CSS Filters", description: "Blur, Sepia.", icon: Sliders, color: "text-pink-600", iconBg: "bg-pink-50", href: "/image-filter" },
-    { id: 'image-color-picker', category: 'image', title: "Img Color Picker", description: "Extract from image.", icon: Pipette, color: "text-blue-600", iconBg: "bg-blue-50", href: "/image-color-picker" },
-    { id: 'blindness-simulator', category: 'image', title: "Blindness Sim", description: "Accessibility test.", icon: EyeOff, color: "text-indigo-600", iconBg: "bg-indigo-50", href: "/blindness-simulator" },
-    { id: 'qr-code', category: 'image', title: "QR Generator", description: "Studio: Color, Logo, WiFi.", icon: QrCode, color: "text-slate-800", iconBg: "bg-slate-100", href: "/qr-code" },
-    { id: 'qr-reader', category: 'image', title: "QR Reader", description: "Scan codes.", icon: QrCode, color: "text-green-600", iconBg: "bg-green-50", href: "/qr-reader" },
 
     // Text Tools
     { id: 'lorem-ipsum', category: 'text', title: "Lorem Ipsum", description: "Dummy text.", icon: AlignLeft, color: "text-gray-500", iconBg: "bg-gray-50", href: "/lorem-ipsum" },

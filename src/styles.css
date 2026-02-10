@@ -324,6 +324,12 @@ button {
   margin-bottom: 8px;
 }
 
+.drop-content p {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
 /* Buttons */
 .btn-primary {
   background: #e11d48;

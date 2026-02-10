@@ -44,6 +44,7 @@ const TOOL_COMPONENTS = {
   'protect': loadTool(() => import('../../tools/ProtectPdfTool')),
   'pdf2pdfa': loadTool(() => import('../../tools/PdfToPdfATool')),
   'scan-pdf': loadTool(() => import('../../tools/ScanTool')),
+  'repair': loadTool(() => import('../../tools/RepairTool')),
   'repair-pdf': loadTool(() => import('../../tools/RepairTool')),
   'pagenums': loadTool(() => import('../../tools/PageNumbersTool')),
   'ocr': loadTool(() => import('../../tools/OcrTool')),

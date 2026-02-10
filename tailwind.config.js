@@ -50,13 +50,6 @@ module.exports = {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
-                // Premium Brand Colors
-                brand: {
-                    red: '#e74c3c', // PDF Tools Red
-                    blue: '#3498db', // Word/Doc Tools Blue
-                    green: '#27ae60', // Compress Green
-                    dark: '#2c3e50', // Footer/Text
-                }
             },
             borderRadius: {
                 lg: "var(--radius)",
@@ -75,12 +68,17 @@ module.exports = {
                 "fade-in-up": {
                     "0%": { opacity: 0, transform: "translateY(10px)" },
                     "100%": { opacity: 1, transform: "translateY(0)" }
-                }
+                },
+                "shimmer": {
+                    "100%": {
+                        "transform": "translateX(100%)",
+                    },
+                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
-                "fade-in-up": "fade-in-up 0.5s ease-out forwards",
+                "fade-in-up": "fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards", // Organic easing
             },
         },
     },
