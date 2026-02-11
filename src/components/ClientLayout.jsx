@@ -59,7 +59,7 @@ export default function ClientLayout({ children }) {
     }, [])
 
     return (
-        <div className="app-layout">
+        <div className="app-layout pt-16">
             <Analytics />
             <ProgressBar />
             <NavBar />
