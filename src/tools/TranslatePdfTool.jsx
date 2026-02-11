@@ -154,43 +154,43 @@ export default function TranslatePdfTool() {
                 {showKeyModal && <ApiKeyModal onSave={handleSaveKey} onClose={() => setShowKeyModal(false)} />}
             </AnimatePresence>
             <div className="max-w-4xl mx-auto">
-                <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
+                <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 transition-colors">
                     {!file ? (
                         <FileDropZone onFiles={handleFileChange} accept="application/pdf" hint="Upload PDF to translate" />
                     ) : (
                         <div className="flex flex-col gap-8">
                             {/* File Header */}
-                            <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-                                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
+                            <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
                                     <Globe className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-slate-800">{file.name}</h3>
-                                    <p className="text-xs text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                    <h3 className="font-bold text-slate-800 dark:text-slate-200">{file.name}</h3>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                 </div>
-                                <button onClick={() => setFile(null)} className="ml-auto text-slate-400 hover:text-red-500 font-bold text-sm">Change</button>
+                                <button onClick={() => setFile(null)} className="ml-auto text-slate-400 hover:text-red-500 font-bold text-sm transition-colors">Change</button>
                             </div>
 
                             {!completed ? (
                                 <>
                                     {/* Language Selector */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                                        <div className="p-4 rounded-2xl border-2 border-slate-200 bg-slate-50 flex items-center justify-between opacity-70">
-                                            <span className="font-bold text-slate-500">Auto-Detect</span>
-                                            <span className="text-xs bg-slate-200 px-2 py-1 rounded-full text-slate-600">Source</span>
+                                        <div className="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex items-center justify-between opacity-70">
+                                            <span className="font-bold text-slate-500 dark:text-slate-400">Auto-Detect</span>
+                                            <span className="text-xs bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-full text-slate-600 dark:text-slate-300">Source</span>
                                         </div>
-                                        <div className="flex justify-center md:hidden"><ArrowRight className="w-6 h-6 text-slate-300 rotate-90" /></div>
-                                        <div className="hidden md:flex justify-center"><ArrowRight className="w-6 h-6 text-slate-300" /></div>
+                                        <div className="flex justify-center md:hidden"><ArrowRight className="w-6 h-6 text-slate-300 dark:text-slate-600 rotate-90" /></div>
+                                        <div className="hidden md:flex justify-center"><ArrowRight className="w-6 h-6 text-slate-300 dark:text-slate-600" /></div>
 
                                         <div className="grid grid-cols-2 gap-2">
                                             {languages.map(lang => (
                                                 <button
                                                     key={lang.code}
                                                     onClick={() => setTargetLang(lang.code)}
-                                                    className={`p-3 rounded-xl border-2 text-left transition-all flex items-center gap-2 ${targetLang === lang.code ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-slate-200 hover:border-blue-300'}`}
+                                                    className={`p-3 rounded-xl border-2 text-left transition-all flex items-center gap-2 ${targetLang === lang.code ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-900/50' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                                                 >
                                                     <span className="text-xl">{lang.flag}</span>
-                                                    <span className="font-bold text-slate-700 text-sm">{lang.name}</span>
+                                                    <span className="font-bold text-slate-700 dark:text-slate-200 text-sm">{lang.name}</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -199,11 +199,11 @@ export default function TranslatePdfTool() {
                                     {/* Progress Bar */}
                                     {busy && (
                                         <div className="space-y-2">
-                                            <div className="flex justify-between text-sm font-bold text-slate-600">
+                                            <div className="flex justify-between text-sm font-bold text-slate-600 dark:text-slate-300">
                                                 <span>{status}</span>
                                                 <span>{Math.round(progress)}%</span>
                                             </div>
-                                            <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
+                                            <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                                                 <motion.div
                                                     initial={{ width: 0 }}
                                                     animate={{ width: `${progress}%` }}
