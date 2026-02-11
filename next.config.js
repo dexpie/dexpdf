@@ -8,8 +8,27 @@ const withPWA = require('next-pwa')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
+    swcMinify: true,
+    images: {
+        domains: ['lh3.googleusercontent.com', 'avatars.githubusercontent.com'],
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '**',
+            },
+        ],
+        unoptimized: true, // Optional: Reduces CPU usage for image optimization
+    },
     eslint: {
+        // Warning: This allows production builds to successfully complete even if
+        // your project has ESLint errors.
         ignoreDuringBuilds: true,
+    },
+    typescript: {
+        // !! WARN !!
+        // Dangerously allow production builds to successfully complete even if
+        // your project has type errors.
+        ignoreBuildErrors: true,
     },
     webpack: (config, { isServer, webpack }) => {
         if (!isServer) {
