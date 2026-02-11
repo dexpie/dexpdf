@@ -77,49 +77,49 @@ export default function CertificateMakerTool() {
             <div className="flex flex-col xl:flex-row gap-8 max-w-7xl mx-auto">
                 {/* Editor Column */}
                 <div className="flex-1 space-y-6">
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-slate-700">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-slate-700 dark:text-slate-200">
                             <PenTool className="w-5 h-5" /> Details
                         </h3>
                         <div className="space-y-4">
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Title</label>
-                                    <input className="input-field mt-1" value={data.title} onChange={e => updateField('title', e.target.value)} />
+                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Title</label>
+                                    <input className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.title} onChange={e => updateField('title', e.target.value)} />
                                 </div>
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Subtitle</label>
-                                    <input className="input-field mt-1" value={data.subtitle} onChange={e => updateField('subtitle', e.target.value)} />
+                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Subtitle</label>
+                                    <input className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.subtitle} onChange={e => updateField('subtitle', e.target.value)} />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase">Recipient Name</label>
-                                <input className="input-field mt-1 text-lg font-bold" value={data.recipient} onChange={e => updateField('recipient', e.target.value)} />
+                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Recipient Name</label>
+                                <input className="input-field mt-1 text-lg font-bold bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.recipient} onChange={e => updateField('recipient', e.target.value)} />
                             </div>
 
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase">Course / Award Name</label>
-                                <input className="input-field mt-1" value={data.course} onChange={e => updateField('course', e.target.value)} />
+                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Course / Award Name</label>
+                                <input className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.course} onChange={e => updateField('course', e.target.value)} />
                             </div>
 
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase">Description</label>
-                                <textarea className="input-field mt-1 h-20" value={data.description} onChange={e => updateField('description', e.target.value)} />
+                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Description</label>
+                                <textarea className="input-field mt-1 h-20 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.description} onChange={e => updateField('description', e.target.value)} />
                             </div>
 
                             <div className="grid md:grid-cols-3 gap-4">
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Date</label>
-                                    <input type="date" className="input-field mt-1" value={data.date} onChange={e => updateField('date', e.target.value)} />
+                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Date</label>
+                                    <input type="date" className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.date} onChange={e => updateField('date', e.target.value)} />
                                 </div>
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Signature Name</label>
-                                    <input className="input-field mt-1" value={data.signature} onChange={e => updateField('signature', e.target.value)} />
+                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Signature Name</label>
+                                    <input className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.signature} onChange={e => updateField('signature', e.target.value)} />
                                 </div>
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase">Sign Title</label>
-                                    <input className="input-field mt-1" value={data.signatureTitle} onChange={e => updateField('signatureTitle', e.target.value)} />
+                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Sign Title</label>
+                                    <input className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.signatureTitle} onChange={e => updateField('signatureTitle', e.target.value)} />
                                 </div>
                             </div>
                         </div>
@@ -130,10 +130,10 @@ export default function CertificateMakerTool() {
                 <div className="xl:w-[700px] flex flex-col gap-6 sticky top-8 h-fit">
 
                     {/* Controls */}
-                    <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
                         <div className="flex gap-4 mb-6">
                             {['gold', 'blue', 'classic'].map(t => (
-                                <button key={t} onClick={() => setTheme(t)} className={`flex-1 p-2 capitalize rounded-lg border-2 font-bold text-sm transition-all ${theme === t ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-slate-100'}`}>
+                                <button key={t} onClick={() => setTheme(t)} className={`flex-1 p-2 capitalize rounded-lg border-2 font-bold text-sm transition-all ${theme === t ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-300'}`}>
                                     {t}
                                 </button>
                             ))}
@@ -145,7 +145,7 @@ export default function CertificateMakerTool() {
                     </div>
 
                     {/* Preview Area (Scaled) */}
-                    <div className="border border-slate-200 rounded-lg overflow-hidden bg-slate-500/10 p-4 flex justify-center">
+                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-slate-500/10 dark:bg-slate-900/50 p-4 flex justify-center">
                         <div className="origin-top transform scale-[0.45] sm:scale-[0.6] xl:scale-[0.65]" style={{ height: 500, width: '297mm' }}>
                             {/* Visible Preview (Not captured) */}
                             <div className={`bg-white shadow-2xl mx-auto text-slate-800 relative flex flex-col justify-center items-center text-center p-20

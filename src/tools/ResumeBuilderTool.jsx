@@ -120,8 +120,8 @@ export default function ResumeBuilderTool() {
                 <div className="flex-1 space-y-6">
 
                     {/* Personal Info */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-slate-700">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-slate-700 dark:text-slate-200">
                             <User className="w-5 h-5" /> Personal Info
                         </h3>
                         <div className="grid md:grid-cols-2 gap-4">
@@ -136,36 +136,36 @@ export default function ResumeBuilderTool() {
                     </div>
 
                     {/* Experience */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg flex items-center gap-2 text-slate-700"><Briefcase className="w-5 h-5" /> Experience</h3>
-                            <button onClick={addExp} className="btn-sm bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-full px-3 py-1 flex items-center gap-1 text-xs font-bold">
+                            <h3 className="font-bold text-lg flex items-center gap-2 text-slate-700 dark:text-slate-200"><Briefcase className="w-5 h-5" /> Experience</h3>
+                            <button onClick={addExp} className="btn-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full px-3 py-1 flex items-center gap-1 text-xs font-bold">
                                 <Plus className="w-3 h-3" /> Add
                             </button>
                         </div>
                         <div className="space-y-6">
                             {data.experience.map((exp, i) => (
-                                <div key={exp.id} className="relative p-4 border border-slate-100 rounded-xl bg-slate-50/50 group">
-                                    <button onClick={() => removeExp(exp.id)} className="absolute top-2 right-2 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div key={exp.id} className="relative p-4 border border-slate-100 dark:border-slate-700 rounded-xl bg-slate-50/50 dark:bg-slate-900/50 group">
+                                    <button onClick={() => removeExp(exp.id)} className="absolute top-2 right-2 text-slate-300 dark:text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Trash className="w-4 h-4" />
                                     </button>
                                     <div className="grid md:grid-cols-2 gap-3 mb-3">
-                                        <input className="input-field bg-white" placeholder="Role / Position" value={exp.role} onChange={e => updateExp(exp.id, 'role', e.target.value)} />
-                                        <input className="input-field bg-white" placeholder="Company" value={exp.company} onChange={e => updateExp(exp.id, 'company', e.target.value)} />
-                                        <input type="month" className="input-field bg-white" value={exp.startDate} onChange={e => updateExp(exp.id, 'startDate', e.target.value)} />
-                                        <input type="text" placeholder="End Date (or 'Present')" className="input-field bg-white" value={exp.endDate} onChange={e => updateExp(exp.id, 'endDate', e.target.value)} />
+                                        <input className="input-field bg-white dark:bg-slate-800" placeholder="Role / Position" value={exp.role} onChange={e => updateExp(exp.id, 'role', e.target.value)} />
+                                        <input className="input-field bg-white dark:bg-slate-800" placeholder="Company" value={exp.company} onChange={e => updateExp(exp.id, 'company', e.target.value)} />
+                                        <input type="month" className="input-field bg-white dark:bg-slate-800" value={exp.startDate} onChange={e => updateExp(exp.id, 'startDate', e.target.value)} />
+                                        <input type="text" placeholder="End Date (or 'Present')" className="input-field bg-white dark:bg-slate-800" value={exp.endDate} onChange={e => updateExp(exp.id, 'endDate', e.target.value)} />
                                     </div>
-                                    <textarea className="input-field bg-white w-full h-24" placeholder="Description (Bullet points)" value={exp.description} onChange={e => updateExp(exp.id, 'description', e.target.value)} />
+                                    <textarea className="input-field bg-white dark:bg-slate-800 w-full h-24" placeholder="Description (Bullet points)" value={exp.description} onChange={e => updateExp(exp.id, 'description', e.target.value)} />
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* Education */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg flex items-center gap-2 text-slate-700"><GraduationCap className="w-5 h-5" /> Education</h3>
-                            <button onClick={addEdu} className="btn-sm bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-full px-3 py-1 flex items-center gap-1 text-xs font-bold">
+                            <h3 className="font-bold text-lg flex items-center gap-2 text-slate-700 dark:text-slate-200"><GraduationCap className="w-5 h-5" /> Education</h3>
+                            <button onClick={addEdu} className="btn-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full px-3 py-1 flex items-center gap-1 text-xs font-bold">
                                 <Plus className="w-3 h-3" /> Add
                             </button>
                         </div>
@@ -186,9 +186,9 @@ export default function ResumeBuilderTool() {
                     </div>
 
                     {/* Skills */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-slate-700"><Award className="w-5 h-5" /> Skills</h3>
-                        <p className="text-xs text-slate-500 mb-2">Comma separated</p>
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-slate-700 dark:text-slate-200"><Award className="w-5 h-5" /> Skills</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Comma separated</p>
                         <textarea className="input-field w-full" value={data.skills.join(', ')} onChange={e => updateSkills(e.target.value)} />
                     </div>
 
@@ -198,18 +198,18 @@ export default function ResumeBuilderTool() {
                 <div className="xl:w-[500px] flex flex-col gap-6 sticky top-8 h-fit">
 
                     {/* Controls */}
-                    <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
+                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
                         <div className="flex gap-4 mb-6">
-                            <button onClick={() => setLayout('modern')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'modern' ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-slate-100 hover:border-slate-300'}`}>
+                            <button onClick={() => setLayout('modern')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'modern' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-slate-300'}`}>
                                 Modern
                             </button>
-                            <button onClick={() => setLayout('classic')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'classic' ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-slate-100 hover:border-slate-300'}`}>
+                            <button onClick={() => setLayout('classic')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'classic' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-slate-100 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-slate-300'}`}>
                                 Classic
                             </button>
                         </div>
 
                         <div className="mb-4">
-                            <label className="text-sm font-medium text-slate-600 block mb-2">Filename</label>
+                            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 block mb-2">Filename</label>
                             <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} />
                         </div>
 
@@ -217,7 +217,7 @@ export default function ResumeBuilderTool() {
                     </div>
 
                     {/* Preview Area (Scaled) */}
-                    <div className="border border-slate-200 rounded-lg overflow-hidden bg-slate-500/10 p-4">
+                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-slate-500/10 dark:bg-slate-900/50 p-4">
                         <div className="origin-top transform scale-[0.55]" style={{ height: 600 }}>
                             <div className="bg-white shadow-2xl mx-auto text-slate-800"
                                 style={{

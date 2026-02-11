@@ -3,7 +3,50 @@ import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import { Brain, Check, FileText, Download, Share2, RefreshCw } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { triggerConfetti } from '../utils/confetti'
+import * as pdfjsLib from 'pdfjs-dist'
+import { configurePdfWorker } from '../utils/pdfWorker'
+import { getStoredApiKey, setStoredApiKey, generateJSON } from '../services/gemini'
+
+configurePdfWorker()
+
+const ApiKeyModal = ({ onSave, onClose }) => {
+    const [input, setInput] = useState('')
+    return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700">
+                <div className="text-center mb-6">
+                    <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Brain className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">Enable AI Intelligence</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                        To generate smart quizzes from your documents, please enter your free Google Gemini API Key.
+                    </p>
+                </div>
+                <input
+                    type="password"
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    placeholder="Enter Gemini API Key"
+                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 mb-4 focus:ring-2 ring-purple-500 outline-none"
+                />
+                <button
+                    onClick={() => { if (input) onSave(input) }}
+                    className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold transition-all"
+                >
+                    Save & Continue
+                </button>
+                <div className="mt-4 text-center">
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline">
+                        Get a free API Key here
+                    </a>
+                </div>
+            </div>
+        </div>
+    )
+}
 
 export default function QuizGeneratorTool() {
     const [file, setFile] = useState(null)
@@ -11,6 +54,19 @@ export default function QuizGeneratorTool() {
     const [quiz, setQuiz] = useState(null)
     const [selectedAnswers, setSelectedAnswers] = useState({})
     const [score, setScore] = useState(null)
+    const [apiKey, setApiKey] = useState('')
+    const [showKeyModal, setShowKeyModal] = useState(false)
+
+    React.useEffect(() => {
+        const key = getStoredApiKey()
+        if (key) setApiKey(key)
+    }, [])
+
+    const handleSaveKey = (key) => {
+        setStoredApiKey(key)
+        setApiKey(key)
+        setShowKeyModal(false)
+    }
 
     const handleFileChange = (files) => {
         if (files[0]) {
@@ -22,38 +78,59 @@ export default function QuizGeneratorTool() {
     }
 
     const generateQuiz = async () => {
-        setGenerating(true)
-        // Simulate AI processing time
-        await new Promise(r => setTimeout(r, 2000))
-
-        // Mock Quiz Data extracted from "PDF"
-        const mockQuiz = {
-            title: `Quiz: ${file.name}`,
-            questions: [
-                {
-                    id: 1,
-                    text: "What is the primary focus of the document?",
-                    options: ["Financial Analysis", "Historical Data", "Project Planning", "Scientific Research"],
-                    correct: 2
-                },
-                {
-                    id: 2,
-                    text: "According to section 3, which metric is most critical?",
-                    options: ["ROI", "KPI Velocity", "Customer Churn", "Net Promoter Score"],
-                    correct: 0
-                },
-                {
-                    id: 3,
-                    text: "The conclusion suggests proceeding with which strategy?",
-                    options: ["Wait and See", "Aggressive Expansion", "Cost Cutting", "Merger"],
-                    correct: 1
-                }
-            ]
+        if (!apiKey) {
+            setShowKeyModal(true)
+            return
         }
 
-        setQuiz(mockQuiz)
-        setGenerating(false)
-        triggerConfetti()
+        setGenerating(true)
+        try {
+            // 1. Extract Text
+            const buffer = await file.arrayBuffer()
+            const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
+            let fullText = ''
+            const maxPages = Math.min(pdf.numPages, 10) // Limit to 10 pages for speed
+            for (let i = 1; i <= maxPages; i++) {
+                const page = await pdf.getPage(i)
+                const textContent = await page.getTextContent()
+                const pageText = textContent.items.map(item => item.str).join(' ')
+                fullText += pageText + '\n'
+            }
+
+            // 2. Generate Quiz with Gemini
+            const prompt = `
+            You are a teacher. Create a multiple choice quiz based on the following text.
+            Text Content: """${fullText.slice(0, 50000)}"""
+
+            Output a JSON object with this exact structure:
+            {
+                "title": "A short title for the quiz",
+                "questions": [
+                    {
+                        "id": 1,
+                        "text": "Question text here?",
+                        "options": ["Option A", "Option B", "Option C", "Option D"],
+                        "correct": 0 // index of correct option (0-3)
+                    }
+                ]
+            }
+            Create 5 challenging questions.
+            `
+
+            const json = await generateJSON(apiKey, prompt)
+            setQuiz(json)
+            triggerConfetti()
+
+        } catch (error) {
+            console.error("Quiz Generation Error:", error)
+            alert("Failed to generate quiz. Please check your API usage or try a different file.")
+            if (error.message?.includes('400') || error.message?.includes('401')) {
+                setStoredApiKey('')
+                setApiKey('')
+            }
+        } finally {
+            setGenerating(false)
+        }
     }
 
     const checkAnswers = () => {
@@ -67,21 +144,24 @@ export default function QuizGeneratorTool() {
 
 
     return (
-        <ToolLayout title="Quiz Generator" description="Turn any PDF into a study quiz instantly with AI.">
+        <ToolLayout title="Quiz Generator" description="Turn any PDF into a study quiz instantly with various AI models">
+            <AnimatePresence>
+                {showKeyModal && <ApiKeyModal onSave={handleSaveKey} onClose={() => setShowKeyModal(false)} />}
+            </AnimatePresence>
             <div className="max-w-4xl mx-auto">
                 {!file ? (
                     <FileDropZone onFiles={handleFileChange} accept="application/pdf" hint="Upload lecture notes or textbook" />
                 ) : (
-                    <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
                         {/* Header */}
-                        <div className="bg-slate-50 p-6 border-b border-slate-200 flex justify-between items-center">
+                        <div className="bg-slate-50 dark:bg-slate-900 p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
                             <div className="flex items-center gap-3">
                                 <div className="bg-purple-100 p-2 rounded-xl text-purple-600">
                                     <Brain className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-slate-800">{file.name}</h3>
-                                    <p className="text-xs text-slate-500">AI Knowledge Engine Ready</p>
+                                    <h3 className="font-bold text-slate-800 dark:text-slate-200">{file.name}</h3>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">AI Knowledge Engine Ready</p>
                                 </div>
                             </div>
                             <button onClick={() => setFile(null)} className="text-xs font-bold text-slate-400 hover:text-red-500">Change File</button>
@@ -90,8 +170,8 @@ export default function QuizGeneratorTool() {
                         <div className="p-8">
                             {!quiz ? (
                                 <div className="text-center py-10">
-                                    <h3 className="text-2xl font-bold text-slate-800 mb-4">Ready to test your knowledge?</h3>
-                                    <p className="text-slate-500 mb-8 max-w-md mx-auto">
+                                    <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-4">Ready to test your knowledge?</h3>
+                                    <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">
                                         Our AI will analyze the document and generate multiple choice questions to help you study.
                                     </p>
                                     <button
@@ -111,9 +191,9 @@ export default function QuizGeneratorTool() {
                             ) : (
                                 <div className="space-y-8">
                                     {quiz.questions.map((q, qIdx) => (
-                                        <div key={q.id} className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                                            <h4 className="font-bold text-slate-800 text-lg mb-4 flex gap-3">
-                                                <span className="bg-white text-slate-400 w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 text-sm">{qIdx + 1}</span>
+                                        <div key={q.id} className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
+                                            <h4 className="font-bold text-slate-800 dark:text-slate-200 text-lg mb-4 flex gap-3">
+                                                <span className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-500 w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 dark:border-slate-700 text-sm">{qIdx + 1}</span>
                                                 {q.text}
                                             </h4>
 
@@ -126,12 +206,12 @@ export default function QuizGeneratorTool() {
                                                     let className = "w-full text-left p-4 rounded-xl border-2 transition-all flex justify-between items-center "
 
                                                     if (score) {
-                                                        if (isCorrect) className += "border-green-500 bg-green-50 text-green-700 font-bold"
-                                                        else if (isWrong) className += "border-red-500 bg-red-50 text-red-700"
-                                                        else className += "border-slate-200 opacity-50"
+                                                        if (isCorrect) className += "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-bold"
+                                                        else if (isWrong) className += "border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
+                                                        else className += "border-slate-200 dark:border-slate-700 opacity-50 dark:opacity-40 text-slate-500 dark:text-slate-400"
                                                     } else {
-                                                        if (isSelected) className += "border-purple-500 bg-purple-50 text-purple-700 font-semibold"
-                                                        else className += "border-slate-200 hover:border-purple-300 bg-white"
+                                                        if (isSelected) className += "border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 font-semibold"
+                                                        else className += "border-slate-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-500/50 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                                                     }
 
                                                     return (
