@@ -25,11 +25,11 @@ export default function PdfToTextTool() {
     const f = e.target.files[0]
     if (!f) return
     if (!f.name.toLowerCase().endsWith('.pdf')) {
-      setErrorMsg('File harus PDF.');
+      setErrorMsg('Please select a PDF file.');
       return;
     }
     if (f.size > 50 * 1024 * 1024) {
-      setErrorMsg('Ukuran file terlalu besar (maks 50MB).');
+      setErrorMsg('File is too large (max 50MB).');
       return;
     }
     setFile(f)
@@ -42,7 +42,7 @@ export default function PdfToTextTool() {
   async function onDropZone(e) { e.preventDefault(); if (busy) return; setDragging(false); const f = e.dataTransfer?.files?.[0]; if (f) { setFile(f); setDropped(true); setTimeout(() => setDropped(false), 1500); } }
 
   async function extract() {
-    if (!file) { setErrorMsg('Pilih file PDF terlebih dahulu.'); return; }
+    if (!file) { setErrorMsg('Please select a PDF file first.'); return; }
     setErrorMsg(''); setSuccessMsg('');
     setBusy(true)
     try {
@@ -62,8 +62,8 @@ export default function PdfToTextTool() {
       a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, ''), '.txt')
       a.click()
       URL.revokeObjectURL(url)
-      setSuccessMsg('Berhasil! Teks berhasil diekstrak dan diunduh.');
-    } catch (err) { console.error(err); setErrorMsg('Gagal: ' + (err.message || err)); }
+      setSuccessMsg('Success! Text extracted and downloaded.');
+    } catch (err) { console.error(err); setErrorMsg('Failed: ' + (err.message || err)); }
     finally { setBusy(false) }
   }
 
@@ -158,7 +158,7 @@ export default function PdfToTextTool() {
           {successMsg && (
             <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
           )}
-          {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
+          {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Processing, please wait...</span></div>}
           <div className={`dropzone ${dragging ? 'dragover' : ''}`} onDragEnter={onDragEnter} onDragOver={onDragOverZone} onDragLeave={onDragLeave} onDrop={onDropZone} style={{ opacity: busy ? 0.6 : 1, pointerEvents: busy ? 'none' : 'auto', border: '2px dashed #3b82f6', borderRadius: 16, padding: 24, marginBottom: 16, background: '#f8fafc' }}>
             <input type="file" accept="application/pdf" onChange={loadFile} disabled={busy} />
             <div className="muted">Select a PDF to extract text (plain text).</div>

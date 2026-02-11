@@ -43,9 +43,9 @@ export default function PDFInfoTool() {
         fileSize: f.size,
         fileName: f.name
       })
-      setSuccessMsg('Berhasil membaca info PDF.');
+      setSuccessMsg('PDF info loaded successfully.');
     } catch (err) {
-      setErrorMsg('Gagal membaca PDF: ' + (err.message || err));
+      setErrorMsg('Failed to read PDF: ' + (err.message || err));
       setInfo({ error: 'Could not read PDF' })
       console.error('Error reading PDF', err)
     }
@@ -62,7 +62,7 @@ export default function PDFInfoTool() {
       {successMsg && (
         <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
       )}
-      {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
+      {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Processing, please wait...</span></div>}
       <input type="file" accept="application/pdf" onChange={handleFile} disabled={busy} />
       {file && (
         <div className="file-list" style={{ margin: '16px 0' }}>

@@ -29,7 +29,7 @@ export default function PdfToExcelTool() {
         const f = files[0]
         if (!f) return
         if (!f.name.toLowerCase().endsWith('.pdf')) {
-            setErrorMsg('File harus PDF.');
+            setErrorMsg('Please select a PDF file.');
             return;
         }
         setFile(f)
@@ -79,7 +79,7 @@ export default function PdfToExcelTool() {
     }
 
     async function convert() {
-        if (!file) { setErrorMsg('Pilih file PDF terlebih dahulu.'); return; }
+        if (!file) { setErrorMsg('Please select a PDF file first.'); return; }
         setErrorMsg(''); setSuccessMsg('');
         setBusy(true)
 
@@ -105,11 +105,11 @@ export default function PdfToExcelTool() {
             a.click()
             URL.revokeObjectURL(url)
 
-            setSuccessMsg('Berhasil! Data berhasil diekstrak ke CSV.')
+            setSuccessMsg('Success! Data extracted to CSV.')
             triggerConfetti()
         } catch (err) {
             console.error(err)
-            setErrorMsg('Gagal: ' + (err.message || err))
+            setErrorMsg('Failed: ' + (err.message || err))
         } finally {
             setBusy(false)
         }

@@ -29,7 +29,7 @@ export default function PdfToPptTool() {
     const f = files[0]
     if (!f) return
     if (!f.name.toLowerCase().endsWith('.pdf')) {
-      setErrorMsg('File harus PDF.');
+      setErrorMsg('Please select a PDF file.');
       return;
     }
     setFile(f)
@@ -37,7 +37,7 @@ export default function PdfToPptTool() {
   }
 
   async function convert() {
-    if (!file) { setErrorMsg('Pilih file PDF terlebih dahulu.'); return; }
+    if (!file) { setErrorMsg('Please select a PDF file first.'); return; }
     setErrorMsg(''); setSuccessMsg('');
     setBusy(true)
 
@@ -75,11 +75,11 @@ export default function PdfToPptTool() {
 
       await pres.writeFile({ fileName: getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, ''), '.pptx') })
 
-      setSuccessMsg('Berhasil! PDF berhasil dikonversi ke PowerPoint.')
+      setSuccessMsg('Success! PDF converted to PowerPoint.')
       triggerConfetti()
     } catch (err) {
       console.error(err)
-      setErrorMsg('Gagal: ' + (err.message || err))
+      setErrorMsg('Failed: ' + (err.message || err))
     } finally {
       setBusy(false)
     }

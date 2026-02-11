@@ -41,9 +41,9 @@ export default function ReorderTool() {
         out.push({ thumb: canvas.toDataURL('image/png'), idx: i - 1 })
       }
       setPages(out)
-      setSuccessMsg('Berhasil memuat PDF.');
+      setSuccessMsg('PDF loaded successfully.');
     } catch (err) {
-      setErrorMsg('Gagal memuat PDF: ' + (err.message || err));
+      setErrorMsg('Failed to load PDF: ' + (err.message || err));
       console.error(err);
     }
     setBusy(false)
@@ -53,7 +53,7 @@ export default function ReorderTool() {
   function onDrop(e, idx) { e.preventDefault(); const from = parseInt(e.dataTransfer.getData('text/plain'), 10); setPages(p => move(p, from, idx)) }
 
   async function exportPdf() {
-    if (!file) { setErrorMsg('Pilih file PDF terlebih dahulu.'); return; }
+    if (!file) { setErrorMsg('Please select a PDF file first.'); return; }
     setErrorMsg(''); setSuccessMsg('');
     setBusy(true)
     try {
@@ -67,9 +67,9 @@ export default function ReorderTool() {
       const blob = new Blob([outBytes], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a'); a.href = url; a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_reordered'); a.click(); URL.revokeObjectURL(url)
-      setSuccessMsg('Berhasil! PDF berhasil diekspor dan diunduh.');
+      setSuccessMsg('Success! PDF exported and downloaded.');
     } catch (err) {
-      setErrorMsg('Gagal ekspor PDF: ' + (err.message || err));
+      setErrorMsg('Failed to export PDF: ' + (err.message || err));
       console.error(err);
     }
     setBusy(false)
@@ -84,7 +84,7 @@ export default function ReorderTool() {
       {successMsg && (
         <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
       )}
-      {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
+      {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Processing, please wait...</span></div>}
       <div className="dropzone" style={{ opacity: busy ? 0.6 : 1, pointerEvents: busy ? 'none' : 'auto', border: '2px dashed #3b82f6', borderRadius: 16, padding: 24, marginBottom: 16, background: '#f8fafc' }}>
         <input type="file" accept="application/pdf" onChange={loadFile} disabled={busy} />
         <div className="muted">Drag thumbnails to reorder pages, then export.</div>

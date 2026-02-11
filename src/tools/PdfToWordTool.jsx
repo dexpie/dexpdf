@@ -40,11 +40,11 @@ export default function PdfToWordTool() {
         const f = files[0]
         if (!f) return
         if (!f.name.toLowerCase().endsWith('.pdf')) {
-            setErrorMsg('File harus PDF.');
+            setErrorMsg('Please select a PDF file.');
             return;
         }
         if (f.size > 50 * 1024 * 1024) {
-            setErrorMsg('Ukuran file terlalu besar (maks 50MB).');
+            setErrorMsg('File is too large (max 50MB).');
             return;
         }
         setFile(f)
@@ -52,7 +52,7 @@ export default function PdfToWordTool() {
     }
 
     async function convert() {
-        if (!file) { setErrorMsg('Pilih file PDF terlebih dahulu.'); return; }
+        if (!file) { setErrorMsg('Please select a PDF file first.'); return; }
         setErrorMsg(''); setSuccessMsg('');
         setBusy(true)
 
@@ -259,7 +259,7 @@ export default function PdfToWordTool() {
             a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, ''), '.docx')
             a.click()
             URL.revokeObjectURL(url)
-            setSuccessMsg('Berhasil! File berhasil dikonversi dan diunduh.');
+            setSuccessMsg('Success! File converted and downloaded.');
             triggerConfetti();
         } catch (err) {
             console.error(err);

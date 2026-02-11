@@ -30,7 +30,7 @@ export default function FlattenPdfTool() {
         const f = files[0]
         if (!f) return
         if (!f.name.toLowerCase().endsWith('.pdf')) {
-            setErrorMsg('File harus PDF.');
+            setErrorMsg('Please select a PDF file.');
             return;
         }
         setFile(f)
@@ -38,7 +38,7 @@ export default function FlattenPdfTool() {
     }
 
     async function convert() {
-        if (!file) { setErrorMsg('Pilih file PDF terlebih dahulu.'); return; }
+        if (!file) { setErrorMsg('Please select a PDF file first.'); return; }
         setErrorMsg(''); setSuccessMsg('');
         setBusy(true)
 
@@ -84,11 +84,11 @@ export default function FlattenPdfTool() {
             a.click()
             URL.revokeObjectURL(url)
 
-            setSuccessMsg('Berhasil! PDF berhasil di-flatten (dijadikan gambar).')
+            setSuccessMsg('Success! PDF has been flattened to images.')
             triggerConfetti()
         } catch (err) {
             console.error(err)
-            setErrorMsg('Gagal: ' + (err.message || err))
+            setErrorMsg('Failed: ' + (err.message || err))
         } finally {
             setBusy(false)
         }
@@ -137,13 +137,13 @@ export default function FlattenPdfTool() {
             {/* Mode Switcher */}
             <div className="flex justify-center gap-4 mb-8">
                 <button
-                    className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                    className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'}`}
                     onClick={() => setBatchMode(false)}
                 >
                     📄 Single File
                 </button>
                 <button
-                    className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                    className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'}`}
                     onClick={() => setBatchMode(true)}
                 >
                     🔄 Batch Process
@@ -163,12 +163,12 @@ export default function FlattenPdfTool() {
                 <div className="max-w-4xl mx-auto">
                     <AnimatePresence>
                         {errorMsg && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-100 dark:border-red-800 flex items-center gap-2 mb-6">
                                 <AlertCircle className="w-5 h-5" /> {errorMsg}
                             </motion.div>
                         )}
                         {successMsg && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
+                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 p-4 rounded-xl border border-green-100 dark:border-green-800 flex items-center gap-2 mb-6">
                                 <CheckCircle className="w-5 h-5" /> {successMsg}
                             </motion.div>
                         )}
@@ -183,31 +183,31 @@ export default function FlattenPdfTool() {
                         />
                     ) : (
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
-                            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-6">
+                            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center text-center gap-6">
 
-                                <div className="w-20 h-20 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center mb-2">
+                                <div className="w-20 h-20 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-2xl flex items-center justify-center mb-2">
                                     <Layers className="w-10 h-10" />
                                 </div>
 
                                 <div>
-                                    <h3 className="font-bold text-xl text-slate-800 mb-2">{file.name}</h3>
-                                    <p className="text-slate-500">Ready to flatten (rasterize pages)</p>
+                                    <h3 className="font-bold text-xl text-slate-800 dark:text-slate-200 mb-2">{file.name}</h3>
+                                    <p className="text-slate-500 dark:text-slate-400">Ready to flatten (rasterize pages)</p>
                                 </div>
 
-                                <div className="bg-slate-50 p-4 rounded-xl w-full max-w-md border border-slate-100 text-left">
-                                    <h4 className="font-semibold text-slate-700 text-sm mb-2 flex items-center gap-2">
+                                <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl w-full max-w-md border border-slate-100 dark:border-slate-600 text-left">
+                                    <h4 className="font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2 flex items-center gap-2">
                                         <Shield className="w-4 h-4 text-blue-500" /> Security Mode
                                     </h4>
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => setQuality('high')}
-                                            className={`flex-1 p-2 rounded-lg text-sm transition-all border ${quality === 'high' ? 'bg-white border-blue-500 text-blue-600 shadow-sm font-bold' : 'border-slate-200 text-slate-500 hover:bg-slate-100'}`}
+                                            className={`flex-1 p-2 rounded-lg text-sm transition-all border ${quality === 'high' ? 'bg-white dark:bg-slate-800 border-blue-500 text-blue-600 shadow-sm font-bold' : 'border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600'}`}
                                         >
                                             High Definition
                                         </button>
                                         <button
                                             onClick={() => setQuality('medium')}
-                                            className={`flex-1 p-2 rounded-lg text-sm transition-all border ${quality === 'medium' ? 'bg-white border-blue-500 text-blue-600 shadow-sm font-bold' : 'border-slate-200 text-slate-500 hover:bg-slate-100'}`}
+                                            className={`flex-1 p-2 rounded-lg text-sm transition-all border ${quality === 'medium' ? 'bg-white dark:bg-slate-800 border-blue-500 text-blue-600 shadow-sm font-bold' : 'border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600'}`}
                                         >
                                             Standard Web
                                         </button>
@@ -218,7 +218,7 @@ export default function FlattenPdfTool() {
                                 </div>
 
                                 <div className="w-full max-w-md">
-                                    <label className="block text-sm font-medium text-slate-600 mb-2 text-left">Output Filename</label>
+                                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2 text-left">Output Filename</label>
                                     <FilenameInput
                                         value={outputFileName}
                                         onChange={e => setOutputFileName(e.target.value)}

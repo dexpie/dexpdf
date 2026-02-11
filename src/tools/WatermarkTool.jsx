@@ -38,7 +38,7 @@ export default function WatermarkTool() {
     const f = files[0]
     if (!f) return
     if (!f.name.toLowerCase().endsWith('.pdf')) {
-      setErrorMsg('File harus PDF.');
+      setErrorMsg('Please select a PDF file.');
       return;
     }
     setFile(f)
@@ -156,7 +156,7 @@ export default function WatermarkTool() {
   }
 
   async function applyWatermark() {
-    if (!file) { setErrorMsg('Pilih file PDF terlebih dahulu.'); return; }
+    if (!file) { setErrorMsg('Please select a PDF file first.'); return; }
     setErrorMsg(''); setSuccessMsg('');
     setBusy(true)
     try {
@@ -249,9 +249,9 @@ export default function WatermarkTool() {
       a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_watermarked')
       a.click()
       URL.revokeObjectURL(url)
-      setSuccessMsg('Berhasil! Watermark berhasil diterapkan dan diunduh.');
+      setSuccessMsg('Success! Watermark applied and downloaded.');
       triggerConfetti()
-    } catch (err) { console.error(err); setErrorMsg('Gagal: ' + (err.message || err)); }
+    } catch (err) { console.error(err); setErrorMsg('Failed: ' + (err.message || err)); }
     finally { setBusy(false) }
   }
 

@@ -21,7 +21,7 @@ export default function ExtractImagesTool() {
   }
 
   const extract = async () => {
-    if (!files.length) { setErrorMsg('Pilih file PDF terlebih dahulu.'); return; }
+    if (!files.length) { setErrorMsg('Please select a PDF file first.'); return; }
     setErrorMsg(''); setSuccessMsg('');
     setBusy(true)
     try {
@@ -36,7 +36,7 @@ export default function ExtractImagesTool() {
           const bytes = await pdf.save()
           zip.file(f.name.replace(/\.pdf$/i, '') + '-original.pdf', bytes)
         } catch (err) {
-          setErrorMsg('Gagal ekstrak gambar dari ' + f.name)
+          setErrorMsg('Failed to extract images from ' + f.name)
           console.error('Error extracting images', err)
         }
       }
@@ -49,9 +49,9 @@ export default function ExtractImagesTool() {
       a.click()
       a.remove()
       URL.revokeObjectURL(url)
-      setSuccessMsg('Berhasil! File ZIP berhasil diunduh.');
+      setSuccessMsg('Success! ZIP file downloaded.');
     } catch (err) {
-      setErrorMsg('Gagal: ' + (err.message || err));
+      setErrorMsg('Failed: ' + (err.message || err));
       console.error(err);
     } finally {
       setBusy(false)
@@ -185,7 +185,7 @@ export default function ExtractImagesTool() {
         </div>
       ) : (
         <div>
-          {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Memproses, mohon tunggu...</span></div>}
+          {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Processing, please wait...</span></div>}
           <input type="file" accept="application/pdf" multiple onChange={handleFiles} disabled={busy} />
           <div className="file-list" style={{ margin: '16px 0' }}>
             {files.map((f, i) => (

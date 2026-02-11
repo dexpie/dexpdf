@@ -22,11 +22,11 @@ export default function ImagesToPdfTool() {
 		const loaded = []
 		for (const f of list) {
 			if (!f.type.startsWith('image/')) {
-				setErrorMsg('Semua file harus gambar.');
+				setErrorMsg('All files must be images.');
 				continue;
 			}
 			if (f.size > 20 * 1024 * 1024) {
-				setErrorMsg('Ukuran gambar terlalu besar (maks 20MB).');
+				setErrorMsg('Image is too large (max 20MB).');
 				continue;
 			}
 			try {
@@ -151,11 +151,11 @@ export default function ImagesToPdfTool() {
 			}
 
 			doc.save('images.pdf')
-			setSuccessMsg('PDF berhasil dibuat dan diunduh!')
+			setSuccessMsg('PDF created and downloaded successfully!')
 			triggerConfetti()
 		} catch (err) {
 			console.error(err)
-			setErrorMsg('Gagal membuat PDF: ' + (err.message || err))
+			setErrorMsg('Failed to create PDF: ' + (err.message || err))
 		} finally {
 			setBusy(false)
 		}
@@ -166,12 +166,12 @@ export default function ImagesToPdfTool() {
 			<div className="max-w-6xl mx-auto">
 				<AnimatePresence>
 					{errorMsg && (
-						<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
+						<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-100 dark:border-red-800 flex items-center gap-2 mb-6">
 							<AlertTriangle className="w-5 h-5" /> {errorMsg}
 						</motion.div>
 					)}
 					{successMsg && (
-						<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
+						<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 p-4 rounded-xl border border-green-100 dark:border-green-800 flex items-center gap-2 mb-6">
 							<CheckCircle className="w-5 h-5" /> {successMsg}
 						</motion.div>
 					)}
@@ -194,7 +194,7 @@ export default function ImagesToPdfTool() {
 									{images.length} Images Selected
 								</h3>
 
-								<div className="flex bg-slate-100 p-1 rounded-xl">
+								<div className="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-xl">
 									{[
 										{ id: 'fit', label: 'Fit Page', icon: Minimize },
 										{ id: 'fill', label: 'Fill Page', icon: Maximize },
@@ -203,7 +203,7 @@ export default function ImagesToPdfTool() {
 										<button
 											key={m.id}
 											onClick={() => setMode(m.id)}
-											className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${mode === m.id ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200'}`}
+											className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${mode === m.id ? 'bg-white dark:bg-slate-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600'}`}
 										>
 											<m.icon className="w-4 h-4" />
 											{m.label}
@@ -221,7 +221,7 @@ export default function ImagesToPdfTool() {
 									initial={{ opacity: 0, scale: 0.9 }}
 									animate={{ opacity: 1, scale: 1 }}
 									exit={{ opacity: 0, scale: 0.9 }}
-									className="group relative bg-white p-2 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all cursor-move hover:border-blue-300"
+									className="group relative bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all cursor-move hover:border-blue-300 dark:hover:border-blue-500"
 								>
 									<div className="absolute top-2 left-2 z-10 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
 										{images.indexOf(entry) + 1}
