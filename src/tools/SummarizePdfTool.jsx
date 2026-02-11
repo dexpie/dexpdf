@@ -8,8 +8,46 @@ import ActionButtons from '../components/common/ActionButtons'
 import { useTranslation } from 'react-i18next'
 import { FileText, Sparkles, BrainCircuit, AlignLeft, List, Loader2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { getStoredApiKey, setStoredApiKey, generateJSON } from '../services/gemini'
 
 configurePdfWorker()
+
+const ApiKeyModal = ({ onSave, onClose }) => {
+    const [input, setInput] = useState('')
+    return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700">
+                <div className="text-center mb-6">
+                    <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <BrainCircuit className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">Enable AI Summarizer</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                        To summarize documents, please enter your free Google Gemini API Key.
+                    </p>
+                </div>
+                <input
+                    type="password"
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    placeholder="Enter Gemini API Key"
+                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 mb-4 focus:ring-2 ring-indigo-500 outline-none"
+                />
+                <button
+                    onClick={() => { if (input) onSave(input) }}
+                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all"
+                >
+                    Save & Continue
+                </button>
+                <div className="mt-4 text-center">
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-xs text-indigo-500 hover:underline">
+                        Get a free API Key here
+                    </a>
+                </div>
+            </div>
+        </div>
+    )
+}
 
 export default function SummarizePdfTool() {
     const { t } = useTranslation()
@@ -17,6 +55,19 @@ export default function SummarizePdfTool() {
     const [isProcessing, setIsProcessing] = useState(false)
     const [summary, setSummary] = useState(null)
     const [mode, setMode] = useState('bullets') // bullets | paragraph
+    const [apiKey, setApiKey] = useState('')
+    const [showKeyModal, setShowKeyModal] = useState(false)
+
+    useEffect(() => {
+        const key = getStoredApiKey()
+        if (key) setApiKey(key)
+    }, [])
+
+    const handleSaveKey = (key) => {
+        setStoredApiKey(key)
+        setApiKey(key)
+        setShowKeyModal(false)
+    }
 
     const handleFileChange = (files) => {
         if (files[0]) {
@@ -43,45 +94,47 @@ export default function SummarizePdfTool() {
                 fullText += pageText + ' '
             }
 
-            // Artificial delay for "Thinking" effect
-            await new Promise(r => setTimeout(r, 1500))
-
-            // 2. Heuristic Analysis (Client-side AI)
-            const sentences = fullText.match(/[^.!?\n]+[.!?\n]+/g) || []
-            const words = fullText.toLowerCase().split(/\s+/).filter(w => w.length > 3)
-
-            // TF-IDF simplified
-            const wordFreq = {}
-            words.forEach(w => wordFreq[w] = (wordFreq[w] || 0) + 1)
-
-            const scoredSentences = sentences.map(sent => {
-                const sentWords = sent.toLowerCase().split(/\s+/)
-                const score = sentWords.reduce((acc, w) => acc + (wordFreq[w] || 0), 0) / sentWords.length
-                return { sent, score }
-            })
-
-            scoredSentences.sort((a, b) => b.score - a.score)
-
-            const topSentences = scoredSentences.slice(0, 5).map(s => s.sent.trim())
-
-            // 3. Generate Output
-            const result = {
-                bullets: topSentences,
-                paragraph: topSentences.join(' ')
+            // 2. Generate Summary with Gemini
+            const prompt = `
+            You are an expert analyst. Summarize the following document.
+            
+            Text:
+            """
+            ${fullText.slice(0, 30000)}
+            """
+            
+            Output a JSON object with this exact structure:
+            {
+                "bullets": ["Key point 1", "Key point 2", "Key point 3", "Key point 4", "Key point 5"],
+                "paragraph": "A concise executive summary paragraph of the entire document."
             }
+            Make the summary professional and capture the most important insights.
+            `
 
-            setSummary(result)
+            try {
+                const result = await generateJSON(apiKey, prompt) // apiKey handles server/client priority
+                setSummary(result)
+            } catch (error) {
+                if (error.message === 'SERVER_KEY_UNAVAILABLE' || error.message?.includes('API Key')) {
+                    setShowKeyModal(true)
+                    return
+                }
+                throw error
+            }
 
         } catch (err) {
             console.error(err)
-            alert('Failed to summarize PDF. It might be image-based.')
+            alert('Failed to summarize PDF. Please check your API usage or try a different file.')
         } finally {
             setIsProcessing(false)
         }
     }
 
     return (
-        <ToolLayout title="AI PDF Summarizer" description="Instantly extract key insights from your documents using local AI.">
+        <ToolLayout title="AI PDF Summarizer" description="Instantly extract key insights from your documents using Gemini AI.">
+            <AnimatePresence>
+                {showKeyModal && <ApiKeyModal onSave={handleSaveKey} onClose={() => setShowKeyModal(false)} />}
+            </AnimatePresence>
 
             {!summary ? (
                 <div className="max-w-4xl mx-auto space-y-8">

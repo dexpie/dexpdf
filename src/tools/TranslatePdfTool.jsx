@@ -5,6 +5,48 @@ import ActionButtons from '../components/common/ActionButtons'
 import { Languages, Globe, ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { triggerConfetti } from '../utils/confetti'
+import * as pdfjsLib from 'pdfjs-dist'
+import { configurePdfWorker } from '../utils/pdfWorker'
+import { getStoredApiKey, setStoredApiKey, generateContent } from '../services/gemini'
+
+configurePdfWorker()
+
+const ApiKeyModal = ({ onSave, onClose }) => {
+    const [input, setInput] = useState('')
+    return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700">
+                <div className="text-center mb-6">
+                    <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Globe className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">Enable AI Translation</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                        To translate documents, please enter your free Google Gemini API Key.
+                    </p>
+                </div>
+                <input
+                    type="password"
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    placeholder="Enter Gemini API Key"
+                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 mb-4 focus:ring-2 ring-blue-500 outline-none"
+                />
+                <button
+                    onClick={() => { if (input) onSave(input) }}
+                    className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all"
+                >
+                    Save & Continue
+                </button>
+                <div className="mt-4 text-center">
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-xs text-blue-500 hover:underline">
+                        Get a free API Key here
+                    </a>
+                </div>
+            </div>
+        </div>
+    )
+}
 
 export default function TranslatePdfTool() {
     const [file, setFile] = useState(null)
@@ -13,6 +55,20 @@ export default function TranslatePdfTool() {
     const [progress, setProgress] = useState(0)
     const [status, setStatus] = useState('')
     const [completed, setCompleted] = useState(false)
+    const [translatedText, setTranslatedText] = useState('')
+    const [apiKey, setApiKey] = useState('')
+    const [showKeyModal, setShowKeyModal] = useState(false)
+
+    useEffect(() => {
+        const key = getStoredApiKey()
+        if (key) setApiKey(key)
+    }, [])
+
+    const handleSaveKey = (key) => {
+        setStoredApiKey(key)
+        setApiKey(key)
+        setShowKeyModal(false)
+    }
 
     const languages = [
         { code: 'es', name: 'Spanish', flag: '🇪🇸' },
@@ -29,32 +85,74 @@ export default function TranslatePdfTool() {
         setProgress(0)
     }
 
-    const simulateTranslation = async () => {
+    const startTranslation = async () => {
         setBusy(true)
         setCompleted(false)
+        setTranslatedText('')
 
-        const steps = [
-            "Extracting text layers...",
-            "Detecting source language...",
-            "Connecting to Neural Engine...",
-            "Translating paragraphs...",
-            "Reconstructing PDF layout...",
-            "Finalizing document..."
-        ]
+        try {
+            // 1. Extract Text
+            setStatus("Extracting text from PDF...")
+            setProgress(10)
 
-        for (let i = 0; i < steps.length; i++) {
-            setStatus(steps[i])
-            setProgress(((i + 1) / steps.length) * 100)
-            await new Promise(r => setTimeout(r, 800 + Math.random() * 500))
+            const buffer = await file.arrayBuffer()
+            const pdf = await pdfjsLib.getDocument({ data: buffer }).promise
+            let fullText = ''
+            const maxPages = Math.min(pdf.numPages, 5) // Limit to 5 pages for translation to avoid huge context
+
+            for (let i = 1; i <= maxPages; i++) {
+                const page = await pdf.getPage(i)
+                const textContent = await page.getTextContent()
+                const pageText = textContent.items.map(item => item.str).join(' ')
+                fullText += pageText + '\n\n'
+                setProgress(10 + (i / maxPages) * 30) // up to 40%
+            }
+
+            // 2. Translate with Gemini
+            setStatus("AI Translating (this may take a moment)...")
+            setProgress(50)
+
+            const targetLangName = languages.find(l => l.code === targetLang)?.name || targetLang
+            const prompt = `
+            Translate the following text to ${targetLangName}. 
+            Maintain the original tone and structure as much as possible.
+            Output ONLY the translated text.
+
+            Text:
+            """
+            ${fullText.slice(0, 30000)}
+            """
+            `
+
+            try {
+                const result = await generateContent(apiKey, prompt) // apiKey can be null (Server Proxy will handle it)
+                setTranslatedText(result)
+                setStatus("Finalizing...")
+                setProgress(100)
+                setCompleted(true)
+                triggerConfetti()
+            } catch (error) {
+                if (error.message === 'SERVER_KEY_UNAVAILABLE' || error.message?.includes('API Key')) {
+                    setShowKeyModal(true)
+                    setBusy(false)
+                    return
+                }
+                throw error
+            }
+
+        } catch (error) {
+            console.error("Translation Error:", error)
+            alert("Translation failed. Please try again.")
+        } finally {
+            setBusy(false)
         }
-
-        setBusy(false)
-        setCompleted(true)
-        triggerConfetti()
     }
 
     return (
-        <ToolLayout title="Neural Translator" description="Translate PDFs using AI while preserving formatting.">
+        <ToolLayout title="Neural Translator" description="Translate PDFs using AI (Gemini) while preserving meaning.">
+            <AnimatePresence>
+                {showKeyModal && <ApiKeyModal onSave={handleSaveKey} onClose={() => setShowKeyModal(false)} />}
+            </AnimatePresence>
             <div className="max-w-4xl mx-auto">
                 <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
                     {!file ? (
@@ -118,7 +216,7 @@ export default function TranslatePdfTool() {
                                     {/* Action */}
                                     <ActionButtons
                                         primaryText={busy ? 'Translating...' : 'Start Translation'}
-                                        onPrimary={simulateTranslation}
+                                        onPrimary={startTranslation}
                                         loading={busy}
                                         icon={Languages}
                                         className="w-full"
@@ -130,11 +228,33 @@ export default function TranslatePdfTool() {
                                         <CheckCircle className="w-10 h-10" />
                                     </motion.div>
                                     <h3 className="text-2xl font-bold text-slate-800 mb-2">Translation Complete!</h3>
-                                    <p className="text-slate-500 mb-8 max-w-md mx-auto">Your document has been translated to {languages.find(l => l.code === targetLang)?.name}. Layout and formatting have been preserved.</p>
+                                    <p className="text-slate-500 mb-8 max-w-md mx-auto">Your document has been translated to {languages.find(l => l.code === targetLang)?.name}.</p>
 
-                                    <button className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all transform hover:scale-105">
-                                        Download Translated PDF
-                                    </button>
+                                    <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-700 text-left max-h-96 overflow-y-auto mb-6 whitespace-pre-wrap">
+                                        {translatedText}
+                                    </div>
+
+                                    <div className="flex gap-4 justify-center">
+                                        <button
+                                            onClick={() => navigator.clipboard.writeText(translatedText)}
+                                            className="px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition-all"
+                                        >
+                                            Copy Text
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const blob = new Blob([translatedText], { type: 'text/plain' })
+                                                const url = URL.createObjectURL(blob)
+                                                const a = document.createElement('a')
+                                                a.href = url
+                                                a.download = `translated_${targetLang}.txt`
+                                                a.click()
+                                            }}
+                                            className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all transform hover:scale-105"
+                                        >
+                                            Download Text
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                         </div>
