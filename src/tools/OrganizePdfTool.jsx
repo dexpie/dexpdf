@@ -222,14 +222,14 @@ export default function OrganizePdfTool() {
                     />
                 ) : (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-wrap gap-4 justify-between items-center sticky top-20 z-10 glass-effect backdrop-blur-md bg-white/80">
+                        <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm mb-6 flex flex-wrap gap-4 justify-between items-center sticky top-20 z-10 glass-effect backdrop-blur-md bg-white/80 dark:bg-slate-800/80">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                                <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center">
                                     <Layers className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-slate-800">{file.name}</h3>
-                                    <p className="text-xs text-slate-500 font-medium">{pages.length} pages remaining</p>
+                                    <h3 className="font-bold text-slate-800 dark:text-slate-200">{file.name}</h3>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{pages.length} pages remaining</p>
                                 </div>
                             </div>
                             <div className="flex gap-2 items-center">
@@ -237,17 +237,17 @@ export default function OrganizePdfTool() {
                                     <motion.div
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl mr-2"
+                                        className="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 p-1.5 rounded-xl mr-2"
                                     >
-                                        <span className="text-xs font-bold text-slate-500 px-2">{pages.filter(p => p.selected).length} Selected</span>
-                                        <button onClick={() => rotateSelected(-1)} className="p-1.5 hover:bg-white rounded-lg text-slate-600 hover:text-blue-600 transition-colors" title="Rotate Selected Left"><RotateCcw className="w-4 h-4" /></button>
-                                        <button onClick={() => rotateSelected(1)} className="p-1.5 hover:bg-white rounded-lg text-slate-600 hover:text-blue-600 transition-colors" title="Rotate Selected Right"><RotateCw className="w-4 h-4" /></button>
-                                        <div className="w-px h-4 bg-slate-300 mx-1" />
-                                        <button onClick={deleteSelected} className="p-1.5 hover:bg-red-100 rounded-lg text-slate-600 hover:text-red-600 transition-colors" title="Delete Selected"><Trash2 className="w-4 h-4" /></button>
-                                        <button onClick={() => setPages(prev => prev.map(p => ({ ...p, selected: false })))} className="px-2 py-1 text-xs font-bold text-slate-500 hover:text-slate-700 ml-1">Clear</button>
+                                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 px-2">{pages.filter(p => p.selected).length} Selected</span>
+                                        <button onClick={() => rotateSelected(-1)} className="p-1.5 hover:bg-white dark:hover:bg-slate-600 rounded-lg text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" title="Rotate Selected Left"><RotateCcw className="w-4 h-4" /></button>
+                                        <button onClick={() => rotateSelected(1)} className="p-1.5 hover:bg-white dark:hover:bg-slate-600 rounded-lg text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" title="Rotate Selected Right"><RotateCw className="w-4 h-4" /></button>
+                                        <div className="w-px h-4 bg-slate-300 dark:bg-slate-600 mx-1" />
+                                        <button onClick={deleteSelected} className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 transition-colors" title="Delete Selected"><Trash2 className="w-4 h-4" /></button>
+                                        <button onClick={() => setPages(prev => prev.map(p => ({ ...p, selected: false })))} className="px-2 py-1 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 ml-1">Clear</button>
                                     </motion.div>
                                 )}
-                                <button onClick={() => setPages([]) || setFile(null)} className="px-4 py-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-red-500 transition-colors text-sm font-semibold" disabled={busy}>Cancel</button>
+                                <button onClick={() => setPages([]) || setFile(null)} className="px-4 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-red-500 transition-colors text-sm font-semibold" disabled={busy}>Cancel</button>
                             </div>
                         </div>
 
@@ -263,11 +263,11 @@ export default function OrganizePdfTool() {
                                     onDragOver={(e) => onDragOver(e, i)}
                                     onDragEnd={onDragEnd}
                                     onClick={(e) => toggleSelection(i, e)}
-                                    className={`group bg-white p-2 rounded-xl border-2 transition-all cursor-pointer hover:shadow-lg ${draggedIndex === i ? 'border-blue-500 opacity-50 scale-95' :
-                                            p.selected ? 'border-blue-500 ring-2 ring-blue-200 bg-blue-50' : 'border-slate-200 hover:border-blue-400'
+                                    className={`group bg-white dark:bg-slate-800 p-2 rounded-xl border-2 transition-all cursor-pointer hover:shadow-lg ${draggedIndex === i ? 'border-blue-500 opacity-50 scale-95' :
+                                        p.selected ? 'border-blue-500 ring-2 ring-blue-200 dark:ring-blue-900 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500'
                                         }`}
                                 >
-                                    <div className="aspect-[3/4] overflow-hidden bg-slate-100 relative rounded-lg border border-slate-100 mb-2">
+                                    <div className="aspect-[3/4] overflow-hidden bg-slate-100 dark:bg-slate-700 relative rounded-lg border border-slate-100 dark:border-slate-700 mb-2">
                                         <img
                                             src={p.thumb}
                                             className="w-full h-full object-contain transition-transform duration-300"
@@ -309,7 +309,7 @@ export default function OrganizePdfTool() {
                         </div>
 
                         <div className="fixed bottom-0 left-0 w-full p-4 pointer-events-none flex justify-center z-20">
-                            <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xl pointer-events-auto flex flex-col md:flex-row gap-4 items-center max-w-2xl w-full">
+                            <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl pointer-events-auto flex flex-col md:flex-row gap-4 items-center max-w-2xl w-full">
                                 <div className="w-full">
                                     <FilenameInput value={outputFileName} onChange={(e) => setOutputFileName(e.target.value)} placeholder="organized" />
                                 </div>

@@ -184,16 +184,16 @@ export default function EditPdfTool() {
           <div className="flex flex-col gap-6">
 
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center justify-between bg-white p-3 rounded-2xl border border-slate-200 shadow-xl sticky top-4 z-40 backdrop-blur-md bg-white/90">
+            <div className="flex flex-wrap items-center justify-between bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl sticky top-4 z-40 backdrop-blur-md bg-white/90 dark:bg-slate-800/90">
               <div className="flex gap-2">
                 <button
                   onClick={addText}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 text-blue-600 font-bold hover:bg-blue-100 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
                 >
                   <Type size={18} />
                   <span>Add Text</span>
                 </button>
-                <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 text-emerald-600 font-bold hover:bg-emerald-100 transition-colors cursor-pointer">
+                <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 font-bold hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors cursor-pointer">
                   <ImageIcon size={18} />
                   <span>Add Image</span>
                   <input type="file" accept="image/*" className="hidden" onChange={addImage} />
@@ -208,7 +208,7 @@ export default function EditPdfTool() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
-                      className="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200"
+                      className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900/50 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700"
                     >
                       <Settings className="w-4 h-4 text-slate-400" />
 
@@ -218,14 +218,14 @@ export default function EditPdfTool() {
                             type="text"
                             value={selectedEl.content}
                             onChange={e => updateElement(selectedEl.id, { content: e.target.value })}
-                            className="border-slate-200 border rounded-lg px-2 py-1 text-sm w-32 focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 py-1 text-sm w-32 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-slate-200"
                           />
                           <div className="flex items-center gap-1">
                             <input
                               type="number"
                               value={selectedEl.fontSize}
                               onChange={e => updateElement(selectedEl.id, { fontSize: Number(e.target.value) })}
-                              className="border-slate-200 border rounded-lg px-2 py-1 text-sm w-16 text-center"
+                              className="border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 py-1 text-sm w-16 text-center text-slate-800 dark:text-slate-200"
                               min={8} max={72}
                             />
                             <span className="text-xs text-slate-400 font-bold">PX</span>
@@ -240,13 +240,13 @@ export default function EditPdfTool() {
                             type="number"
                             value={selectedEl.width}
                             onChange={e => updateElement(selectedEl.id, { width: Number(e.target.value) })}
-                            className="border-slate-200 border rounded-lg px-2 py-1 text-sm w-20 text-center"
+                            className="border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 py-1 text-sm w-20 text-center text-slate-800 dark:text-slate-200"
                             min={20} max={1000}
                           />
                         </div>
                       )}
 
-                      <button onClick={() => deleteElement(selectedEl.id)} className="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition-colors">
+                      <button onClick={() => deleteElement(selectedEl.id)} className="text-red-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 p-1.5 rounded-lg transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </motion.div>
@@ -256,7 +256,7 @@ export default function EditPdfTool() {
 
               <div className="flex gap-2 ml-auto">
                 <button className="text-slate-400 hover:text-red-500 px-4 py-2 text-sm font-bold" onClick={() => setFile(null)}>Close</button>
-                <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
+                <div className="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
                 <div className="flex gap-2">
                   <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="edited" className="w-32" />
                   <button
@@ -271,7 +271,7 @@ export default function EditPdfTool() {
             </div>
 
             {/* Canvas Area */}
-            <div className="relative bg-slate-100 rounded-3xl p-8 min-h-[800px] overflow-auto flex justify-center items-start border border-slate-200 shadow-inner">
+            <div className="relative bg-slate-100 dark:bg-slate-900/50 rounded-3xl p-8 min-h-[800px] overflow-auto flex justify-center items-start border border-slate-200 dark:border-slate-700 shadow-inner">
               <EditorCanvas
                 file={file}
                 pageIndex={pageIndex}

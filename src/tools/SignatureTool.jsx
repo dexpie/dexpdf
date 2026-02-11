@@ -30,17 +30,17 @@ function SignatureModal({ onSave, onCancel }) {
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden"
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden"
       >
-        <div className="p-4 border-b border-slate-100 flex justify-between items-center">
-          <h3 className="font-bold text-slate-800 flex items-center gap-2">
+        <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+          <h3 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <PenTool className="w-5 h-5 text-blue-500" /> Draw Signature
           </h3>
           <button onClick={onCancel} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
         </div>
 
-        <div className="p-6 bg-slate-50">
-          <div className="bg-white rounded-xl border-2 border-dashed border-slate-300 shadow-inner overflow-hidden">
+        <div className="p-6 bg-slate-50 dark:bg-slate-900/50">
+          <div className="bg-white dark:bg-slate-700 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 shadow-inner overflow-hidden">
             <SignatureCanvas
               ref={sigRef}
               canvasProps={{ width: 500, height: 200, className: 'w-full h-48 cursor-crosshair' }}
@@ -50,9 +50,9 @@ function SignatureModal({ onSave, onCancel }) {
           <p className="text-center text-xs text-slate-400 mt-2">Sign above using your mouse or touch</p>
         </div>
 
-        <div className="p-4 border-t border-slate-100 flex justify-end gap-2 bg-white">
-          <button className="px-4 py-2 rounded-lg text-slate-500 hover:bg-slate-100 font-medium text-sm" onClick={() => sigRef.current.clear()}>Clear</button>
-          <button className="px-4 py-2 rounded-lg text-slate-500 hover:bg-slate-100 font-medium text-sm" onClick={onCancel}>Cancel</button>
+        <div className="p-4 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-2 bg-white dark:bg-slate-800">
+          <button className="px-4 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 font-medium text-sm" onClick={() => sigRef.current.clear()}>Clear</button>
+          <button className="px-4 py-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 font-medium text-sm" onClick={onCancel}>Cancel</button>
           <button className="px-6 py-2 rounded-lg bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-500/30 hover:scale-105 transition-transform" onClick={save}>Add Signature</button>
         </div>
       </motion.div>
@@ -270,12 +270,12 @@ export default function SignatureTool() {
         <div className="flex flex-col lg:flex-row gap-8 items-start">
 
           {/* Sidebar Controls */}
-          <div className="w-full lg:w-80 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm sticky top-4">
-            <h3 className="font-bold text-slate-800 mb-4">Signature Source</h3>
+          <div className="w-full lg:w-80 bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm sticky top-4">
+            <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-4">Signature Source</h3>
 
             {sigDataUrl ? (
               <div className="mb-6 group relative">
-                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-center justify-center h-24">
+                <div className="bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl p-4 flex items-center justify-center h-24">
                   <img src={sigDataUrl} className="max-h-full max-w-full" alt="Current Signature" />
                 </div>
                 <button
@@ -289,11 +289,11 @@ export default function SignatureTool() {
               <div className="grid grid-cols-2 gap-3 mb-6">
                 <button
                   onClick={() => setShowDrawPad(true)}
-                  className="flex flex-col items-center justify-center gap-2 py-6 bg-blue-50 text-blue-600 rounded-xl border-2 border-transparent hover:border-blue-200 transition-all font-semibold"
+                  className="flex flex-col items-center justify-center gap-2 py-6 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl border-2 border-transparent hover:border-blue-200 dark:hover:border-blue-800 transition-all font-semibold"
                 >
                   <PenTool className="w-6 h-6" /> Draw
                 </button>
-                <label className="flex flex-col items-center justify-center gap-2 py-6 bg-slate-50 text-slate-600 rounded-xl border-2 border-transparent hover:border-slate-200 transition-all font-semibold cursor-pointer">
+                <label className="flex flex-col items-center justify-center gap-2 py-6 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl border-2 border-transparent hover:border-slate-200 dark:hover:border-slate-600 transition-all font-semibold cursor-pointer">
                   <Upload className="w-6 h-6" /> Upload
                   <input type="file" accept="image/*" onChange={onSigUpload} className="hidden" />
                 </label>
@@ -314,7 +314,7 @@ export default function SignatureTool() {
           </div>
 
           {/* Document Preview */}
-          <div className="flex-1 w-full bg-slate-100 rounded-2xl border border-slate-200 p-8 min-h-[600px] flex flex-col items-center gap-8">
+          <div className="flex-1 w-full bg-slate-100 dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-8 min-h-[600px] flex flex-col items-center gap-8">
             {pages.map((p, i) => (
               <div key={i} className="relative shadow-xl group">
                 {/* Page Canvas */}
