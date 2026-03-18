@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Minus, HelpCircle } from 'lucide-react'
 
 export default function FAQ() {
@@ -47,7 +46,7 @@ export default function FAQ() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className={`bg-white rounded-2xl border transition-all duration-300 ${openIndex === index ? 'border-blue-200 shadow-lg' : 'border-slate-200 shadow-sm hover:border-blue-100'}`}
+              className={`bg-white rounded-2xl border transition-colors ${openIndex === index ? 'border-blue-200 shadow-md' : 'border-slate-200 shadow-sm hover:border-blue-100'}`}
             >
               <button
                 className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
@@ -61,21 +60,11 @@ export default function FAQ() {
                 </div>
               </button>
 
-              <AnimatePresence>
-                {openIndex === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-6 pb-6 pt-0 text-slate-500 leading-relaxed border-t border-slate-50 mt-2 pt-4">
-                      {faq.answer}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div className={`accordion-content ${openIndex === index ? 'open' : ''}`}>
+                <div className="px-6 pb-6 pt-0 text-slate-500 leading-relaxed border-t border-slate-50 mt-2 pt-4">
+                  {faq.answer}
+                </div>
+              </div>
             </div>
           ))}
         </div>

@@ -1,25 +1,19 @@
-import fs from 'fs'
-import path from 'path'
+import { TOOLS } from '@/config/tools'
 import ToolPageClient from '@/components/ToolPageClient'
 
 export async function generateMetadata({ params }) {
-    // Fetch tools logic (duplicated from home page for now to keep it simple)
-    // In production, might want a shared cached utility.
-    const filePath = path.join(process.cwd(), 'public', 'tools.json')
-    const file = await fs.promises.readFile(filePath, 'utf8')
-    const tools = JSON.parse(file)
-
-    const tool = tools.find(x => x.id === params.toolId)
+    const tool = TOOLS.find(x => x.id === params.toolId)
 
     if (!tool) {
         return {
-            title: 'Tool Not Found - DexPDF',
+            title: `${params.toolId.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} - DexPDF`,
+            description: 'Free online PDF tool',
         }
     }
 
     return {
-        title: `${tool.name} - DexPDF`,
-        description: tool.desc,
+        title: `${tool.title} - DexPDF`,
+        description: tool.description,
     }
 }
 

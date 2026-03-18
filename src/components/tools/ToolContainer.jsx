@@ -55,6 +55,15 @@ const TOOL_COMPONENTS = {
   'invoice-generator': loadTool(() => import('../../tools/InvoiceGeneratorTool')),
   'resume-builder': loadTool(() => import('../../tools/ResumeBuilderTool')),
   'certificate-maker': loadTool(() => import('../../tools/CertificateMakerTool')),
+  'pdf2text': loadTool(() => import('../../tools/PdfToTextTool')),
+  'translate-pdf': loadTool(() => import('../../tools/TranslatePdfTool')),
+  'extract-images': loadTool(() => import('../../tools/ExtractImagesTool')),
+  'csv-to-pdf': loadTool(() => import('../../tools/CSVToPdfTool')),
+  'annotate': loadTool(() => import('../../tools/AnnotateTool')),
+  'pdf-info': loadTool(() => import('../../tools/PDFInfoTool')),
+  'reorder': loadTool(() => import('../../tools/ReorderTool')),
+  'quiz-generator': loadTool(() => import('../../tools/QuizGeneratorTool')),
+  'qr-reader': loadTool(() => import('../../tools/QrReaderTool')),
 
   // Image
   'image-resizer': loadTool(() => import('../../tools/ImageResizerTool')),

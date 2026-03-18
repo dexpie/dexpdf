@@ -237,37 +237,7 @@
     font-weight: 500;
 }
 
-/* Dark Mode Styles */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-primary: #1f2937;
-        --bg-secondary: #111827;
-        --bg-hover: #374151;
-        --text-primary: #f9fafb;
-        --text-secondary: #d1d5db;
-        --text-tertiary: #9ca3af;
-        --border-color: #374151;
-        --border-hover: #4b5563;
-        --scrollbar-thumb: #4b5563;
-        --scrollbar-thumb-hover: #6b7280;
-    }
 
-    .shortcuts-panel {
-        box-shadow:
-            0 20px 60px rgba(0, 0, 0, 0.5),
-            0 0 0 1px rgba(255, 255, 255, 0.1);
-    }
-
-    .shortcuts-kbd {
-        box-shadow:
-            0 1px 0 rgba(0, 0, 0, 0.3),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    }
-
-    .shortcuts-item:hover:not(.disabled) {
-        background: var(--bg-hover);
-    }
-}
 
 /* Animations */
 @keyframes fadeIn {

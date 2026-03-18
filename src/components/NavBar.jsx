@@ -3,19 +3,13 @@ import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
 import { usePWA } from '@/hooks/usePWA'
-import { Share2, Download, Building2, Menu, X, FileText } from 'lucide-react'
-import ThemeToggle from '@/components/ThemeToggle'
-import BrandKit from '@/components/BrandKit'
-
-import { useSound } from '@/hooks/useSound'
+import { Download, Menu, X, FileText, Search } from 'lucide-react'
 
 export default function NavBar() {
   const { t, i18n } = useTranslation()
   const router = useRouter()
   const { isInstallable, promptInstall } = usePWA()
-  const { playClick, playHover } = useSound()
   const [mounted, setMounted] = useState(false)
-  const [brandKitOpen, setBrandKitOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -27,93 +21,74 @@ export default function NavBar() {
     i18n.changeLanguage(newLang)
   }
 
-  const handleShare = async () => {
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({
-          title: 'DexPDF',
-          text: t('hero.subtitle', 'The best PDF tools'),
-          url: window.location.href,
-        })
-      } catch (err) {
-        console.error('Share failed:', err)
-      }
-    } else {
-      if (typeof window !== 'undefined') {
-        navigator.clipboard.writeText(window.location.href)
-        alert(t('nav.share_success', 'Link copied to clipboard!'))
-      }
-    }
+  const openSearch = () => {
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))
   }
 
   return (
     <>
-      <nav className="fixed top-0 left-0 w-full z-50 bg-white border-b border-slate-200 shadow-sm transition-all h-16">
+      <nav className="fixed top-0 left-0 w-full z-50 bg-white border-b border-slate-200 shadow-sm h-14">
         <div className="container mx-auto px-4 md:px-6 h-full flex justify-between items-center">
 
           {/* Brand */}
           <div
-            className="cursor-pointer flex items-center gap-2 group"
-            onClick={() => {
-              playClick()
-              router.push('/')
-            }}
-            onMouseEnter={playHover}
+            className="cursor-pointer flex items-center gap-2"
+            onClick={() => router.push('/')}
           >
-            <div className="flex items-center justify-center text-red-600">
-              <span className="font-black text-2xl tracking-tighter">DexPDF</span>
-            </div>
-            {/* Tagline for desktop */}
-            <div className="hidden lg:block h-6 w-[1px] bg-slate-300 mx-2"></div>
-            <span className="hidden lg:block text-slate-500 text-sm font-medium">Every tool you need for PDF</span>
+            <span className="font-black text-xl tracking-tighter text-red-600">DexPDF</span>
           </div>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex gap-4 items-center">
+          <div className="hidden md:flex gap-3 items-center">
             {mounted && (
               <>
                 <button
                   onClick={() => router.push('/merge')}
-                  className="text-sm font-bold text-slate-600 hover:text-red-600 transition-colors"
+                  className="text-sm font-semibold text-slate-600 hover:text-red-600 transition-colors px-2 py-1"
                 >
-                  Merge PDF
+                  Merge
                 </button>
                 <button
                   onClick={() => router.push('/split')}
-                  className="text-sm font-bold text-slate-600 hover:text-red-600 transition-colors"
+                  className="text-sm font-semibold text-slate-600 hover:text-red-600 transition-colors px-2 py-1"
                 >
-                  Split PDF
+                  Split
                 </button>
                 <button
                   onClick={() => router.push('/compress')}
-                  className="text-sm font-bold text-slate-600 hover:text-red-600 transition-colors"
+                  className="text-sm font-semibold text-slate-600 hover:text-red-600 transition-colors px-2 py-1"
                 >
-                  Compress PDF
+                  Compress
+                </button>
+                <button
+                  onClick={() => router.push('/pdf2word')}
+                  className="text-sm font-semibold text-slate-600 hover:text-red-600 transition-colors px-2 py-1"
+                >
+                  Convert
                 </button>
 
-                <div className="h-6 w-[1px] bg-slate-200 mx-1"></div>
+                <div className="h-5 w-[1px] bg-slate-200 mx-1"></div>
 
                 <button
-                  onClick={() => setBrandKitOpen(true)}
-                  className="text-slate-500 hover:text-slate-800 transition-colors"
-                  title="Brand Kit"
+                  onClick={openSearch}
+                  className="flex items-center gap-1.5 text-slate-400 hover:text-slate-600 transition-colors px-2 py-1 rounded-lg border border-slate-200 hover:border-slate-300 text-xs"
                 >
-                  <Building2 className="w-5 h-5" />
+                  <Search className="w-3.5 h-3.5" />
+                  <span className="hidden lg:inline">Search tools...</span>
+                  <kbd className="hidden lg:inline bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-400">⌘K</kbd>
                 </button>
 
                 <button
                   onClick={() => router.push('/my-documents')}
-                  className="text-slate-500 hover:text-slate-800 transition-colors"
+                  className="text-slate-500 hover:text-slate-700 transition-colors p-1.5"
                   title="My Documents"
                 >
-                  <FileText className="w-5 h-5" />
+                  <FileText className="w-4.5 h-4.5" />
                 </button>
-
-                <ThemeToggle className="text-slate-500 hover:text-slate-800 transition-colors" />
 
                 <button
                   onClick={toggleLanguage}
-                  className="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded hover:bg-slate-200 transition-colors uppercase"
+                  className="text-xs font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded hover:bg-slate-200 transition-colors uppercase"
                 >
                   {i18n.language === 'en' ? 'ID' : 'EN'}
                 </button>
@@ -123,47 +98,51 @@ export default function NavBar() {
             {isInstallable && (
               <button
                 onClick={promptInstall}
-                className="ml-2 bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-red-700 hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2 shadow-md shadow-red-600/20"
+                className="ml-1 bg-red-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-red-700 transition-colors flex items-center gap-1.5"
               >
-                <Download className="w-4 h-4" />
-                Desktop App
+                <Download className="w-3.5 h-3.5" />
+                Install
               </button>
             )}
           </div>
 
           {/* Mobile Toggle */}
-          <div className="md:hidden flex items-center gap-4">
-            <ThemeToggle />
+          <div className="md:hidden flex items-center gap-3">
+            <button
+              onClick={openSearch}
+              className="text-slate-500 p-1.5"
+            >
+              <Search className="w-5 h-5" />
+            </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="text-slate-800"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-xl p-4 flex flex-col gap-2 md:hidden animate-accordion-down z-50">
-            <button onClick={() => router.push('/merge')} className="w-full text-left p-3 rounded-lg hover:bg-red-50 text-slate-700 font-bold hover:text-red-600">Merge PDF</button>
-            <button onClick={() => router.push('/split')} className="w-full text-left p-3 rounded-lg hover:bg-red-50 text-slate-700 font-bold hover:text-red-600">Split PDF</button>
-            <button onClick={() => router.push('/compress')} className="w-full text-left p-3 rounded-lg hover:bg-red-50 text-slate-700 font-bold hover:text-red-600">Compress PDF</button>
+          <div className="absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-lg p-3 flex flex-col gap-1 md:hidden z-50">
+            <button onClick={() => { router.push('/merge'); setMobileMenuOpen(false); }} className="w-full text-left p-3 rounded-lg hover:bg-red-50 text-slate-700 font-semibold hover:text-red-600 text-sm">Merge PDF</button>
+            <button onClick={() => { router.push('/split'); setMobileMenuOpen(false); }} className="w-full text-left p-3 rounded-lg hover:bg-red-50 text-slate-700 font-semibold hover:text-red-600 text-sm">Split PDF</button>
+            <button onClick={() => { router.push('/compress'); setMobileMenuOpen(false); }} className="w-full text-left p-3 rounded-lg hover:bg-red-50 text-slate-700 font-semibold hover:text-red-600 text-sm">Compress PDF</button>
+            <button onClick={() => { router.push('/pdf2word'); setMobileMenuOpen(false); }} className="w-full text-left p-3 rounded-lg hover:bg-red-50 text-slate-700 font-semibold hover:text-red-600 text-sm">Convert PDF</button>
             <div className="h-[1px] bg-slate-100 my-1"></div>
             <button
               onClick={() => {
                 router.push('/my-documents')
                 setMobileMenuOpen(false)
               }}
-              className="w-full text-left p-3 rounded-lg hover:bg-slate-50 font-medium text-slate-600"
+              className="w-full text-left p-3 rounded-lg hover:bg-slate-50 font-medium text-slate-500 text-sm"
             >
               My Documents
             </button>
           </div>
         )}
       </nav>
-
-      <BrandKit isOpen={brandKitOpen} onClose={() => setBrandKitOpen(false)} />
     </>
   )
 }

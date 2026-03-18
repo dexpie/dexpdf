@@ -10,12 +10,12 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer style={{ borderTop: '1px solid var(--border)', background: 'var(--card)', padding: 18, marginTop: 24 }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', color: 'var(--muted)' }}>
-        <small>
+    <footer className="border-t border-slate-200 bg-white py-5 mt-0">
+      <div className="max-w-[1100px] mx-auto px-4 text-center">
+        <small className="text-slate-400 text-xs">
           {mounted
             ? t('footer.copyright', { year: new Date().getFullYear() })
-            : `© ${new Date().getFullYear()} DEXPDF lightweight client-side PDF tools`
+            : `© ${new Date().getFullYear()} DexPDF. All rights reserved.`
           }
         </small>
       </div>

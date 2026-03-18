@@ -275,41 +275,7 @@
     transform: translateY(0);
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-primary: #1f2937;
-        --bg-secondary: #111827;
-        --bg-hover: #374151;
-        --text-primary: #f9fafb;
-        --text-secondary: #d1d5db;
-        --text-tertiary: #9ca3af;
-        --border-color: #374151;
-        --border-hover: #4b5563;
-    }
 
-    .file-size-modal {
-        box-shadow:
-            0 20px 60px rgba(0, 0, 0, 0.5),
-            0 0 0 1px rgba(255, 255, 255, 0.1);
-    }
-
-    .size-comparison {
-        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-    }
-
-    .savings-banner.positive {
-        background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-        color: #d1fae5;
-        border-color: #10b981;
-    }
-
-    .savings-banner.negative {
-        background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
-        color: #fee2e2;
-        border-color: #ef4444;
-    }
-}
 
 /* Animations */
 @keyframes fadeIn {

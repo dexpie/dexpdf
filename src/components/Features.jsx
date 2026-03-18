@@ -45,7 +45,7 @@ export default function Features({ tools = [] }) {
         if (groupTools.length === 0) return null
 
         return (
-          <section key={key} className="scroll-mt-24" id={key}>
+          <section key={key} className="scroll-mt-48" id={key}>
             <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-blue-500"></span>
               {group.title}

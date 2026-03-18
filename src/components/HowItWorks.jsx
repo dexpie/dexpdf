@@ -1,5 +1,4 @@
 import React from 'react'
-import { motion } from 'framer-motion'
 import { UploadCloud, Settings, Download } from 'lucide-react'
 
 export default function HowItWorks() {
@@ -39,15 +38,12 @@ export default function HowItWorks() {
                     <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-slate-100 -z-10"></div>
 
                     {steps.map((step, idx) => (
-                        <motion.div
+                        <div
                             key={idx}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: idx * 0.2 }}
-                            className="relative flex flex-col items-center text-center group"
+                            className="relative flex flex-col items-center text-center group fade-in"
+                            style={{ animationDelay: `${idx * 0.15}s` }}
                         >
-                            <div className={`w-24 h-24 rounded-3xl ${step.color} flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform duration-300 border-4 border-white`}>
+                            <div className={`w-24 h-24 rounded-3xl ${step.color} flex items-center justify-center mb-6 shadow-sm border-4 border-white`}>
                                 <step.icon className="w-10 h-10" />
                             </div>
                             <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold mb-4 border-4 border-white shadow-sm">
@@ -57,7 +53,7 @@ export default function HowItWorks() {
                             <p className="text-slate-500 leading-relaxed px-4">
                                 {step.desc}
                             </p>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
             </div>

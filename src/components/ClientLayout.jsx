@@ -1,26 +1,19 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
-import '@/i18n' // Initialize i18n on client
+import '@/i18n'
 import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
 import Analytics from '@/components/Analytics'
 import ProgressBar from '@/components/ProgressBar'
 import CommandPalette from '@/components/CommandPalette'
 import GlobalDropZone from '@/components/GlobalDropZone'
-import DexAssistant from '@/components/DexAssistant'
-import KeyboardShortcuts from '@/components/KeyboardShortcuts'
-// Tools loading logic is usually in App.jsx but now tools.json fetching 
-// might need to happen here or passed down. We'll fetch here for simplicity.
 
 export default function ClientLayout({ children }) {
     const [tools, setTools] = useState([])
     const [showCommandPalette, setShowCommandPalette] = useState(false)
-    const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false)
-    const searchRef = useRef(null)
 
     useEffect(() => {
-        // We need to fetch tools for command palette
         fetch('/tools.json')
             .then(res => res.json())
             .then(data => setTools(data))
@@ -35,23 +28,11 @@ export default function ClientLayout({ children }) {
     }, [])
 
     useEffect(() => {
-        // Global hotkeys
         const onKeyDown = (e) => {
             // CMD+K palette
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault()
                 setShowCommandPalette(true)
-            }
-            // ? shortcuts
-            if (e.key === '?' && !(document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA'))) {
-                e.preventDefault()
-                setShowKeyboardShortcuts(prev => !prev)
-            }
-            // CMD+D theme (if we kept it)
-            if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
-                e.preventDefault()
-                const themeToggle = document.querySelector('.theme-toggle')
-                if (themeToggle) themeToggle.click()
             }
         }
         window.addEventListener('keydown', onKeyDown)
@@ -64,19 +45,12 @@ export default function ClientLayout({ children }) {
             <ProgressBar />
             <NavBar />
             <GlobalDropZone />
-            <DexAssistant />
-
 
             <CommandPalette
                 tools={tools}
                 isOpen={showCommandPalette}
                 onClose={() => setShowCommandPalette(false)}
                 onSelect={() => setShowCommandPalette(false)}
-            />
-
-            <KeyboardShortcuts
-                isOpen={showKeyboardShortcuts}
-                onClose={() => setShowKeyboardShortcuts(false)}
             />
 
             {children}

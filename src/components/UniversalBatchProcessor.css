@@ -386,34 +386,7 @@
     transform: translateY(-2px);
 }
 
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-primary: #1f2937;
-        --bg-secondary: #111827;
-        --bg-hover: #374151;
-        --text-primary: #f9fafb;
-        --text-secondary: #d1d5db;
-        --text-tertiary: #9ca3af;
-        --border-color: #374151;
-    }
 
-    .batch-upload-zone {
-        background: #1f2937;
-    }
-
-    .batch-upload-zone:hover {
-        background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    }
-
-    .batch-global-progress {
-        background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-    }
-
-    .global-progress-bar {
-        background: rgba(0, 0, 0, 0.3);
-    }
-}
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
