@@ -76,20 +76,24 @@ export default function PdfToImagesTool() {
       const pdf = await pdfjsLib.getDocument({ data }).promise
       const toZip = []
 
-      for (const pnum of indices) {
-        const page = await pdf.getPage(pnum)
-        const viewport = page.getViewport({ scale: 2 })
-        const canvas = document.createElement('canvas')
-        canvas.width = Math.ceil(viewport.width)
-        canvas.height = Math.ceil(viewport.height)
-        const ctx = canvas.getContext('2d')
-        await page.render({ canvasContext: ctx, viewport }).promise
+      const BATCH_SIZE = 3;
+      for (let start = 0; start < indices.length; start += BATCH_SIZE) {
+        const batchIndices = indices.slice(start, start + BATCH_SIZE);
+        await Promise.all(batchIndices.map(async (pnum) => {
+          const page = await pdf.getPage(pnum)
+          const viewport = page.getViewport({ scale: 2 })
+          const canvas = document.createElement('canvas')
+          canvas.width = Math.ceil(viewport.width)
+          canvas.height = Math.ceil(viewport.height)
+          const ctx = canvas.getContext('2d')
+          await page.render({ canvasContext: ctx, viewport }).promise
 
-        const mimeType = format === 'png' ? 'image/png' : format === 'webp' ? 'image/webp' : 'image/jpeg'
-        const blob = await new Promise(res =>
-          format === 'png' ? canvas.toBlob(res, 'image/png') : canvas.toBlob(res, mimeType, quality)
-        )
-        toZip.push({ pnum, blob })
+          const mimeType = format === 'png' ? 'image/png' : format === 'webp' ? 'image/webp' : 'image/jpeg'
+          const blob = await new Promise(res =>
+            format === 'png' ? canvas.toBlob(res, 'image/png') : canvas.toBlob(res, mimeType, quality)
+          )
+          toZip.push({ pnum, blob })
+        }));
       }
 
       const ext = format === 'png' ? '.png' : format === 'webp' ? '.webp' : '.jpg'
@@ -137,20 +141,31 @@ export default function PdfToImagesTool() {
       const zip = new JSZip()
       const ext = format === 'png' ? '.png' : format === 'webp' ? '.webp' : '.jpg'
 
-      for (let pnum = 1; pnum <= numPages; pnum++) {
-        const page = await pdf.getPage(pnum)
-        const viewport = page.getViewport({ scale: 2 })
-        const canvas = document.createElement('canvas')
-        canvas.width = Math.ceil(viewport.width)
-        canvas.height = Math.ceil(viewport.height)
-        const ctx = canvas.getContext('2d')
-        await page.render({ canvasContext: ctx, viewport }).promise
-        const mimeType = format === 'png' ? 'image/png' : format === 'webp' ? 'image/webp' : 'image/jpeg'
-        const blob = await new Promise(res =>
-          format === 'png' ? canvas.toBlob(res, 'image/png') : canvas.toBlob(res, mimeType, quality)
-        )
-        zip.file(`page_${pnum}${ext}`, await blob.arrayBuffer())
-        onProgress(30 + (pnum / numPages) * 60)
+      const BATCH_SIZE = 3;
+      for (let start = 1; start <= numPages; start += BATCH_SIZE) {
+        const end = Math.min(start + BATCH_SIZE - 1, numPages);
+        const pagePromises = [];
+        for (let pnum = start; pnum <= end; pnum++) {
+          pagePromises.push((async () => {
+            const page = await pdf.getPage(pnum)
+            const viewport = page.getViewport({ scale: 2 })
+            const canvas = document.createElement('canvas')
+            canvas.width = Math.ceil(viewport.width)
+            canvas.height = Math.ceil(viewport.height)
+            const ctx = canvas.getContext('2d')
+            await page.render({ canvasContext: ctx, viewport }).promise
+            const mimeType = format === 'png' ? 'image/png' : format === 'webp' ? 'image/webp' : 'image/jpeg'
+            const blob = await new Promise(res =>
+              format === 'png' ? canvas.toBlob(res, 'image/png') : canvas.toBlob(res, mimeType, quality)
+            )
+            return { pnum, blob };
+          })());
+        }
+        const pagesData = await Promise.all(pagePromises);
+        for (const { pnum, blob } of pagesData) {
+          zip.file(`page_${pnum}${ext}`, await blob.arrayBuffer())
+        }
+        onProgress(30 + (end / numPages) * 60)
       }
       onProgress(90)
       return await zip.generateAsync({ type: 'blob' })

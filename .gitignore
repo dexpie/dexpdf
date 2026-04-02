@@ -31,6 +31,9 @@ ts-debug.log*
 # Vercel
 .vercel
 
+# Claude / agent artifacts
+.claude/
+
 # Project specific
 *.old
 *.bak

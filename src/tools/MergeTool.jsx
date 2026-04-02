@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import * as pdfjsLib from 'pdfjs-dist'
 import FilenameInput from '../components/FilenameInput'
@@ -9,52 +9,114 @@ import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import ActionButtons from '../components/common/ActionButtons'
 import { useTranslation } from 'react-i18next'
-import { FileText, X, ArrowUp, ArrowDown, File } from 'lucide-react'
+import { FileText, X, ArrowUp, ArrowDown, File, GripVertical, Layers, CheckCircle, AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ResultPage from '../components/common/ResultPage'
+import JSZip from 'jszip'
 
 configurePdfWorker()
 
+/**
+ * MergeTool - Merge multiple PDF files into one
+ * Features: Visual thumbnails, drag-drop reorder, progress tracking
+ */
 export default function MergeTool() {
   const { t } = useTranslation()
   const [files, setFiles] = useState([])
   const [busy, setBusy] = useState(false)
+  const [progress, setProgress] = useState(0)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [downloadUrl, setDownloadUrl] = useState(null)
   const [outputFileName, setOutputFileName] = useState('merged')
+  const [draggedIndex, setDraggedIndex] = useState(null)
 
+  /**
+   * Handle new file uploads with thumbnail generation
+   */
   async function handleFiles(newFiles) {
-    setErrorMsg(''); setSuccessMsg('');
+    setErrorMsg('')
     const list = Array.from(newFiles)
     const loaded = []
+
     for (const f of list) {
       if (!f.name.toLowerCase().endsWith('.pdf')) {
-        setErrorMsg('All files must be PDF format.');
-        continue;
+        setErrorMsg('All files must be PDF format.')
+        continue
       }
       if (f.size > 50 * 1024 * 1024) {
-        setErrorMsg('File is too large (max 50MB per file).');
-        continue;
+        setErrorMsg('File is too large (max 50MB per file).')
+        continue
       }
-      const thumb = await generatePdfThumbnail(f)
-      loaded.push({ file: f, thumb })
+
+      // Get page count and thumbnail
+      const info = await getPdfInfo(f)
+      loaded.push({
+        file: f,
+        thumb: info.thumbnail,
+        pageCount: info.pageCount
+      })
     }
+
     setFiles(prev => prev.concat(loaded))
   }
 
+  /**
+   * Extract PDF info: page count and first page thumbnail
+   */
+  async function getPdfInfo(file) {
+    try {
+      const data = await file.arrayBuffer()
+      const pdf = await pdfjsLib.getDocument({ data }).promise
+      const pageCount = pdf.numPages
+
+      // Generate thumbnail from first page
+      let thumbnail = null
+      try {
+        const page = await pdf.getPage(1)
+        const viewport = page.getViewport({ scale: 0.5 })
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.ceil(viewport.width)
+        canvas.height = Math.ceil(viewport.height)
+        const ctx = canvas.getContext('2d')
+        await page.render({ canvasContext: ctx, viewport }).promise
+        thumbnail = canvas.toDataURL('image/jpeg', 0.7)
+      } catch (e) {
+        console.warn('Could not generate thumbnail', e)
+      }
+
+      return { pageCount, thumbnail }
+    } catch (err) {
+      return { pageCount: 0, thumbnail: null }
+    }
+  }
+
+  /**
+   * Merge all PDFs into one
+   */
   async function merge() {
     if (!files.length) return
-    setErrorMsg(''); setSuccessMsg('');
+    setErrorMsg('')
+    setSuccessMsg('')
     setBusy(true)
+    setProgress(0)
+
     try {
       const merged = await PDFDocument.create()
       let skippedCount = 0
-      for (const entry of files) {
+      const total = files.length
+
+      for (let i = 0; i < files.length; i++) {
+        const entry = files[i]
         try {
+          setProgress(Math.round(((i + 0.5) / total) * 50)) // First 50% for loading
+
           const f = entry.file
           const bytes = await f.arrayBuffer()
           const pdf = await PDFDocument.load(bytes, { ignoreEncryption: true })
+
+          setProgress(Math.round(((i + 1) / total) * 50)) // 50% after load
+
           const copied = await merged.copyPages(pdf, pdf.getPageIndices())
           copied.forEach(p => merged.addPage(p))
         } catch (fileErr) {
@@ -62,25 +124,35 @@ export default function MergeTool() {
           skippedCount++
         }
       }
+
       if (merged.getPageCount() === 0) {
         throw new Error('No pages could be extracted from the uploaded files.')
       }
+
+      setProgress(75) // 75% when saving
+
       const out = await merged.save({ useObjectStreams: true })
       const blob = new Blob([out], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
+
+      setProgress(100)
+
       const a = document.createElement('a')
       a.href = url
-      a.download = getOutputFilename(outputFileName, 'merged')
+      a.download = getOutputFilename(outputFileName, 'pdf')
       a.click()
-      setDownloadUrl(url)
 
-      triggerConfetti();
+      setDownloadUrl(url)
+      triggerConfetti()
+
       const skippedNote = skippedCount > 0 ? ` (${skippedCount} file(s) skipped due to errors)` : ''
-      setSuccessMsg('PDF Merged' + skippedNote)
+      setSuccessMsg('PDF Merged Successfully!' + skippedNote)
     } catch (err) {
       console.error(err)
-      setErrorMsg('Merge failed: ' + (err.message || err));
-    } finally { setBusy(false) }
+      setErrorMsg('Merge failed: ' + (err.message || err))
+    } finally {
+      setBusy(false)
+    }
   }
 
   function remove(i) {
@@ -88,133 +160,219 @@ export default function MergeTool() {
   }
 
   function moveUp(i) {
+    if (i <= 0) return
     setFiles(prev => {
-      if (i <= 0) return prev
-      const copy = prev.slice()
-      const t = copy[i - 1]
+      const copy = [...prev]
+      const temp = copy[i - 1]
       copy[i - 1] = copy[i]
-      copy[i] = t
+      copy[i] = temp
       return copy
     })
   }
 
   function moveDown(i) {
+    if (i >= files.length - 1) return
     setFiles(prev => {
-      if (i >= prev.length - 1) return prev
-      const copy = prev.slice()
-      const t = copy[i + 1]
+      const copy = [...prev]
+      const temp = copy[i + 1]
       copy[i + 1] = copy[i]
-      copy[i] = t
+      copy[i] = temp
       return copy
     })
   }
 
-  async function generatePdfThumbnail(file) {
-    try {
-      const data = await file.arrayBuffer()
-      const pdf = await pdfjsLib.getDocument({ data }).promise
-      const page = await pdf.getPage(1)
-      const viewport = page.getViewport({ scale: 1.5 })
-      const canvas = document.createElement('canvas')
-      canvas.width = Math.ceil(viewport.width)
-      canvas.height = Math.ceil(viewport.height)
-      const ctx = canvas.getContext('2d')
-      await page.render({ canvasContext: ctx, viewport }).promise
-      return canvas.toDataURL('image/png')
-    } catch (err) {
-      return null
-    }
+  // Drag and drop handlers
+  const handleDragStart = (e, index) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = 'move'
   }
 
-  return (
-    <ToolLayout title="Merge PDF" description={t('tool.merge_desc', 'Combine multiple PDFs into one')}>
+  const handleDragOver = (e, index) => {
+    e.preventDefault()
+    if (draggedIndex === null || draggedIndex === index) return
 
-      {/* Main Merge Interface */}
+    setFiles(prev => {
+      const copy = [...prev]
+      const draggedItem = copy[draggedIndex]
+      copy.splice(draggedIndex, 1)
+      copy.splice(index, 0, draggedItem)
+      return copy
+    })
+    setDraggedIndex(index)
+  }
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null)
+  }
+
+  // Calculate totals
+  const totalSize = files.reduce((acc, f) => acc + f.file.size, 0)
+  const totalPages = files.reduce((acc, f) => acc + (f.pageCount || 0), 0)
+
+  return (
+    <ToolLayout
+      title="Merge PDF"
+      description="Combine multiple PDFs into a single file"
+    >
       <div className="flex flex-col gap-6">
+        {/* Error Alert */}
         {errorMsg && (
-          <div className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-200 dark:border-red-800 flex items-center gap-2">
-            ⚠️ {errorMsg}
+          <div className="bg-destructive/10 text-destructive p-4 rounded-xl border border-destructive/20 flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 shrink-0" />
+            {errorMsg}
           </div>
         )}
 
+        {/* Success State */}
         {successMsg ? (
           <ResultPage
             title={t('tool.merge_success', 'PDFs Merged Successfully!')}
             description={t('tool.merge_download_desc', 'Your merged PDF is ready. Download it below or continue with other tools.')}
             downloadUrl={downloadUrl}
-            downloadFilename={getOutputFilename(outputFileName, 'merged')}
-            sourceFile={{ name: `${files.length} files merged`, size: files.reduce((acc, f) => acc + f.size, 0), type: 'application/pdf' }}
+            downloadFilename={getOutputFilename(outputFileName, 'pdf')}
+            sourceFile={{
+              name: `${files.length} files merged`,
+              size: totalSize,
+              type: 'application/pdf'
+            }}
             toolId="merge"
             onReset={() => {
-              setFiles([]);
-              setSuccessMsg('');
-              setDownloadUrl(null);
+              setFiles([])
+              setSuccessMsg('')
+              setDownloadUrl(null)
             }}
           />
         ) : (
           <>
+            {/* Upload Zone */}
             <FileDropZone
               onFiles={handleFiles}
               accept="application/pdf"
               multiple
               disabled={busy}
-              hint="Upload multiple PDFs to merge"
+              hint="Upload multiple PDFs to merge (max 50MB each)"
             />
 
+            {/* Files List */}
             {files.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6"
+                className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden"
               >
-                <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-blue-500" />
-                  Selected Files ({files.length})
-                </h3>
+                {/* Header with stats */}
+                <div className="p-4 bg-secondary/50 border-b border-border flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-5 h-5 text-primary" />
+                      <span className="font-semibold text-foreground">
+                        {files.length} {files.length === 1 ? 'File' : 'Files'}
+                      </span>
+                    </div>
+                    <div className="h-4 w-px bg-border" />
+                    <span className="text-sm text-muted-foreground">
+                      {totalPages} {totalPages === 1 ? 'page' : 'pages'}
+                    </span>
+                    <div className="h-4 w-px bg-border" />
+                    <span className="text-sm text-muted-foreground">
+                      {(totalSize / 1024 / 1024).toFixed(1)} MB
+                    </span>
+                  </div>
+                </div>
 
-                <div className="space-y-3 mb-8">
+                {/* Progress Bar */}
+                {busy && (
+                  <div className="h-1 bg-secondary">
+                    <motion.div
+                      className="h-full bg-primary"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress}%` }}
+                    />
+                  </div>
+                )}
+
+                {/* File Items */}
+                <div className="p-4 space-y-2">
                   <AnimatePresence>
                     {files.map((entry, i) => (
                       <motion.div
-                        key={entry.file.name + i} // Better key if possible
+                        key={entry.file.name + i}
+                        layout
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                        className="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors group"
+                        draggable={!busy}
+                        onDragStart={(e) => handleDragStart(e, i)}
+                        onDragOver={(e) => handleDragOver(e, i)}
+                        onDragEnd={handleDragEnd}
+                        className={`
+                          flex items-center gap-3 p-3 rounded-xl border transition-all
+                          ${draggedIndex === i
+                            ? 'border-primary bg-primary/5 opacity-50'
+                            : 'border-border bg-background hover:border-primary/30'
+                          }
+                        `}
                       >
-                        <div className="w-12 h-16 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-600 flex items-center justify-center overflow-hidden shrink-0">
+                        {/* Drag Handle */}
+                        <div className={`cursor-grab ${busy ? 'opacity-50' : ''}`}>
+                          <GripVertical className="w-5 h-5 text-muted-foreground" />
+                        </div>
+
+                        {/* Thumbnail */}
+                        <div className="w-12 h-16 bg-secondary rounded-lg border border-border flex items-center justify-center overflow-hidden shrink-0">
                           {entry.thumb ? (
-                            <img src={entry.thumb} alt="" className="w-full h-full object-contain" />
+                            <img src={entry.thumb} alt="" className="w-full h-full object-cover" />
                           ) : (
-                            <File className="w-6 h-6 text-slate-300" />
+                            <FileText className="w-6 h-6 text-muted-foreground" />
                           )}
                         </div>
 
+                        {/* File Info */}
                         <div className="flex-1 min-w-0">
-                          <div className="font-medium text-slate-700 dark:text-slate-300 truncate">{entry.file.name}</div>
-                          <div className="text-xs text-slate-400 dark:text-slate-500">{(entry.file.size / 1024).toFixed(1)} KB</div>
+                          <div className="font-medium text-foreground truncate">
+                            {entry.file.name}
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>{(entry.file.size / 1024).toFixed(1)} KB</span>
+                            {entry.pageCount > 0 && (
+                              <>
+                                <span>·</span>
+                                <span>{entry.pageCount} {entry.pageCount === 1 ? 'page' : 'pages'}</span>
+                              </>
+                            )}
+                          </div>
                         </div>
 
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {/* Page Count Badge */}
+                        {entry.pageCount > 0 && (
+                          <div className="hidden sm:flex items-center gap-1 px-2 py-1 bg-secondary rounded-lg text-xs text-muted-foreground">
+                            <File className="w-3 h-3" />
+                            {entry.pageCount}
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-1">
                           <button
                             onClick={() => moveUp(i)}
-                            disabled={i === 0}
-                            className="p-2 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-slate-500 dark:text-slate-400 disabled:opacity-30"
+                            disabled={i === 0 || busy}
+                            className="p-2 hover:bg-secondary rounded-lg text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                             title="Move Up"
                           >
                             <ArrowUp className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => moveDown(i)}
-                            disabled={i === files.length - 1}
-                            className="p-2 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-slate-500 dark:text-slate-400 disabled:opacity-30"
+                            disabled={i === files.length - 1 || busy}
+                            className="p-2 hover:bg-secondary rounded-lg text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                             title="Move Down"
                           >
                             <ArrowDown className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => remove(i)}
-                            className="p-2 hover:bg-red-100 rounded-lg text-red-500 hover:text-red-600"
+                            disabled={busy}
+                            className="p-2 hover:bg-destructive/10 rounded-lg text-muted-foreground hover:text-destructive disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             title="Remove"
                           >
                             <X className="w-4 h-4" />
@@ -225,19 +383,43 @@ export default function MergeTool() {
                   </AnimatePresence>
                 </div>
 
-                <div className="pt-6 border-t border-slate-100 dark:border-slate-700 flex flex-col md:flex-row items-end gap-4">
-                  <div className="w-full md:w-auto flex-1">
-                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Output Filename</label>
-                    <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="merged" />
-                  </div>
-                  <div className="w-full md:w-auto">
-                    <ActionButtons
-                      primaryText={busy ? 'Merging...' : 'Merge PDF'}
-                      onPrimary={merge}
-                      onSecondary={() => setFiles([])}
-                      secondaryText="Reset All"
-                      loading={busy}
+                {/* Footer Actions */}
+                <div className="p-4 border-t border-border bg-secondary/30 flex flex-col sm:flex-row items-end gap-4">
+                  <div className="w-full sm:w-auto flex-1">
+                    <label className="block text-sm font-medium text-muted-foreground mb-2">
+                      Output Filename
+                    </label>
+                    <FilenameInput
+                      value={outputFileName}
+                      onChange={e => setOutputFileName(e.target.value)}
+                      placeholder="merged"
                     />
+                  </div>
+                  <div className="w-full sm:w-auto flex gap-3">
+                    <button
+                      onClick={() => setFiles([])}
+                      disabled={busy}
+                      className="px-5 py-2.5 font-medium text-muted-foreground hover:text-foreground hover:bg-secondary rounded-xl transition-colors disabled:opacity-50"
+                    >
+                      Clear All
+                    </button>
+                    <button
+                      onClick={merge}
+                      disabled={busy || files.length < 2}
+                      className="flex-1 sm:flex-none px-8 py-2.5 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {busy ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                          Merging... {progress}%
+                        </>
+                      ) : (
+                        <>
+                          <Layers className="w-4 h-4" />
+                          Merge PDF
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -245,30 +427,6 @@ export default function MergeTool() {
           </>
         )}
       </div>
-      {/* Feature Info */}
-      <div className="grid md:grid-cols-3 gap-8 mt-16 px-4">
-        <div className="p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
-            <FileText className="w-5 h-5" />
-          </div>
-          <h3 className="font-bold text-slate-800 mb-2">Easy Ordering</h3>
-          <p className="text-sm text-slate-500">Drag and drop your files to arrange them in the exact order you want.</p>
-        </div>
-        <div className="p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4">
-            <File className="w-5 h-5" />
-          </div>
-          <h3 className="font-bold text-slate-800 mb-2">Batch Processing</h3>
-          <p className="text-sm text-slate-500">Merge dozens of files at once. Our engine handles large batches effortlessly.</p>
-        </div>
-        <div className="p-6 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4">
-            <ArrowDown className="w-5 h-5" />
-          </div>
-          <h3 className="font-bold text-slate-800 mb-2">One-Click Download</h3>
-          <p className="text-sm text-slate-500">Get your merged document instantly. No watermarks, no sign-up required.</p>
-        </div>
-      </div>
-    </ToolLayout >
+    </ToolLayout>
   )
 }

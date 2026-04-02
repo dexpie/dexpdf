@@ -49,28 +49,29 @@ export default function PdfToPptTool() {
       const pdf = await pdfjsLib.getDocument({ data }).promise
       const numPages = pdf.numPages
 
-      for (let i = 1; i <= numPages; i++) {
-        const page = await pdf.getPage(i)
-
-        // Render at high quality (scale 2.0 = 144dpi approx)
-        const scale = 2.0
-        const viewport = page.getViewport({ scale })
-        const canvas = document.createElement('canvas')
-        canvas.width = viewport.width
-        canvas.height = viewport.height
-        const ctx = canvas.getContext('2d')
-
-        await page.render({ canvasContext: ctx, viewport }).promise
-        const imgData = canvas.toDataURL('image/jpeg', 0.8)
-
-        // Create Slide
-        const slide = pres.addSlide()
-
-        // Fit image to slide (cover or contain? usually best to fit whole page)
-        // PPT default size is 10x5.625 inches (16:9) or 10x7.5 (4:3)
-        // We'll let pptxgenjs handle fitting or we can calculate aspect ratio.
-        // Easiest is to set w:'100%', h:'100%'
-        slide.addImage({ data: imgData, x: 0, y: 0, w: '100%', h: '100%' })
+      const BATCH_SIZE = 3;
+      for (let start = 1; start <= numPages; start += BATCH_SIZE) {
+        const end = Math.min(start + BATCH_SIZE - 1, numPages);
+        const pagePromises = [];
+        for (let i = start; i <= end; i++) {
+          pagePromises.push((async () => {
+            const page = await pdf.getPage(i);
+            const scale = 2.0;
+            const viewport = page.getViewport({ scale });
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            return { pageNum: i, imgData: canvas.toDataURL('image/jpeg', 0.8) };
+          })());
+        }
+        const pagesData = await Promise.all(pagePromises);
+        pagesData.sort((a, b) => a.pageNum - b.pageNum);
+        for (const { imgData } of pagesData) {
+          const slide = pres.addSlide();
+          slide.addImage({ data: imgData, x: 0, y: 0, w: '100%', h: '100%' });
+        }
       }
 
       await pres.writeFile({ fileName: getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, ''), '.pptx') })
@@ -96,20 +97,29 @@ export default function PdfToPptTool() {
       const numPages = pdf.numPages
       onProgress(20)
 
-      for (let i = 1; i <= numPages; i++) {
-        const page = await pdf.getPage(i)
-        const viewport = page.getViewport({ scale: 1.5 })
-        const canvas = document.createElement('canvas')
-        canvas.width = viewport.width
-        canvas.height = viewport.height
-        const ctx = canvas.getContext('2d')
-        await page.render({ canvasContext: ctx, viewport }).promise
-        const imgData = canvas.toDataURL('image/jpeg', 0.8)
-
-        const slide = pres.addSlide()
-        slide.addImage({ data: imgData, x: 0, y: 0, w: '100%', h: '100%' })
-
-        onProgress(20 + (i / numPages) * 60)
+      const BATCH_SIZE = 3;
+      for (let start = 1; start <= numPages; start += BATCH_SIZE) {
+        const end = Math.min(start + BATCH_SIZE - 1, numPages);
+        const pagePromises = [];
+        for (let i = start; i <= end; i++) {
+          pagePromises.push((async () => {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d');
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            return { pageNum: i, imgData: canvas.toDataURL('image/jpeg', 0.8) };
+          })());
+        }
+        const pagesData = await Promise.all(pagePromises);
+        pagesData.sort((a, b) => a.pageNum - b.pageNum);
+        for (const { imgData } of pagesData) {
+          const slide = pres.addSlide();
+          slide.addImage({ data: imgData, x: 0, y: 0, w: '100%', h: '100%' });
+        }
+        onProgress(20 + (end / numPages) * 60);
       }
 
       const blob = await pres.write({ outputType: 'blob' })

@@ -87,12 +87,16 @@ export default function SummarizePdfTool() {
             let fullText = ''
             const maxPages = Math.min(pdf.numPages, 10) // Limit to 10 pages for performance
 
+            const pagePromises = [];
             for (let i = 1; i <= maxPages; i++) {
-                const page = await pdf.getPage(i)
-                const textContent = await page.getTextContent()
-                const pageText = textContent.items.map(item => item.str).join(' ')
-                fullText += pageText + ' '
+                pagePromises.push(pdf.getPage(i).then(async page => {
+                    const textContent = await page.getTextContent()
+                    return { i, text: textContent.items.map(item => item.str).join(' ') }
+                }));
             }
+            const pagesData = await Promise.all(pagePromises);
+            pagesData.sort((a, b) => a.i - b.i);
+            fullText = pagesData.map(p => p.text).join(' ');
 
             // 2. Generate Summary with Gemini
             const prompt = `

@@ -2,160 +2,201 @@ import React, { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Upload, FileText, Image, FileSpreadsheet, File } from 'lucide-react'
 
+/**
+ * Get appropriate icon based on file type accept attribute
+ * @param {string} accept - MIME type accept string
+ * @returns {React.Component} Icon component
+ */
 function getFileIcon(accept) {
-    if (!accept) return File
-    if (accept.includes('pdf')) return FileText
-    if (accept.includes('image')) return Image
-    if (accept.includes('spreadsheet') || accept.includes('excel') || accept.includes('.xlsx') || accept.includes('.csv')) return FileSpreadsheet
-    return File
+  if (!accept) return File
+  if (accept.includes('pdf')) return FileText
+  if (accept.includes('image')) return Image
+  if (accept.includes('spreadsheet') || accept.includes('excel') || accept.includes('.xlsx') || accept.includes('.csv')) return FileSpreadsheet
+  return File
 }
 
+/**
+ * Extract file extensions from accept attribute
+ * @param {string} accept - MIME type accept string
+ * @returns {string[]|null} Array of extensions or null
+ */
 function getAcceptExtensions(accept) {
-    if (!accept) return null
-    const map = {
-        'application/pdf': ['.pdf'],
-        'image/*': ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg'],
-        '.pdf': ['.pdf'],
-    }
-    for (const [key, exts] of Object.entries(map)) {
-        if (accept.includes(key)) return exts
-    }
-    return null
+  if (!accept) return null
+
+  const parts = accept.split(',').map(s => s.trim().toLowerCase())
+  let exts = []
+
+  parts.forEach(part => {
+    if (part === 'application/pdf') exts.push('.pdf')
+    else if (part === 'image/*') exts.push('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg')
+    else if (part.startsWith('.')) exts.push(part)
+  })
+
+  return exts.length > 0 ? [...new Set(exts)] : null
 }
 
-export default function FileDropZone({ onFiles, accept = 'application/pdf', multiple = false, disabled = false, hint, maxSizeMB = 50 }) {
-    const { t } = useTranslation()
-    const [isDragOver, setIsDragOver] = useState(false)
-    const [validationError, setValidationError] = useState('')
-    const inputRef = useRef(null)
+/**
+ * FileDropZone - Drag and drop file upload component
+ * Provides visual feedback for file drag/drop and validates file types/sizes
+ * @param {Object} props
+ * @param {Function} props.onFiles - Callback when files are selected
+ * @param {string} props.accept - Accepted MIME types (default: application/pdf)
+ * @param {boolean} props.multiple - Allow multiple files (default: false)
+ * @param {boolean} props.disabled - Disable the dropzone
+ * @param {string} props.hint - Helper text to display
+ * @param {number} props.maxSizeMB - Max file size in MB (default: 50)
+ */
+export default function FileDropZone({
+  onFiles,
+  accept = 'application/pdf',
+  multiple = false,
+  disabled = false,
+  hint,
+  maxSizeMB = 50
+}) {
+  const { t } = useTranslation()
+  const [isDragOver, setIsDragOver] = useState(false)
+  const [validationError, setValidationError] = useState('')
+  const inputRef = useRef(null)
 
-    const FileIcon = getFileIcon(accept)
-    const acceptExtensions = getAcceptExtensions(accept)
+  const FileIcon = getFileIcon(accept)
+  const acceptExtensions = getAcceptExtensions(accept)
 
-    const validateFiles = (files) => {
-        setValidationError('')
-        const validFiles = []
+  /**
+   * Validate files against size and type requirements
+   * @param {FileList} files - Files to validate
+   * @returns {File[]|null} Valid files or null if invalid
+   */
+  const validateFiles = (files) => {
+    setValidationError('')
+    const validFiles = []
 
-        for (const file of files) {
-            if (file.size > maxSizeMB * 1024 * 1024) {
-                setValidationError(`File "${file.name}" exceeds ${maxSizeMB}MB limit.`)
-                return null
-            }
+    for (const file of files) {
+      // Check file size
+      if (file.size > maxSizeMB * 1024 * 1024) {
+        setValidationError(`File "${file.name}" exceeds ${maxSizeMB}MB limit.`)
+        return null
+      }
 
-            if (acceptExtensions) {
-                const ext = '.' + file.name.split('.').pop().toLowerCase()
-                if (!acceptExtensions.includes(ext)) {
-                    setValidationError(`"${file.name}" is not a supported file type. Expected: ${acceptExtensions.join(', ')}`)
-                    return null
-                }
-            }
-
-            validFiles.push(file)
+      // Check file extension
+      if (acceptExtensions) {
+        const ext = '.' + file.name.split('.').pop().toLowerCase()
+        if (!acceptExtensions.includes(ext)) {
+          setValidationError(`"${file.name}" is not a supported file type. Expected: ${acceptExtensions.join(', ')}`)
+          return null
         }
-        return validFiles.length > 0 ? validFiles : null
+      }
+
+      validFiles.push(file)
     }
+    return validFiles.length > 0 ? validFiles : null
+  }
 
-    const handleDragOver = (e) => {
-        e.preventDefault()
-        if (!disabled) setIsDragOver(true)
+  const handleDragOver = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!disabled) setIsDragOver(true)
+  }
+
+  const handleDragLeave = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragOver(false)
+
+    if (disabled) return
+
+    const files = e.dataTransfer.files
+    const validFiles = validateFiles(files)
+    if (validFiles) {
+      onFiles(multiple ? validFiles : validFiles[0])
     }
+  }
 
-    const handleDragLeave = (e) => {
-        e.preventDefault()
-        setIsDragOver(false)
+  const handleFileSelect = (e) => {
+    const files = e.target.files
+    const validFiles = validateFiles(files)
+    if (validFiles) {
+      onFiles(multiple ? validFiles : validFiles[0])
     }
+    e.target.value = ''
+  }
 
-    const handleDrop = (e) => {
-        e.preventDefault()
-        setIsDragOver(false)
-        if (disabled) return
+  const handleClick = () => {
+    if (!disabled) inputRef.current?.click()
+  }
 
-        const files = Array.from(e.dataTransfer.files)
-        if (files.length > 0) {
-            const validated = validateFiles(files)
-            if (validated) {
-                onFiles(validated)
-            }
-        }
-    }
+  return (
+    <div className="w-full">
+      <div
+        onClick={handleClick}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`
+          relative cursor-pointer
+          border-2 border-dashed rounded-xl p-8
+          transition-all duration-200
+          flex flex-col items-center justify-center
+          gap-4 text-center
+          ${disabled
+            ? 'border-border bg-muted/30 cursor-not-allowed opacity-60'
+            : isDragOver
+              ? 'border-primary bg-primary/5 scale-[1.02]'
+              : 'border-border hover:border-primary/50 hover:bg-secondary/50'
+          }
+        `}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept={accept}
+          multiple={multiple}
+          onChange={handleFileSelect}
+          disabled={disabled}
+          className="hidden"
+        />
 
-    const handleChange = (e) => {
-        const files = Array.from(e.target.files || [])
-        if (files.length > 0) {
-            const validated = validateFiles(files)
-            if (validated) {
-                onFiles(validated)
-            }
-        }
-        if (inputRef.current) inputRef.current.value = ''
-    }
-
-    return (
-        <div className="flex flex-col gap-3">
-            <div
-                className={`
-                    relative rounded-2xl border-2 border-dashed p-12 md:p-16 text-center cursor-pointer
-                    transition-all duration-200 group
-                    ${isDragOver
-                        ? 'border-red-400 bg-red-50 scale-[1.01] shadow-lg shadow-red-500/10'
-                        : 'border-slate-300 bg-white hover:border-red-300 hover:bg-red-50/30'
-                    }
-                    ${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
-                `}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => !disabled && inputRef.current?.click()}
-            >
-                <input
-                    type="file"
-                    ref={inputRef}
-                    accept={accept}
-                    multiple={multiple}
-                    onChange={handleChange}
-                    disabled={disabled}
-                    hidden
-                />
-
-                {/* Icon */}
-                <div className={`
-                    mx-auto mb-5 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-200
-                    ${isDragOver
-                        ? 'bg-red-100 text-red-500 scale-110'
-                        : 'bg-slate-100 text-slate-400 group-hover:bg-red-100 group-hover:text-red-500'
-                    }
-                `}>
-                    <Upload className={`w-8 h-8 transition-transform duration-200 ${isDragOver ? '-translate-y-1' : 'group-hover:-translate-y-0.5'}`} />
-                </div>
-
-                <h3 className="text-slate-800 text-lg font-bold mb-1">
-                    {isDragOver
-                        ? t('common.drop_release', 'Release to upload')
-                        : t('common.drop_title', 'Select PDF files')
-                    }
-                </h3>
-                <p className="text-slate-400 text-sm">
-                    {hint || t('common.drop_hint', 'or drag and drop them here')}
-                </p>
-
-                {/* File type badges */}
-                {acceptExtensions && (
-                    <div className="flex items-center justify-center gap-2 mt-4">
-                        {acceptExtensions.map(ext => (
-                            <span key={ext} className="px-2.5 py-1 bg-slate-100 text-slate-500 rounded-full text-xs font-semibold uppercase">
-                                {ext.replace('.', '')}
-                            </span>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Validation Error */}
-            {validationError && (
-                <div className="bg-red-50 text-red-600 p-3 rounded-xl border border-red-200 text-sm font-medium flex items-center gap-2">
-                    <span>⚠️</span> {validationError}
-                </div>
-            )}
+        <div className={`
+          w-14 h-14 rounded-xl flex items-center justify-center
+          transition-colors duration-200
+          ${isDragOver ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}
+        `}>
+          <Upload className="w-7 h-7" />
         </div>
-    )
+
+        <div>
+          <p className="text-foreground font-medium mb-1">
+            {isDragOver ? 'Drop files here' : 'Drag & drop your file here'}
+          </p>
+          <p className="text-muted-foreground text-sm">
+            or <span className="text-primary font-medium hover:underline">browse</span> to choose
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <FileIcon className="w-4 h-4" />
+          <span className="text-xs">
+            {acceptExtensions ? acceptExtensions.join(', ').toUpperCase() : 'All files'}
+            {maxSizeMB && ` (max ${maxSizeMB}MB)`}
+          </span>
+        </div>
+      </div>
+
+      {hint && !validationError && (
+        <p className="text-xs text-muted-foreground mt-2 text-center">{hint}</p>
+      )}
+
+      {validationError && (
+        <p className="text-xs text-destructive mt-2 text-center bg-destructive/10 p-2 rounded-lg">
+          {validationError}
+        </p>
+      )}
+    </div>
+  )
 }

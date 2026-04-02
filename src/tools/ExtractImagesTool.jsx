@@ -75,39 +75,52 @@ export default function ExtractImagesTool() {
       const zip = new JSZip()
 
       // Extract images from each page
-      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum)
-        const ops = await page.getOperatorList()
+      // Extract images from each page concurrently in batches
+      const BATCH_SIZE = 5;
+      for (let start = 1; start <= pdf.numPages; start += BATCH_SIZE) {
+        const end = Math.min(start + BATCH_SIZE - 1, pdf.numPages);
+        const pagePromises = [];
+        for (let pageNum = start; pageNum <= end; pageNum++) {
+          pagePromises.push((async () => {
+            const page = await pdf.getPage(pageNum)
+            const ops = await page.getOperatorList()
+            const extracted = [];
+            let imgIndex = 0
 
-        // Find image operations
-        let imgIndex = 0
-        for (let i = 0; i < ops.fnArray.length; i++) {
-          if (ops.fnArray[i] === pdfjsLib.OPS.paintImageXObject || ops.fnArray[i] === pdfjsLib.OPS.paintJpegXObject) {
-            try {
-              const imgName = ops.argsArray[i][0]
-              // Try to get the image
-              const img = page.objs.get(imgName)
-              if (img && img.data) {
-                // Convert to PNG
-                const canvas = document.createElement('canvas')
-                canvas.width = img.width
-                canvas.height = img.height
-                const ctx = canvas.getContext('2d')
-                const imageData = new ImageData(new Uint8ClampedArray(img.data), img.width, img.height)
-                ctx.putImageData(imageData, 0, 0)
+            for (let i = 0; i < ops.fnArray.length; i++) {
+              if (ops.fnArray[i] === pdfjsLib.OPS.paintImageXObject || ops.fnArray[i] === pdfjsLib.OPS.paintJpegXObject) {
+                try {
+                  const imgName = ops.argsArray[i][0]
+                  const img = page.objs.get(imgName)
+                  if (img && img.data) {
+                    const canvas = document.createElement('canvas')
+                    canvas.width = img.width
+                    canvas.height = img.height
+                    const ctx = canvas.getContext('2d')
+                    const imageData = new ImageData(new Uint8ClampedArray(img.data), img.width, img.height)
+                    ctx.putImageData(imageData, 0, 0)
 
-                // Convert canvas to blob
-                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
-                zip.file(`page${pageNum}_img${imgIndex}.png`, blob)
-                imgIndex++
+                    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'))
+                    extracted.push({ name: `page${pageNum}_img${imgIndex}.png`, blob })
+                    imgIndex++
+                  }
+                } catch (err) {
+                  console.warn('Failed to extract image:', err)
+                }
               }
-            } catch (err) {
-              console.warn('Failed to extract image:', err)
             }
+            return { pageNum, extracted };
+          })());
+        }
+        
+        const pagesData = await Promise.all(pagePromises);
+        pagesData.sort((a, b) => a.pageNum - b.pageNum);
+        for (const { extracted } of pagesData) {
+          for (const item of extracted) {
+            zip.file(item.name, item.blob);
           }
         }
-
-        onProgress(40 + (pageNum / pdf.numPages) * 50)
+        onProgress(40 + (end / pdf.numPages) * 50)
       }
 
       onProgress(90)

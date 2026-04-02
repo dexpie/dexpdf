@@ -1,102 +1,159 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import { triggerConfetti } from '../utils/confetti'
 import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
+import { configurePdfWorker } from '../utils/pdfWorker'
+import ToolLayout from '../components/common/ToolLayout'
+import FileDropZone from '../components/common/FileDropZone'
+import ActionButtons from '../components/common/ActionButtons'
+import { useTranslation } from 'react-i18next'
+import { FileText, AlertCircle, CheckCircle, Settings, AlignLeft, Type } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
-try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) { }
+configurePdfWorker()
 
 export default function PdfToTextTool() {
+  const { t } = useTranslation()
   const [batchMode, setBatchMode] = useState(false)
   const [file, setFile] = useState(null)
   const [busy, setBusy] = useState(false)
-  const [dragging, setDragging] = useState(false)
-  const [dropped, setDropped] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [outputFileName, setOutputFileName] = useState('')
-  const errorRef = React.useRef(null);
-  const successRef = React.useRef(null);
-  React.useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus(); }, [errorMsg]);
-  React.useEffect(() => { if (successMsg && successRef.current) successRef.current.focus(); }, [successMsg]);
+  const [progressText, setProgressText] = useState('')
+  const [includePageHeaders, setIncludePageHeaders] = useState(true)
+  const [extractMode, setExtractMode] = useState('text') // text or raw
 
-  async function loadFile(e) {
-    setErrorMsg(''); setSuccessMsg('');
-    const f = e.target.files[0]
+  async function handleFileChange(files) {
+    setErrorMsg('')
+    setSuccessMsg('')
+    const f = files[0]
     if (!f) return
     if (!f.name.toLowerCase().endsWith('.pdf')) {
-      setErrorMsg('Please select a PDF file.');
-      return;
+      setErrorMsg(t('tools.pdfToText.errorPdf', 'Please select a PDF file.'))
+      return
     }
     if (f.size > 50 * 1024 * 1024) {
-      setErrorMsg('File is too large (max 50MB).');
-      return;
+      setErrorMsg(t('tools.pdfToText.errorSize', 'File is too large (max 50MB).'))
+      return
     }
     setFile(f)
     setOutputFileName(getDefaultFilename(f))
   }
 
-  function onDragEnter(e) { e.preventDefault(); if (!busy) setDragging(true) }
-  function onDragOverZone(e) { e.preventDefault(); if (!busy) e.dataTransfer.dropEffect = 'copy' }
-  function onDragLeave(e) { e.preventDefault(); if (!busy) setDragging(false) }
-  async function onDropZone(e) { e.preventDefault(); if (busy) return; setDragging(false); const f = e.dataTransfer?.files?.[0]; if (f) { setFile(f); setDropped(true); setTimeout(() => setDropped(false), 1500); } }
-
   async function extract() {
-    if (!file) { setErrorMsg('Please select a PDF file first.'); return; }
-    setErrorMsg(''); setSuccessMsg('');
+    if (!file) {
+      setErrorMsg(t('tools.pdfToText.errorNoFile', 'Please select a PDF file first.'))
+      return
+    }
+    setErrorMsg('')
+    setSuccessMsg('')
     setBusy(true)
+    setProgressText(t('tools.pdfToText.reading', 'Reading PDF...'))
+
     try {
       const data = await file.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data }).promise
       let out = ''
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i)
-        const txtContent = await page.getTextContent()
-        const strings = txtContent.items.map(it => it.str)
-        out += `\n--- Page ${i} ---\n` + strings.join(' ') + '\n'
+      const numPages = pdf.numPages
+
+      const BATCH_SIZE = 10
+      for (let start = 1; start <= numPages; start += BATCH_SIZE) {
+        const end = Math.min(start + BATCH_SIZE - 1, numPages)
+        const pagePromises = []
+        for (let i = start; i <= end; i++) {
+          pagePromises.push(
+            pdf
+              .getPage(i)
+              .then(async (page) => {
+                const txtContent = await page.getTextContent()
+                const strings = txtContent.items.map((it) => it.str)
+                return {
+                  pageNum: i,
+                  text: includePageHeaders
+                    ? `\n--- Page ${i} ---\n` + strings.join(' ') + '\n'
+                    : strings.join(' ') + '\n',
+                }
+              })
+              .catch((e) => ({ pageNum: i, text: `\n--- Page ${i} (Error) ---\n` }))
+          )
+        }
+        const pagesData = await Promise.all(pagePromises)
+        pagesData.sort((a, b) => a.pageNum - b.pageNum)
+        for (const { text } of pagesData) out += text
+        setProgressText(
+          t('tools.pdfToText.progress', 'Processing... {{percent}}%', {
+            percent: Math.round((end / numPages) * 100),
+          })
+        )
       }
+
       const blob = new Blob([out], { type: 'text/plain' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, ''), '.txt')
+      a.download = getOutputFilename(
+        outputFileName,
+        file.name.replace(/\.pdf$/i, ''),
+        '.txt'
+      )
       a.click()
       URL.revokeObjectURL(url)
-      setSuccessMsg('Success! Text extracted and downloaded.');
-    } catch (err) { console.error(err); setErrorMsg('Failed: ' + (err.message || err)); }
-    finally { setBusy(false) }
+
+      setSuccessMsg(t('tools.pdfToText.success', 'Success! Text extracted and downloaded.'))
+      triggerConfetti()
+    } catch (err) {
+      console.error(err)
+      setErrorMsg(t('tools.pdfToText.error', 'Failed: {{message}}', { message: err.message || err }))
+    } finally {
+      setBusy(false)
+      setProgressText('')
+    }
   }
 
-  // Batch processing: Extract text from multiple PDFs
+  // Batch processing
   const processBatchFile = async (file, index, onProgress) => {
     try {
       onProgress(10)
-
-      // Load PDF
       const data = await file.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data }).promise
       onProgress(25)
 
-      // Extract text from all pages
       let out = ''
       const numPages = pdf.numPages
+      const BATCH_SIZE = 10
 
-      for (let i = 1; i <= numPages; i++) {
-        const page = await pdf.getPage(i)
-        const txtContent = await page.getTextContent()
-        const strings = txtContent.items.map(it => it.str)
-        out += `\n--- Page ${i} ---\n` + strings.join(' ') + '\n'
-
-        // Update progress for each page
-        onProgress(25 + (i / numPages) * 65)
+      for (let start = 1; start <= numPages; start += BATCH_SIZE) {
+        const end = Math.min(start + BATCH_SIZE - 1, numPages)
+        const pagePromises = []
+        for (let i = start; i <= end; i++) {
+          pagePromises.push(
+            pdf
+              .getPage(i)
+              .then(async (page) => {
+                const txtContent = await page.getTextContent()
+                const strings = txtContent.items.map((it) => it.str)
+                return {
+                  pageNum: i,
+                  text: includePageHeaders
+                    ? `\n--- Page ${i} ---\n` + strings.join(' ') + '\n'
+                    : strings.join(' ') + '\n',
+                }
+              })
+              .catch((e) => ({ pageNum: i, text: `\n--- Page ${i} (Error) ---\n` }))
+          )
+        }
+        const pagesData = await Promise.all(pagePromises)
+        pagesData.sort((a, b) => a.pageNum - b.pageNum)
+        for (const { text } of pagesData) out += text
+        onProgress(25 + (end / numPages) * 65)
       }
 
       onProgress(90)
-
-      // Create text blob
       const blob = new Blob([out], { type: 'text/plain' })
       onProgress(100)
-
       return blob
     } catch (error) {
       console.error(`Error extracting text from ${file.name}:`, error)
@@ -105,85 +162,210 @@ export default function PdfToTextTool() {
   }
 
   return (
-    <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
-      <h2 style={{ textAlign: 'center', marginBottom: 16 }}>PDF → Text</h2>
-
-      {/* Mode Toggle */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 16 }}>
+    <ToolLayout
+      title={t('tools.pdfToText.title', 'PDF to Text')}
+      description={t(
+        'tools.pdfToText.description',
+        'Extract plain text from PDF documents quickly and accurately'
+      )}
+    >
+      {/* Mode Switcher */}
+      <div className="flex justify-center gap-4 mb-8">
         <button
-          className={!batchMode ? 'btn-primary' : 'btn-outline'}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${
+            !batchMode
+              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+          }`}
           onClick={() => setBatchMode(false)}
-          style={{ minWidth: 120 }}
         >
-          📄 Single File
+          {t('tools.common.singleFile', '📄 Single File')}
         </button>
         <button
-          className={batchMode ? 'btn-primary' : 'btn-outline'}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${
+            batchMode
+              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+          }`}
           onClick={() => setBatchMode(true)}
-          style={{ minWidth: 120 }}
         >
-          🔄 Batch Extract
+          {t('tools.common.batchConvert', '🔄 Batch Convert')}
         </button>
       </div>
 
-      {/* Batch Mode */}
-      {batchMode && (
+      {batchMode ? (
         <UniversalBatchProcessor
-          toolName="Extract Text"
+          toolName={t('tools.pdfToText.title', 'Extract Text')}
           processFile={processBatchFile}
           acceptedTypes=".pdf"
           outputExtension=".txt"
           maxFiles={100}
           customOptions={
-            <div style={{ padding: '12px 0' }}>
-              <div style={{ fontSize: 14, color: '#666', marginBottom: 8 }}>
-                💡 <strong>Batch Extract Mode:</strong> Extract text from multiple PDFs at once.
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="text-sm text-slate-600 dark:text-slate-300 mb-3">
+                <span className="flex items-center gap-2">
+                  <AlignLeft className="w-4 h-4 text-indigo-500" />
+                  {t('tools.pdfToText.batchOptions', 'Extraction Options')}
+                </span>
               </div>
-              <div style={{ fontSize: 13, color: '#888' }}>
-                📝 Plain text extraction with page separators<br />
-                📦 Download individual .txt files or all as ZIP<br />
-                ⚡ Process up to 100 PDFs simultaneously
-              </div>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includePageHeaders}
+                  onChange={(e) => setIncludePageHeaders(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <span className="text-sm text-slate-600 dark:text-slate-400">
+                  {t('tools.pdfToText.includeHeaders', 'Include page headers (--- Page X ---)')}
+                </span>
+              </label>
             </div>
           }
         />
-      )}
+      ) : (
+        <div className="max-w-4xl mx-auto">
+          <AnimatePresence>
+            {errorMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-100 dark:border-red-800/30 flex items-center gap-2 mb-6"
+              >
+                <AlertCircle className="w-5 h-5" /> {errorMsg}
+              </motion.div>
+            )}
+            {successMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-xl border border-green-100 dark:border-green-800/30 flex items-center gap-2 mb-6"
+              >
+                <CheckCircle className="w-5 h-5" /> {successMsg}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-      {/* Single File Mode */}
-      {!batchMode && (
-        <div>
-          {errorMsg && (
-            <div ref={errorRef} tabIndex={-1} aria-live="assertive" style={{ color: '#dc2626', marginBottom: 8, background: '#fee2e2', padding: 8, borderRadius: 6, outline: 'none' }}>{errorMsg}</div>
-          )}
-          {successMsg && (
-            <div ref={successRef} tabIndex={-1} aria-live="polite" style={{ color: '#059669', marginBottom: 8, background: '#d1fae5', padding: 8, borderRadius: 6, outline: 'none' }}>{successMsg}</div>
-          )}
-          {busy && <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}><span className="loader" style={{ display: 'inline-block', width: 24, height: 24, border: '3px solid #3b82f6', borderTop: '3px solid #fff', borderRadius: '50%', animation: 'spin 1s linear infinite', verticalAlign: 'middle' }}></span> <span>Processing, please wait...</span></div>}
-          <div className={`dropzone ${dragging ? 'dragover' : ''}`} onDragEnter={onDragEnter} onDragOver={onDragOverZone} onDragLeave={onDragLeave} onDrop={onDropZone} style={{ opacity: busy ? 0.6 : 1, pointerEvents: busy ? 'none' : 'auto', border: '2px dashed #3b82f6', borderRadius: 16, padding: 24, marginBottom: 16, background: '#f8fafc' }}>
-            <input type="file" accept="application/pdf" onChange={loadFile} disabled={busy} />
-            <div className="muted">Select a PDF to extract text (plain text).</div>
-            {dropped && <div className="drop-overlay" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(59,130,246,0.1)', color: '#2563eb', fontSize: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 16 }}>✓ Uploaded</div>}
-          </div>
-          {file && (
-            <div style={{ marginBottom: 8, background: '#f9fafb', borderRadius: 8, padding: 8, boxShadow: '0 1px 4px #0001' }}>
-              <div style={{ fontWeight: 500, color: '#3b82f6', wordBreak: 'break-all' }}>{file.name}</div>
-              <div style={{ color: '#888', fontSize: 13 }}>{(file.size / 1024).toFixed(1)} KB • {file.lastModified ? new Date(file.lastModified).toLocaleString() : ''}</div>
+          {/* Settings Card */}
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm max-w-2xl mx-auto w-full mb-6">
+            <div className="flex items-center gap-2 mb-4 text-slate-800 dark:text-slate-200 font-semibold">
+              <Settings className="w-5 h-5 text-indigo-500" />
+              <span>{t('tools.common.settings', 'Extraction Settings')}</span>
             </div>
-          )}
-          {file && (
-            <FilenameInput
-              value={outputFileName}
-              onChange={(e) => setOutputFileName(e.target.value)}
-              disabled={busy}
-              placeholder="output"
-            />
-          )}
-          <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button className="btn-primary" onClick={extract} disabled={busy || !file}>{busy ? 'Working...' : 'Extract Text'}</button>
-            <button className="btn-ghost" style={{ color: '#dc2626', marginLeft: 'auto' }} onClick={() => { setFile(null); setErrorMsg(''); setSuccessMsg(''); }} disabled={busy || !file}>Reset</button>
+            <div className="space-y-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includePageHeaders}
+                  onChange={(e) => setIncludePageHeaders(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <div>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {t('tools.pdfToText.includeHeaders', 'Include page headers')}
+                  </span>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {t('tools.pdfToText.headersDesc', 'Adds "--- Page X ---" markers between pages')}
+                  </p>
+                </div>
+              </label>
+            </div>
           </div>
+
+          {!file ? (
+            <FileDropZone
+              onFiles={handleFileChange}
+              accept="application/pdf"
+              disabled={busy}
+              hint={t('tools.pdfToText.hint', 'Upload PDF to extract text')}
+            />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8"
+            >
+              <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center text-center gap-6">
+                {/* Icon */}
+                <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center mb-2">
+                  <Type className="w-10 h-10" />
+                </div>
+
+                {/* File Info */}
+                <div>
+                  <h3 className="font-bold text-xl text-slate-800 dark:text-slate-200 mb-2">
+                    {file.name}
+                  </h3>
+                  <p className="text-slate-500 dark:text-slate-400">
+                    {t('tools.pdfToText.readyToExtract', 'Ready to extract text')}
+                  </p>
+                </div>
+
+                {/* Info Box */}
+                <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl w-full max-w-md border border-slate-100 dark:border-slate-700">
+                  <div className="flex items-start gap-3">
+                    <FileText className="w-5 h-5 text-indigo-500 mt-1" />
+                    <div className="text-left">
+                      <h4 className="font-semibold text-slate-700 dark:text-slate-300 text-sm">
+                        {t('tools.pdfToText.howItWorks', 'How it works')}
+                      </h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        {t(
+                          'tools.pdfToText.description',
+                          'Extracts readable text from the PDF. For scanned documents, use OCR Tool instead.'
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Progress */}
+                {progressText && (
+                  <div className="w-full max-w-md text-center">
+                    <div className="flex items-center justify-center gap-2 text-indigo-600 dark:text-indigo-400">
+                      <div className="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                      <span className="text-sm font-medium">{progressText}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Filename Input */}
+                <div className="w-full max-w-md">
+                  <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2 text-left">
+                    {t('tools.common.outputFilename', 'Output Filename')}
+                  </label>
+                  <FilenameInput
+                    value={outputFileName}
+                    onChange={(e) => setOutputFileName(e.target.value)}
+                    placeholder="output"
+                    disabled={busy}
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 w-full max-w-md">
+                  <button
+                    onClick={() => setFile(null)}
+                    className="flex-1 py-3 rounded-xl font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    disabled={busy}
+                  >
+                    {t('tools.common.cancel', 'Cancel')}
+                  </button>
+                  <ActionButtons
+                    primaryText={
+                      busy ? progressText || t('tools.common.processing', 'Processing...') : t('tools.pdfToText.extractText', 'Extract Text')
+                    }
+                    onPrimary={extract}
+                    loading={busy}
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
       )}
-    </div>
+    </ToolLayout>
   )
 }
