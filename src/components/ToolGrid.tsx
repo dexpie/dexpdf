@@ -11,6 +11,11 @@ import {
   getRecentToolIds,
   PREFERENCES_EVENT,
 } from '@/utils/toolPreferences'
+import {
+  getIntentToolIds,
+  getToolSearchText,
+  POPULAR_WORKFLOWS,
+} from '@/utils/toolDiscovery'
 
 const CATEGORY_COPY: Record<string, string> = {
   all: 'Everything you need for daily document work.',
@@ -48,11 +53,22 @@ export default function ToolGrid() {
 
   const filteredTools = useMemo(() => {
     const query = searchQuery.trim().toLowerCase()
-    return TOOLS.filter(tool => {
-      const matchesSearch = !query || `${tool.title} ${tool.description}`.toLowerCase().includes(query)
-      const matchesCategory = activeCategory === 'all' || tool.category === activeCategory
-      return matchesSearch && matchesCategory
-    })
+    const intentIds = new Set(query ? getIntentToolIds(query) : [])
+    const scored = TOOLS
+      .filter(tool => activeCategory === 'all' || tool.category === activeCategory)
+      .map(tool => {
+        const text = getToolSearchText(tool)
+        let score = 0
+        if (!query) score = 1
+        if (query && text.includes(query)) score += 8
+        if (query && tool.title.toLowerCase().includes(query)) score += 10
+        if (intentIds.has(tool.id)) score += 20
+        return { tool, score }
+      })
+      .filter(item => !query || item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(item => item.tool)
+    return scored
   }, [activeCategory, searchQuery])
 
   const shouldLimit = activeCategory === 'all' && !searchQuery && !showAll
@@ -63,6 +79,12 @@ export default function ToolGrid() {
   const featuredTools = FEATURED_TOOL_IDS
     .map(id => TOOLS.find(tool => tool.id === id))
     .filter(Boolean)
+  const workflows = POPULAR_WORKFLOWS.map(workflow => ({
+    ...workflow,
+    tools: workflow.toolIds
+      .map(id => TOOLS.find(tool => tool.id === id))
+      .filter(Boolean),
+  })).filter(workflow => workflow.tools.length > 0)
 
   return (
     <section id="tool-catalog" className="relative px-4 py-16 md:px-6 md:py-24">
@@ -101,6 +123,45 @@ export default function ToolGrid() {
                   </div>
                 </Link>
               ))}
+            </div>
+          </div>
+        )}
+
+        {workflows.length > 0 && activeCategory === 'all' && !searchQuery && (
+          <div className="mb-8">
+            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-primary">
+                  <SlidersHorizontal className="h-3.5 w-3.5" />
+                  Popular workflows
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">One-click paths for common document jobs.</p>
+              </div>
+            </div>
+            <div className="grid gap-3 lg:grid-cols-4">
+              {workflows.map(workflow => {
+                const firstTool = workflow.tools[0] as any
+                return (
+                  <Link
+                    key={workflow.id}
+                    href={firstTool.href || `/${firstTool.id}`}
+                    className="group rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg"
+                  >
+                    <h3 className="text-sm font-black text-foreground">{workflow.title}</h3>
+                    <p className="mt-1 min-h-10 text-xs leading-5 text-muted-foreground">{workflow.description}</p>
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      {workflow.tools.map((tool: any, index) => (
+                        <React.Fragment key={tool.id}>
+                          <span className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-foreground">
+                            {tool.title}
+                          </span>
+                          {index < workflow.tools.length - 1 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </Link>
+                )
+              })}
             </div>
           </div>
         )}
@@ -183,7 +244,7 @@ export default function ToolGrid() {
             <input
               id="tool-search"
               type="search"
-              placeholder="Search a task..."
+              placeholder="Try: gabung, kecilkan, qr, scan..."
               value={searchQuery}
               onChange={event => setSearchQuery(event.target.value)}
               className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-10 text-sm font-medium text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/50 focus:ring-4 focus:ring-primary/10"

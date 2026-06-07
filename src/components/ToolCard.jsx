@@ -8,6 +8,7 @@ import {
   PREFERENCES_EVENT,
   toggleFavoriteTool,
 } from '@/utils/toolPreferences'
+import { getToolBadges } from '@/utils/toolDiscovery'
 
 const CATEGORY_STYLES = {
   organize: { icon: 'bg-red-500/10 text-red-500', label: 'Organize' },
@@ -20,6 +21,7 @@ const CATEGORY_STYLES = {
 export default function ToolCard({ tool }) {
   const styles = CATEGORY_STYLES[tool.category] || CATEGORY_STYLES.default
   const [isFavorite, setIsFavorite] = useState(false)
+  const badges = getToolBadges(tool)
 
   useEffect(() => {
     const syncFavorite = () => setIsFavorite(getFavoriteToolIds().includes(tool.id))
@@ -55,6 +57,15 @@ export default function ToolCard({ tool }) {
             </p>
             <h3 className="text-base font-bold tracking-tight text-foreground">{tool.title}</h3>
             <p className="mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground">{tool.description}</p>
+            {badges.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {badges.map(badge => (
+                  <span key={badge} className="rounded-full border border-border bg-secondary px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                    {badge}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </article>
       </Link>

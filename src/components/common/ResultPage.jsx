@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Download, RefreshCcw, FileText, TrendingDown, Eye, CheckCircle, ArrowRight } from 'lucide-react'
+import { Download, RefreshCcw, FileText, TrendingDown, Eye, CheckCircle, ArrowRight, Clock3 } from 'lucide-react'
 import Link from 'next/link'
 import { useFileHistory } from '@/hooks/useFileHistory'
 import { TOOLS } from '@/config/tools'
@@ -138,6 +138,10 @@ export default function ResultPage({
     imgs2pdf: ['compress', 'ocr', 'protect'],
     ocr: ['pdf2word', 'pdf2text', 'translate-pdf'],
     signature: ['flatten', 'protect', 'compress'],
+    'qr-code': ['qr-reader', 'imgs2pdf', 'invoice-generator'],
+    'qr-reader': ['qr-code', 'pdf2text', 'scan-pdf'],
+    'pdf2excel': ['excel2pdf', 'compress', 'protect'],
+    'invoice-generator': ['signature', 'compress', 'protect'],
   }
   const suggestionIds = nextToolIds[toolId] || ['compress', 'merge', 'protect']
   const suggestions = suggestionIds
@@ -278,8 +282,16 @@ export default function ResultPage({
 
       {/* Suggestions */}
       <div className="bg-secondary/50 rounded-2xl p-8 border border-border max-w-3xl mx-auto">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Common next steps</h3>
-        <p className="mb-6 text-sm text-muted-foreground">Choose another useful action for your document.</p>
+        <div className="mb-6 flex flex-col items-center justify-between gap-3 sm:flex-row sm:text-left">
+          <div>
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Recommended next steps</h3>
+            <p className="text-sm text-muted-foreground">Keep the workflow moving with tools that usually come next.</p>
+          </div>
+          <Link href="/my-documents" className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-bold text-foreground transition hover:border-primary/30 hover:text-primary">
+            <Clock3 className="h-4 w-4" />
+            View history
+          </Link>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {suggestions.map((tool) => (
             <Link href={tool.href || `/${tool.id}`} key={tool.id}>
