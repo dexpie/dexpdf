@@ -214,10 +214,16 @@
 /* Homepage workspace treatment */
 .hero-grid {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(37, 99, 235, 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.075) 1px, transparent 1px);
   background-size: 52px 52px;
   background-position: center center;
+}
+
+.dark .hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
 }
 
 .hero-grid::after {
@@ -225,8 +231,12 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: radial-gradient(circle at center, transparent 15%, #0a1020 82%);
+  background: radial-gradient(circle at center, transparent 18%, rgba(248, 250, 252, 0.9) 86%);
   pointer-events: none;
+}
+
+.dark .hero-grid::after {
+  background: radial-gradient(circle at center, transparent 15%, #0a1020 82%);
 }
 
 .hero-orb {
@@ -263,6 +273,10 @@
   inset: 1px;
   z-index: -1;
   border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.75), rgba(219, 234, 254, 0.35));
+}
+
+.dark .workspace-card::before {
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015));
 }
 
