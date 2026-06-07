@@ -1,5 +1,5 @@
 import {
-  Zap, Layers, Scissors, Download, FileText, LayoutTemplate, FileOutput, PenTool, FileImage, Image, FileSignature, RefreshCcw, Unlock, Lock, Type, FileSpreadsheet, BrainCircuit, Wand2, ShieldAlert, Eraser, Camera, GitCompare, FileInput, ClipboardList, CheckCircle, FileCheck, Images, FolderOutput, AlignLeft, AlignCenter, AlignRight, FileType, Monitor, FileCode, BookOpen, FileText as FileTextIcon, Table, FileJson, FileCode2, Contrast
+  Zap, Layers, Scissors, Download, FileText, LayoutTemplate, FileOutput, PenTool, FileImage, Image, FileSignature, RefreshCcw, Unlock, Lock, Type, FileSpreadsheet, BrainCircuit, Wand2, ShieldAlert, Eraser, Camera, GitCompare, FileInput, ClipboardList, CheckCircle, FileCheck, Images, FolderOutput, AlignLeft, AlignCenter, AlignRight, FileType, Monitor, FileCode, BookOpen, FileText as FileTextIcon, Table, FileJson, FileCode2, Contrast, QrCode
 } from 'lucide-react'
 
 /**
@@ -77,4 +77,6 @@ export const TOOLS = [
   { id: 'summarize-pdf', category: 'create', title: "AI Summarizer", description: "Summarize text from the first ten pages.", icon: BrainCircuit, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/summarize-pdf" },
   { id: 'smart-organize', category: 'create', title: "Smart Organizer", description: "Suggest names and folders from first-page patterns.", icon: Wand2, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/smart-organize" },
   { id: 'translate-pdf', category: 'create', title: "Translate PDF Text", description: "Translate extracted text from the first five pages.", icon: FileText, color: "text-blue-500", iconBg: "bg-blue-50", href: "/translate-pdf" },
+  { id: 'qr-code', category: 'create', title: "QR Code Studio", description: "Create custom QR codes with colors, shapes, and logos.", icon: QrCode, color: "text-emerald-500", iconBg: "bg-emerald-50", href: "/qr-code" },
+  { id: 'qr-reader', category: 'create', title: "QR Code Reader", description: "Scan QR codes from camera or image files.", icon: QrCode, color: "text-green-500", iconBg: "bg-green-50", href: "/qr-reader" },
 ]
