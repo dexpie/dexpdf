@@ -21,7 +21,7 @@ import {
   PREFERENCES_EVENT,
 } from '@/utils/toolPreferences'
 
-const QUICK_TOOLS = ['merge', 'compress', 'pdf2word', 'edit']
+const QUICK_TOOLS = ['merge', 'compress', 'qr-code', 'qr-reader']
 
 export default function LandingPage() {
   const [recentTools, setRecentTools] = useState<any[]>([])

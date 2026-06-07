@@ -20,6 +20,8 @@ const CATEGORY_COPY: Record<string, string> = {
   create: 'Create polished documents and use AI helpers.',
 }
 
+const FEATURED_TOOL_IDS = ['qr-code', 'qr-reader', 'merge', 'compress', 'pdf2word', 'protect']
+
 export default function ToolGrid() {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
@@ -58,12 +60,53 @@ export default function ToolGrid() {
   const shortcuts = shortcutIds
     .map(id => TOOLS.find(tool => tool.id === id))
     .filter(Boolean)
+  const featuredTools = FEATURED_TOOL_IDS
+    .map(id => TOOLS.find(tool => tool.id === id))
+    .filter(Boolean)
 
   return (
     <section id="tool-catalog" className="relative px-4 py-16 md:px-6 md:py-24">
       <div className="mx-auto max-w-7xl">
-        {shortcuts.length > 0 && (
-          <div className="mb-12 rounded-3xl border border-border bg-card p-5 shadow-sm md:p-6">
+        {featuredTools.length > 0 && activeCategory === 'all' && !searchQuery && (
+          <div className="mb-8 rounded-3xl border border-blue-200/70 bg-gradient-to-br from-blue-50 via-card to-violet-50 p-5 shadow-sm dark:border-blue-500/20 dark:from-blue-950/30 dark:via-card dark:to-violet-950/20 md:p-6">
+            <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-primary">
+                  <Star className="h-3.5 w-3.5 fill-current" />
+                  Featured tools
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">Start with the tools people reach for most, including QR creation and scanning.</p>
+              </div>
+              <Link href="/qr-code" className="inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:translate-x-0.5">
+                Open QR Studio
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+              {featuredTools.map((tool: any) => (
+                <Link
+                  key={tool.id}
+                  href={tool.href || `/${tool.id}`}
+                  className="group flex min-h-24 flex-col justify-between rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <tool.icon className="h-5 w-5" />
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
+                  </div>
+                  <div>
+                    <p className="mt-4 text-sm font-black text-foreground">{tool.title}</p>
+                    <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{tool.description}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {shortcuts.length > 1 && (
+          <div className="mb-8 rounded-3xl border border-border bg-card p-5 shadow-sm md:p-6">
             <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-primary">
