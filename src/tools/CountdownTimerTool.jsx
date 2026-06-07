@@ -42,7 +42,7 @@ export default function CountdownTimerTool() {
             <div className="max-w-2xl mx-auto space-y-8 text-center">
 
                 <div className={`transition-all duration-300 ${timeLeft === 0 ? 'scale-110 animate-bounce' : ''}`}>
-                    <div className={`text-9xl font-black font-mono tabular-nums ${timeLeft < 10 && timeLeft > 0 ? 'text-red-500 animate-pulse' : 'text-slate-800'}`}>
+                    <div className={`text-9xl font-black font-mono tabular-nums ${timeLeft < 10 && timeLeft > 0 ? 'text-red-500 animate-pulse' : 'text-foreground'}`}>
                         {format(timeLeft)}
                     </div>
                 </div>
@@ -53,7 +53,7 @@ export default function CountdownTimerTool() {
                             <button
                                 key={m}
                                 onClick={() => { setDuration(m * 60); setTimeLeft(m * 60); }}
-                                className={`px-4 py-2 rounded-full font-bold text-sm ${duration === m * 60 ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                                className={`px-4 py-2 rounded-full font-bold text-sm ${duration === m * 60 ? 'bg-slate-800 text-white' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
                             >
                                 {m}m
                             </button>
@@ -72,7 +72,7 @@ export default function CountdownTimerTool() {
                             <Pause className="icon-xl fill-current" />
                         </button>
                     )}
-                    <button onClick={reset} className="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center text-slate-500 shadow-xl hover:scale-110 transition-transform">
+                    <button onClick={reset} className="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center text-muted-foreground shadow-xl hover:scale-110 transition-transform">
                         <RefreshCw className="icon-xl" />
                     </button>
                 </div>

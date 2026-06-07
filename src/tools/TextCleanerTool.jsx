@@ -22,11 +22,11 @@ export default function TextCleanerTool() {
         <ToolLayout title="Text Cleaner" description="Deduplicate, sort, trim, and format lists.">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-6 h-[600px]">
 
-                <div className="flex-1 flex flex-col bg-white rounded-3xl shadow p-4 border border-slate-200">
-                    <label className="font-bold text-slate-500 mb-2">Input Text</label>
+                <div className="flex-1 flex flex-col bg-card rounded-3xl shadow p-4 border border-border">
+                    <label className="font-bold text-muted-foreground mb-2">Input Text</label>
                     <textarea
                         value={input} onChange={e => setInput(e.target.value)}
-                        className="flex-1 resize-none outline-none font-mono text-sm p-4 bg-slate-50 rounded-xl"
+                        className="flex-1 resize-none outline-none font-mono text-sm p-4 bg-secondary rounded-xl"
                         placeholder="Paste list here..."
                     />
                 </div>
@@ -42,8 +42,8 @@ export default function TextCleanerTool() {
 
                 <div className="flex-1 flex flex-col bg-slate-900 rounded-3xl shadow p-4 border border-slate-800">
                     <div className="flex justify-between items-center mb-2">
-                        <label className="font-bold text-slate-400">Cleaned Result</label>
-                        <button onClick={() => navigator.clipboard.writeText(output)} className="text-slate-400 hover:text-white"><Copy className="w-4 h-4" /></button>
+                        <label className="font-bold text-muted-foreground">Cleaned Result</label>
+                        <button onClick={() => navigator.clipboard.writeText(output)} className="text-muted-foreground hover:text-white"><Copy className="w-4 h-4" /></button>
                     </div>
                     <textarea
                         value={output} readOnly
@@ -61,7 +61,7 @@ function ActionButton({ icon, label, onClick }) {
     return (
         <button
             onClick={onClick}
-            className="p-3 bg-white text-slate-600 rounded-xl border border-slate-200 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all flex items-center gap-2"
+            className="p-3 bg-card text-slate-600 rounded-xl border border-border font-bold text-sm hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all flex items-center gap-2"
         >
             {icon} {label}
         </button>

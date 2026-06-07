@@ -70,8 +70,8 @@ export default function ColorConverterTool() {
                         className="w-full aspect-square rounded-3xl shadow-lg border-4 border-white ring-1 ring-slate-200"
                         style={{ backgroundColor: hex }}
                     />
-                    <div className="bg-white p-4 rounded-2xl text-center shadow-sm border border-slate-100">
-                        <div className="text-slate-400 text-xs font-bold uppercase mb-1">Preview</div>
+                    <div className="bg-card p-4 rounded-2xl text-center shadow-sm border border-border">
+                        <div className="text-muted-foreground text-xs font-bold uppercase mb-1">Preview</div>
                         <input
                             type="color"
                             value={hex}
@@ -84,28 +84,28 @@ export default function ColorConverterTool() {
                 {/* Converters */}
                 <div className="flex-1 space-y-4">
                     {/* HEX */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center group">
+                    <div className="bg-card p-6 rounded-2xl shadow-sm border border-border flex justify-between items-center group">
                         <div>
-                            <div className="text-slate-400 text-xs font-bold uppercase mb-1">HEX</div>
+                            <div className="text-muted-foreground text-xs font-bold uppercase mb-1">HEX</div>
                             <input
                                 value={hex}
                                 onChange={e => handleHex(e.target.value)}
-                                className="font-mono text-xl font-bold text-slate-800 outline-none uppercase w-full"
+                                className="font-mono text-xl font-bold text-foreground outline-none uppercase w-full"
                             />
                         </div>
-                        <button onClick={() => copy(hex)} className="p-2 text-slate-300 hover:text-blue-500"><Copy className="w-5 h-5" /></button>
+                        <button onClick={() => copy(hex)} className="p-2 text-muted-foreground hover:text-blue-500"><Copy className="w-5 h-5" /></button>
                     </div>
 
                     {/* RGB */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 group">
+                    <div className="bg-card p-6 rounded-2xl shadow-sm border border-border group">
                         <div className="flex justify-between items-center mb-2">
-                            <div className="text-slate-400 text-xs font-bold uppercase">RGB</div>
-                            <button onClick={() => copy(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)} className="p-2 text-slate-300 hover:text-blue-500"><Copy className="w-4 h-4" /></button>
+                            <div className="text-muted-foreground text-xs font-bold uppercase">RGB</div>
+                            <button onClick={() => copy(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)} className="p-2 text-muted-foreground hover:text-blue-500"><Copy className="w-4 h-4" /></button>
                         </div>
                         <div className="flex gap-4">
                             {['r', 'g', 'b'].map(k => (
                                 <div key={k} className="flex-1">
-                                    <label className="text-xs font-bold text-slate-300 uppercase block mb-1">{k}</label>
+                                    <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">{k}</label>
                                     <input
                                         type="number" min="0" max="255"
                                         value={rgb[k]}
@@ -114,7 +114,7 @@ export default function ColorConverterTool() {
                                             const newRgb = { ...rgb, [k]: val }
                                             updateFromRgb(newRgb.r, newRgb.g, newRgb.b)
                                         }}
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold"
+                                        className="w-full bg-secondary border border-border rounded-lg px-2 py-1 font-mono font-bold"
                                     />
                                 </div>
                             ))}
@@ -122,20 +122,20 @@ export default function ColorConverterTool() {
                     </div>
 
                     {/* HSL */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 group">
+                    <div className="bg-card p-6 rounded-2xl shadow-sm border border-border group">
                         <div className="flex justify-between items-center mb-2">
-                            <div className="text-slate-400 text-xs font-bold uppercase">HSL</div>
-                            <button onClick={() => copy(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`)} className="p-2 text-slate-300 hover:text-blue-500"><Copy className="w-4 h-4" /></button>
+                            <div className="text-muted-foreground text-xs font-bold uppercase">HSL</div>
+                            <button onClick={() => copy(`hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`)} className="p-2 text-muted-foreground hover:text-blue-500"><Copy className="w-4 h-4" /></button>
                         </div>
                         <div className="flex gap-4">
                             {['h', 's', 'l'].map(k => (
                                 <div key={k} className="flex-1">
-                                    <label className="text-xs font-bold text-slate-300 uppercase block mb-1">{k}</label>
+                                    <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">{k}</label>
                                     <input
                                         type="number"
                                         value={hsl[k]}
                                         readOnly
-                                        className="w-full bg-slate-50 border-none rounded-lg px-2 py-1 font-mono font-bold text-slate-500"
+                                        className="w-full bg-secondary border-none rounded-lg px-2 py-1 font-mono font-bold text-muted-foreground"
                                     />
                                 </div>
                             ))}
@@ -143,20 +143,20 @@ export default function ColorConverterTool() {
                     </div>
 
                     {/* CMYK */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 group">
+                    <div className="bg-card p-6 rounded-2xl shadow-sm border border-border group">
                         <div className="flex justify-between items-center mb-2">
-                            <div className="text-slate-400 text-xs font-bold uppercase">CMYK</div>
-                            <button onClick={() => copy(`cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)`)} className="p-2 text-slate-300 hover:text-blue-500"><Copy className="w-4 h-4" /></button>
+                            <div className="text-muted-foreground text-xs font-bold uppercase">CMYK</div>
+                            <button onClick={() => copy(`cmyk(${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%)`)} className="p-2 text-muted-foreground hover:text-blue-500"><Copy className="w-4 h-4" /></button>
                         </div>
                         <div className="flex gap-4">
                             {['c', 'm', 'y', 'k'].map(k => (
                                 <div key={k} className="flex-1">
-                                    <label className="text-xs font-bold text-slate-300 uppercase block mb-1">{k}</label>
+                                    <label className="text-xs font-bold text-muted-foreground uppercase block mb-1">{k}</label>
                                     <input
                                         type="number"
                                         value={cmyk[k]}
                                         readOnly
-                                        className="w-full bg-slate-50 border-none rounded-lg px-2 py-1 font-mono font-bold text-slate-500"
+                                        className="w-full bg-secondary border-none rounded-lg px-2 py-1 font-mono font-bold text-muted-foreground"
                                     />
                                 </div>
                             ))}

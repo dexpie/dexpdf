@@ -38,7 +38,7 @@ export default function BottomNav() {
             <div className="h-20 md:hidden" />
 
             {/* Bottom Bar */}
-            <div className="fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-50 md:hidden pb-safe">
+            <div className="fixed bottom-0 left-0 w-full bg-card border-t border-border z-50 md:hidden pb-safe">
                 <div className="flex justify-around items-center p-2">
                     {navItems.map((item) => {
                         const isActive = pathname === item.href
@@ -46,7 +46,7 @@ export default function BottomNav() {
                             <button
                                 key={item.id}
                                 onClick={item.action ? item.action : () => router.push(item.href || '/')}
-                                className={`flex flex-col items-center justify-center p-2 rounded-xl transition-colors ${isActive ? 'text-red-600 bg-red-50' : 'text-slate-400 hover:text-slate-600'}`}
+                                className={`flex flex-col items-center justify-center p-2 rounded-xl transition-colors ${isActive ? 'text-red-600 bg-red-50' : 'text-muted-foreground hover:text-foreground'}`}
                             >
                                 <item.icon className="w-5 h-5 mb-0.5" />
                                 <span className="text-[10px] font-bold">{item.label}</span>

@@ -44,7 +44,7 @@ export default function CommandPalette({ tools, isOpen, onClose }) {
             className="cmdk-dialog"
         >
             <div className="cmdk-header">
-                <Search className="w-5 h-5 text-slate-400 ml-4" />
+                <Search className="w-5 h-5 text-muted-foreground ml-4" />
                 <Command.Input
                     placeholder={isListening ? "Listening..." : "Type a command or search..."}
                     className="cmdk-input"
@@ -54,7 +54,7 @@ export default function CommandPalette({ tools, isOpen, onClose }) {
                 <button
                     onClick={startListening}
                     disabled={!supported}
-                    className={`mr-4 p-2 rounded-full transition-all ${isListening ? 'bg-red-100 text-red-600' : 'hover:bg-slate-100 text-slate-400'}`}
+                    className={`mr-4 p-2 rounded-full transition-all ${isListening ? 'bg-red-100 text-red-600' : 'hover:bg-secondary text-muted-foreground'}`}
                 >
                     {isListening ? <MicOff className="w-4 h-4 animate-pulse" /> : <Mic className="w-4 h-4" />}
                 </button>
@@ -90,7 +90,7 @@ export default function CommandPalette({ tools, isOpen, onClose }) {
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="font-medium">{tool.name}</span>
-                                    <span className="text-xs text-slate-400">{tool.desc}</span>
+                                    <span className="text-xs text-muted-foreground">{tool.desc}</span>
                                 </div>
                             </div>
                         </Command.Item>
@@ -115,7 +115,7 @@ export default function CommandPalette({ tools, isOpen, onClose }) {
             </Command.List>
 
             <div className="cmdk-footer">
-                <div className="flex gap-4 text-xs text-slate-400">
+                <div className="flex gap-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><kbd>↵</kbd> select</span>
                     <span className="flex items-center gap-1"><kbd>↓</kbd> navigate</span>
                     <span className="flex items-center gap-1"><kbd>esc</kbd> close</span>

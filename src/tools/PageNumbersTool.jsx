@@ -88,7 +88,7 @@ export default function PageNumbersTool() {
 
   // Visual Position Selector Component
   const PositionSelector = () => (
-    <div className="grid grid-cols-2 gap-4 w-full max-w-[200px] mx-auto bg-slate-50 p-4 rounded-xl border border-slate-200 aspect-[3/4] relative">
+    <div className="grid grid-cols-2 gap-4 w-full max-w-[200px] mx-auto bg-secondary p-4 rounded-xl border border-border aspect-[3/4] relative">
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-slate-200"></div>
       <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1px] bg-slate-200"></div>
 
@@ -101,7 +101,7 @@ export default function PageNumbersTool() {
         <button
           key={pos.id}
           onClick={() => setPosition(pos.id)}
-          className={`w-full h-full rounded-lg flex items-center justify-center transition-all ${position === pos.id ? 'bg-blue-500 text-white shadow-md scale-110 z-10' : 'bg-white text-slate-400 hover:bg-white hover:text-slate-600 hover:shadow-sm'}`}
+          className={`w-full h-full rounded-lg flex items-center justify-center transition-all ${position === pos.id ? 'bg-blue-500 text-white shadow-md scale-110 z-10' : 'bg-card text-muted-foreground hover:bg-card hover:text-slate-600 hover:shadow-sm'}`}
         >
           <pos.icon className="w-5 h-5" />
         </button>
@@ -114,13 +114,13 @@ export default function PageNumbersTool() {
 
       <div className="flex justify-center gap-4 mb-8">
         <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
           onClick={() => setBatchMode(false)}
         >
           📄 Single Single
         </button>
         <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
           onClick={() => setBatchMode(true)}
         >
           📚 Batch Process
@@ -159,18 +159,18 @@ export default function PageNumbersTool() {
           ) : (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid md:grid-cols-2 gap-8">
 
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2"><Layout className="w-5 h-5 text-blue-500" /> Position</h3>
+              <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
+                <h3 className="font-bold text-foreground mb-6 flex items-center gap-2"><Layout className="w-5 h-5 text-blue-500" /> Position</h3>
                 <PositionSelector />
-                <p className="text-center text-sm text-slate-500 mt-4 font-medium capitalize">{position.replace('-', ' ')}</p>
+                <p className="text-center text-sm text-muted-foreground mt-4 font-medium capitalize">{position.replace('-', ' ')}</p>
               </div>
 
               <div className="flex flex-col gap-6">
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex-1">
-                  <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><Hash className="w-5 h-5 text-blue-500" /> Configuration</h3>
+                <div className="bg-card p-6 rounded-2xl border border-border shadow-sm flex-1">
+                  <h3 className="font-bold text-foreground mb-4 flex items-center gap-2"><Hash className="w-5 h-5 text-blue-500" /> Configuration</h3>
 
                   <div className="mb-6">
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Start Number</label>
+                    <label className="block text-sm font-bold text-foreground mb-2">Start Number</label>
                     <input
                       type="number"
                       value={start}
@@ -180,7 +180,7 @@ export default function PageNumbersTool() {
                   </div>
 
                   <div className="mb-6">
-                    <label className="block text-sm font-bold text-slate-700 mb-2">Output Filename</label>
+                    <label className="block text-sm font-bold text-foreground mb-2">Output Filename</label>
                     <FilenameInput
                       value={outputFileName}
                       onChange={(e) => setOutputFileName(e.target.value)}
@@ -190,7 +190,7 @@ export default function PageNumbersTool() {
                   </div>
 
                   <div className="flex gap-2">
-                    <button className="px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors" onClick={() => setFile(null)}>Cancel</button>
+                    <button className="px-6 py-3 rounded-xl font-bold text-muted-foreground hover:bg-slate-100 transition-colors" onClick={() => setFile(null)}>Cancel</button>
                     <ActionButtons
                       primaryText="Add Numbers"
                       onPrimary={applyNumbers}

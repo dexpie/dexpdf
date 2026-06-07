@@ -21,13 +21,13 @@ export default function UrlEncoderTool() {
         <ToolLayout title="URL Encoder / Decoder" description="Safe URL formatting.">
             <div className="max-w-4xl mx-auto space-y-8">
 
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
-                    <label className="text-sm font-bold text-slate-500 uppercase mb-2 block">Input String</label>
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border">
+                    <label className="text-sm font-bold text-muted-foreground uppercase mb-2 block">Input String</label>
                     <textarea
                         value={input}
                         onChange={e => handleInput(e.target.value)}
                         placeholder="Paste URL or text here..."
-                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-blue-500 font-mono text-sm h-32 resize-none"
+                        className="w-full p-4 bg-secondary border border-border rounded-xl outline-none focus:ring-2 ring-blue-500 font-mono text-sm h-32 resize-none"
                     />
                 </div>
 
@@ -43,17 +43,17 @@ export default function UrlEncoderTool() {
 
 function ResultBox({ label, value, color }) {
     return (
-        <div className={`bg-white rounded-3xl shadow-md border border-slate-100 overflow-hidden flex flex-col`}>
+        <div className={`bg-card rounded-3xl shadow-md border border-border overflow-hidden flex flex-col`}>
             <div className={`p-4 bg-${color}-50 border-b border-${color}-100 flex justify-between items-center`}>
                 <span className={`font-bold text-${color}-600`}>{label}</span>
-                <button onClick={() => navigator.clipboard.writeText(value)} className="text-slate-400 hover:text-slate-600">
+                <button onClick={() => navigator.clipboard.writeText(value)} className="text-muted-foreground hover:text-slate-600">
                     <Copy className="w-4 h-4" />
                 </button>
             </div>
             <textarea
                 value={value}
                 readOnly
-                className="flex-1 p-4 resize-none outline-none font-mono text-sm text-slate-700 bg-white h-40"
+                className="flex-1 p-4 resize-none outline-none font-mono text-sm text-foreground bg-card h-40"
             />
         </div>
     )

@@ -30,19 +30,19 @@ export default function LoremIpsumGeneratorTool() {
         <ToolLayout title="Lorem Ipsum" description="Generate dummy text for your designs.">
             <div className="max-w-4xl mx-auto space-y-8">
 
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-wrap gap-4 items-end">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-wrap gap-4 items-end">
                     <div className="space-y-1 flex-1">
-                        <label className="text-xs font-bold text-slate-400 uppercase">Count</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">Count</label>
                         <input
                             type="number" min="1" max="100" value={count} onChange={e => setCount(Number(e.target.value))}
-                            className="w-full p-3 bg-slate-50 rounded-xl font-bold border border-slate-200"
+                            className="w-full p-3 bg-secondary rounded-xl font-bold border border-border"
                         />
                     </div>
                     <div className="space-y-1 flex-1">
-                        <label className="text-xs font-bold text-slate-400 uppercase">Unit</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">Unit</label>
                         <select
                             value={unit} onChange={e => setUnit(e.target.value)}
-                            className="w-full p-3 bg-slate-50 rounded-xl font-bold border border-slate-200 outline-none"
+                            className="w-full p-3 bg-secondary rounded-xl font-bold border border-border outline-none"
                         >
                             <option value="paragraphs">Paragraphs</option>
                             <option value="sentences">Sentences</option>
@@ -63,7 +63,7 @@ export default function LoremIpsumGeneratorTool() {
                     </button>
                 </div>
 
-                <div className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 min-h-[300px]">
+                <div className="bg-card p-8 rounded-3xl shadow-lg border border-border min-h-[300px]">
                     <div className="prose max-w-none text-slate-600 leading-relaxed whitespace-pre-line font-serif text-lg">
                         {text}
                     </div>

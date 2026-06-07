@@ -91,7 +91,7 @@ export default function EditorCanvas({
     return (
         <div
             ref={containerRef}
-            className="relative shadow-lg border border-gray-200 mx-auto bg-white overflow-hidden transition-all duration-300"
+            className="relative shadow-lg border border-border mx-auto bg-card overflow-hidden transition-all duration-300"
             style={{
                 width: dimensions.width || '100%',
                 height: dimensions.height || 400,
@@ -101,7 +101,7 @@ export default function EditorCanvas({
         >
             {/* Loading Overlay */}
             {loading && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
                     <div className="flex flex-col items-center">
                         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
                         <div className="text-sm font-medium text-slate-600">Rendering PDF...</div>

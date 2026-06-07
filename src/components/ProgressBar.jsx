@@ -43,7 +43,7 @@ export default function ProgressBar() {
         status !== 'idle' ? 'visible' : '',
         status === 'success'
           ? "bg-green-50 border-green-200 text-green-700"
-          : "bg-white border-slate-200 text-slate-700"
+          : "bg-card border-border text-foreground"
       )}
     >
       {status === 'progress' ? (

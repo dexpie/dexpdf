@@ -1,10 +1,11 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
+import { recordToolUse } from '@/utils/toolPreferences'
 
 // Utility for cleaner dynamic imports with loading state
 const loadTool = (importFunc) => dynamic(importFunc, {
-  loading: () => <div className="flex h-[400px] items-center justify-center p-8 bg-white rounded-xl shadow-sm border border-gray-100"><div className="w-8 h-8 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" /></div>,
+  loading: () => <div className="flex h-[400px] items-center justify-center p-8 bg-card rounded-xl shadow-sm border border-gray-100"><div className="w-8 h-8 rounded-full border-4 border-blue-500 border-t-transparent animate-spin" /></div>,
   ssr: false
 })
 
@@ -27,6 +28,15 @@ const TOOL_COMPONENTS = {
   'excel2pdf': loadTool(() => import('../../tools/ExcelToPdfTool')),
   'edit': loadTool(() => import('../../tools/EditPdfTool')),
   'pdf2imgs': loadTool(() => import('../../tools/PdfToImagesTool')),
+'pdf2png': loadTool(() => import('../../tools/PdfToPngTool')),
+'pdf2webp': loadTool(() => import('../../tools/PdfToWebPTool')),
+'pdf2html': loadTool(() => import('../../tools/PdfToHtmlTool')),
+'pdf2json': loadTool(() => import('../../tools/PdfDataExtractTool')),
+'pdf2csv': loadTool(() => import('../../tools/PdfDataExtractTool')),
+'pdf2rtf': loadTool(() => import('../../tools/PdfDataExtractTool')),
+'pdf2markdown': loadTool(() => import('../../tools/PdfDataExtractTool')),
+'pdf2epub': loadTool(() => import('../../tools/PdfDataExtractTool')),
+'pdf-grayscale': loadTool(() => import('../../tools/PdfDataExtractTool')),
   'imgs2pdf': loadTool(() => import('../../tools/ImagesToPdfTool')),
   'signature': loadTool(() => import('../../tools/SignatureTool')),
   'watermark': loadTool(() => import('../../tools/WatermarkTool')),
@@ -58,6 +68,11 @@ const TOOL_COMPONENTS = {
   'pdf2text': loadTool(() => import('../../tools/PdfToTextTool')),
   'translate-pdf': loadTool(() => import('../../tools/TranslatePdfTool')),
   'extract-images': loadTool(() => import('../../tools/ExtractImagesTool')),
+'form-filler': loadTool(() => import('../../tools/FormFillerTool')),
+'pdf-validator': loadTool(() => import('../../tools/PdfValidatorTool')),
+'batch-pdf': loadTool(() => import('../../tools/BatchPdfTool')),
+'header-footer': loadTool(() => import('../../tools/HeaderFooterTool')),
+'pdf-optimize': loadTool(() => import('../../tools/PdfOptimizeTool')),
   'csv-to-pdf': loadTool(() => import('../../tools/CSVToPdfTool')),
   'annotate': loadTool(() => import('../../tools/AnnotateTool')),
   'pdf-info': loadTool(() => import('../../tools/PDFInfoTool')),
@@ -155,10 +170,15 @@ const TOOL_COMPONENTS = {
 
 export default function ToolContainer({ toolId, onClose }) {
   const [mounted, setMounted] = useState(false)
+  const recordedToolId = useRef(null)
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+    if (recordedToolId.current !== toolId) {
+      recordedToolId.current = toolId
+      recordToolUse(toolId)
+    }
+  }, [toolId])
 
   // Get the component for current tool
   const ToolComponent = TOOL_COMPONENTS[toolId]
@@ -175,7 +195,7 @@ export default function ToolContainer({ toolId, onClose }) {
 
   return (
     <div className={`tool-container-wrapper w-full max-w-6xl mx-auto px-4 py-8 ${mounted ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
-      <ToolComponent />
+      <ToolComponent toolId={toolId} />
     </div>
   )
 }

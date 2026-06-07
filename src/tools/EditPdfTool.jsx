@@ -184,7 +184,7 @@ export default function EditPdfTool() {
           <div className="flex flex-col gap-6">
 
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center justify-between bg-white dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl sticky top-4 z-40 backdrop-blur-md bg-white/90 dark:bg-slate-800/90">
+            <div className="flex flex-wrap items-center justify-between bg-card dark:bg-slate-800 p-3 rounded-2xl border border-border dark:border-slate-700 shadow-xl sticky top-4 z-40 backdrop-blur-md bg-card/90 dark:bg-slate-800/90">
               <div className="flex gap-2">
                 <button
                   onClick={addText}
@@ -208,9 +208,9 @@ export default function EditPdfTool() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
-                      className="flex items-center gap-3 bg-slate-50 dark:bg-slate-900/50 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700"
+                      className="flex items-center gap-3 bg-secondary dark:bg-slate-900/50 px-4 py-2 rounded-xl border border-border dark:border-slate-700"
                     >
-                      <Settings className="w-4 h-4 text-slate-400" />
+                      <Settings className="w-4 h-4 text-muted-foreground" />
 
                       {selectedEl.type === 'text' && (
                         <>
@@ -218,29 +218,29 @@ export default function EditPdfTool() {
                             type="text"
                             value={selectedEl.content}
                             onChange={e => updateElement(selectedEl.id, { content: e.target.value })}
-                            className="border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 py-1 text-sm w-32 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-slate-200"
+                            className="border-border dark:border-slate-600 bg-card dark:bg-slate-700 rounded-lg px-2 py-1 text-sm w-32 focus:ring-2 focus:ring-blue-500 outline-none text-foreground dark:text-slate-200"
                           />
                           <div className="flex items-center gap-1">
                             <input
                               type="number"
                               value={selectedEl.fontSize}
                               onChange={e => updateElement(selectedEl.id, { fontSize: Number(e.target.value) })}
-                              className="border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 py-1 text-sm w-16 text-center text-slate-800 dark:text-slate-200"
+                              className="border-border dark:border-slate-600 bg-card dark:bg-slate-700 rounded-lg px-2 py-1 text-sm w-16 text-center text-foreground dark:text-slate-200"
                               min={8} max={72}
                             />
-                            <span className="text-xs text-slate-400 font-bold">PX</span>
+                            <span className="text-xs text-muted-foreground font-bold">PX</span>
                           </div>
                         </>
                       )}
 
                       {selectedEl.type === 'image' && (
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-slate-500">WIDTH</span>
+                          <span className="text-xs font-bold text-muted-foreground">WIDTH</span>
                           <input
                             type="number"
                             value={selectedEl.width}
                             onChange={e => updateElement(selectedEl.id, { width: Number(e.target.value) })}
-                            className="border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 py-1 text-sm w-20 text-center text-slate-800 dark:text-slate-200"
+                            className="border-border dark:border-slate-600 bg-card dark:bg-slate-700 rounded-lg px-2 py-1 text-sm w-20 text-center text-foreground dark:text-slate-200"
                             min={20} max={1000}
                           />
                         </div>
@@ -255,7 +255,7 @@ export default function EditPdfTool() {
               </div>
 
               <div className="flex gap-2 ml-auto">
-                <button className="text-slate-400 hover:text-red-500 px-4 py-2 text-sm font-bold" onClick={() => setFile(null)}>Close</button>
+                <button className="text-muted-foreground hover:text-red-500 px-4 py-2 text-sm font-bold" onClick={() => setFile(null)}>Close</button>
                 <div className="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
                 <div className="flex gap-2">
                   <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="edited" className="w-32" />
@@ -271,7 +271,7 @@ export default function EditPdfTool() {
             </div>
 
             {/* Canvas Area */}
-            <div className="relative bg-slate-100 dark:bg-slate-900/50 rounded-3xl p-8 min-h-[800px] overflow-auto flex justify-center items-start border border-slate-200 dark:border-slate-700 shadow-inner">
+            <div className="relative bg-slate-100 dark:bg-slate-900/50 rounded-3xl p-8 min-h-[800px] overflow-auto flex justify-center items-start border border-border dark:border-slate-700 shadow-inner">
               <EditorCanvas
                 file={file}
                 pageIndex={pageIndex}

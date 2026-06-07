@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { PDFDocument } from 'pdf-lib'
 import { useTranslation } from 'react-i18next'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
@@ -142,14 +141,8 @@ export default function ProtectPdfTool() {
     try {
       setProgress(20)
       const array = await file.arrayBuffer()
-      const srcPdf = await PDFDocument.load(array)
-
-      setProgress(40)
-      const pdf = await PDFDocument.create()
-      const copied = await pdf.copyPages(srcPdf, srcPdf.getPageIndices())
-
-      setProgress(60)
-      copied.forEach(page => pdf.addPage(page))
+      const { PDFDocument } = await import('pdf-lib-plus-encrypt')
+      const pdf = await PDFDocument.load(array)
 
       // Build permissions object
       const permissions = {
@@ -163,9 +156,9 @@ export default function ProtectPdfTool() {
       }
 
       setProgress(80)
-      pdf.encrypt({
+      await pdf.encrypt({
         userPassword: password,
-        ownerPassword: password,
+        ownerPassword: generateOwnerPassword(),
         permissions,
       })
 
@@ -212,6 +205,12 @@ export default function ProtectPdfTool() {
     }
     setPassword(result)
     setConfirmPassword(result)
+  }
+
+  const generateOwnerPassword = () => {
+    const bytes = new Uint8Array(24)
+    crypto.getRandomValues(bytes)
+    return Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('')
   }
 
   return (

@@ -32,16 +32,16 @@ export default function DecisionMakerTool() {
         <ToolLayout title="Decision Maker" description="Coin flip and random picker wheel.">
             <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 h-[500px]">
 
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-col gap-4">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-col gap-4">
                     <div className="flex gap-2 p-1 bg-slate-100 rounded-xl">
-                        <button onClick={() => setMode('coin')} className={`flex-1 py-2 rounded-lg font-bold text-sm ${mode === 'coin' ? 'bg-white shadow' : 'text-slate-500'}`}>Coin Flip</button>
-                        <button onClick={() => setMode('wheel')} className={`flex-1 py-2 rounded-lg font-bold text-sm ${mode === 'wheel' ? 'bg-white shadow' : 'text-slate-500'}`}>Random Picker</button>
+                        <button onClick={() => setMode('coin')} className={`flex-1 py-2 rounded-lg font-bold text-sm ${mode === 'coin' ? 'bg-card shadow' : 'text-muted-foreground'}`}>Coin Flip</button>
+                        <button onClick={() => setMode('wheel')} className={`flex-1 py-2 rounded-lg font-bold text-sm ${mode === 'wheel' ? 'bg-card shadow' : 'text-muted-foreground'}`}>Random Picker</button>
                     </div>
 
                     {mode === 'wheel' && (
                         <textarea
                             value={items} onChange={e => setItems(e.target.value)}
-                            className="flex-1 resize-none p-4 bg-slate-50 rounded-xl outline-none font-bold text-slate-600 border border-slate-100 focus:border-blue-300"
+                            className="flex-1 resize-none p-4 bg-secondary rounded-xl outline-none font-bold text-slate-600 border border-border focus:border-blue-300"
                             placeholder="Enter options (one per line)"
                         />
                     )}
@@ -65,7 +65,7 @@ export default function DecisionMakerTool() {
                         <RefreshCw className="w-16 h-16 text-purple-500 animate-spin" />
                     )}
                     {!result && !spinning && (
-                        <div className="text-slate-700 font-bold uppercase text-sm">Ready to decide</div>
+                        <div className="text-foreground font-bold uppercase text-sm">Ready to decide</div>
                     )}
                 </div>
 

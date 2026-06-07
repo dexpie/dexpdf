@@ -57,15 +57,15 @@ export default function CronParserTool() {
         <ToolLayout title="Cron Parser" description="Understand Cron schedule expressions.">
             <div className="max-w-4xl mx-auto flex flex-col gap-8">
                 {/* Input */}
-                <div className="bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col items-center gap-6">
+                <div className="bg-card p-8 rounded-[2rem] shadow-xl border border-border flex flex-col items-center gap-6">
                     <div className="w-full relative">
                         <input
                             type="text"
                             value={expression}
                             onChange={e => handleInput(e.target.value)}
-                            className="w-full text-center text-4xl font-mono font-bold text-slate-800 bg-slate-50 border-2 border-slate-200 rounded-2xl p-6 outline-none focus:border-blue-500 focus:bg-white transition-all"
+                            className="w-full text-center text-4xl font-mono font-bold text-foreground bg-secondary border-2 border-border rounded-2xl p-6 outline-none focus:border-blue-500 focus:bg-card transition-all"
                         />
-                        <div className="absolute -bottom-6 left-0 w-full flex justify-between text-xs font-mono text-slate-400 px-8">
+                        <div className="absolute -bottom-6 left-0 w-full flex justify-between text-xs font-mono text-muted-foreground px-8">
                             <span>MIN</span>
                             <span>HOUR</span>
                             <span>DOM</span>
@@ -97,10 +97,10 @@ function ExampleBtn({ val, label, set }) {
     return (
         <button
             onClick={() => set(val)}
-            className="p-4 bg-white rounded-xl shadow-sm border border-slate-100 hover:shadow-md hover:border-blue-200 transition-all text-left group"
+            className="p-4 bg-card rounded-xl shadow-sm border border-border hover:shadow-md hover:border-blue-200 transition-all text-left group"
         >
-            <div className="font-bold text-slate-700 text-sm mb-1 group-hover:text-blue-600">{label}</div>
-            <div className="font-mono text-xs text-slate-400">{val}</div>
+            <div className="font-bold text-foreground text-sm mb-1 group-hover:text-blue-600">{label}</div>
+            <div className="font-mono text-xs text-muted-foreground">{val}</div>
         </button>
     )
 }

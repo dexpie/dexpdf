@@ -22,7 +22,7 @@ export default function RedactTool() {
     const [file, setFile] = useState(null)
     const [searchText, setSearchText] = useState('')
 
-    // Redaction Regions (Mocked as "elements" for EditorCanvas reuse)
+    // Redaction regions reuse the editor canvas coordinate model.
     const [regions, setRegions] = useState([])
     const [selectedId, setSelectedId] = useState(null)
 
@@ -33,6 +33,7 @@ export default function RedactTool() {
     const [sanitizeMode, setSanitizeMode] = useState(true) // Default to Secure (Rasterize)
 
     const [pageIndex, setPageIndex] = useState(1)
+    const [pageCount, setPageCount] = useState(1)
     const [isScanning, setIsScanning] = useState(false)
 
     async function handleAutoRedact() {
@@ -43,11 +44,11 @@ export default function RedactTool() {
         try {
             const matches = await scanPageForSensitiveData(file, pageIndex, 1.5) // Scale 1.5 matches EditorCanvas
             if (matches.length > 0) {
-                setRegions(prev => [...prev, ...matches])
-                setSuccessMsg(`🤖 AI found & redacted ${matches.length} sensitive items!`)
+                setRegions(prev => [...prev, ...matches.map(match => ({ ...match, pageIndex }))])
+                setSuccessMsg(`Found ${matches.length} potentially sensitive items on this page.`)
                 triggerConfetti()
             } else {
-                setSuccessMsg('✅ No emails or phone numbers found on this page.')
+                setSuccessMsg('No emails or phone numbers found on this page.')
             }
         } catch (err) {
             console.error(err)
@@ -56,26 +57,27 @@ export default function RedactTool() {
             setIsScanning(false)
         }
 
-        async function handleTextRedact() {
-            if (!file || !searchText.trim()) return
-            setIsScanning(true)
-            setErrorMsg('')
-            setSuccessMsg('')
-            try {
-                const matches = await scanPageForText(file, pageIndex, searchText, 1.5)
-                if (matches.length > 0) {
-                    setRegions(prev => [...prev, ...matches])
-                    setSuccessMsg(`🔎 Found & redacted ${matches.length} occurrences of "${searchText}"`)
-                    triggerConfetti()
-                } else {
-                    setSuccessMsg(`❌ Text "${searchText}" not found on this page.`)
-                }
-            } catch (err) {
-                console.error(err)
-                setErrorMsg('Search failed: ' + err.message)
-            } finally {
-                setIsScanning(false)
+    }
+
+    async function handleTextRedact() {
+        if (!file || !searchText.trim()) return
+        setIsScanning(true)
+        setErrorMsg('')
+        setSuccessMsg('')
+        try {
+            const matches = await scanPageForText(file, pageIndex, searchText, 1.5)
+            if (matches.length > 0) {
+                setRegions(prev => [...prev, ...matches.map(match => ({ ...match, pageIndex }))])
+                setSuccessMsg(`Found ${matches.length} occurrences of "${searchText}" on this page.`)
+                triggerConfetti()
+            } else {
+                setSuccessMsg(`Text "${searchText}" was not found on this page.`)
             }
+        } catch (err) {
+            console.error(err)
+            setErrorMsg('Search failed: ' + err.message)
+        } finally {
+            setIsScanning(false)
         }
     }
 
@@ -84,9 +86,17 @@ export default function RedactTool() {
         if (!f) return
         setFile(f)
         setRegions([])
+        setPageIndex(1)
         setOutputFileName(getDefaultFilename(f, '_redacted'))
         setErrorMsg('')
         setSuccessMsg('')
+        try {
+            const pdf = await pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise
+            setPageCount(pdf.numPages)
+        } catch (err) {
+            setFile(null)
+            setErrorMsg('Could not read this PDF.')
+        }
     }
 
     const addRedactionBox = () => {
@@ -98,7 +108,8 @@ export default function RedactTool() {
             width: 200,
             height: 50,
             color: '#000000', // Black
-            isRedaction: true
+            isRedaction: true,
+            pageIndex
         }
         setRegions(prev => [...prev, newRegion])
         setSelectedId(newRegion.id)
@@ -121,26 +132,17 @@ export default function RedactTool() {
             const array = await file.arrayBuffer()
             const pdf = await PDFDocument.load(array)
             const pages = pdf.getPages()
-            const page = pages[pageIndex - 1]
-            const { width, height } = page.getSize()
-
-            // 1. Draw Black Boxes (Visual)
-            // EditorCanvas scale is usually passed down or assumed. We need to match EditorCanvas logic.
-            // Assuming EditorCanvas renders at scale 1.5 or similar, we reverse map coordinates.
-            // For this "Pro" tool, let's assume direct coordinate mapping or re-use edit logic.
-            // Since EditorCanvas is complex, I will implement a simplified coordinate mapper here assuming standard view.
-
-            // NOTE: EditorCanvas in this project seems to handle rendering. 
-            // We will perform the "Burn" logic here.
-
             const scale = 1.5 // Standard editor scale
 
             regions.forEach(r => {
+                const targetPage = pages[(r.pageIndex || pageIndex) - 1]
+                if (!targetPage) return
+                const { height } = targetPage.getSize()
                 const pdfX = r.x / scale
                 // PDF Y is bottom-left origin
                 const pdfY = height - (r.y / scale) - (r.height / scale)
 
-                page.drawRectangle({
+                targetPage.drawRectangle({
                     x: pdfX,
                     y: pdfY,
                     width: r.width / scale,
@@ -152,40 +154,32 @@ export default function RedactTool() {
             let finalPdfBytes
 
             if (sanitizeMode) {
-                // 2. Secure Mode: Rasterize Page -> Image -> New PDF
-                // This ensures underlying text is DESTROYED.
-
-                // Render current state (with black boxes) to Canvas
-                // Note: pdf-lib changes are in memory. We need to save, then load in pdf.js, or just use pdf-lib to save to bytes.
-                // Getting pdf.js to render 'edited' pdf requires saving it first.
-
                 const editedPdfBytes = await pdf.save()
-
-                // Load executed PDF into PDF.js to render as image
                 const loadingTask = pdfjsLib.getDocument({ data: editedPdfBytes })
                 const renderedPdf = await loadingTask.promise
-                const renderedPage = await renderedPdf.getPage(pageIndex)
-
-                const viewport = renderedPage.getViewport({ scale: 2.0 }) // High res
-                const canvas = document.createElement('canvas')
-                canvas.width = viewport.width
-                canvas.height = viewport.height
-                const ctx = canvas.getContext('2d')
-                await renderedPage.render({ canvasContext: ctx, viewport }).promise
-
-                const imgDataUrl = canvas.toDataURL('image/jpeg', 0.8)
-
-                // Create NEW PDF from this image
                 const newPdf = await PDFDocument.create()
-                const newPage = newPdf.addPage([width, height])
-                const embeddedImage = await newPdf.embedJpg(await fetch(imgDataUrl).then(res => res.arrayBuffer()))
 
-                newPage.drawImage(embeddedImage, {
-                    x: 0,
-                    y: 0,
-                    width: width,
-                    height: height
-                })
+                // Rasterize every page so the selected redaction cannot be
+                // uncovered while preserving the complete document.
+                for (let currentPage = 1; currentPage <= renderedPdf.numPages; currentPage++) {
+                    const renderedPage = await renderedPdf.getPage(currentPage)
+                    const viewport = renderedPage.getViewport({ scale: 2 })
+                    const canvas = document.createElement('canvas')
+                    canvas.width = viewport.width
+                    canvas.height = viewport.height
+                    const ctx = canvas.getContext('2d')
+                    await renderedPage.render({ canvasContext: ctx, viewport }).promise
+
+                    const sourceSize = pages[currentPage - 1].getSize()
+                    const embeddedImage = await newPdf.embedJpg(canvas.toDataURL('image/jpeg', 0.9))
+                    const newPage = newPdf.addPage([sourceSize.width, sourceSize.height])
+                    newPage.drawImage(embeddedImage, {
+                        x: 0,
+                        y: 0,
+                        width: sourceSize.width,
+                        height: sourceSize.height
+                    })
+                }
 
                 finalPdfBytes = await newPdf.save()
 
@@ -198,7 +192,7 @@ export default function RedactTool() {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = getOutputFilename(outputFileName, '_secure_redacted')
+            a.download = getOutputFilename(outputFileName || getDefaultFilename(file, '_redacted'), 'pdf')
             a.click()
             URL.revokeObjectURL(url)
             setSuccessMsg('Document successfully sanitized!')
@@ -220,7 +214,7 @@ export default function RedactTool() {
                 ) : (
                     <div className="flex flex-col gap-6">
                         {/* Toolbar */}
-                        <div className="flex items-center justify-between bg-white p-3 rounded-2xl shadow-xl sticky top-4 z-40 border border-slate-200">
+                        <div className="flex items-center justify-between bg-card p-3 rounded-2xl shadow-xl sticky top-4 z-40 border border-border">
                             <div className="flex gap-4 items-center">
                                 <button onClick={addRedactionBox} className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-700 font-bold transition-all shadow-lg shadow-slate-900/20">
                                     <Eraser className="w-4 h-4" /> Add Box
@@ -249,10 +243,10 @@ export default function RedactTool() {
                                         className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500"
                                     />
                                     <div className="flex flex-col leading-tight">
-                                        <span className="font-bold text-slate-800 flex items-center gap-1">
+                                        <span className="font-bold text-foreground flex items-center gap-1">
                                             Secure Burn {sanitizeMode && <ShieldAlert className="w-3 h-3 text-green-500" />}
                                         </span>
-                                        <span className="text-[10px] text-slate-500">Converts page to image (Unsearchable)</span>
+                                        <span className="text-[10px] text-muted-foreground">Converts page to image (Unsearchable)</span>
                                     </div>
                                 </label>
                             </div>
@@ -260,18 +254,36 @@ export default function RedactTool() {
                         </div>
 
                         {/* Find & Redact Group */}
-                        <div className="flex items-center gap-2 pl-4 border-l border-slate-200">
+                        <div className="flex items-center gap-2 pl-4 border-l border-border">
+                            <button
+                                onClick={() => { setPageIndex(value => Math.max(1, value - 1)); setSelectedId(null) }}
+                                disabled={pageIndex <= 1}
+                                className="px-3 py-2 bg-secondary rounded-xl text-xs font-bold disabled:opacity-40"
+                            >
+                                Previous
+                            </button>
+                            <span className="text-xs font-bold text-muted-foreground">Page {pageIndex} of {pageCount}</span>
+                            <button
+                                onClick={() => { setPageIndex(value => Math.min(pageCount, value + 1)); setSelectedId(null) }}
+                                disabled={pageIndex >= pageCount}
+                                className="px-3 py-2 bg-secondary rounded-xl text-xs font-bold disabled:opacity-40"
+                            >
+                                Next
+                            </button>
+                        </div>
+
+                        <div className="flex items-center gap-2 pl-4 border-l border-border">
                             <div className="relative">
                                 <input
                                     type="text"
                                     value={searchText}
                                     onChange={e => setSearchText(e.target.value)}
                                     placeholder="Find text..."
-                                    className="pl-3 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl w-40 text-sm focus:ring-2 ring-purple-500 focus:outline-none"
+                                    className="pl-3 pr-8 py-2 bg-secondary border border-border rounded-xl w-40 text-sm focus:ring-2 ring-purple-500 focus:outline-none"
                                     onKeyDown={e => e.key === 'Enter' && handleTextRedact()}
                                 />
                                 {searchText && (
-                                    <button onClick={() => setSearchText('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                                    <button onClick={() => setSearchText('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-slate-600">
                                         <X className="w-3 h-3" />
                                     </button>
                                 )}
@@ -279,13 +291,13 @@ export default function RedactTool() {
                             <button
                                 onClick={handleTextRedact}
                                 disabled={busy || !searchText}
-                                className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition-all disabled:opacity-50"
+                                className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-foreground rounded-xl font-bold text-xs transition-all disabled:opacity-50"
                             >
                                 Redact Matches
                             </button>
                         </div>
 
-                        <div className="flex items-center gap-2 pl-4 border-l border-slate-200">
+                        <div className="flex items-center gap-2 pl-4 border-l border-border">
                             <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="redacted" className="w-32" />
                             <button
                                 onClick={applyRedaction}
@@ -298,21 +310,14 @@ export default function RedactTool() {
 
 
                         {/* Editor Area */}
-                        <div className="relative bg-slate-100 rounded-3xl p-8 min-h-[800px] flex justify-center border border-slate-200">
-                            {/* Note: In a real implementation, we would pass 'regions' to EditorCanvas 
-                    But EditorCanvas expects specific shape types. For MVP, we can treat them as 'images' or just rectangles if supported.
-                    Here I'll assume EditorCanvas can render a simple black div for type 'rectangle'.
-                    If EditorCanvas doesn't support 'rectangle', we might need to patch it or use a simple HTML overlay here.
-                */}
+                        <div className="relative bg-slate-100 rounded-3xl p-8 min-h-[800px] flex justify-center border border-border">
                             <div className="relative">
-                                {/* Reuse EditorCanvas just for rendering the PDF background */}
                                 <EditorCanvas
                                     file={file}
                                     pageIndex={pageIndex}
-                                    elements={regions.map(r => ({
+                                    elements={regions.filter(r => (r.pageIndex || pageIndex) === pageIndex).map(r => ({
                                         ...r,
-                                        content: '', // No text content
-                                        // Mocking what EditorCanvas expects for style
+                                        content: '',
                                         style: { backgroundColor: 'black', opacity: 1 }
                                     }))}
                                     onUpdateElement={updateRegion}

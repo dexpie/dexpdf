@@ -47,11 +47,11 @@ export default function ImageFilterTool() {
 
                     <div className="bg-slate-900 rounded-2xl p-4 flex items-center justify-between">
                         <code className="text-green-400 text-xs font-mono break-all mr-4">{`filter: ${filterString};`}</code>
-                        <button onClick={() => navigator.clipboard.writeText(`filter: ${filterString};`)} className="text-slate-400 hover:text-white"><Copy className="w-4 h-4" /></button>
+                        <button onClick={() => navigator.clipboard.writeText(`filter: ${filterString};`)} className="text-muted-foreground hover:text-white"><Copy className="w-4 h-4" /></button>
                     </div>
                 </div>
 
-                <div className="w-full lg:w-80 bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-col gap-4 h-fit">
+                <div className="w-full lg:w-80 bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-col gap-4 h-fit">
                     <div className="flex justify-between items-center">
                         <h3 className="font-bold flex items-center gap-2"><Sliders className="w-4 h-4 text-purple-500" /> Adjustments</h3>
                         <button onClick={reset} className="text-xs font-bold text-red-500 hover:underline">Reset</button>
@@ -76,7 +76,7 @@ export default function ImageFilterTool() {
 function FilterSlider({ label, value, min = 0, max, onChange }) {
     return (
         <div>
-            <div className="flex justify-between text-xs font-bold text-slate-500 mb-1">
+            <div className="flex justify-between text-xs font-bold text-muted-foreground mb-1">
                 <span>{label}</span>
                 <span>{value}</span>
             </div>

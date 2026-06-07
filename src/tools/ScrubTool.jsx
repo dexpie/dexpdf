@@ -65,8 +65,8 @@ export default function ScrubTool() {
             pdf.setAuthor('')
             pdf.setSubject('')
             pdf.setKeywords([])
-            pdf.setCreator('DexPDF (Privacy-First)')
-            pdf.setProducer('DexPDF (Privacy-First)')
+            pdf.setCreator('')
+            pdf.setProducer('')
 
             // Note: Creation/Mod dates are tricky in pdf-lib, but setting to now or clearing might work depending on viewer.
             // pdf-lib usually updates modification date automatically.
@@ -76,7 +76,7 @@ export default function ScrubTool() {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = getOutputFilename(outputFileName, '_scrubbed')
+            a.download = getOutputFilename(outputFileName || getDefaultFilename(file, '_scrubbed'), 'pdf')
             a.click()
             URL.revokeObjectURL(url)
 
@@ -99,8 +99,8 @@ export default function ScrubTool() {
                     <div className="flex flex-col gap-6">
 
                         {/* Metadata Preview Card */}
-                        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                            <div className="flex items-center gap-3 mb-4 text-slate-700 font-bold border-b border-slate-100 pb-3">
+                        <div className="bg-card rounded-2xl border border-border shadow-sm p-6">
+                            <div className="flex items-center gap-3 mb-4 text-foreground font-bold border-b border-border pb-3">
                                 <FileSearch className="w-5 h-5 text-blue-500" />
                                 <span>Current Metadata</span>
                             </div>
@@ -108,24 +108,24 @@ export default function ScrubTool() {
                             {meta ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                     <div className="flex flex-col">
-                                        <span className="text-slate-400 font-medium text-xs uppercase">Title</span>
-                                        <span className="text-slate-800 font-medium truncate">{meta.title || '-'}</span>
+                                        <span className="text-muted-foreground font-medium text-xs uppercase">Title</span>
+                                        <span className="text-foreground font-medium truncate">{meta.title || '-'}</span>
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-slate-400 font-medium text-xs uppercase">Author</span>
-                                        <span className="text-slate-800 font-medium truncate">{meta.author || '-'}</span>
+                                        <span className="text-muted-foreground font-medium text-xs uppercase">Author</span>
+                                        <span className="text-foreground font-medium truncate">{meta.author || '-'}</span>
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-slate-400 font-medium text-xs uppercase">Software (Creator)</span>
-                                        <span className="text-slate-800 font-medium truncate">{meta.creator || '-'}</span>
+                                        <span className="text-muted-foreground font-medium text-xs uppercase">Software (Creator)</span>
+                                        <span className="text-foreground font-medium truncate">{meta.creator || '-'}</span>
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-slate-400 font-medium text-xs uppercase">Producer</span>
-                                        <span className="text-slate-800 font-medium truncate">{meta.producer || '-'}</span>
+                                        <span className="text-muted-foreground font-medium text-xs uppercase">Producer</span>
+                                        <span className="text-foreground font-medium truncate">{meta.producer || '-'}</span>
                                     </div>
                                     <div className="flex flex-col md:col-span-2">
-                                        <span className="text-slate-400 font-medium text-xs uppercase">Keywords</span>
-                                        <span className="text-slate-800 font-medium truncate">{meta.keywords || '-'}</span>
+                                        <span className="text-muted-foreground font-medium text-xs uppercase">Keywords</span>
+                                        <span className="text-foreground font-medium truncate">{meta.keywords || '-'}</span>
                                     </div>
                                 </div>
                             ) : (
@@ -136,13 +136,13 @@ export default function ScrubTool() {
                         </div>
 
                         {/* Action Area */}
-                        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 flex flex-col items-center text-center gap-4">
+                        <div className="bg-secondary rounded-2xl p-6 border border-border flex flex-col items-center text-center gap-4">
                             <div className="p-3 bg-red-100 text-red-600 rounded-full">
                                 <Trash2 className="w-8 h-8" />
                             </div>
-                            <h3 className="text-lg font-bold text-slate-800">Ready to clean?</h3>
-                            <p className="text-slate-500 max-w-sm">
-                                This will remove all identifying metadata information from the file headers. Content remains unchanged.
+                            <h3 className="text-lg font-bold text-foreground">Ready to clean?</h3>
+                            <p className="text-muted-foreground max-w-sm">
+                                This clears standard title, author, subject, keywords, creator, and producer fields. Embedded files and content remain unchanged.
                             </p>
 
                             <div className="flex gap-2 w-full max-w-sm mt-2">

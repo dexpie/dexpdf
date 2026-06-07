@@ -175,7 +175,7 @@ export default function PdfToTextTool() {
           className={`px-6 py-2 rounded-full font-medium transition-all ${
             !batchMode
               ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+              : 'bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
           onClick={() => setBatchMode(false)}
         >
@@ -185,7 +185,7 @@ export default function PdfToTextTool() {
           className={`px-6 py-2 rounded-full font-medium transition-all ${
             batchMode
               ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+              : 'bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
           onClick={() => setBatchMode(true)}
         >
@@ -201,8 +201,8 @@ export default function PdfToTextTool() {
           outputExtension=".txt"
           maxFiles={100}
           customOptions={
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
-              <div className="text-sm text-slate-600 dark:text-slate-300 mb-3">
+            <div className="p-4 bg-secondary dark:bg-slate-800/50 rounded-xl border border-border dark:border-slate-700">
+              <div className="text-sm text-slate-600 dark:text-muted-foreground mb-3">
                 <span className="flex items-center gap-2">
                   <AlignLeft className="w-4 h-4 text-indigo-500" />
                   {t('tools.pdfToText.batchOptions', 'Extraction Options')}
@@ -215,7 +215,7 @@ export default function PdfToTextTool() {
                   onChange={(e) => setIncludePageHeaders(e.target.checked)}
                   className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                <span className="text-sm text-slate-600 dark:text-slate-400">
+                <span className="text-sm text-slate-600 dark:text-muted-foreground">
                   {t('tools.pdfToText.includeHeaders', 'Include page headers (--- Page X ---)')}
                 </span>
               </label>
@@ -248,8 +248,8 @@ export default function PdfToTextTool() {
           </AnimatePresence>
 
           {/* Settings Card */}
-          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm max-w-2xl mx-auto w-full mb-6">
-            <div className="flex items-center gap-2 mb-4 text-slate-800 dark:text-slate-200 font-semibold">
+          <div className="bg-card dark:bg-slate-800 p-5 rounded-2xl border border-border dark:border-slate-700 shadow-sm max-w-2xl mx-auto w-full mb-6">
+            <div className="flex items-center gap-2 mb-4 text-foreground dark:text-slate-200 font-semibold">
               <Settings className="w-5 h-5 text-indigo-500" />
               <span>{t('tools.common.settings', 'Extraction Settings')}</span>
             </div>
@@ -262,10 +262,10 @@ export default function PdfToTextTool() {
                   className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                 />
                 <div>
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-sm font-medium text-foreground dark:text-muted-foreground">
                     {t('tools.pdfToText.includeHeaders', 'Include page headers')}
                   </span>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-muted-foreground dark:text-muted-foreground">
                     {t('tools.pdfToText.headersDesc', 'Adds "--- Page X ---" markers between pages')}
                   </p>
                 </div>
@@ -286,7 +286,7 @@ export default function PdfToTextTool() {
               animate={{ opacity: 1, y: 0 }}
               className="mt-8"
             >
-              <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center text-center gap-6">
+              <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl border border-border dark:border-slate-700 shadow-sm flex flex-col items-center text-center gap-6">
                 {/* Icon */}
                 <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center mb-2">
                   <Type className="w-10 h-10" />
@@ -294,23 +294,23 @@ export default function PdfToTextTool() {
 
                 {/* File Info */}
                 <div>
-                  <h3 className="font-bold text-xl text-slate-800 dark:text-slate-200 mb-2">
+                  <h3 className="font-bold text-xl text-foreground dark:text-slate-200 mb-2">
                     {file.name}
                   </h3>
-                  <p className="text-slate-500 dark:text-slate-400">
+                  <p className="text-muted-foreground dark:text-muted-foreground">
                     {t('tools.pdfToText.readyToExtract', 'Ready to extract text')}
                   </p>
                 </div>
 
                 {/* Info Box */}
-                <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl w-full max-w-md border border-slate-100 dark:border-slate-700">
+                <div className="bg-secondary dark:bg-slate-900/50 p-4 rounded-xl w-full max-w-md border border-border dark:border-slate-700">
                   <div className="flex items-start gap-3">
                     <FileText className="w-5 h-5 text-indigo-500 mt-1" />
                     <div className="text-left">
-                      <h4 className="font-semibold text-slate-700 dark:text-slate-300 text-sm">
+                      <h4 className="font-semibold text-foreground dark:text-muted-foreground text-sm">
                         {t('tools.pdfToText.howItWorks', 'How it works')}
                       </h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      <p className="text-xs text-muted-foreground dark:text-muted-foreground mt-1">
                         {t(
                           'tools.pdfToText.description',
                           'Extracts readable text from the PDF. For scanned documents, use OCR Tool instead.'
@@ -332,7 +332,7 @@ export default function PdfToTextTool() {
 
                 {/* Filename Input */}
                 <div className="w-full max-w-md">
-                  <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2 text-left">
+                  <label className="block text-sm font-medium text-slate-600 dark:text-muted-foreground mb-2 text-left">
                     {t('tools.common.outputFilename', 'Output Filename')}
                   </label>
                   <FilenameInput
@@ -347,7 +347,7 @@ export default function PdfToTextTool() {
                 <div className="flex gap-3 w-full max-w-md">
                   <button
                     onClick={() => setFile(null)}
-                    className="flex-1 py-3 rounded-xl font-bold text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    className="flex-1 py-3 rounded-xl font-bold text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-800 transition-colors"
                     disabled={busy}
                   >
                     {t('tools.common.cancel', 'Cancel')}

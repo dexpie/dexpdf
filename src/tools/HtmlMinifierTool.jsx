@@ -21,8 +21,8 @@ export default function HtmlMinifierTool() {
         <ToolLayout title="HTML Minifier" description="Compress HTML code by removing whitespace and comments.">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 h-[600px]">
                 {/* Input */}
-                <div className="flex flex-col bg-white rounded-3xl shadow-lg border border-slate-100 p-6">
-                    <label className="text-sm font-bold text-slate-500 uppercase mb-4 flex items-center gap-2">
+                <div className="flex flex-col bg-card rounded-3xl shadow-lg border border-border p-6">
+                    <label className="text-sm font-bold text-muted-foreground uppercase mb-4 flex items-center gap-2">
                         <FileCode className="w-4 h-4" /> Input HTML
                     </label>
                     <textarea
@@ -32,19 +32,19 @@ export default function HtmlMinifierTool() {
     <span>  Hello  </span>
     <!-- Comment -->
 </div>"
-                        className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-4 font-mono text-sm resize-none outline-none focus:ring-2 ring-blue-500"
+                        className="flex-1 w-full bg-secondary border border-border rounded-xl p-4 font-mono text-sm resize-none outline-none focus:ring-2 ring-blue-500"
                     />
                 </div>
 
                 {/* Output */}
                 <div className="flex flex-col bg-slate-900 rounded-3xl shadow-lg border border-slate-800 p-6 relative">
                     <div className="flex justify-between items-center mb-4">
-                        <label className="text-sm font-bold text-slate-400 uppercase flex items-center gap-2">
+                        <label className="text-sm font-bold text-muted-foreground uppercase flex items-center gap-2">
                             <FileCode className="w-4 h-4" /> Minified Output
                         </label>
                         <button
                             onClick={() => navigator.clipboard.writeText(output)}
-                            className="text-slate-400 hover:text-white"
+                            className="text-muted-foreground hover:text-white"
                         >
                             <Copy className="w-4 h-4" />
                         </button>

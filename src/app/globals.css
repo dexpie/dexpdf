@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,73 +6,75 @@
 @layer base {
   :root {
     /* Soft Neutral Palette - Comfortable for Eyes */
-    --background: 220 20% 97%;
-    --foreground: 220 15% 20%;
+    /* Light mode - soft off-white, not pure white */
+    --background: 220 18% 96%;
+    --foreground: 220 12% 22%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 15% 20%;
+    --card: 220 18% 98%;
+    --card-foreground: 220 12% 22%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 20%;
+    --popover: 220 18% 98%;
+    --popover-foreground: 220 12% 22%;
 
     /* Softer primary - warm blue instead of harsh indigo */
     --primary: 211 85% 55%;
-    --primary-foreground: 0 0% 100%;
+    --primary-foreground: 220 18% 96%;
 
-    --secondary: 220 15% 94%;
-    --secondary-foreground: 220 15% 25%;
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 12% 25%;
 
-    --muted: 220 15% 94%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 220 12% 92%;
+    --muted-foreground: 220 8% 45%;
 
-    --accent: 220 15% 94%;
-    --accent-foreground: 220 15% 25%;
+    --accent: 220 12% 92%;
+    --accent-foreground: 220 12% 25%;
 
     --destructive: 0 75% 55%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 220 18% 96%;
 
-    --border: 220 15% 88%;
-    --input: 220 15% 88%;
+    --border: 220 12% 86%;
+    --input: 220 12% 86%;
     --ring: 211 85% 55%;
 
     --radius: 0.75rem;
   }
 
   .dark {
-    /* Dark mode - softer, less harsh */
-    --background: 220 20% 10%;
-    --foreground: 220 15% 92%;
+    /* Dark mode - sophisticated charcoal/slate, NOT pure black */
+    --background: 220 15% 8%;
+    --foreground: 220 10% 90%;
 
-    --card: 220 20% 12%;
-    --card-foreground: 220 15% 92%;
+    --card: 220 18% 10%;
+    --card-foreground: 220 10% 90%;
 
-    --popover: 220 20% 12%;
-    --popover-foreground: 220 15% 92%;
+    --popover: 220 18% 10%;
+    --popover-foreground: 220 10% 90%;
 
-    --primary: 211 85% 60%;
-    --primary-foreground: 220 20% 10%;
+    --primary: 211 80% 60%;
+    --primary-foreground: 220 15% 8%;
 
-    --secondary: 220 20% 15%;
-    --secondary-foreground: 220 15% 92%;
+    --secondary: 220 15% 14%;
+    --secondary-foreground: 220 10% 90%;
 
-    --muted: 220 20% 15%;
-    --muted-foreground: 220 10% 60%;
+    --muted: 220 15% 12%;
+    --muted-foreground: 220 8% 60%;
 
-    --accent: 220 20% 15%;
-    --accent-foreground: 220 15% 92%;
+    --accent: 220 15% 14%;
+    --accent-foreground: 220 10% 90%;
 
     --destructive: 0 70% 45%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 220 15% 8%;
 
-    --border: 220 20% 18%;
-    --input: 220 20% 18%;
-    --ring: 211 85% 60%;
+    --border: 220 12% 16%;
+    --input: 220 12% 16%;
+    --ring: 211 80% 60%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
   }
 
   html {
@@ -80,10 +83,11 @@
 
   body {
     @apply bg-background text-foreground min-h-screen font-sans;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
-    ::selection {
-      @apply bg-primary/20 text-primary;
-    }
+  ::selection {
+    @apply bg-primary/20 text-primary;
   }
 }
 
@@ -204,5 +208,77 @@
 @layer utilities {
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Homepage workspace treatment */
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 52px 52px;
+  background-position: center center;
+}
+
+.hero-grid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(circle at center, transparent 15%, #0a1020 82%);
+  pointer-events: none;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(70px);
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.hero-orb-one {
+  width: 22rem;
+  height: 22rem;
+  top: 4rem;
+  right: 12%;
+  background: #7c6cff;
+}
+
+.hero-orb-two {
+  width: 18rem;
+  height: 18rem;
+  bottom: 0;
+  left: 8%;
+  background: #46c6b5;
+}
+
+.workspace-card {
+  isolation: isolate;
+}
+
+.workspace-card::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015));
+}
+
+.hero-gradient-text {
+  color: transparent;
+  background: linear-gradient(90deg, #a9c2ff 0%, #9b8cff 45%, #ff9dce 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

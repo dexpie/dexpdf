@@ -80,7 +80,7 @@ export default function FlattenPdfTool() {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, ''), '_flattened.pdf')
+            a.download = getOutputFilename(outputFileName || getDefaultFilename(file, '_flattened'), 'pdf')
             a.click()
             URL.revokeObjectURL(url)
 
@@ -137,13 +137,13 @@ export default function FlattenPdfTool() {
             {/* Mode Switcher */}
             <div className="flex justify-center gap-4 mb-8">
                 <button
-                    className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'}`}
+                    className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-slate-600'}`}
                     onClick={() => setBatchMode(false)}
                 >
                     📄 Single File
                 </button>
                 <button
-                    className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'}`}
+                    className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 dark:bg-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-slate-600'}`}
                     onClick={() => setBatchMode(true)}
                 >
                     🔄 Batch Process
@@ -155,8 +155,7 @@ export default function FlattenPdfTool() {
                     toolName="Flatten PDF"
                     processFile={processBatchFile}
                     acceptedTypes=".pdf"
-                    outputExtension="_flattened.pdf" // Suffix logic handled by processor usually
-                    outputFilenameSuffix="_flattened"
+                    outputExtension=".pdf"
                     maxFiles={50}
                 />
             ) : (
@@ -183,42 +182,42 @@ export default function FlattenPdfTool() {
                         />
                     ) : (
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
-                            <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center text-center gap-6">
+                            <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl border border-border dark:border-slate-700 shadow-sm flex flex-col items-center text-center gap-6">
 
-                                <div className="w-20 h-20 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-2xl flex items-center justify-center mb-2">
+                                <div className="w-20 h-20 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-muted-foreground rounded-2xl flex items-center justify-center mb-2">
                                     <Layers className="w-10 h-10" />
                                 </div>
 
                                 <div>
-                                    <h3 className="font-bold text-xl text-slate-800 dark:text-slate-200 mb-2">{file.name}</h3>
-                                    <p className="text-slate-500 dark:text-slate-400">Ready to flatten (rasterize pages)</p>
+                                    <h3 className="font-bold text-xl text-foreground dark:text-slate-200 mb-2">{file.name}</h3>
+                                    <p className="text-muted-foreground dark:text-muted-foreground">Ready to flatten (rasterize pages)</p>
                                 </div>
 
-                                <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl w-full max-w-md border border-slate-100 dark:border-slate-600 text-left">
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2 flex items-center gap-2">
+                                <div className="bg-secondary dark:bg-slate-700/50 p-4 rounded-xl w-full max-w-md border border-border dark:border-slate-600 text-left">
+                                    <h4 className="font-semibold text-foreground dark:text-muted-foreground text-sm mb-2 flex items-center gap-2">
                                         <Shield className="w-4 h-4 text-blue-500" /> Security Mode
                                     </h4>
                                     <div className="flex gap-2">
                                         <button
                                             onClick={() => setQuality('high')}
-                                            className={`flex-1 p-2 rounded-lg text-sm transition-all border ${quality === 'high' ? 'bg-white dark:bg-slate-800 border-blue-500 text-blue-600 shadow-sm font-bold' : 'border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600'}`}
+                                            className={`flex-1 p-2 rounded-lg text-sm transition-all border ${quality === 'high' ? 'bg-card dark:bg-slate-800 border-blue-500 text-blue-600 shadow-sm font-bold' : 'border-border dark:border-slate-600 text-muted-foreground dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-600'}`}
                                         >
                                             High Definition
                                         </button>
                                         <button
                                             onClick={() => setQuality('medium')}
-                                            className={`flex-1 p-2 rounded-lg text-sm transition-all border ${quality === 'medium' ? 'bg-white dark:bg-slate-800 border-blue-500 text-blue-600 shadow-sm font-bold' : 'border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-600'}`}
+                                            className={`flex-1 p-2 rounded-lg text-sm transition-all border ${quality === 'medium' ? 'bg-card dark:bg-slate-800 border-blue-500 text-blue-600 shadow-sm font-bold' : 'border-border dark:border-slate-600 text-muted-foreground dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-600'}`}
                                         >
                                             Standard Web
                                         </button>
                                     </div>
-                                    <p className="text-xs text-slate-400 mt-2">
+                                    <p className="text-xs text-muted-foreground mt-2">
                                         {quality === 'high' ? 'Best for printing and reading. Larger file size.' : 'Best for sharing online. Smaller file size.'}
                                     </p>
                                 </div>
 
                                 <div className="w-full max-w-md">
-                                    <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-2 text-left">Output Filename</label>
+                                    <label className="block text-sm font-medium text-slate-600 dark:text-muted-foreground mb-2 text-left">Output Filename</label>
                                     <FilenameInput
                                         value={outputFileName}
                                         onChange={e => setOutputFileName(e.target.value)}
@@ -229,7 +228,7 @@ export default function FlattenPdfTool() {
                                 <div className="flex gap-3 w-full max-w-md">
                                     <button
                                         onClick={() => setFile(null)}
-                                        className="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-colors"
+                                        className="flex-1 py-3 rounded-xl font-bold text-muted-foreground hover:bg-secondary transition-colors"
                                         disabled={busy}
                                     >
                                         Cancel

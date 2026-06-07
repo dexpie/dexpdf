@@ -1,106 +1,72 @@
 'use client'
+
 import React from 'react'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Shield, Zap, Lock, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Lock, Shield, Zap } from 'lucide-react'
 
-/**
- * ToolLayout - Standard layout wrapper for all tool pages
- * Provides consistent header, steps indicator, and trust sections
- * @param {Object} props
- * @param {string} props.title - Tool title
- * @param {string} props.description - Tool description
- * @param {React.ReactNode} props.children - Main content
- * @param {Array} props.features - Custom features array
- * @param {Array} props.steps - Custom steps array
- * @param {Function} props.onClose - Optional close handler
- */
-export default function ToolLayout({ title, description, children, features, steps, onClose }) {
+export default function ToolLayout({ title, description, children, features, steps }) {
   const { t } = useTranslation()
 
-  // Default features if none provided
   const defaultFeatures = [
-    { icon: Shield, label: '100% Secure', desc: 'Files processed locally in your browser' },
-    { icon: Zap, label: 'Lightning Fast', desc: 'No upload — instant processing' },
-    { icon: Lock, label: 'Private', desc: 'Your files never leave your device' },
+    { icon: Shield, label: 'Secure workflow', desc: 'Clear processing status and validation' },
+    { icon: Zap, label: 'Fast processing', desc: 'Optimized for modern browsers' },
+    { icon: Lock, label: 'Privacy aware', desc: 'Local tools keep files on your device' },
   ]
 
-  const toolFeatures = features || defaultFeatures
-
-  // Default steps if none provided
   const defaultSteps = [
-    { num: '1', label: 'Upload your file' },
+    { num: '1', label: 'Choose your file' },
     { num: '2', label: 'Adjust settings' },
     { num: '3', label: 'Download result' },
   ]
 
+  const toolFeatures = features || defaultFeatures
   const toolSteps = steps || defaultSteps
 
   return (
     <div className="min-h-screen bg-background pb-20">
-
-      {/* Tool Header */}
-      <div className="bg-card border-b border-border pt-8 pb-10 px-4 relative">
+      <header className="relative border-b border-border bg-card px-4 pb-10 pt-8">
         <div className="container mx-auto max-w-5xl text-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2 tracking-tight">
-            {title}
-          </h1>
-          {description && (
-            <p className="text-muted-foreground text-base max-w-xl mx-auto">
-              {description}
-            </p>
-          )}
+          <h1 className="mb-2 text-2xl font-black tracking-tight text-foreground md:text-3xl">{title}</h1>
+          {description && <p className="mx-auto max-w-2xl text-base text-muted-foreground">{description}</p>}
 
-          {/* Step Indicators */}
-          <div className="flex items-center justify-center gap-3 mt-6">
-            {toolSteps.map((step, i) => (
-              <React.Fragment key={i}>
+          <div className="mt-6 flex items-center justify-center gap-3">
+            {toolSteps.map((step, index) => (
+              <React.Fragment key={step.num || index}>
                 <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shadow-sm">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-sm">
                     {step.num}
                   </span>
-                  <span className="text-sm text-muted-foreground hidden sm:inline font-medium">
-                    {step.label}
-                  </span>
+                  <span className="hidden text-sm font-medium text-muted-foreground sm:inline">{step.label}</span>
                 </div>
-                {i < toolSteps.length - 1 && (
-                  <div className="w-10 h-px bg-border" />
-                )}
+                {index < toolSteps.length - 1 && <div className="h-px w-10 bg-border" />}
               </React.Fragment>
             ))}
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Back Navigation */}
       <div className="container mx-auto max-w-5xl px-4 py-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary font-medium transition-colors text-sm hover:bg-secondary px-3 py-1.5 rounded-lg"
-        >
-          <ArrowLeft className="w-4 h-4" />
+        <Link href="/" className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-primary">
+          <ArrowLeft className="h-4 w-4" />
           {t('common.back', 'Back')}
         </Link>
       </div>
 
-      {/* Main Tool Container */}
       <main className="container mx-auto max-w-5xl px-4">
-        <div className="bg-card rounded-2xl border border-border shadow-sm p-6 md:p-10 min-h-[400px]">
-          {children}
-        </div>
+        <div className="min-h-[400px] rounded-2xl border border-border bg-card p-6 shadow-sm md:p-10">{children}</div>
       </main>
 
-      {/* Trust Section */}
-      <section className="container mx-auto max-w-5xl px-4 mt-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {toolFeatures.map((feat, i) => (
-            <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-card border border-border">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <feat.icon className="w-5 h-5 text-primary" />
+      <section className="container mx-auto mt-10 max-w-5xl px-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {toolFeatures.map((feature, index) => (
+            <div key={index} className="flex items-start gap-3 rounded-xl border border-border bg-card p-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                <feature.icon className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h4 className="font-semibold text-foreground text-sm">{feat.label}</h4>
-                <p className="text-muted-foreground text-xs mt-0.5">{feat.desc}</p>
+                <h4 className="text-sm font-semibold text-foreground">{feature.label}</h4>
+                <p className="mt-0.5 text-xs text-muted-foreground">{feature.desc}</p>
               </div>
             </div>
           ))}

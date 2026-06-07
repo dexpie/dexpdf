@@ -67,7 +67,7 @@ export default function PasswordGeneratorTool() {
                     </div>
 
                     <div className="flex justify-center gap-4">
-                        <button onClick={generate} className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-colors">
+                        <button onClick={generate} className="p-3 bg-card/10 hover:bg-card/20 rounded-xl text-white transition-colors">
                             <RefreshCw className="w-6 h-6" />
                         </button>
                         <button onClick={copyToClipboard} className="p-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-white transition-colors shadow-lg shadow-blue-500/30">
@@ -77,9 +77,9 @@ export default function PasswordGeneratorTool() {
                 </div>
 
                 {/* Controls */}
-                <div className="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+                <div className="bg-card rounded-3xl p-8 shadow-lg border border-border">
                     <div className="mb-8">
-                        <label className="flex justify-between font-bold text-slate-700 mb-2">
+                        <label className="flex justify-between font-bold text-foreground mb-2">
                             <span>Length</span>
                             <span className="text-blue-600">{length} characters</span>
                         </label>
@@ -96,7 +96,7 @@ export default function PasswordGeneratorTool() {
                         {Object.keys(options).map(key => (
                             <label key={key} className={`
                                 flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all
-                                ${options[key] ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-slate-200 hover:border-slate-300 text-slate-500'}
+                                ${options[key] ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-border hover:border-slate-300 text-muted-foreground'}
                             `}>
                                 <span className="capitalize font-bold">{key}</span>
                                 <input

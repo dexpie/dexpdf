@@ -62,7 +62,7 @@ export default function DexAssistant() {
             </button>
 
             {/* Chat Window - CSS transition */}
-            <div className={`chat-window fixed bottom-40 md:bottom-24 right-6 w-80 md:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden z-50 flex flex-col max-h-[500px] ${isOpen ? 'open' : ''}`}>
+            <div className={`chat-window fixed bottom-40 md:bottom-24 right-6 w-80 md:w-96 bg-card rounded-3xl shadow-2xl border border-border overflow-hidden z-50 flex flex-col max-h-[500px] ${isOpen ? 'open' : ''}`}>
                 {/* Header */}
                 <div className="bg-slate-900 p-4 text-white flex items-center gap-3">
                     <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center">
@@ -72,21 +72,21 @@ export default function DexAssistant() {
                         <h3 className="font-bold">Dex AI</h3>
                         <div className="flex items-center gap-1.5">
                             <span className="w-2 h-2 bg-green-400 rounded-full" />
-                            <span className="text-xs text-slate-300">Online</span>
+                            <span className="text-xs text-muted-foreground">Online</span>
                         </div>
                     </div>
                     <Sparkles className="w-5 h-5 ml-auto text-yellow-300 opacity-50" />
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-secondary">
                     {messages.map((m, i) => (
                         <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             <div className={`
                                 max-w-[80%] px-4 py-2.5 rounded-2xl text-sm font-medium
                                 ${m.role === 'user'
                                     ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
-                                    : 'bg-white text-slate-700 rounded-bl-none border border-slate-200 shadow-sm'}
+                                    : 'bg-secondary text-foreground rounded-bl-none border border-border shadow-sm'}
                             `}>
                                 {m.thinking ? (
                                     <div className="flex gap-1 h-5 items-center">
@@ -102,7 +102,7 @@ export default function DexAssistant() {
                 </div>
 
                 {/* Input */}
-                <div className="p-3 bg-white border-t border-slate-200 flex gap-2">
+                <div className="p-3 bg-card border-t border-border flex gap-2">
                     <div className="flex-1 relative">
                         <input
                             type="text"
@@ -110,11 +110,11 @@ export default function DexAssistant() {
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
                             placeholder="Ask Dex..."
-                            className="w-full bg-slate-100 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                            className="w-full bg-secondary rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
                         />
                         <button
                             onClick={startListening}
-                            className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-colors ${isListening ? 'text-red-500 bg-red-100' : 'text-slate-400 hover:bg-slate-200'}`}
+                            className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-colors ${isListening ? 'text-red-500 bg-red-100' : 'text-muted-foreground hover:bg-secondary'}`}
                         >
                             <Mic className="w-4 h-4" />
                         </button>

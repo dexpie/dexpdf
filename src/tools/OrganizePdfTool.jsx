@@ -551,7 +551,7 @@ export default function OrganizePdfTool() {
                             <CheckCircle className="w-3.5 h-3.5 text-white" />
                           </div>
                         ) : (
-                          <div className="w-5 h-5 border-2 border-muted-foreground/30 rounded-md bg-white/80" />
+                          <div className="w-5 h-5 border-2 border-muted-foreground/30 rounded-md bg-card/80" />
                         )}
                       </div>
 

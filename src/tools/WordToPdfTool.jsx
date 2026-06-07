@@ -154,7 +154,7 @@ export default function WordToPdfTool() {
     }
 
     return (
-        <ToolLayout title="Word to PDF" description={t('tool.word_to_pdf_desc', 'Convert Microsoft Word documents to PDF format.')}>
+        <ToolLayout title="DOCX to PDF" description={t('tool.word_to_pdf_desc', 'Render a DOCX document into PDF pages. Complex Word layouts may differ.')}>
             <div className="max-w-4xl mx-auto">
                 <AnimatePresence>
                     {errorMsg && (
@@ -178,14 +178,14 @@ export default function WordToPdfTool() {
                     />
                 ) : (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
-                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-6">
+                        <div className="bg-card p-6 rounded-2xl border border-border shadow-sm flex flex-col items-center text-center gap-6">
                             <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-2">
                                 <FileText className="w-10 h-10" />
                             </div>
 
                             <div>
-                                <h3 className="font-bold text-xl text-slate-800 mb-2">{file.name}</h3>
-                                <p className="text-slate-500">{(file.size / 1024).toFixed(1)} KB</p>
+                                <h3 className="font-bold text-xl text-foreground mb-2">{file.name}</h3>
+                                <p className="text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</p>
                             </div>
 
                             <div className="w-full max-w-md">
@@ -196,7 +196,7 @@ export default function WordToPdfTool() {
                             <div className="flex gap-3 w-full max-w-md">
                                 <button
                                     onClick={() => setFile(null)}
-                                    className="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-colors"
+                                    className="flex-1 py-3 rounded-xl font-bold text-muted-foreground hover:bg-secondary transition-colors"
                                     disabled={busy}
                                 >
                                     Cancel

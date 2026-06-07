@@ -29,7 +29,7 @@ export default function MarkdownPreviewTool() {
             .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-bold mb-4 border-b pb-2">$1</h1>')
             .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold mb-3 mt-6">$1</h2>')
             .replace(/^### (.*$)/gim, '<h3 class="text-xl font-bold mb-2 mt-4">$1</h3>')
-            .replace(/^\> (.*$)/gim, '<blockquote class="border-l-4 border-blue-500 pl-4 italic bg-slate-50 p-2 my-4">$1</blockquote>')
+            .replace(/^\> (.*$)/gim, '<blockquote class="border-l-4 border-blue-500 pl-4 italic bg-secondary p-2 my-4">$1</blockquote>')
             .replace(/\*\*(.*)\*\*/gim, '<b>$1</b>')
             .replace(/\*(.*)\*/gim, '<i>$1</i>')
             .replace(/!\[(.*?)\]\((.*?)\)/gim, "<img alt='$1' src='$2' class='rounded-lg shadow-md max-w-full my-4' />")
@@ -63,13 +63,13 @@ export default function MarkdownPreviewTool() {
         <ToolLayout title="Markdown Editor" description="Live markdown editing and preview.">
             <div className="max-w-6xl mx-auto h-[700px] flex flex-col md:flex-row gap-6">
                 {/* Editor */}
-                <div className="flex-1 flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
-                    <div className="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
-                        <div className="flex items-center gap-2 font-bold text-slate-700">
+                <div className="flex-1 flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
+                    <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
+                        <div className="flex items-center gap-2 font-bold text-foreground">
                             <Code className="w-4 h-4 text-blue-500" /> Editor
                         </div>
                         <div className="flex gap-2">
-                            <button onClick={() => setMarkdown('')} className="text-xs font-bold text-slate-400 hover:text-red-500">Clear</button>
+                            <button onClick={() => setMarkdown('')} className="text-xs font-bold text-muted-foreground hover:text-red-500">Clear</button>
                             <button onClick={() => setMarkdown(SAMPLE_MD)} className="text-xs font-bold text-blue-500 hover:text-blue-600">Sample</button>
                         </div>
                     </div>
@@ -82,13 +82,13 @@ export default function MarkdownPreviewTool() {
                 </div>
 
                 {/* Preview */}
-                <div className="flex-1 flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
-                    <div className="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
-                        <div className="flex items-center gap-2 font-bold text-slate-700">
+                <div className="flex-1 flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
+                    <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
+                        <div className="flex items-center gap-2 font-bold text-foreground">
                             <Eye className="w-4 h-4 text-green-500" /> Preview
                         </div>
                         <div className="flex gap-2">
-                            <button onClick={() => navigator.clipboard.writeText(markdown)} className="p-2 hover:bg-slate-200 rounded-lg text-slate-500">
+                            <button onClick={() => navigator.clipboard.writeText(markdown)} className="p-2 hover:bg-slate-200 rounded-lg text-muted-foreground">
                                 <Copy className="w-4 h-4" />
                             </button>
                             <button onClick={downloadMd} className="p-2 hover:bg-slate-200 rounded-lg text-blue-600">

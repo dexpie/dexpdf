@@ -84,13 +84,13 @@ export default function TimezoneConverterTool() {
             <div className="max-w-4xl mx-auto flex flex-col items-center gap-8">
 
                 {/* Selector */}
-                <div className="flex flex-col md:flex-row items-center gap-4 bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
+                <div className="flex flex-col md:flex-row items-center gap-4 bg-card p-6 rounded-3xl shadow-lg border border-border">
                     <div className="flex flex-col gap-2">
-                        <label className="text-xs font-bold text-slate-400 uppercase">From</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">From</label>
                         <select
                             value={sourceZone}
                             onChange={e => setSourceZone(e.target.value)}
-                            className="p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold min-w-[200px]"
+                            className="p-3 bg-secondary border border-border rounded-xl font-bold min-w-[200px]"
                         >
                             {TIMEZONES.map(z => <option key={z} value={z}>{z.replace('_', ' ')}</option>)}
                         </select>
@@ -101,11 +101,11 @@ export default function TimezoneConverterTool() {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="text-xs font-bold text-slate-400 uppercase">To</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">To</label>
                         <select
                             value={targetZone}
                             onChange={e => setTargetZone(e.target.value)}
-                            className="p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold min-w-[200px]"
+                            className="p-3 bg-secondary border border-border rounded-xl font-bold min-w-[200px]"
                         >
                             {TIMEZONES.map(z => <option key={z} value={z}>{z.replace('_', ' ')}</option>)}
                         </select>
@@ -115,31 +115,31 @@ export default function TimezoneConverterTool() {
                 {/* Result */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
                     {/* Left Card */}
-                    <div className="bg-white p-8 rounded-[2rem] shadow-xl border-l-[8px] border-blue-500">
+                    <div className="bg-card p-8 rounded-[2rem] shadow-xl border-l-[8px] border-blue-500">
                         <div className="flex items-center gap-3 mb-4">
                             <Clock className="w-6 h-6 text-blue-500" />
-                            <h3 className="font-bold text-slate-800 text-lg">{sourceZone.split('/')[1]?.replace('_', ' ') || sourceZone}</h3>
+                            <h3 className="font-bold text-foreground text-lg">{sourceZone.split('/')[1]?.replace('_', ' ') || sourceZone}</h3>
                         </div>
-                        <div className="text-5xl font-black text-slate-800 mb-2">{sTime}</div>
-                        <div className="text-slate-500 font-bold">{sDate}</div>
+                        <div className="text-5xl font-black text-foreground mb-2">{sTime}</div>
+                        <div className="text-muted-foreground font-bold">{sDate}</div>
                     </div>
 
                     {/* Right Card */}
-                    <div className="bg-white p-8 rounded-[2rem] shadow-xl border-l-[8px] border-indigo-500">
+                    <div className="bg-card p-8 rounded-[2rem] shadow-xl border-l-[8px] border-indigo-500">
                         <div className="flex items-center gap-3 mb-4">
                             <Clock className="w-6 h-6 text-indigo-500" />
-                            <h3 className="font-bold text-slate-800 text-lg">{targetZone.split('/')[1]?.replace('_', ' ') || targetZone}</h3>
+                            <h3 className="font-bold text-foreground text-lg">{targetZone.split('/')[1]?.replace('_', ' ') || targetZone}</h3>
                         </div>
-                        <div className="text-5xl font-black text-slate-800 mb-2">{tTime}</div>
-                        <div className="text-slate-500 font-bold">{tDate}</div>
+                        <div className="text-5xl font-black text-foreground mb-2">{tTime}</div>
+                        <div className="text-muted-foreground font-bold">{tDate}</div>
                         <div className="mt-4 inline-block px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg font-bold text-sm">
                             {diff > 0 ? `+${diff}` : diff} Hours Difference
                         </div>
                     </div>
                 </div>
 
-                <div className="text-center p-8 bg-slate-50 rounded-3xl w-full">
-                    <h4 className="font-bold text-slate-500 mb-4">Common Office Hours Overlap</h4>
+                <div className="text-center p-8 bg-secondary rounded-3xl w-full">
+                    <h4 className="font-bold text-muted-foreground mb-4">Common Office Hours Overlap</h4>
                     <div className="flex justify-center gap-1 overflow-x-auto pb-4">
                         {Array.from({ length: 24 }).map((_, i) => {
                             // Calculate hour in Target zone relative to Source hour i
@@ -154,16 +154,16 @@ export default function TimezoneConverterTool() {
                             return (
                                 <div key={i} className="flex flex-col items-center gap-1">
                                     <div className={`w-8 h-20 rounded-lg flex items-center justify-center text-xs font-bold text-white
-                                        ${overlap ? 'bg-green-500' : isWorkS ? 'bg-blue-300' : 'bg-slate-200 text-slate-400'}
+                                        ${overlap ? 'bg-green-500' : isWorkS ? 'bg-blue-300' : 'bg-slate-200 text-muted-foreground'}
                                     `}>
                                         {i}
                                     </div>
-                                    <div className="text-[10px] text-slate-400 font-mono">{Math.floor(tH)}</div>
+                                    <div className="text-[10px] text-muted-foreground font-mono">{Math.floor(tH)}</div>
                                 </div>
                             )
                         })}
                     </div>
-                    <div className="flex gap-4 justify-center text-xs font-bold text-slate-500 mt-2">
+                    <div className="flex gap-4 justify-center text-xs font-bold text-muted-foreground mt-2">
                         <span className="flex items-center gap-1"><div className="w-3 h-3 bg-green-500 rounded"></div> Good Meeting Time</span>
                         <span className="flex items-center gap-1"><div className="w-3 h-3 bg-blue-300 rounded"></div> Source Work Hours</span>
                     </div>

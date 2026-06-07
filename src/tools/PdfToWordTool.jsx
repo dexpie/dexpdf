@@ -194,15 +194,15 @@ export default function PdfToWordTool() {
   const [thumbnail, setThumbnail] = useState(null)
   const [pageCount, setPageCount] = useState(0)
 
-  // Load saved API key
+  // Keep user-provided service credentials only for the current browser session.
   useEffect(() => {
-    const saved = localStorage.getItem('convertApiSecret') || ''
+    const saved = sessionStorage.getItem('convertApiSecret') || ''
     setApiKey(saved)
   }, [])
 
-  // Save API key when changed
   useEffect(() => {
-    if (apiKey) localStorage.setItem('convertApiSecret', apiKey)
+    if (apiKey) sessionStorage.setItem('convertApiSecret', apiKey)
+    else sessionStorage.removeItem('convertApiSecret')
   }, [apiKey])
 
   async function handleFileChange(files) {
@@ -265,8 +265,6 @@ export default function PdfToWordTool() {
       try {
         if (!apiKey) {
           setProgress(10)
-          // Simulate connection
-          await new Promise(r => setTimeout(r, 1000))
         }
 
         const formData = new FormData()
@@ -387,7 +385,7 @@ export default function PdfToWordTool() {
       id: 'layout',
       icon: Cloud,
       title: 'Pro Layout (Cloud)',
-      description: 'Preserves exact layout, images, and tables using ConvertAPI.',
+      description: 'Uses ConvertAPI for stronger layout preservation. Results can still vary.',
       badges: [
         { label: '🎯 Best Quality', class: 'bg-purple-100 text-purple-700' },
         { label: '☁️ Cloud', class: 'bg-blue-100 text-blue-700' }

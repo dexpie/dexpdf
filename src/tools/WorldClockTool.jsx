@@ -41,12 +41,12 @@ export default function WorldClockTool() {
                             <Plus className="w-5 h-5" /> Add City
                         </button>
                         {adding && (
-                            <div className="absolute top-full right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-100 p-2 w-64 z-10 grid gap-1 max-h-64 overflow-y-auto">
+                            <div className="absolute top-full right-0 mt-2 bg-card rounded-xl shadow-xl border border-border p-2 w-64 z-10 grid gap-1 max-h-64 overflow-y-auto">
                                 {ZONES.map(z => (
                                     <button
                                         key={z}
                                         onClick={() => addClock(z)}
-                                        className="text-left px-4 py-2 hover:bg-slate-50 rounded-lg text-sm font-bold text-slate-700 disabled:opacity-50"
+                                        className="text-left px-4 py-2 hover:bg-secondary rounded-lg text-sm font-bold text-foreground disabled:opacity-50"
                                         disabled={clocks.includes(z)}
                                     >
                                         {z.replace('_', ' ')}
@@ -59,28 +59,28 @@ export default function WorldClockTool() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {clocks.map(zone => (
-                        <div key={zone} className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 relative group overflow-hidden">
+                        <div key={zone} className="bg-card p-6 rounded-3xl shadow-lg border border-border relative group overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => removeClock(zone)} className="bg-slate-100 text-slate-400 p-2 rounded-full hover:bg-red-100 hover:text-red-500">
+                                <button onClick={() => removeClock(zone)} className="bg-slate-100 text-muted-foreground p-2 rounded-full hover:bg-red-100 hover:text-red-500">
                                     <X className="w-4 h-4" />
                                 </button>
                             </div>
 
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="p-3 bg-slate-50 text-slate-400 rounded-full">
+                                <div className="p-3 bg-secondary text-muted-foreground rounded-full">
                                     <Globe className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-slate-700 text-lg">{zone.split('/')[1]?.replace('_', ' ') || zone}</h3>
-                                    <p className="text-xs text-slate-400 font-bold uppercase">{zone.split('/')[0]}</p>
+                                    <h3 className="font-bold text-foreground text-lg">{zone.split('/')[1]?.replace('_', ' ') || zone}</h3>
+                                    <p className="text-xs text-muted-foreground font-bold uppercase">{zone.split('/')[0]}</p>
                                 </div>
                             </div>
 
                             <div className="text-center py-6">
-                                <div className="text-4xl font-black text-slate-800 font-mono tracking-wider">
+                                <div className="text-4xl font-black text-foreground font-mono tracking-wider">
                                     {now.toLocaleTimeString('en-US', { timeZone: zone, hour: '2-digit', minute: '2-digit' })}
                                 </div>
-                                <div className="text-sm font-bold text-slate-400 mt-2">
+                                <div className="text-sm font-bold text-muted-foreground mt-2">
                                     {now.toLocaleDateString('en-US', { timeZone: zone, weekday: 'long', month: 'short', day: 'numeric' })}
                                 </div>
                             </div>

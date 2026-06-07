@@ -25,13 +25,13 @@ export default function HashGeneratorTool() {
         <ToolLayout title="Hash Generator" description="Generate MD5, SHA1, SHA256 hashes instantly.">
             <div className="max-w-4xl mx-auto space-y-8">
 
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
-                    <label className="text-sm font-bold text-slate-500 uppercase mb-2 block">Value to Hash</label>
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border">
+                    <label className="text-sm font-bold text-muted-foreground uppercase mb-2 block">Value to Hash</label>
                     <textarea
                         value={input}
                         onChange={e => generate(e.target.value)}
                         placeholder="Type something..."
-                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-blue-500 font-mono text-sm h-24 resize-none"
+                        className="w-full p-4 bg-secondary border border-border rounded-xl outline-none focus:ring-2 ring-blue-500 font-mono text-sm h-24 resize-none"
                     />
                 </div>
 
@@ -49,18 +49,18 @@ export default function HashGeneratorTool() {
 
 function HashRow({ label, value, color }) {
     return (
-        <div className={`bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-center overflow-hidden`}>
+        <div className={`bg-card rounded-2xl shadow-sm border border-border flex flex-col md:flex-row items-center overflow-hidden`}>
             <div className={`w-full md:w-32 p-4 bg-${color}-50 text-${color}-600 font-bold border-b md:border-b-0 md:border-r border-${color}-100 flex justify-between md:justify-center items-center`}>
                 {label}
                 <Fingerprint className="w-4 h-4 md:hidden" />
             </div>
             <div className="flex-1 p-4 font-mono text-xs break-all text-slate-600 w-full text-center md:text-left">
-                {value || <span className="text-slate-300 italic">Waiting...</span>}
+                {value || <span className="text-muted-foreground italic">Waiting...</span>}
             </div>
             <button
                 onClick={() => navigator.clipboard.writeText(value)}
                 disabled={!value}
-                className="w-full md:w-auto p-4 text-slate-400 hover:text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-colors"
+                className="w-full md:w-auto p-4 text-muted-foreground hover:text-slate-600 hover:bg-secondary disabled:opacity-50 transition-colors"
             >
                 <Copy className="w-5 h-5 mx-auto" />
             </button>

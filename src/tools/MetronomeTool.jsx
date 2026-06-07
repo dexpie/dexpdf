@@ -74,13 +74,13 @@ export default function MetronomeTool() {
                     <div className={`absolute inset-0 bg-blue-600/20 transition-opacity duration-100 ease-out ${beat === 0 && isPlaying ? 'opacity-100' : 'opacity-0'}`}></div>
                     <div className={`absolute w-full h-2 bottom-0 left-0 bg-green-500 transition-all duration-100 ${isPlaying ? 'opacity-100' : 'opacity-0'}`} style={{ width: `${(beat + 1) * 25}%` }}></div>
 
-                    <h2 className="text-slate-500 text-sm font-bold uppercase tracking-[0.3em] mb-4">BPM</h2>
+                    <h2 className="text-muted-foreground text-sm font-bold uppercase tracking-[0.3em] mb-4">BPM</h2>
                     <div className="text-9xl font-black text-white mb-8 select-none">
                         {bpm}
                     </div>
 
                     <div className="flex items-center justify-center gap-6 mb-8">
-                        <button onClick={() => adjustBpm(-10)} className="w-12 h-12 rounded-full border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-bold text-xl">-10</button>
+                        <button onClick={() => adjustBpm(-10)} className="w-12 h-12 rounded-full border border-slate-700 text-muted-foreground hover:text-white hover:bg-slate-800 transition-colors font-bold text-xl">-10</button>
                         <button onClick={() => adjustBpm(-1)} className="w-16 h-16 rounded-full bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors font-bold text-2xl"><Minus className="w-6 h-6 mx-auto" /></button>
 
                         <button
@@ -91,10 +91,10 @@ export default function MetronomeTool() {
                         </button>
 
                         <button onClick={() => adjustBpm(1)} className="w-16 h-16 rounded-full bg-slate-800 text-slate-200 hover:bg-slate-700 transition-colors font-bold text-2xl"><Plus className="w-6 h-6 mx-auto" /></button>
-                        <button onClick={() => adjustBpm(10)} className="w-12 h-12 rounded-full border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors font-bold text-xl">+10</button>
+                        <button onClick={() => adjustBpm(10)} className="w-12 h-12 rounded-full border border-slate-700 text-muted-foreground hover:text-white hover:bg-slate-800 transition-colors font-bold text-xl">+10</button>
                     </div>
 
-                    <div className="text-slate-500 font-bold text-sm">
+                    <div className="text-muted-foreground font-bold text-sm">
                         {isPlaying ? (
                             <span className="flex items-center justify-center gap-2 animate-pulse text-green-400">
                                 <Volume2 className="w-4 h-4" /> Playing

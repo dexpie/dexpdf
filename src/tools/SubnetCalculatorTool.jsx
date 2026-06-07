@@ -28,20 +28,20 @@ export default function SubnetCalculatorTool() {
         <ToolLayout title="Subnet Calculator" description="Calculate CIDR, subnet masks, and IP ranges.">
             <div className="max-w-4xl mx-auto space-y-8">
 
-                <div className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 flex flex-col md:flex-row gap-6 items-end">
+                <div className="bg-card p-8 rounded-3xl shadow-lg border border-border flex flex-col md:flex-row gap-6 items-end">
                     <div className="flex-1 w-full space-y-2">
-                        <label className="text-xs font-bold text-slate-400 uppercase">IP Address</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">IP Address</label>
                         <input
                             value={ip} onChange={e => setIp(e.target.value)}
-                            className="w-full text-2xl font-mono font-bold p-4 bg-slate-50 rounded-xl outline-none focus:ring-2 ring-blue-500 text-slate-700"
+                            className="w-full text-2xl font-mono font-bold p-4 bg-secondary rounded-xl outline-none focus:ring-2 ring-blue-500 text-foreground"
                             placeholder="192.168.0.1"
                         />
                     </div>
                     <div className="w-full md:w-32 space-y-2">
-                        <label className="text-xs font-bold text-slate-400 uppercase">Mask (/{cidr})</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">Mask (/{cidr})</label>
                         <input
                             type="number" min="0" max="32" value={cidr} onChange={e => setCidr(Number(e.target.value))}
-                            className="w-full text-2xl font-mono font-bold p-4 bg-slate-50 rounded-xl outline-none focus:ring-2 ring-blue-500 text-slate-700 text-center"
+                            className="w-full text-2xl font-mono font-bold p-4 bg-secondary rounded-xl outline-none focus:ring-2 ring-blue-500 text-foreground text-center"
                         />
                     </div>
                 </div>
@@ -70,8 +70,8 @@ export default function SubnetCalculatorTool() {
 
 function ResultCard({ label, value }) {
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
-            <span className="font-bold text-slate-500">{label}</span>
+        <div className="bg-card p-6 rounded-2xl shadow-sm border border-border flex justify-between items-center">
+            <span className="font-bold text-muted-foreground">{label}</span>
             <span className="font-mono font-bold text-lg text-blue-600">{value}</span>
         </div>
     )

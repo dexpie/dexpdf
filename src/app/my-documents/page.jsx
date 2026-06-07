@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { motion } from 'framer-motion'
-import { FileText, Clock, Trash2, ArrowRight, Hash, ShieldCheck, FileSpreadsheet, Download } from 'lucide-react'
+import { FileText, Clock, Trash2, FileSpreadsheet } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Link from 'next/link'
 import { useFileHistory } from '@/hooks/useFileHistory'
@@ -12,14 +12,14 @@ export default function MyDocumentsPage() {
     const { t } = useTranslation()
 
     const handleExport = () => {
-        const headers = ['Operation ID', 'Date', 'Tool', 'File Name', 'Size (Bytes)', 'Hash (SHA-256)']
+        const headers = ['Record ID', 'Date', 'Tool', 'File Name', 'Size (Bytes)', 'Status']
         const rows = history.map(item => [
             item.opId || '-',
             item.date,
             item.tool,
             item.name,
             item.size,
-            item.hash || '-'
+            item.status || 'completed'
         ])
 
         const csvContent = [
@@ -36,17 +36,17 @@ export default function MyDocumentsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-secondary py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
-                            <ShieldCheck className="w-8 h-8 text-blue-600" />
-                            Enterprise Audit Trail
+                            <Clock className="w-8 h-8 text-blue-600" />
+                            Processing History
                         </h1>
-                        <p className="text-slate-500 mt-1">
-                            Immutable record of all file processing operations.
+                        <p className="text-muted-foreground mt-1">
+                            Local browser history of completed file operations.
                         </p>
                     </div>
                     <div className="flex gap-2">
@@ -54,16 +54,16 @@ export default function MyDocumentsPage() {
                             <>
                                 <Button
                                     onClick={handleExport}
-                                    className="bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 shadow-sm"
+                                    className="bg-card text-foreground border border-slate-300 hover:bg-secondary shadow-sm"
                                 >
                                     <FileSpreadsheet className="w-4 h-4 mr-2" /> Export CSV
                                 </Button>
                                 <Button
                                     variant="destructive"
                                     onClick={() => {
-                                        if (confirm("Clear all audit logs? This action cannot be undone.")) clearHistory()
+                                        if (confirm("Clear all processing history? This action cannot be undone.")) clearHistory()
                                     }}
-                                    className="bg-white text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 shadow-sm"
+                                    className="bg-card text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 shadow-sm"
                                 >
                                     <Trash2 className="w-4 h-4 mr-2" /> Clear Log
                                 </Button>
@@ -74,12 +74,12 @@ export default function MyDocumentsPage() {
 
                 {/* List */}
                 {history.length === 0 ? (
-                    <div className="bg-white rounded-2xl p-12 text-center border border-slate-200 shadow-sm">
+                    <div className="bg-card rounded-2xl p-12 text-center border border-border shadow-sm">
                         <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <ShieldCheck className="w-8 h-8 text-slate-400" />
+                            <Clock className="w-8 h-8 text-muted-foreground" />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-800 mb-2">Audit Log is Empty</h3>
-                        <p className="text-slate-500 mb-8">No operations recorded yet.</p>
+                        <h3 className="text-xl font-bold text-foreground mb-2">Processing History is Empty</h3>
+                        <p className="text-muted-foreground mb-8">No operations recorded yet.</p>
                         <Link href="/">
                             <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
                                 Start Processing
@@ -87,23 +87,23 @@ export default function MyDocumentsPage() {
                         </Link>
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left text-sm">
-                                <thead className="bg-slate-50 border-b border-slate-200">
+                                <thead className="bg-secondary border-b border-border">
                                     <tr>
-                                        <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">Operation ID</th>
-                                        <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">Timestamp</th>
-                                        <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">Asset / Action</th>
-                                        <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">Integrity Proof (SHA-256)</th>
-                                        <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs text-right">Status</th>
+                                        <th className="px-6 py-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">Record ID</th>
+                                        <th className="px-6 py-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">Timestamp</th>
+                                        <th className="px-6 py-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">Asset / Action</th>
+                                        <th className="px-6 py-4 font-bold text-muted-foreground uppercase tracking-wider text-xs">File Size</th>
+                                        <th className="px-6 py-4 font-bold text-muted-foreground uppercase tracking-wider text-xs text-right">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
                                     {history.map((item) => (
-                                        <tr key={item.id} className="hover:bg-slate-50 transition-colors group">
-                                            <td className="px-6 py-4 font-mono text-xs text-slate-500">
-                                                {item.opId || <span className="text-slate-300">LEGACY</span>}
+                                        <tr key={item.id} className="hover:bg-secondary transition-colors group">
+                                            <td className="px-6 py-4 font-mono text-xs text-muted-foreground">
+                                                {item.opId || <span className="text-muted-foreground">LEGACY</span>}
                                             </td>
                                             <td className="px-6 py-4 text-slate-600 whitespace-nowrap">
                                                 {new Date(item.date).toLocaleString()}
@@ -117,20 +117,15 @@ export default function MyDocumentsPage() {
                                                         <FileText className="w-4 h-4" />
                                                     </div>
                                                     <div>
-                                                        <div className="font-bold text-slate-700">{item.name}</div>
-                                                        <div className="text-xs text-slate-400 uppercase font-bold">{item.tool}</div>
+                                                        <div className="font-bold text-foreground">{item.name}</div>
+                                                        <div className="text-xs text-muted-foreground uppercase font-bold">{item.tool}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center gap-2 font-mono text-xs text-slate-500 bg-slate-50 px-2 py-1 rounded border border-slate-100 max-w-[200px] truncate" title={item.hash}>
-                                                    <Hash className="w-3 h-3 text-slate-300" />
-                                                    {item.hash ? item.hash.substring(0, 24) + '...' : 'N/A'}
-                                                </div>
-                                            </td>
+                                            <td className="px-6 py-4 text-muted-foreground">{item.size ? `${(item.size / 1024).toFixed(1)} KB` : 'N/A'}</td>
                                             <td className="px-6 py-4 text-right">
                                                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                    <ShieldCheck className="w-3 h-3" /> Verified
+                                                    Completed
                                                 </span>
                                             </td>
                                         </tr>

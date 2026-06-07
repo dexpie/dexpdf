@@ -181,8 +181,8 @@ export default function QrCodeProTool() {
                     <div className="lg:col-span-7 space-y-6">
 
                         {/* 1. Content Type */}
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700">
-                            <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase mb-4 tracking-wider">1. Select Content</h3>
+                        <div className="bg-card dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-border dark:border-slate-700">
+                            <h3 className="text-sm font-bold text-muted-foreground dark:text-muted-foreground uppercase mb-4 tracking-wider">1. Select Content</h3>
                             <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
                                 {INPUT_TYPES.map(type => (
                                     <button
@@ -190,7 +190,7 @@ export default function QrCodeProTool() {
                                         onClick={() => { setInputType(type.id); setValue('') }}
                                         className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${inputType === type.id
                                             ? 'bg-blue-600 text-white shadow-md scale-105 ring-2 ring-offset-2 ring-blue-600 dark:ring-blue-500 dark:ring-offset-slate-800'
-                                            : 'bg-slate-50 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                            : 'bg-secondary dark:bg-slate-700/50 text-muted-foreground dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-700'
                                             }`}
                                     >
                                         <type.icon className="w-5 h-5" />
@@ -201,8 +201,8 @@ export default function QrCodeProTool() {
                         </div>
 
                         {/* 2. Input Fields */}
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700">
-                            <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase mb-4 tracking-wider">2. Enter Data</h3>
+                        <div className="bg-card dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-border dark:border-slate-700">
+                            <h3 className="text-sm font-bold text-muted-foreground dark:text-muted-foreground uppercase mb-4 tracking-wider">2. Enter Data</h3>
 
                             {/* Standard Inputs */}
                             {['url', 'text', 'email', 'phone'].includes(inputType) && (
@@ -211,16 +211,16 @@ export default function QrCodeProTool() {
                                     value={value}
                                     onChange={e => setValue(e.target.value)}
                                     placeholder={INPUT_TYPES.find(t => t.id === inputType)?.placeholder}
-                                    className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-lg !text-black dark:!text-white placeholder:!text-slate-400 focus:outline-none focus:ring-2 ring-blue-500 transition-all font-medium"
+                                    className="w-full p-4 bg-secondary dark:bg-slate-900 border border-border dark:border-slate-700 rounded-xl text-lg !text-black dark:!text-white placeholder:!text-muted-foreground focus:outline-none focus:ring-2 ring-blue-500 transition-all font-medium"
                                 />
                             )}
 
                             {/* WiFi */}
                             {inputType === 'wifi' && (
                                 <div className="space-y-3">
-                                    <input value={wifiSSID} onChange={e => setWifiSSID(e.target.value)} placeholder="SSID (Network Name)" className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl !text-black dark:!text-white placeholder:!text-slate-400 focus:outline-none focus:ring-2 ring-blue-500" />
-                                    <input type="password" value={wifiPassword} onChange={e => setWifiPassword(e.target.value)} placeholder="Password" className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl !text-black dark:!text-white placeholder:!text-slate-400 focus:outline-none focus:ring-2 ring-blue-500" />
-                                    <select value={wifiEncryption} onChange={e => setWifiEncryption(e.target.value)} className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl !text-black dark:!text-white focus:outline-none focus:ring-2 ring-blue-500">
+                                    <input value={wifiSSID} onChange={e => setWifiSSID(e.target.value)} placeholder="SSID (Network Name)" className="w-full p-4 bg-secondary dark:bg-slate-900 border border-border dark:border-slate-700 rounded-xl !text-black dark:!text-white placeholder:!text-muted-foreground focus:outline-none focus:ring-2 ring-blue-500" />
+                                    <input type="password" value={wifiPassword} onChange={e => setWifiPassword(e.target.value)} placeholder="Password" className="w-full p-4 bg-secondary dark:bg-slate-900 border border-border dark:border-slate-700 rounded-xl !text-black dark:!text-white placeholder:!text-muted-foreground focus:outline-none focus:ring-2 ring-blue-500" />
+                                    <select value={wifiEncryption} onChange={e => setWifiEncryption(e.target.value)} className="w-full p-4 bg-secondary dark:bg-slate-900 border border-border dark:border-slate-700 rounded-xl !text-black dark:!text-white focus:outline-none focus:ring-2 ring-blue-500">
                                         <option value="WPA">WPA/WPA2</option>
                                         <option value="WEP">WEP</option>
                                         <option value="nopass">No Password</option>
@@ -231,47 +231,47 @@ export default function QrCodeProTool() {
                             {/* WhatsApp */}
                             {inputType === 'whatsapp' && (
                                 <div className="space-y-3">
-                                    <input value={waPhone} onChange={e => setWaPhone(e.target.value)} placeholder="WhatsApp Number (e.g. 628123...)" className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl !text-black dark:!text-white placeholder:!text-slate-400 focus:outline-none focus:ring-2 ring-blue-500" />
-                                    <textarea value={waMessage} onChange={e => setWaMessage(e.target.value)} placeholder="Pre-filled Message" className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl !text-black dark:!text-white placeholder:!text-slate-400 focus:outline-none focus:ring-2 ring-blue-500 h-24 resize-none" />
+                                    <input value={waPhone} onChange={e => setWaPhone(e.target.value)} placeholder="WhatsApp Number (e.g. 628123...)" className="w-full p-4 bg-secondary dark:bg-slate-900 border border-border dark:border-slate-700 rounded-xl !text-black dark:!text-white placeholder:!text-muted-foreground focus:outline-none focus:ring-2 ring-blue-500" />
+                                    <textarea value={waMessage} onChange={e => setWaMessage(e.target.value)} placeholder="Pre-filled Message" className="w-full p-4 bg-secondary dark:bg-slate-900 border border-border dark:border-slate-700 rounded-xl !text-black dark:!text-white placeholder:!text-muted-foreground focus:outline-none focus:ring-2 ring-blue-500 h-24 resize-none" />
                                 </div>
                             )}
 
                             {/* Crypto */}
                             {inputType === 'crypto' && (
                                 <div className="space-y-3">
-                                    <select value={cryptoType} onChange={e => setCryptoType(e.target.value)} className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl !text-black dark:!text-white focus:outline-none focus:ring-2 ring-blue-500">
+                                    <select value={cryptoType} onChange={e => setCryptoType(e.target.value)} className="w-full p-4 bg-secondary dark:bg-slate-900 border border-border dark:border-slate-700 rounded-xl !text-black dark:!text-white focus:outline-none focus:ring-2 ring-blue-500">
                                         <option value="bitcoin">Bitcoin (BTC)</option>
                                         <option value="ethereum">Ethereum (ETH)</option>
                                         <option value="solana">Solana (SOL)</option>
                                     </select>
-                                    <input value={cryptoAddr} onChange={e => setCryptoAddr(e.target.value)} placeholder="Wallet Address" className="w-full p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl !text-black dark:!text-white placeholder:!text-slate-400 focus:outline-none focus:ring-2 ring-blue-500 font-mono text-sm" />
+                                    <input value={cryptoAddr} onChange={e => setCryptoAddr(e.target.value)} placeholder="Wallet Address" className="w-full p-4 bg-secondary dark:bg-slate-900 border border-border dark:border-slate-700 rounded-xl !text-black dark:!text-white placeholder:!text-muted-foreground focus:outline-none focus:ring-2 ring-blue-500 font-mono text-sm" />
                                 </div>
                             )}
 
                             {/* vCard */}
                             {inputType === 'vcard' && (
                                 <div className="grid grid-cols-2 gap-3">
-                                    <input value={vcardName} onChange={e => setVcardName(e.target.value)} placeholder="Full Name" className="col-span-2 w-full p-4 bg-slate-50 border border-slate-200 rounded-xl !text-black placeholder:!text-slate-400 focus:outline-none focus:ring-2 ring-blue-500" />
-                                    <input value={vcardPhone} onChange={e => setVcardPhone(e.target.value)} placeholder="Phone" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl !text-black placeholder:!text-slate-400 focus:outline-none focus:ring-2 ring-blue-500" />
-                                    <input value={vcardEmail} onChange={e => setVcardEmail(e.target.value)} placeholder="Email" className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl !text-black placeholder:!text-slate-400 focus:outline-none focus:ring-2 ring-blue-500" />
-                                    <input value={vcardOrg} onChange={e => setVcardOrg(e.target.value)} placeholder="Organization" className="col-span-2 w-full p-4 bg-slate-50 border border-slate-200 rounded-xl !text-black placeholder:!text-slate-400 focus:outline-none focus:ring-2 ring-blue-500" />
+                                    <input value={vcardName} onChange={e => setVcardName(e.target.value)} placeholder="Full Name" className="col-span-2 w-full p-4 bg-secondary border border-border rounded-xl !text-black placeholder:!text-muted-foreground focus:outline-none focus:ring-2 ring-blue-500" />
+                                    <input value={vcardPhone} onChange={e => setVcardPhone(e.target.value)} placeholder="Phone" className="w-full p-4 bg-secondary border border-border rounded-xl !text-black placeholder:!text-muted-foreground focus:outline-none focus:ring-2 ring-blue-500" />
+                                    <input value={vcardEmail} onChange={e => setVcardEmail(e.target.value)} placeholder="Email" className="w-full p-4 bg-secondary border border-border rounded-xl !text-black placeholder:!text-muted-foreground focus:outline-none focus:ring-2 ring-blue-500" />
+                                    <input value={vcardOrg} onChange={e => setVcardOrg(e.target.value)} placeholder="Organization" className="col-span-2 w-full p-4 bg-secondary border border-border rounded-xl !text-black placeholder:!text-muted-foreground focus:outline-none focus:ring-2 ring-blue-500" />
                                 </div>
                             )}
                         </div>
 
                         {/* 3. Customization */}
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700">
-                            <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase mb-6 tracking-wider flex items-center gap-2">
+                        <div className="bg-card dark:bg-slate-800 p-6 rounded-3xl shadow-sm border border-border dark:border-slate-700">
+                            <h3 className="text-sm font-bold text-muted-foreground dark:text-muted-foreground uppercase mb-6 tracking-wider flex items-center gap-2">
                                 <Palette className="w-4 h-4" /> 3. Appearance
                             </h3>
 
                             {/* Color & Gradient */}
                             <div className="mb-8">
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-3 block uppercase">Colors</label>
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground mb-3 block uppercase">Colors</label>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                                    <div className="bg-secondary dark:bg-slate-900 p-4 rounded-xl border border-border dark:border-slate-700">
                                         <div className="flex justify-between items-center mb-2">
-                                            <span className="text-xs font-bold text-slate-400">Foreground</span>
+                                            <span className="text-xs font-bold text-muted-foreground">Foreground</span>
                                             <select
                                                 value={gradientType}
                                                 onChange={e => setGradientType(e.target.value)}
@@ -283,12 +283,12 @@ export default function QrCodeProTool() {
                                             </select>
                                         </div>
                                         <div className="flex gap-2">
-                                            <div className="h-10 w-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 relative">
+                                            <div className="h-10 w-10 rounded-lg overflow-hidden border border-border shrink-0 relative">
                                                 <input type="color" value={fgColor} onChange={e => setFgColor(e.target.value)} className="h-full w-full cursor-pointer p-0 border-0 opacity-0 relative z-10" style={{ backgroundColor: fgColor }} />
                                                 <div className="absolute inset-0" style={{ backgroundColor: fgColor }} />
                                             </div>
                                             {gradientType !== 'none' && (
-                                                <div className="h-10 w-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 relative">
+                                                <div className="h-10 w-10 rounded-lg overflow-hidden border border-border shrink-0 relative">
                                                     <input type="color" value={gradientColor2} onChange={e => setGradientColor2(e.target.value)} className="h-full w-full cursor-pointer p-0 border-0 opacity-0 relative z-10" style={{ backgroundColor: gradientColor2 }} />
                                                     <div className="absolute inset-0" style={{ backgroundColor: gradientColor2 }} />
                                                 </div>
@@ -296,11 +296,11 @@ export default function QrCodeProTool() {
                                         </div>
                                     </div>
 
-                                    <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                                    <div className="bg-secondary dark:bg-slate-900 p-4 rounded-xl border border-border dark:border-slate-700">
                                         <div className="flex justify-between items-center mb-2">
-                                            <span className="text-xs font-bold text-slate-400">Background</span>
+                                            <span className="text-xs font-bold text-muted-foreground">Background</span>
                                         </div>
-                                        <div className="h-10 w-10 rounded-lg overflow-hidden border border-slate-200 shrink-0 relative">
+                                        <div className="h-10 w-10 rounded-lg overflow-hidden border border-border shrink-0 relative">
                                             <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)} className="h-full w-full cursor-pointer p-0 border-0 opacity-0 relative z-10" style={{ backgroundColor: bgColor }} />
                                             <div className="absolute inset-0" style={{ backgroundColor: bgColor }} />
                                         </div>
@@ -310,13 +310,13 @@ export default function QrCodeProTool() {
 
                             {/* Dot Styles */}
                             <div className="mb-8">
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-3 block uppercase">Pattern Style</label>
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground mb-3 block uppercase">Pattern Style</label>
                                 <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                                     {DOT_TYPES.map(type => (
                                         <button
                                             key={type}
                                             onClick={() => setDotOptions(prev => ({ ...prev, type }))}
-                                            className={`p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${dotOptions.type === type ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                            className={`p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${dotOptions.type === type ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-800'}`}
                                         >
                                             {type.replace('-', ' ')}
                                         </button>
@@ -327,13 +327,13 @@ export default function QrCodeProTool() {
                             {/* Corner Styles */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-3 block uppercase">Corner Square</label>
+                                    <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground mb-3 block uppercase">Corner Square</label>
                                     <div className="flex gap-2">
                                         {CORNER_SQUARE_TYPES.map(type => (
                                             <button
                                                 key={type}
                                                 onClick={() => setCornerSquareOptions(prev => ({ ...prev, type }))}
-                                                className={`flex-1 p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${cornerSquareOptions.type === type ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                                className={`flex-1 p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${cornerSquareOptions.type === type ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-800'}`}
                                             >
                                                 {type.replace('-', ' ')}
                                             </button>
@@ -341,13 +341,13 @@ export default function QrCodeProTool() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 mb-3 block uppercase">Corner Dot</label>
+                                    <label className="text-xs font-bold text-muted-foreground mb-3 block uppercase">Corner Dot</label>
                                     <div className="flex gap-2">
                                         {CORNER_DOT_TYPES.map(type => (
                                             <button
                                                 key={type}
                                                 onClick={() => setCornerDotOptions(prev => ({ ...prev, type }))}
-                                                className={`flex-1 p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${cornerDotOptions.type === type ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                                className={`flex-1 p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${cornerDotOptions.type === type ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-800'}`}
                                             >
                                                 {type}
                                             </button>
@@ -358,11 +358,11 @@ export default function QrCodeProTool() {
 
                             {/* Logo */}
                             <div>
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-3 block uppercase">Logo Overlay</label>
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground mb-3 block uppercase">Logo Overlay</label>
                                 <div className="flex items-center gap-4">
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="h-12 px-4 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors text-slate-700 dark:text-slate-200"
+                                        className="h-12 px-4 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors text-foreground dark:text-slate-200"
                                     >
                                         <ImageIcon className="w-4 h-4" /> Upload Logo
                                     </button>
@@ -370,7 +370,7 @@ export default function QrCodeProTool() {
 
                                     {logo && (
                                         <div className="flex items-center gap-4 flex-1">
-                                            <div className="h-12 w-12 rounded-lg border border-slate-200 p-1 bg-white relative group">
+                                            <div className="h-12 w-12 rounded-lg border border-border p-1 bg-card relative group">
                                                 <img src={logo} className="w-full h-full object-contain" />
                                                 <button onClick={() => setLogo(null)} className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <Trash2 className="w-3 h-3" />
@@ -378,7 +378,7 @@ export default function QrCodeProTool() {
                                             </div>
                                             <div className="flex-1 space-y-2">
                                                 <div>
-                                                    <div className="flex justify-between text-[10px] font-bold text-slate-400 uppercase">
+                                                    <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase">
                                                         <span>Size</span>
                                                         <span>{Math.round(logoSize * 100)}%</span>
                                                     </div>
@@ -396,15 +396,15 @@ export default function QrCodeProTool() {
                     {/* Right: Preview & Download (Cols 8-12) */}
                     <div className="lg:col-span-5 space-y-6">
                         <div className="sticky top-6">
-                            <div className="bg-white dark:bg-slate-800 p-8 rounded-[40px] shadow-xl border border-slate-100 dark:border-slate-700 flex flex-col items-center justify-center min-h-[500px] relative overflow-hidden">
-                                <div className="absolute inset-0 bg-slate-50/50 dark:bg-slate-900/50" />
+                            <div className="bg-card dark:bg-slate-800 p-8 rounded-[40px] shadow-xl border border-border dark:border-slate-700 flex flex-col items-center justify-center min-h-[500px] relative overflow-hidden">
+                                <div className="absolute inset-0 bg-secondary/50 dark:bg-slate-900/50" />
 
-                                <div className="relative z-10 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                                <div className="relative z-10 bg-card p-6 rounded-3xl shadow-sm border border-border">
                                     <div ref={ref} />
                                 </div>
 
                                 {!hasContent && (
-                                    <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex items-center justify-center flex-col text-slate-400">
+                                    <div className="absolute inset-0 z-20 bg-card/80 backdrop-blur-sm flex items-center justify-center flex-col text-muted-foreground">
                                         <QrCode className="w-16 h-16 mb-4 opacity-50" />
                                         <p className="font-bold">Enter content to generate</p>
                                     </div>
@@ -423,14 +423,14 @@ export default function QrCodeProTool() {
                                         <button
                                             onClick={() => download('svg')}
                                             disabled={!hasContent}
-                                            className="flex-1 py-3 bg-white border-2 border-slate-100 hover:border-slate-300 text-slate-700 rounded-2xl font-bold transition-all disabled:opacity-50"
+                                            className="flex-1 py-3 bg-card border-2 border-border hover:border-slate-300 text-foreground rounded-2xl font-bold transition-all disabled:opacity-50"
                                         >
                                             SVG
                                         </button>
                                         <button
                                             onClick={() => download('webp')}
                                             disabled={!hasContent}
-                                            className="flex-1 py-3 bg-white border-2 border-slate-100 hover:border-slate-300 text-slate-700 rounded-2xl font-bold transition-all disabled:opacity-50"
+                                            className="flex-1 py-3 bg-card border-2 border-border hover:border-slate-300 text-foreground rounded-2xl font-bold transition-all disabled:opacity-50"
                                         >
                                             WEBP
                                         </button>

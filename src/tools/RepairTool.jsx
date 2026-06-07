@@ -5,7 +5,7 @@ import { Wrench, CheckCircle, AlertTriangle, Download, RefreshCw } from 'lucide-
 import { PDFDocument } from 'pdf-lib'
 import { motion } from 'framer-motion'
 import { triggerConfetti } from '../utils/confetti'
-import { getOutputFilename } from '../utils/fileHelpers'
+import { getDefaultFilename, getOutputFilename } from '../utils/fileHelpers'
 
 export default function RepairTool() {
     const [file, setFile] = useState(null)
@@ -22,8 +22,6 @@ export default function RepairTool() {
         addToLog(`Analyzing ${f.name}...`)
 
         try {
-            await new Promise(r => setTimeout(r, 1000)) // Fake analyze delay
-
             const ab = await f.arrayBuffer()
             addToLog(`File size: ${(ab.byteLength / 1024).toFixed(2)} KB`)
 
@@ -39,7 +37,7 @@ export default function RepairTool() {
             addToLog(`Structure parsed successfully. Found ${pdfDoc.getPageCount()} pages.`)
 
             addToLog("Reconstructing PDF objects...")
-            addToLog("Optimizing object streams...")
+            addToLog("Serializing a normalized PDF structure...")
 
             const savedBytes = await pdfDoc.save()
             setRepairedBytes(savedBytes)
@@ -66,17 +64,17 @@ export default function RepairTool() {
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = getOutputFilename(file.name, '_repaired')
+        a.download = getOutputFilename(getDefaultFilename(file, '_normalized'), 'normalized')
         a.click()
     }
 
     return (
-        <ToolLayout title="Repair PDF" description="Fix corrupted or damaged PDF files.">
+        <ToolLayout title="Normalize PDF" description="Rebuild readable PDF structure. Severely corrupted files may not be recoverable.">
             <div className="max-w-4xl mx-auto">
                 {!file ? (
                     <FileDropZone onFiles={files => repairPdf(files[0])} accept="application/pdf" hint="Upload broken PDF" />
                 ) : (
-                    <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
+                    <div className="bg-card rounded-3xl shadow-xl overflow-hidden border border-border">
                         {/* Status Header */}
                         <div className={`p-8 text-center ${status === 'success' ? 'bg-green-50' : status === 'error' ? 'bg-red-50' : 'bg-blue-50'}`}>
                             {status === 'repairing' && (
@@ -89,9 +87,9 @@ export default function RepairTool() {
                                 <AlertTriangle className="w-16 h-16 mx-auto text-red-500 mb-4" />
                             )}
 
-                            <h3 className="text-2xl font-bold text-slate-800">
+                            <h3 className="text-2xl font-bold text-foreground">
                                 {status === 'repairing' ? ' repairing...' :
-                                    status === 'success' ? 'Repair Successful!' : 'Repair Failed'}
+                                    status === 'success' ? 'Normalization Successful!' : 'Normalization Failed'}
                             </h3>
                         </div>
 
@@ -106,15 +104,15 @@ export default function RepairTool() {
                         </div>
 
                         {/* Actions */}
-                        <div className="p-6 bg-white border-t border-slate-200 flex justify-between items-center">
-                            <button onClick={() => setFile(null)} className="text-slate-500 font-bold hover:text-slate-800">Try Another File</button>
+                        <div className="p-6 bg-card border-t border-border flex justify-between items-center">
+                            <button onClick={() => setFile(null)} className="text-muted-foreground font-bold hover:text-foreground">Try Another File</button>
 
                             {status === 'success' && (
                                 <button
                                     onClick={downloadRepaired}
                                     className="px-8 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 shadow-lg shadow-green-500/30 flex items-center gap-2"
                                 >
-                                    <Download className="w-5 h-5" /> Download Fixed PDF
+                                    <Download className="w-5 h-5" /> Download Normalized PDF
                                 </button>
                             )}
                         </div>

@@ -13,10 +13,17 @@ export async function POST(req) {
         }
 
         const body = await req.json();
-        const { prompt, jsonMode = false, modelName = "gemini-1.5-flash" } = body;
+        const { prompt, jsonMode = false, modelName = "gemini-2.5-flash" } = body;
+        const allowedModels = new Set(["gemini-2.5-flash", "gemini-2.5-flash-lite"]);
 
-        if (!prompt) {
+        if (typeof prompt !== "string" || !prompt.trim()) {
             return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
+        }
+        if (prompt.length > 150000) {
+            return NextResponse.json({ error: "Prompt is too large" }, { status: 413 });
+        }
+        if (!allowedModels.has(modelName)) {
+            return NextResponse.json({ error: "Unsupported model" }, { status: 400 });
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);

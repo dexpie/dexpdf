@@ -57,20 +57,20 @@ export default function ColorContrastTool() {
             <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
 
                 {/* Inputs */}
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-col gap-6">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-col gap-6">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-400 uppercase">Text Color</label>
+                            <label className="text-xs font-bold text-muted-foreground uppercase">Text Color</label>
                             <div className="flex gap-2">
-                                <input type="color" value={fg} onChange={e => setFg(e.target.value)} className="w-12 h-12 rounded-xl cursor-pointer shadow-sm border border-slate-200 p-1 bg-white" />
-                                <input type="text" value={fg} onChange={e => setFg(e.target.value)} className="flex-1 p-3 bg-slate-50 rounded-xl font-bold uppercase" />
+                                <input type="color" value={fg} onChange={e => setFg(e.target.value)} className="w-12 h-12 rounded-xl cursor-pointer shadow-sm border border-border p-1 bg-card" />
+                                <input type="text" value={fg} onChange={e => setFg(e.target.value)} className="flex-1 p-3 bg-secondary rounded-xl font-bold uppercase" />
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-400 uppercase">Background</label>
+                            <label className="text-xs font-bold text-muted-foreground uppercase">Background</label>
                             <div className="flex gap-2">
-                                <input type="color" value={bg} onChange={e => setBg(e.target.value)} className="w-12 h-12 rounded-xl cursor-pointer shadow-sm border border-slate-200 p-1 bg-white" />
-                                <input type="text" value={bg} onChange={e => setBg(e.target.value)} className="flex-1 p-3 bg-slate-50 rounded-xl font-bold uppercase" />
+                                <input type="color" value={bg} onChange={e => setBg(e.target.value)} className="w-12 h-12 rounded-xl cursor-pointer shadow-sm border border-border p-1 bg-card" />
+                                <input type="text" value={bg} onChange={e => setBg(e.target.value)} className="flex-1 p-3 bg-secondary rounded-xl font-bold uppercase" />
                             </div>
                         </div>
                     </div>
@@ -81,7 +81,7 @@ export default function ColorContrastTool() {
 
                     {/* Preview */}
                     <div
-                        className="p-8 rounded-2xl flex flex-col justify-center items-center gap-4 text-center transition-colors border border-slate-200 h-48"
+                        className="p-8 rounded-2xl flex flex-col justify-center items-center gap-4 text-center transition-colors border border-border h-48"
                         style={{ backgroundColor: bg, color: fg }}
                     >
                         <h3 className="text-2xl font-bold">Preview Text</h3>
@@ -94,7 +94,7 @@ export default function ColorContrastTool() {
                 {/* Score Card */}
                 <div className="bg-slate-900 text-white p-8 rounded-3xl shadow-xl flex flex-col justify-between">
                     <div className="text-center mb-8">
-                        <div className="text-slate-400 font-bold uppercase text-sm mb-2">Contrast Ratio</div>
+                        <div className="text-muted-foreground font-bold uppercase text-sm mb-2">Contrast Ratio</div>
                         <div className={`text-6xl font-black ${ratio < 3 ? 'text-red-500' : ratio < 4.5 ? 'text-yellow-500' : 'text-green-500'}`}>
                             {ratio.toFixed(2)}
                         </div>

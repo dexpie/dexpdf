@@ -44,41 +44,46 @@ export default function ComparePdfTool() {
     const [opacity, setOpacity] = useState(0.5)
 
     useEffect(() => {
-        // Determine common page count
         const checkPages = async () => {
-            if (fileA) {
-                const ab = await fileA.arrayBuffer()
-                const pdf = await pdfjsLib.getDocument(ab).promise
-                setNumPages(pdf.numPages)
+            if (fileA && fileB) {
+                const [pdfA, pdfB] = await Promise.all([
+                    fileA.arrayBuffer().then(data => pdfjsLib.getDocument(data).promise),
+                    fileB.arrayBuffer().then(data => pdfjsLib.getDocument(data).promise)
+                ])
+                setNumPages(Math.min(pdfA.numPages, pdfB.numPages))
+                setPageIndex(current => Math.min(current, Math.min(pdfA.numPages, pdfB.numPages)))
+            } else {
+                setNumPages(0)
+                setPageIndex(1)
             }
         }
         checkPages()
-    }, [fileA])
+    }, [fileA, fileB])
 
     return (
-        <ToolLayout title="Compare PDF" description="Visually compare two PDF documents to spot differences.">
+        <ToolLayout title="Visual PDF Compare" description="Overlay or view matching pages side by side.">
             <div className="max-w-7xl mx-auto space-y-6">
 
                 {/* Upload Section */}
                 {(!fileA || !fileB) && (
                     <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-4">
-                            <h3 className="font-bold text-center text-slate-700">Document A (Base)</h3>
+                            <h3 className="font-bold text-center text-foreground">Document A (Base)</h3>
                             {!fileA ? (
                                 <FileDropZone onFiles={files => setFileA(files[0])} accept="application/pdf" className="h-48" />
                             ) : (
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex justify-between items-center">
+                                <div className="bg-secondary p-4 rounded-xl border border-border flex justify-between items-center">
                                     <span className="truncate flex-1 font-medium">{fileA.name}</span>
                                     <button onClick={() => setFileA(null)} className="text-red-500 p-2 hover:bg-red-50 rounded-lg"><X className="w-4 h-4" /></button>
                                 </div>
                             )}
                         </div>
                         <div className="space-y-4">
-                            <h3 className="font-bold text-center text-slate-700">Document B (New)</h3>
+                            <h3 className="font-bold text-center text-foreground">Document B (New)</h3>
                             {!fileB ? (
                                 <FileDropZone onFiles={files => setFileB(files[0])} accept="application/pdf" className="h-48" />
                             ) : (
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 flex justify-between items-center">
+                                <div className="bg-secondary p-4 rounded-xl border border-border flex justify-between items-center">
                                     <span className="truncate flex-1 font-medium">{fileB.name}</span>
                                     <button onClick={() => setFileB(null)} className="text-red-500 p-2 hover:bg-red-50 rounded-lg"><X className="w-4 h-4" /></button>
                                 </div>
@@ -89,17 +94,17 @@ export default function ComparePdfTool() {
 
                 {/* Controls */}
                 {fileA && fileB && (
-                    <div className="sticky top-4 z-40 bg-white p-4 rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-wrap gap-4 items-center justify-between">
+                    <div className="sticky top-4 z-40 bg-card p-4 rounded-2xl shadow-xl shadow-slate-200/50 border border-border flex flex-wrap gap-4 items-center justify-between">
                         <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
                             <button
                                 onClick={() => setViewMode('overlay')}
-                                className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'overlay' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'overlay' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground hover:text-foreground'}`}
                             >
                                 <Layers className="w-4 h-4" /> Overlay
                             </button>
                             <button
                                 onClick={() => setViewMode('side-by-side')}
-                                className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'side-by-side' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                                className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'side-by-side' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground hover:text-foreground'}`}
                             >
                                 <Layout className="w-4 h-4" /> Side by Side
                             </button>
@@ -107,7 +112,7 @@ export default function ComparePdfTool() {
 
                         {viewMode === 'overlay' && (
                             <div className="flex items-center gap-3 bg-slate-100 px-4 py-2 rounded-xl">
-                                <span className="text-xs font-bold text-slate-500">Opacity</span>
+                                <span className="text-xs font-bold text-muted-foreground">Opacity</span>
                                 <input
                                     type="range"
                                     min="0"
@@ -125,7 +130,7 @@ export default function ComparePdfTool() {
                             <button
                                 onClick={() => setPageIndex(p => Math.max(1, p - 1))}
                                 disabled={pageIndex <= 1}
-                                className="p-2 hover:bg-white rounded-lg disabled:opacity-50 transition-all"
+                                className="p-2 hover:bg-card rounded-lg disabled:opacity-50 transition-all"
                             >
                                 <ArrowLeft className="w-4 h-4" />
                             </button>
@@ -135,13 +140,13 @@ export default function ComparePdfTool() {
                             <button
                                 onClick={() => setPageIndex(p => p + 1)} // Allow going beyond A's count? No, stick to safer bounds or allow check.
                                 disabled={pageIndex >= numPages && numPages > 0}
-                                className="p-2 hover:bg-white rounded-lg disabled:opacity-50 transition-all"
+                                className="p-2 hover:bg-card rounded-lg disabled:opacity-50 transition-all"
                             >
                                 <ArrowRight className="w-4 h-4" />
                             </button>
                         </div>
 
-                        <button onClick={() => { setFileA(null); setFileB(null) }} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                        <button onClick={() => { setFileA(null); setFileB(null) }} className="p-2 text-muted-foreground hover:text-red-500 transition-colors">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
@@ -151,7 +156,7 @@ export default function ComparePdfTool() {
                 {fileA && fileB && (
                     <div className="bg-slate-200/50 rounded-3xl p-8 min-h-[600px] flex justify-center overflow-auto border border-dashed border-slate-300">
                         {viewMode === 'overlay' ? (
-                            <div className="relative shadow-2xl bg-white">
+                            <div className="relative shadow-2xl bg-card">
                                 {/* Base Layer */}
                                 <PdfPageCanvas file={fileA} pageIndex={pageIndex} scale={1.2} className="block" />
 
@@ -182,14 +187,14 @@ export default function ComparePdfTool() {
                         ) : (
                             <div className="flex gap-8 justify-center items-start">
                                 <div className="flex flex-col gap-2">
-                                    <span className="text-center text-sm font-bold text-slate-500">Document A</span>
-                                    <div className="shadow-xl bg-white border-2 border-transparent">
+                                    <span className="text-center text-sm font-bold text-muted-foreground">Document A</span>
+                                    <div className="shadow-xl bg-card border-2 border-transparent">
                                         <PdfPageCanvas file={fileA} pageIndex={pageIndex} scale={1.0} />
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <span className="text-center text-sm font-bold text-slate-500">Document B</span>
-                                    <div className="shadow-xl bg-white border-2 border-blue-500">
+                                    <span className="text-center text-sm font-bold text-muted-foreground">Document B</span>
+                                    <div className="shadow-xl bg-card border-2 border-blue-500">
                                         <PdfPageCanvas file={fileB} pageIndex={pageIndex} scale={1.0} />
                                     </div>
                                 </div>

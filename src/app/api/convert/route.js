@@ -4,6 +4,10 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request) {
     try {
+        const contentType = request.headers.get('content-type') || ''
+        if (!contentType.includes('multipart/form-data') && !contentType.includes('application/x-www-form-urlencoded')) {
+            return NextResponse.json({ error: 'Expected a form-data request' }, { status: 400 })
+        }
         const formData = await request.formData()
         const file = formData.get('file')
         const format = formData.get('format')
@@ -11,6 +15,12 @@ export async function POST(request) {
 
         if (!file || !format) {
             return NextResponse.json({ error: 'Missing file or format' }, { status: 400 })
+        }
+        if (!['docx'].includes(String(format).toLowerCase())) {
+            return NextResponse.json({ error: 'Unsupported conversion format' }, { status: 400 })
+        }
+        if (file.size > 50 * 1024 * 1024) {
+            return NextResponse.json({ error: 'File is too large (max 50MB)' }, { status: 413 })
         }
 
         if (!apiKey || apiKey === 'your_secret_here') {

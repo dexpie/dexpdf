@@ -77,49 +77,49 @@ export default function CertificateMakerTool() {
             <div className="flex flex-col xl:flex-row gap-8 max-w-7xl mx-auto">
                 {/* Editor Column */}
                 <div className="flex-1 space-y-6">
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-slate-700 dark:text-slate-200">
+                    <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-border dark:border-slate-700">
+                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-foreground dark:text-slate-200">
                             <PenTool className="w-5 h-5" /> Details
                         </h3>
                         <div className="space-y-4">
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Title</label>
-                                    <input className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.title} onChange={e => updateField('title', e.target.value)} />
+                                    <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Title</label>
+                                    <input className="input-field mt-1 bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-foreground dark:text-slate-200" value={data.title} onChange={e => updateField('title', e.target.value)} />
                                 </div>
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Subtitle</label>
-                                    <input className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.subtitle} onChange={e => updateField('subtitle', e.target.value)} />
+                                    <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Subtitle</label>
+                                    <input className="input-field mt-1 bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-foreground dark:text-slate-200" value={data.subtitle} onChange={e => updateField('subtitle', e.target.value)} />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Recipient Name</label>
-                                <input className="input-field mt-1 text-lg font-bold bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.recipient} onChange={e => updateField('recipient', e.target.value)} />
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Recipient Name</label>
+                                <input className="input-field mt-1 text-lg font-bold bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-foreground dark:text-slate-200" value={data.recipient} onChange={e => updateField('recipient', e.target.value)} />
                             </div>
 
                             <div>
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Course / Award Name</label>
-                                <input className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.course} onChange={e => updateField('course', e.target.value)} />
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Course / Award Name</label>
+                                <input className="input-field mt-1 bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-foreground dark:text-slate-200" value={data.course} onChange={e => updateField('course', e.target.value)} />
                             </div>
 
                             <div>
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Description</label>
-                                <textarea className="input-field mt-1 h-20 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.description} onChange={e => updateField('description', e.target.value)} />
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Description</label>
+                                <textarea className="input-field mt-1 h-20 bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-foreground dark:text-slate-200" value={data.description} onChange={e => updateField('description', e.target.value)} />
                             </div>
 
                             <div className="grid md:grid-cols-3 gap-4">
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Date</label>
-                                    <input type="date" className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.date} onChange={e => updateField('date', e.target.value)} />
+                                    <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Date</label>
+                                    <input type="date" className="input-field mt-1 bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-foreground dark:text-slate-200" value={data.date} onChange={e => updateField('date', e.target.value)} />
                                 </div>
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Signature Name</label>
-                                    <input className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.signature} onChange={e => updateField('signature', e.target.value)} />
+                                    <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Signature Name</label>
+                                    <input className="input-field mt-1 bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-foreground dark:text-slate-200" value={data.signature} onChange={e => updateField('signature', e.target.value)} />
                                 </div>
                                 <div>
-                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Sign Title</label>
-                                    <input className="input-field mt-1 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200" value={data.signatureTitle} onChange={e => updateField('signatureTitle', e.target.value)} />
+                                    <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Sign Title</label>
+                                    <input className="input-field mt-1 bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-foreground dark:text-slate-200" value={data.signatureTitle} onChange={e => updateField('signatureTitle', e.target.value)} />
                                 </div>
                             </div>
                         </div>
@@ -130,10 +130,10 @@ export default function CertificateMakerTool() {
                 <div className="xl:w-[700px] flex flex-col gap-6 sticky top-8 h-fit">
 
                     {/* Controls */}
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+                    <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-border dark:border-slate-700">
                         <div className="flex gap-4 mb-6">
                             {['gold', 'blue', 'classic'].map(t => (
-                                <button key={t} onClick={() => setTheme(t)} className={`flex-1 p-2 capitalize rounded-lg border-2 font-bold text-sm transition-all ${theme === t ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-slate-100 dark:border-slate-700 text-slate-600 dark:text-slate-300'}`}>
+                                <button key={t} onClick={() => setTheme(t)} className={`flex-1 p-2 capitalize rounded-lg border-2 font-bold text-sm transition-all ${theme === t ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 text-slate-600 dark:text-muted-foreground'}`}>
                                     {t}
                                 </button>
                             ))}
@@ -145,10 +145,10 @@ export default function CertificateMakerTool() {
                     </div>
 
                     {/* Preview Area (Scaled) */}
-                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-slate-500/10 dark:bg-slate-900/50 p-4 flex justify-center">
+                    <div className="border border-border dark:border-slate-700 rounded-lg overflow-hidden bg-secondary0/10 dark:bg-slate-900/50 p-4 flex justify-center">
                         <div className="origin-top transform scale-[0.45] sm:scale-[0.6] xl:scale-[0.65]" style={{ height: 500, width: '297mm' }}>
                             {/* Visible Preview (Not captured) */}
-                            <div className={`bg-white shadow-2xl mx-auto text-slate-800 relative flex flex-col justify-center items-center text-center p-20
+                            <div className={`bg-card shadow-2xl mx-auto text-foreground relative flex flex-col justify-center items-center text-center p-20
                                 ${theme === 'gold' ? 'border-[20px] border-double border-yellow-600' : ''}
                                 ${theme === 'blue' ? 'border-[20px] border-solid border-blue-900' : ''}
                                 ${theme === 'classic' ? 'border-[2px] border-black outline outline-4 outline-offset-4 outline-black' : ''}
@@ -164,11 +164,11 @@ export default function CertificateMakerTool() {
                                 </div>
 
                                 <div className="relative z-10 w-full max-w-4xl space-y-6">
-                                    <h1 className="text-6xl text-slate-900" style={{ fontFamily: '"Cinzel", serif' }}>
+                                    <h1 className="text-6xl text-foreground" style={{ fontFamily: '"Cinzel", serif' }}>
                                         {data.title}
                                     </h1>
 
-                                    <div className="text-xl text-slate-500 italic font-light" style={{ fontFamily: '"Lato", sans-serif' }}>
+                                    <div className="text-xl text-muted-foreground italic font-light" style={{ fontFamily: '"Lato", sans-serif' }}>
                                         {data.subtitle}
                                     </div>
 
@@ -179,7 +179,7 @@ export default function CertificateMakerTool() {
                                         <div className="h-0.5 w-2/3 max-w-lg bg-slate-200 mx-auto mt-4"></div>
                                     </div>
 
-                                    <div className="text-2xl font-bold text-slate-800 uppercase tracking-widest" style={{ fontFamily: '"Cinzel", serif' }}>
+                                    <div className="text-2xl font-bold text-foreground uppercase tracking-widest" style={{ fontFamily: '"Cinzel", serif' }}>
                                         {data.course}
                                     </div>
 
@@ -189,9 +189,9 @@ export default function CertificateMakerTool() {
 
                                     <div className="flex justify-between items-end mt-16 px-16">
                                         <div className="text-center">
-                                            <div className="text-xl font-bold text-slate-800 mb-2">{data.date}</div>
+                                            <div className="text-xl font-bold text-foreground mb-2">{data.date}</div>
                                             <div className="h-px w-48 bg-slate-400 mb-2"></div>
-                                            <div className="text-sm text-slate-500 uppercase tracking-wider">Date</div>
+                                            <div className="text-sm text-muted-foreground uppercase tracking-wider">Date</div>
                                         </div>
 
                                         {/* Seal */}
@@ -206,9 +206,9 @@ export default function CertificateMakerTool() {
                                         </div>
 
                                         <div className="text-center">
-                                            <div className="text-3xl text-slate-800 mb-0" style={{ fontFamily: '"Great Vibes", cursive' }}>{data.signature}</div>
+                                            <div className="text-3xl text-foreground mb-0" style={{ fontFamily: '"Great Vibes", cursive' }}>{data.signature}</div>
                                             <div className="h-px w-48 bg-slate-400 mb-2 mt-2"></div>
-                                            <div className="text-sm text-slate-500 uppercase tracking-wider">{data.signatureTitle}</div>
+                                            <div className="text-sm text-muted-foreground uppercase tracking-wider">{data.signatureTitle}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -220,7 +220,7 @@ export default function CertificateMakerTool() {
                 {/* --- Ghost Print Area (Hidden) --- */}
                 {/* We render a full-scale, un-transformed version off-screen for html2canvas */}
                 <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
-                    <div ref={previewRef} className={`bg-white text-slate-800 relative flex flex-col justify-center items-center text-center p-20
+                    <div ref={previewRef} className={`bg-card text-foreground relative flex flex-col justify-center items-center text-center p-20
                         ${theme === 'gold' ? 'border-[20px] border-double border-yellow-600' : ''}
                         ${theme === 'blue' ? 'border-[20px] border-solid border-blue-900' : ''}
                         ${theme === 'classic' ? 'border-[2px] border-black outline outline-4 outline-offset-4 outline-black' : ''}
@@ -238,11 +238,11 @@ export default function CertificateMakerTool() {
                         </div>
 
                         <div className="relative z-10 w-full max-w-4xl space-y-6">
-                            <h1 className="text-6xl text-slate-900" style={{ fontFamily: '"Cinzel", serif' }}>
+                            <h1 className="text-6xl text-foreground" style={{ fontFamily: '"Cinzel", serif' }}>
                                 {data.title}
                             </h1>
 
-                            <div className="text-xl text-slate-500 italic font-light" style={{ fontFamily: '"Lato", sans-serif' }}>
+                            <div className="text-xl text-muted-foreground italic font-light" style={{ fontFamily: '"Lato", sans-serif' }}>
                                 {data.subtitle}
                             </div>
 
@@ -253,7 +253,7 @@ export default function CertificateMakerTool() {
                                 <div className="h-0.5 w-2/3 max-w-lg bg-slate-200 mx-auto mt-4"></div>
                             </div>
 
-                            <div className="text-2xl font-bold text-slate-800 uppercase tracking-widest" style={{ fontFamily: '"Cinzel", serif' }}>
+                            <div className="text-2xl font-bold text-foreground uppercase tracking-widest" style={{ fontFamily: '"Cinzel", serif' }}>
                                 {data.course}
                             </div>
 
@@ -263,9 +263,9 @@ export default function CertificateMakerTool() {
 
                             <div className="flex justify-between items-end mt-16 px-16">
                                 <div className="text-center">
-                                    <div className="text-xl font-bold text-slate-800 mb-2">{data.date}</div>
+                                    <div className="text-xl font-bold text-foreground mb-2">{data.date}</div>
                                     <div className="h-px w-48 bg-slate-400 mb-2"></div>
-                                    <div className="text-sm text-slate-500 uppercase tracking-wider">Date</div>
+                                    <div className="text-sm text-muted-foreground uppercase tracking-wider">Date</div>
                                 </div>
 
                                 {/* Seal */}
@@ -280,9 +280,9 @@ export default function CertificateMakerTool() {
                                 </div>
 
                                 <div className="text-center">
-                                    <div className="text-3xl text-slate-800 mb-0" style={{ fontFamily: '"Great Vibes", cursive' }}>{data.signature}</div>
+                                    <div className="text-3xl text-foreground mb-0" style={{ fontFamily: '"Great Vibes", cursive' }}>{data.signature}</div>
                                     <div className="h-px w-48 bg-slate-400 mb-2 mt-2"></div>
-                                    <div className="text-sm text-slate-500 uppercase tracking-wider">{data.signatureTitle}</div>
+                                    <div className="text-sm text-muted-foreground uppercase tracking-wider">{data.signatureTitle}</div>
                                 </div>
                             </div>
                         </div>

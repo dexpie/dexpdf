@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import ActionButtons from '../components/common/ActionButtons'
@@ -15,13 +15,13 @@ const ApiKeyModal = ({ onSave, onClose }) => {
     const [input, setInput] = useState('')
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700">
+            <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-border dark:border-slate-700">
                 <div className="text-center mb-6">
                     <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Globe className="w-6 h-6" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">Enable AI Translation</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    <h3 className="text-xl font-bold text-foreground dark:text-slate-200">Enable AI Translation</h3>
+                    <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-2">
                         To translate documents, please enter your free Google Gemini API Key.
                     </p>
                 </div>
@@ -30,7 +30,7 @@ const ApiKeyModal = ({ onSave, onClose }) => {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     placeholder="Enter Gemini API Key"
-                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 mb-4 focus:ring-2 ring-blue-500 outline-none"
+                    className="w-full p-3 rounded-xl border border-border dark:border-slate-600 bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200 mb-4 focus:ring-2 ring-blue-500 outline-none"
                 />
                 <button
                     onClick={() => { if (input) onSave(input) }}
@@ -107,6 +107,7 @@ export default function TranslatePdfTool() {
                 fullText += pageText + '\n\n'
                 setProgress(10 + (i / maxPages) * 30) // up to 40%
             }
+            if (!fullText.trim()) throw new Error('No extractable text found. Run OCR first for scanned PDFs.')
 
             // 2. Translate with Gemini
             setStatus("AI Translating (this may take a moment)...")
@@ -149,48 +150,48 @@ export default function TranslatePdfTool() {
     }
 
     return (
-        <ToolLayout title="Neural Translator" description="Translate PDFs using AI (Gemini) while preserving meaning.">
+        <ToolLayout title="Translate PDF Text" description="Extract and translate text from the first five PDF pages using Gemini.">
             <AnimatePresence>
                 {showKeyModal && <ApiKeyModal onSave={handleSaveKey} onClose={() => setShowKeyModal(false)} />}
             </AnimatePresence>
             <div className="max-w-4xl mx-auto">
-                <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 transition-colors">
+                <div className="bg-card dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-border dark:border-slate-700 transition-colors">
                     {!file ? (
                         <FileDropZone onFiles={handleFileChange} accept="application/pdf" hint="Upload PDF to translate" />
                     ) : (
                         <div className="flex flex-col gap-8">
                             {/* File Header */}
-                            <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+                            <div className="flex items-center gap-4 bg-secondary dark:bg-slate-900 p-4 rounded-2xl border border-border dark:border-slate-700">
                                 <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center">
                                     <Globe className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-slate-800 dark:text-slate-200">{file.name}</h3>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                    <h3 className="font-bold text-foreground dark:text-slate-200">{file.name}</h3>
+                                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                 </div>
-                                <button onClick={() => setFile(null)} className="ml-auto text-slate-400 hover:text-red-500 font-bold text-sm transition-colors">Change</button>
+                                <button onClick={() => setFile(null)} className="ml-auto text-muted-foreground hover:text-red-500 font-bold text-sm transition-colors">Change</button>
                             </div>
 
                             {!completed ? (
                                 <>
                                     {/* Language Selector */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                                        <div className="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex items-center justify-between opacity-70">
-                                            <span className="font-bold text-slate-500 dark:text-slate-400">Auto-Detect</span>
-                                            <span className="text-xs bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-full text-slate-600 dark:text-slate-300">Source</span>
+                                        <div className="p-4 rounded-2xl border-2 border-border dark:border-slate-700 bg-secondary dark:bg-slate-900 flex items-center justify-between opacity-70">
+                                            <span className="font-bold text-muted-foreground dark:text-muted-foreground">Auto-Detect</span>
+                                            <span className="text-xs bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-full text-slate-600 dark:text-muted-foreground">Source</span>
                                         </div>
-                                        <div className="flex justify-center md:hidden"><ArrowRight className="w-6 h-6 text-slate-300 dark:text-slate-600 rotate-90" /></div>
-                                        <div className="hidden md:flex justify-center"><ArrowRight className="w-6 h-6 text-slate-300 dark:text-slate-600" /></div>
+                                        <div className="flex justify-center md:hidden"><ArrowRight className="w-6 h-6 text-muted-foreground dark:text-slate-600 rotate-90" /></div>
+                                        <div className="hidden md:flex justify-center"><ArrowRight className="w-6 h-6 text-muted-foreground dark:text-slate-600" /></div>
 
                                         <div className="grid grid-cols-2 gap-2">
                                             {languages.map(lang => (
                                                 <button
                                                     key={lang.code}
                                                     onClick={() => setTargetLang(lang.code)}
-                                                    className={`p-3 rounded-xl border-2 text-left transition-all flex items-center gap-2 ${targetLang === lang.code ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-900/50' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                                    className={`p-3 rounded-xl border-2 text-left transition-all flex items-center gap-2 ${targetLang === lang.code ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-900/50' : 'border-border dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-secondary dark:hover:bg-slate-800'}`}
                                                 >
                                                     <span className="text-xl">{lang.flag}</span>
-                                                    <span className="font-bold text-slate-700 dark:text-slate-200 text-sm">{lang.name}</span>
+                                                    <span className="font-bold text-foreground dark:text-slate-200 text-sm">{lang.name}</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -199,7 +200,7 @@ export default function TranslatePdfTool() {
                                     {/* Progress Bar */}
                                     {busy && (
                                         <div className="space-y-2">
-                                            <div className="flex justify-between text-sm font-bold text-slate-600 dark:text-slate-300">
+                                            <div className="flex justify-between text-sm font-bold text-slate-600 dark:text-muted-foreground">
                                                 <span>{status}</span>
                                                 <span>{Math.round(progress)}%</span>
                                             </div>
@@ -227,17 +228,17 @@ export default function TranslatePdfTool() {
                                     <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <CheckCircle className="w-10 h-10" />
                                     </motion.div>
-                                    <h3 className="text-2xl font-bold text-slate-800 mb-2">Translation Complete!</h3>
-                                    <p className="text-slate-500 mb-8 max-w-md mx-auto">Your document has been translated to {languages.find(l => l.code === targetLang)?.name}.</p>
+                                    <h3 className="text-2xl font-bold text-foreground mb-2">Translation Complete!</h3>
+                                    <p className="text-muted-foreground mb-8 max-w-md mx-auto">Your document has been translated to {languages.find(l => l.code === targetLang)?.name}.</p>
 
-                                    <div className="bg-slate-50 dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-700 text-left max-h-96 overflow-y-auto mb-6 whitespace-pre-wrap">
+                                    <div className="bg-secondary dark:bg-slate-900 p-6 rounded-xl border border-border dark:border-slate-700 text-left max-h-96 overflow-y-auto mb-6 whitespace-pre-wrap">
                                         {translatedText}
                                     </div>
 
                                     <div className="flex gap-4 justify-center">
                                         <button
                                             onClick={() => navigator.clipboard.writeText(translatedText)}
-                                            className="px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition-all"
+                                            className="px-6 py-3 bg-card border border-border text-foreground rounded-xl font-bold hover:bg-secondary transition-all"
                                         >
                                             Copy Text
                                         </button>
@@ -261,9 +262,9 @@ export default function TranslatePdfTool() {
                     )}
                 </div>
 
-                <div className="mt-8 text-center text-xs text-slate-400 max-w-lg mx-auto">
+                <div className="mt-8 text-center text-xs text-muted-foreground max-w-lg mx-auto">
                     <AlertTriangle className="w-4 h-4 inline mr-1" />
-                    AI Translation is experimental. Complex layouts might vary. Sensitive data is processed securely.
+                    Translation is experimental. Extracted text is sent to Google Gemini when you run this tool.
                 </div>
             </div>
         </ToolLayout>

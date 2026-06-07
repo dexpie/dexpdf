@@ -51,7 +51,7 @@ export default function ImageColorPickerTool() {
                     {!image ? (
                         <FileDropZone onFiles={handleFile} accept="image/*" hint="Upload image to pick colors" />
                     ) : (
-                        <div className="bg-white p-4 rounded-3xl shadow-lg border border-slate-100 overflow-hidden relative group">
+                        <div className="bg-card p-4 rounded-3xl shadow-lg border border-border overflow-hidden relative group">
                             <canvas
                                 ref={canvasRef}
                                 className="w-full h-auto rounded-xl cursor-crosshair shadow-inner"
@@ -66,7 +66,7 @@ export default function ImageColorPickerTool() {
 
                             <button
                                 onClick={() => setImage(null)}
-                                className="absolute top-6 right-6 p-2 bg-white/90 backdrop-blur text-slate-600 rounded-full shadow-lg hover:text-red-500 transition-colors"
+                                className="absolute top-6 right-6 p-2 bg-card/90 backdrop-blur text-slate-600 rounded-full shadow-lg hover:text-red-500 transition-colors"
                             >
                                 <ImageIcon className="w-5 h-5" />
                             </button>
@@ -84,18 +84,18 @@ export default function ImageColorPickerTool() {
                         <div className="font-mono font-black text-2xl drop-shadow-md uppercase">{color.hex}</div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 space-y-4">
+                    <div className="bg-card p-6 rounded-3xl shadow-lg border border-border space-y-4">
                         <div className="flex justify-between items-center">
-                            <span className="font-bold text-slate-500">HEX</span>
+                            <span className="font-bold text-muted-foreground">HEX</span>
                             <div className="flex items-center gap-2">
-                                <span className="font-mono bg-slate-50 px-2 py-1 rounded text-slate-700 uppercase">{color.hex}</span>
+                                <span className="font-mono bg-secondary px-2 py-1 rounded text-foreground uppercase">{color.hex}</span>
                                 <button onClick={() => navigator.clipboard.writeText(color.hex)} className="text-blue-500"><Copy className="w-4 h-4" /></button>
                             </div>
                         </div>
                         <div className="flex justify-between items-center">
-                            <span className="font-bold text-slate-500">RGB</span>
+                            <span className="font-bold text-muted-foreground">RGB</span>
                             <div className="flex items-center gap-2">
-                                <span className="font-mono bg-slate-50 px-2 py-1 rounded text-slate-700">{color.r}, {color.g}, {color.b}</span>
+                                <span className="font-mono bg-secondary px-2 py-1 rounded text-foreground">{color.r}, {color.g}, {color.b}</span>
                                 <button onClick={() => navigator.clipboard.writeText(`rgb(${color.r}, ${color.g}, ${color.b})`)} className="text-blue-500"><Copy className="w-4 h-4" /></button>
                             </div>
                         </div>

@@ -61,20 +61,20 @@ export default function RegexTesterTool() {
             <div className="max-w-4xl mx-auto space-y-6">
 
                 {/* Regex Input Bar */}
-                <div className="bg-white p-2 rounded-2xl shadow-lg border border-slate-100 flex items-center gap-2">
-                    <div className="pl-4 font-mono font-bold text-slate-400 text-lg">/</div>
+                <div className="bg-card p-2 rounded-2xl shadow-lg border border-border flex items-center gap-2">
+                    <div className="pl-4 font-mono font-bold text-muted-foreground text-lg">/</div>
                     <input
                         value={regexStr}
                         onChange={e => setRegexStr(e.target.value)}
                         placeholder="regex..."
-                        className={`flex-1 p-2 outline-none font-mono text-lg font-medium ${error ? 'text-red-500' : 'text-slate-800'}`}
+                        className={`flex-1 p-2 outline-none font-mono text-lg font-medium ${error ? 'text-red-500' : 'text-foreground'}`}
                     />
-                    <div className="font-mono font-bold text-slate-400 text-lg">/</div>
+                    <div className="font-mono font-bold text-muted-foreground text-lg">/</div>
                     <input
                         value={flags}
                         onChange={e => setFlags(e.target.value)}
                         placeholder="gims"
-                        className="w-20 p-2 outline-none font-mono text-slate-600 bg-slate-50 rounded-lg text-sm text-center"
+                        className="w-20 p-2 outline-none font-mono text-slate-600 bg-secondary rounded-lg text-sm text-center"
                     />
                 </div>
 
@@ -84,7 +84,7 @@ export default function RegexTesterTool() {
                         <button
                             key={f}
                             onClick={() => toggleFlag(f)}
-                            className={`px-3 py-1 rounded-lg font-mono text-xs font-bold border transition-colors ${flags.includes(f) ? 'bg-blue-100 border-blue-200 text-blue-700' : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'
+                            className={`px-3 py-1 rounded-lg font-mono text-xs font-bold border transition-colors ${flags.includes(f) ? 'bg-blue-100 border-blue-200 text-blue-700' : 'bg-card border-border text-muted-foreground hover:border-slate-300'
                                 }`}
                         >
                             {f}
@@ -100,12 +100,12 @@ export default function RegexTesterTool() {
                 )}
 
                 {/* Test String Input/Output */}
-                <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden min-h-[400px] flex flex-col">
-                    <div className="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
+                <div className="bg-card rounded-3xl shadow-xl border border-border overflow-hidden min-h-[400px] flex flex-col">
+                    <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
                         <h3 className="font-bold text-slate-600 flex items-center gap-2">
                             Test String
                         </h3>
-                        <div className="text-xs font-bold text-slate-400 uppercase">
+                        <div className="text-xs font-bold text-muted-foreground uppercase">
                             {matchCount} Match{matchCount !== 1 && 'es'}
                         </div>
                     </div>
@@ -120,11 +120,11 @@ export default function RegexTesterTool() {
                         />
 
                         {/* Highlight Layer */}
-                        <div className="absolute inset-0 w-full h-full p-6 font-mono text-sm pointer-events-none whitespace-pre-wrap break-words text-slate-400 z-0">
+                        <div className="absolute inset-0 w-full h-full p-6 font-mono text-sm pointer-events-none whitespace-pre-wrap break-words text-muted-foreground z-0">
                             {parts.map((p, i) => (
                                 <span
                                     key={i}
-                                    className={`${p.match ? 'bg-yellow-300 text-slate-900 rounded font-bold box-decoration-clone' : ''}`}
+                                    className={`${p.match ? 'bg-yellow-300 text-foreground rounded font-bold box-decoration-clone' : ''}`}
                                 >
                                     {p.text}
                                 </span>

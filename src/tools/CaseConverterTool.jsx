@@ -48,8 +48,8 @@ export default function CaseConverterTool() {
         <ToolLayout title="Case Converter" description="Convert text style instantly.">
             <div className="max-w-4xl mx-auto space-y-6">
 
-                <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 flex flex-col h-[300px]">
-                    <div className="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
+                <div className="bg-card rounded-3xl shadow-xl overflow-hidden border border-border flex flex-col h-[300px]">
+                    <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
                         <label className="font-bold text-slate-600 flex items-center gap-2">
                             <Type className="w-4 h-4" /> Text Input
                         </label>
@@ -61,7 +61,7 @@ export default function CaseConverterTool() {
                         value={text}
                         onChange={e => setText(e.target.value)}
                         placeholder="Type or paste text here..."
-                        className="flex-1 w-full p-6 resize-none outline-none text-lg leading-relaxed text-slate-700"
+                        className="flex-1 w-full p-6 resize-none outline-none text-lg leading-relaxed text-foreground"
                     />
                 </div>
 
@@ -70,14 +70,14 @@ export default function CaseConverterTool() {
                         <button
                             key={c.name}
                             onClick={() => setText(c.fn(text))}
-                            className="bg-white border border-slate-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 text-slate-600 font-bold py-3 px-2 rounded-xl text-sm transition-all shadow-sm"
+                            className="bg-card border border-border hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 text-slate-600 font-bold py-3 px-2 rounded-xl text-sm transition-all shadow-sm"
                         >
                             {c.name}
                         </button>
                     ))}
                 </div>
 
-                <div className="bg-slate-50 rounded-xl p-4 text-center text-xs text-slate-400 font-bold uppercase tracking-widest">
+                <div className="bg-secondary rounded-xl p-4 text-center text-xs text-muted-foreground font-bold uppercase tracking-widest">
                     {text.length} Characters • {text.split(/\s+/).filter(w => w).length} Words
                 </div>
 

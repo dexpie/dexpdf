@@ -48,7 +48,7 @@ export default function OcrTool() {
   const [successMsg, setSuccessMsg] = useState('')
   const [ocrEngine, setOcrEngine] = useState('auto') // auto, cloud, local
 
-  // 🌩️ OCR.space API (FREE - 25k requests/month)
+  // Optional OCR.space processing through the server proxy.
   const runCloudOCR = async (imageDataUrl) => {
     const formData = new FormData()
     formData.append('base64Image', imageDataUrl)
@@ -73,7 +73,7 @@ export default function OcrTool() {
           ? Math.round(result.ParsedResults[0].TextOverlay.Lines.reduce((acc, line) =>
             acc + (line.Words?.reduce((sum, word) => sum + (word.WordText ? 90 : 0), 0) || 0), 0) /
             (result.ParsedResults[0].TextOverlay.Lines.length || 1))
-          : 85 // Default confidence for cloud OCR
+          : null
 
         return { text: parsedText, confidence }
       } else {
@@ -86,7 +86,7 @@ export default function OcrTool() {
     }
   }
 
-  // 🎨 Enhanced image preprocessing for 95%+ OCR accuracy
+  // Image preprocessing can improve OCR results on noisy scans.
   const preprocessCanvas = (canvas) => {
     if (!imageEnhancement) return canvas
     const ctx = canvas.getContext('2d')
@@ -261,7 +261,7 @@ export default function OcrTool() {
       if (result) {
         setConfidence(result.confidence)
         setText(result.text)
-        setSuccessMsg(`✅ OCR completed! Confidence: ${result.confidence}%`)
+        setSuccessMsg(result.confidence == null ? 'OCR completed.' : `OCR completed. Confidence: ${result.confidence}%`)
         triggerConfetti()
         setProgress(100)
       } else { throw new Error('All OCR engines failed') }
@@ -319,6 +319,7 @@ export default function OcrTool() {
       textResult = text
       await worker.terminate()
     }
+    if (!textResult) throw new Error('OCR did not return any text.')
     return new Blob([textResult], { type: 'text/plain' })
   }
 
@@ -349,11 +350,11 @@ export default function OcrTool() {
   }, [selectedPage])
 
   return (
-    <ToolLayout title="OCR Text Extraction" description={t('tool.ocr_desc', 'Convert scanned documents and images into editable text')}>
+    <ToolLayout title="OCR Text Extraction" description={t('tool.ocr_desc', 'Extract text locally with Tesseract or optionally send an image to OCR.space.')}>
 
       {/* Settings Panel */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm max-w-4xl mx-auto w-full mb-8">
-        <div className="flex items-center gap-2 mb-4 text-slate-800 font-semibold">
+      <div className="bg-card p-5 rounded-2xl border border-border shadow-sm max-w-4xl mx-auto w-full mb-8">
+        <div className="flex items-center gap-2 mb-4 text-foreground font-semibold">
           <Settings className="w-5 h-5 text-blue-500" />
           <span>Extraction Settings</span>
         </div>
@@ -364,7 +365,7 @@ export default function OcrTool() {
             <label className="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-2">
               <Languages className="w-4 h-4" /> Language
             </label>
-            <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
+            <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-secondary focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
               {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.name}</option>)}
             </select>
           </div>
@@ -377,19 +378,19 @@ export default function OcrTool() {
             <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl">
               <button
                 onClick={() => setOcrEngine('auto')}
-                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all ${ocrEngine === 'auto' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200'}`}
+                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all ${ocrEngine === 'auto' ? 'bg-card text-blue-600 shadow-sm' : 'text-muted-foreground hover:bg-slate-200'}`}
               >
                 Auto
               </button>
               <button
                 onClick={() => setOcrEngine('cloud')}
-                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'cloud' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200'}`}
+                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'cloud' ? 'bg-card text-blue-600 shadow-sm' : 'text-muted-foreground hover:bg-slate-200'}`}
               >
                 <Cloud className="w-3 h-3" /> Cloud
               </button>
               <button
                 onClick={() => setOcrEngine('local')}
-                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'local' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:bg-slate-200'}`}
+                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'local' ? 'bg-card text-blue-600 shadow-sm' : 'text-muted-foreground hover:bg-slate-200'}`}
               >
                 <Laptop className="w-3 h-3" /> Local
               </button>
@@ -401,7 +402,7 @@ export default function OcrTool() {
             <label className="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-2">
               <Zap className="w-4 h-4" /> Speed vs Accuracy
             </label>
-            <select value={ocrMode} onChange={e => setOcrMode(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-slate-50 focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
+            <select value={ocrMode} onChange={e => setOcrMode(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-secondary focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
               <option value="fast">⚡ Fast (Draft)</option>
               <option value="balanced">⚖️ Balanced</option>
               <option value="accurate">🎯 High Accuracy</option>
@@ -440,10 +441,10 @@ export default function OcrTool() {
           >
             {/* Progress Bar */}
             {busy && (
-              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center animate-pulse">
+              <div className="bg-secondary p-6 rounded-2xl border border-border text-center animate-pulse">
                 <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
                 <p className="text-slate-600 font-medium mb-1">{progressText}</p>
-                <p className="text-sm text-slate-400 font-mono">{progress}%</p>
+                <p className="text-sm text-muted-foreground font-mono">{progress}%</p>
                 <div className="w-full bg-slate-200 h-1.5 rounded-full mt-4 overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
@@ -456,12 +457,12 @@ export default function OcrTool() {
 
             <div className={`grid grid-cols-1 lg:grid-cols-2 gap-6 ${busy ? 'opacity-50 pointer-events-none' : ''}`}>
               {/* Left: Preview */}
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px]">
-                <div className="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center text-sm font-semibold text-slate-700">
+              <div className="bg-card rounded-2xl border border-border overflow-hidden flex flex-col h-[500px]">
+                <div className="p-3 border-b border-border bg-secondary flex justify-between items-center text-sm font-semibold text-foreground">
                   <span>Original View</span>
                   <div className="flex gap-2">
                     {file.type === 'application/pdf' && totalPages > 1 && (
-                      <div className="flex items-center gap-1 bg-white rounded-lg border border-slate-200 px-1">
+                      <div className="flex items-center gap-1 bg-card rounded-lg border border-border px-1">
                         <button disabled={selectedPage <= 1} onClick={() => setSelectedPage(p => p - 1)} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30"><ChevronLeft className="w-4 h-4" /></button>
                         <span className="text-xs px-2">{selectedPage}/{totalPages}</span>
                         <button disabled={selectedPage >= totalPages} onClick={() => setSelectedPage(p => p + 1)} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30"><ChevronRight className="w-4 h-4" /></button>
@@ -473,7 +474,7 @@ export default function OcrTool() {
                   {previewUrl ? (
                     <img src={previewUrl} alt="Preview" className="max-w-full max-h-full object-contain shadow-lg rounded" />
                   ) : (
-                    <div className="text-slate-400 flex flex-col items-center">
+                    <div className="text-muted-foreground flex flex-col items-center">
                       <FileText className="w-12 h-12 mb-2 opacity-20" />
                       <span>No preview available</span>
                     </div>
@@ -482,14 +483,14 @@ export default function OcrTool() {
               </div>
 
               {/* Right: Result */}
-              <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col h-[500px]">
-                <div className="p-3 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                  <span className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+              <div className="bg-card rounded-2xl border border-border overflow-hidden flex flex-col h-[500px]">
+                <div className="p-3 border-b border-border bg-secondary flex justify-between items-center">
+                  <span className="text-sm font-semibold text-foreground flex items-center gap-2">
                     Extracted Text
                     {confidence && <span className={`text-[10px] px-2 py-0.5 rounded-full ${confidence > 80 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{confidence}% Score</span>}
                   </span>
                   <div className="flex gap-2">
-                    <select value={exportFormat} onChange={e => setExportFormat(e.target.value)} className="text-xs p-1.5 rounded border border-slate-300 bg-white">
+                    <select value={exportFormat} onChange={e => setExportFormat(e.target.value)} className="text-xs p-1.5 rounded border border-slate-300 bg-card">
                       <option value="txt">.txt</option>
                       <option value="json">.json</option>
                       <option value="csv">.csv</option>
@@ -499,15 +500,15 @@ export default function OcrTool() {
                 <textarea
                   value={text}
                   onChange={e => setText(e.target.value)}
-                  className="flex-1 w-full p-4 resize-none outline-none font-mono text-sm text-slate-700 bg-white"
+                  className="flex-1 w-full p-4 resize-none outline-none font-mono text-sm text-foreground bg-card"
                   placeholder="Text will appear here after processing..."
                 />
               </div>
             </div>
 
             {/* Action Footer */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-lg flex justify-between items-center max-w-4xl mx-auto w-full sticky bottom-4 z-10">
-              <button onClick={() => setFile(null)} className="font-semibold text-slate-500 hover:text-slate-800 transition-colors">Start Over</button>
+            <div className="bg-card p-6 rounded-2xl border border-border shadow-lg flex justify-between items-center max-w-4xl mx-auto w-full sticky bottom-4 z-10">
+              <button onClick={() => setFile(null)} className="font-semibold text-muted-foreground hover:text-foreground transition-colors">Start Over</button>
               <ActionButtons
                 primaryText="Download Result"
                 onPrimary={exportText}

@@ -45,22 +45,22 @@ export function FileUpload({ onFilesSelected, accept = { 'application/pdf': ['.p
                     "relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ease-in-out",
                     isDragActive
                         ? "border-primary bg-primary/5 scale-[1.02]"
-                        : "border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300"
+                        : "border-border bg-secondary hover:bg-slate-100 hover:border-slate-300"
                 )}
             >
                 <input {...getInputProps()} />
                 <div className="flex flex-col items-center justify-center gap-4">
                     <div className={cn(
                         "w-20 h-20 rounded-full flex items-center justify-center transition-colors",
-                        isDragActive ? "bg-primary text-white" : "bg-white text-primary shadow-sm"
+                        isDragActive ? "bg-primary text-white" : "bg-card text-primary shadow-sm"
                     )}>
                         <Upload className="w-10 h-10" />
                     </div>
                     <div className="space-y-2">
-                        <h3 className="text-2xl font-bold text-slate-800">
+                        <h3 className="text-2xl font-bold text-foreground">
                             {isDragActive ? "Drop PDF here" : "Select PDF files"}
                         </h3>
-                        <p className="text-slate-500 text-lg">
+                        <p className="text-muted-foreground text-lg">
                             or drag and drop them here
                         </p>
                     </div>
@@ -86,22 +86,22 @@ export function FileUpload({ onFilesSelected, accept = { 'application/pdf': ['.p
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, scale: 0.9 }}
-                            className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-xl shadow-sm"
+                            className="flex items-center justify-between p-4 bg-card border border-border rounded-xl shadow-sm"
                         >
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-red-50 text-red-600 rounded-lg flex items-center justify-center">
                                     <FileType className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-slate-700">{file.name}</p>
-                                    <p className="text-xs text-slate-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                    <p className="font-semibold text-foreground">{file.name}</p>
+                                    <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                 </div>
                             </div>
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={(e) => { e.stopPropagation(); removeFile(file.name); }}
-                                className="text-slate-400 hover:text-red-500 hover:bg-red-50"
+                                className="text-muted-foreground hover:text-red-500 hover:bg-red-50"
                             >
                                 <X className="w-5 h-5" />
                             </Button>

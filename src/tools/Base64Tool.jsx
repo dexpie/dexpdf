@@ -38,12 +38,12 @@ export default function Base64Tool() {
             <div className="max-w-4xl mx-auto">
                 <div className="flex flex-col gap-4">
                     {/* Input */}
-                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                    <div className="bg-card p-6 rounded-3xl shadow-sm border border-border">
                         <div className="flex justify-between mb-2">
-                            <label className="text-sm font-bold text-slate-500 uppercase">
+                            <label className="text-sm font-bold text-muted-foreground uppercase">
                                 {mode === 'encode' ? 'Text' : 'Base64'}
                             </label>
-                            <button onClick={() => setInput('')} className="text-slate-400 hover:text-red-500">
+                            <button onClick={() => setInput('')} className="text-muted-foreground hover:text-red-500">
                                 <Trash2 className="w-4 h-4" />
                             </button>
                         </div>
@@ -51,7 +51,7 @@ export default function Base64Tool() {
                             value={input}
                             onChange={e => process(e.target.value, mode)}
                             placeholder={mode === 'encode' ? "Type text to encode..." : "Paste Base64 to decode..."}
-                            className="w-full h-32 resize-none bg-slate-50 border-none rounded-xl p-4 focus:ring-2 ring-blue-500 outline-none font-mono text-sm"
+                            className="w-full h-32 resize-none bg-secondary border-none rounded-xl p-4 focus:ring-2 ring-blue-500 outline-none font-mono text-sm"
                         />
                     </div>
 
@@ -68,12 +68,12 @@ export default function Base64Tool() {
                     {/* Output */}
                     <div className="bg-slate-900 p-6 rounded-3xl shadow-lg border border-slate-800 relative group">
                         <div className="flex justify-between mb-2">
-                            <label className="text-sm font-bold text-slate-500 uppercase">
+                            <label className="text-sm font-bold text-muted-foreground uppercase">
                                 {mode === 'encode' ? 'Base64' : 'Text'}
                             </label>
                             <button
                                 onClick={() => navigator.clipboard.writeText(output)}
-                                className="text-slate-400 hover:text-white"
+                                className="text-muted-foreground hover:text-white"
                             >
                                 <Copy className="w-4 h-4" />
                             </button>

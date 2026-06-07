@@ -7,9 +7,20 @@
  * @param {string} extension - File extension (default: '.pdf')
  */
 export function getOutputFilename(customName, defaultName = 'output', extension = '.pdf') {
+    const knownExtensions = new Set([
+        'csv', 'doc', 'docx', 'epub', 'html', 'jpg', 'jpeg', 'json', 'md',
+        'pdf', 'png', 'ppt', 'pptx', 'rtf', 'txt', 'webp', 'xls', 'xlsx', 'zip'
+    ])
+
+    if (arguments.length === 2 && knownExtensions.has(defaultName.toLowerCase().replace(/^\./, ''))) {
+        extension = defaultName
+        defaultName = 'output'
+    }
+
     const finalName = (customName || defaultName).trim()
     const ext = extension.startsWith('.') ? extension : '.' + extension
-    return finalName.endsWith(ext) ? finalName : finalName + ext
+    const withoutKnownExtension = finalName.replace(/\.(csv|docx?|epub|html?|jpe?g|json|md|pdf|png|pptx?|rtf|txt|webp|xlsx?|zip)$/i, '')
+    return finalName.toLowerCase().endsWith(ext.toLowerCase()) ? finalName : withoutKnownExtension + ext
 }
 
 /**

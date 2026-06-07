@@ -10,9 +10,9 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="border-t border-slate-200 bg-white py-5 mt-0">
+    <footer className="border-t border-border bg-card py-5 mt-0">
       <div className="max-w-[1100px] mx-auto px-4 text-center">
-        <small className="text-slate-400 text-xs">
+        <small className="text-muted-foreground text-xs">
           {mounted
             ? t('footer.copyright', { year: new Date().getFullYear() })
             : `© ${new Date().getFullYear()} DexPDF. All rights reserved.`

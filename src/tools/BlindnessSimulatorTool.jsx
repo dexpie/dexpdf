@@ -22,12 +22,12 @@ export default function BlindnessSimulatorTool() {
             <div className="max-w-6xl mx-auto flex flex-col gap-8">
 
                 {/* Toolbar */}
-                <div className="bg-white p-2 rounded-2xl shadow-lg border border-slate-100 flex flex-wrap justify-center gap-2">
+                <div className="bg-card p-2 rounded-2xl shadow-lg border border-border flex flex-wrap justify-center gap-2">
                     {Object.keys(FILTERS).map(k => (
                         <button
                             key={k}
                             onClick={() => setType(k)}
-                            className={`px-4 py-2 rounded-xl font-bold capitalize transition-all ${type === k ? 'bg-slate-800 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'
+                            className={`px-4 py-2 rounded-xl font-bold capitalize transition-all ${type === k ? 'bg-slate-800 text-white' : 'bg-card text-muted-foreground hover:bg-secondary'
                                 }`}
                         >
                             {k}
@@ -45,7 +45,7 @@ export default function BlindnessSimulatorTool() {
                 </svg>
 
                 {/* Viewport */}
-                <div className="flex-1 bg-slate-900/5 rounded-3xl min-h-[500px] flex items-center justify-center border-2 border-dashed border-slate-200 overflow-hidden relative">
+                <div className="flex-1 bg-slate-900/5 rounded-3xl min-h-[500px] flex items-center justify-center border-2 border-dashed border-border overflow-hidden relative">
                     {!image ? (
                         <div className="w-full h-full p-8">
                             <FileDropZone onFiles={files => setImage(URL.createObjectURL(files[0]))} accept="image/*" hint="Upload design to test" />
@@ -60,7 +60,7 @@ export default function BlindnessSimulatorTool() {
                             />
                             <button
                                 onClick={() => setImage(null)}
-                                className="absolute top-4 right-4 bg-white/90 backdrop-blur p-2 rounded-full text-slate-600 hover:text-red-500 shadow-lg"
+                                className="absolute top-4 right-4 bg-card/90 backdrop-blur p-2 rounded-full text-slate-600 hover:text-red-500 shadow-lg"
                             >
                                 <EyeOff className="w-5 h-5" />
                             </button>
@@ -68,7 +68,7 @@ export default function BlindnessSimulatorTool() {
                     )}
                 </div>
 
-                <div className="text-center text-slate-400 text-sm">
+                <div className="text-center text-muted-foreground text-sm">
                     {type === 'normal' ? 'Standard Vision' :
                         type === 'protanopia' ? 'Red-Blindness (Protanopia)' :
                             type === 'deuteranopia' ? 'Green-Blindness (Deuteranopia)' :

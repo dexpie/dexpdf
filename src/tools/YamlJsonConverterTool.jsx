@@ -33,11 +33,11 @@ export default function YamlJsonConverterTool() {
         <ToolLayout title="YAML <-> JSON" description="Convert between YAML and JSON formats.">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-4 h-[600px]">
 
-                <div className="flex flex-col bg-white rounded-3xl shadow p-4 border border-slate-200">
-                    <label className="font-bold text-slate-500 mb-2">YAML</label>
+                <div className="flex flex-col bg-card rounded-3xl shadow p-4 border border-border">
+                    <label className="font-bold text-muted-foreground mb-2">YAML</label>
                     <textarea
                         value={left} onChange={e => setLeft(e.target.value)}
-                        className="flex-1 resize-none outline-none font-mono text-xs p-4 bg-slate-50 rounded-xl"
+                        className="flex-1 resize-none outline-none font-mono text-xs p-4 bg-secondary rounded-xl"
                         placeholder="key: value..."
                     />
                 </div>
@@ -51,11 +51,11 @@ export default function YamlJsonConverterTool() {
                     </button>
                 </div>
 
-                <div className="flex flex-col bg-white rounded-3xl shadow p-4 border border-slate-200">
-                    <label className="font-bold text-slate-500 mb-2">JSON</label>
+                <div className="flex flex-col bg-card rounded-3xl shadow p-4 border border-border">
+                    <label className="font-bold text-muted-foreground mb-2">JSON</label>
                     <textarea
                         value={right} onChange={e => setRight(e.target.value)}
-                        className="flex-1 resize-none outline-none font-mono text-xs p-4 bg-slate-50 rounded-xl"
+                        className="flex-1 resize-none outline-none font-mono text-xs p-4 bg-secondary rounded-xl"
                         placeholder="{ ... }"
                     />
                 </div>

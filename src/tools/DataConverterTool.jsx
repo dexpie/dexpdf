@@ -58,23 +58,23 @@ export default function DataConverterTool() {
         <ToolLayout title="Data Converter" description="Convert between CSV and JSON formats.">
             <div className="max-w-6xl mx-auto flex flex-col gap-6">
                 {/* Controls */}
-                <div className="flex justify-center items-center gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                    <span className={`font-bold ${mode === 'csv2json' ? 'text-blue-600' : 'text-slate-400'}`}>CSV</span>
+                <div className="flex justify-center items-center gap-4 bg-card p-4 rounded-2xl shadow-sm border border-border">
+                    <span className={`font-bold ${mode === 'csv2json' ? 'text-blue-600' : 'text-muted-foreground'}`}>CSV</span>
                     <button onClick={swap} className="p-2 bg-slate-100 rounded-full hover:bg-blue-100 text-slate-600 hover:text-blue-600 transition-colors">
                         <ArrowLeftRight className="w-5 h-5" />
                     </button>
-                    <span className={`font-bold ${mode === 'json2csv' ? 'text-blue-600' : 'text-slate-400'}`}>JSON</span>
+                    <span className={`font-bold ${mode === 'json2csv' ? 'text-blue-600' : 'text-muted-foreground'}`}>JSON</span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[500px]">
                     {/* Input */}
-                    <div className="flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
-                        <div className="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
+                    <div className="flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
+                        <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
                             <label className="font-bold text-slate-600 flex items-center gap-2">
                                 {mode === 'csv2json' ? <FileSpreadsheet className="w-4 h-4" /> : <FileJson className="w-4 h-4" />}
                                 Input
                             </label>
-                            <button onClick={() => setInput('')} className="text-slate-400 hover:text-red-500">
+                            <button onClick={() => setInput('')} className="text-muted-foreground hover:text-red-500">
                                 <Trash2 className="w-4 h-4" />
                             </button>
                         </div>
@@ -89,12 +89,12 @@ export default function DataConverterTool() {
                     {/* Output */}
                     <div className="flex flex-col bg-slate-900 rounded-3xl shadow-lg border border-slate-800 overflow-hidden relative">
                         <div className="bg-slate-800 p-4 border-b border-slate-700 flex justify-between items-center">
-                            <label className="font-bold text-slate-300 flex items-center gap-2">
+                            <label className="font-bold text-muted-foreground flex items-center gap-2">
                                 {mode === 'json2csv' ? <FileSpreadsheet className="w-4 h-4" /> : <FileJson className="w-4 h-4" />}
                                 Output
                             </label>
                             <div className="flex gap-2">
-                                <button onClick={() => navigator.clipboard.writeText(output)} className="text-slate-400 hover:text-white">
+                                <button onClick={() => navigator.clipboard.writeText(output)} className="text-muted-foreground hover:text-white">
                                     <Copy className="w-4 h-4" />
                                 </button>
                                 <button onClick={download} className="text-blue-400 hover:text-blue-300">

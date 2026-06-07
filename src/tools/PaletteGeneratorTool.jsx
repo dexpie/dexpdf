@@ -55,7 +55,7 @@ export default function PaletteGeneratorTool() {
             <div className="max-w-6xl mx-auto space-y-8">
 
                 {/* Controls */}
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-wrap gap-6 items-center justify-between">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-wrap gap-6 items-center justify-between">
                     <div className="flex items-center gap-4 flex-1 min-w-[300px]">
                         <label className="font-bold text-slate-600">Base Hue</label>
                         <input
@@ -73,7 +73,7 @@ export default function PaletteGeneratorTool() {
                             <button
                                 key={m}
                                 onClick={() => setHarmony(m)}
-                                className={`px-4 py-2 rounded-full font-bold text-sm capitalize transition-all ${harmony === m ? 'bg-slate-800 text-white shadow-lg' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                className={`px-4 py-2 rounded-full font-bold text-sm capitalize transition-all ${harmony === m ? 'bg-slate-800 text-white shadow-lg' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'
                                     }`}
                             >
                                 {m}
@@ -90,9 +90,9 @@ export default function PaletteGeneratorTool() {
                             className="flex-1 flex flex-col justify-end p-6 transition-all hover:flex-[1.5] group relative"
                             style={{ backgroundColor: c.hex }}
                         >
-                            <div className="bg-white/90 backdrop-blur rounded-xl p-4 shadow-lg transform translate-y-20 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                                <div className="font-black text-xl text-slate-800 uppercase tracking-wider mb-1">{c.hex}</div>
-                                <div className="text-xs font-bold text-slate-500 mb-2">{c.hsl}</div>
+                            <div className="bg-card/90 backdrop-blur rounded-xl p-4 shadow-lg transform translate-y-20 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                                <div className="font-black text-xl text-foreground uppercase tracking-wider mb-1">{c.hex}</div>
+                                <div className="text-xs font-bold text-muted-foreground mb-2">{c.hsl}</div>
                                 <button
                                     onClick={() => navigator.clipboard.writeText(c.hex)}
                                     className="w-full py-2 bg-slate-900 text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-black"

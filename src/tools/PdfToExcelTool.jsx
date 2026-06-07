@@ -115,7 +115,7 @@ async function extractTableFromPage(page) {
 
 /**
  * PdfToExcelTool - Extract tables and data from PDF
- * Supports both CSV and Excel format with preview
+ * Exports heuristically detected table rows as CSV with preview.
  */
 export default function PdfToExcelTool() {
   const { t } = useTranslation()
@@ -311,8 +311,8 @@ export default function PdfToExcelTool() {
 
   return (
     <ToolLayout
-      title="PDF to Excel"
-      description="Extract tables and data from PDF into CSV/Excel format"
+      title="PDF Table to CSV"
+      description="Heuristically extract aligned table text from PDF into CSV"
     >
       {/* Mode Switcher */}
       <div className="flex justify-center gap-2 mb-8">
@@ -340,7 +340,7 @@ export default function PdfToExcelTool() {
 
       {batchMode ? (
         <UniversalBatchProcessor
-          toolName="PDF to Excel"
+          toolName="PDF Table to CSV"
           processFile={processBatchFile}
           acceptedTypes=".pdf"
           outputExtension=".csv"

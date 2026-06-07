@@ -38,12 +38,12 @@ export default function StatisticsTool() {
 
                 {/* Input */}
                 <div className="flex flex-col gap-4">
-                    <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 h-full flex flex-col">
+                    <div className="bg-card p-6 rounded-3xl shadow-lg border border-border h-full flex flex-col">
                         <div className="flex justify-between items-center mb-4">
                             <label className="font-bold text-slate-600 flex items-center gap-2">
                                 <Sigma className="w-5 h-5 text-blue-500" /> Data Set
                             </label>
-                            <button onClick={() => setInput('')} className="text-slate-400 hover:text-red-500">
+                            <button onClick={() => setInput('')} className="text-muted-foreground hover:text-red-500">
                                 <X className="w-4 h-4" />
                             </button>
                         </div>
@@ -51,9 +51,9 @@ export default function StatisticsTool() {
                             value={input}
                             onChange={e => setInput(e.target.value)}
                             placeholder="Enter numbers separated by spaces or commas...&#10;Example: 10, 20, 30, 45, 12"
-                            className="flex-1 w-full p-4 bg-slate-50 rounded-xl resize-none outline-none font-mono text-sm"
+                            className="flex-1 w-full p-4 bg-secondary rounded-xl resize-none outline-none font-mono text-sm"
                         />
-                        <div className="mt-4 text-xs font-bold text-slate-400 text-right">
+                        <div className="mt-4 text-xs font-bold text-muted-foreground text-right">
                             {stats ? stats.count : 0} Valid Numbers
                         </div>
                     </div>
@@ -73,7 +73,7 @@ export default function StatisticsTool() {
                             <StatCard label="Sum" value={stats.sum} color="green" />
                         </>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-slate-400 p-8 border-2 border-dashed border-slate-200 rounded-3xl">
+                        <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-8 border-2 border-dashed border-border rounded-3xl">
                             <BarChart className="w-12 h-12 mb-4 opacity-50" />
                             <p>Enter data to calculate stats</p>
                         </div>
@@ -87,9 +87,9 @@ export default function StatisticsTool() {
 
 function StatCard({ label, value, color }) {
     return (
-        <div className={`bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center border-l-4 border-${color}-500`}>
-            <span className="font-bold text-slate-500">{label}</span>
-            <span className="font-mono font-black text-2xl text-slate-800">{value}</span>
+        <div className={`bg-card p-6 rounded-2xl shadow-sm border border-border flex justify-between items-center border-l-4 border-${color}-500`}>
+            <span className="font-bold text-muted-foreground">{label}</span>
+            <span className="font-mono font-black text-2xl text-foreground">{value}</span>
         </div>
     )
 }

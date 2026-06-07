@@ -41,7 +41,7 @@ export default function KeycodeInfoTool() {
                             <Keyboard className="w-12 h-12 text-blue-400" />
                         </div>
                         <h2 className="text-2xl font-bold text-white">Press any key</h2>
-                        <p className="text-slate-400">to visualize event data</p>
+                        <p className="text-muted-foreground">to visualize event data</p>
                     </div>
                 ) : (
                     <div className="flex flex-col gap-8">
@@ -69,11 +69,11 @@ export default function KeycodeInfoTool() {
                         </div>
 
                         {/* Recent History */}
-                        <div className="bg-white rounded-3xl p-6 shadow-lg border border-slate-100">
-                            <h3 className="font-bold text-slate-400 uppercase text-xs mb-4">Recent Keys</h3>
+                        <div className="bg-card rounded-3xl p-6 shadow-lg border border-border">
+                            <h3 className="font-bold text-muted-foreground uppercase text-xs mb-4">Recent Keys</h3>
                             <div className="flex gap-2 overflow-x-auto pb-2">
                                 {history.map((h, i) => (
-                                    <div key={i} className={`flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center font-bold text-lg border ${i === 0 ? 'bg-blue-600 text-white border-blue-600 shadow-md transform scale-105' : 'bg-slate-50 text-slate-500 border-slate-200'}`}>
+                                    <div key={i} className={`flex-shrink-0 w-16 h-16 rounded-xl flex items-center justify-center font-bold text-lg border ${i === 0 ? 'bg-blue-600 text-white border-blue-600 shadow-md transform scale-105' : 'bg-secondary text-muted-foreground border-border'}`}>
                                         {h.key === ' ' ? '␣' : h.key}
                                     </div>
                                 ))}
@@ -89,7 +89,7 @@ export default function KeycodeInfoTool() {
 function KeyDetail({ label, value }) {
     return (
         <div className="bg-slate-800 p-4 rounded-xl flex flex-col gap-1 text-left">
-            <span className="text-xs font-bold text-slate-500 uppercase">{label}</span>
+            <span className="text-xs font-bold text-muted-foreground uppercase">{label}</span>
             <span className="text-green-400 font-mono font-bold truncate">{value}</span>
         </div>
     )

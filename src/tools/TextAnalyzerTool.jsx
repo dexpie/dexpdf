@@ -41,43 +41,43 @@ export default function TextAnalyzerTool() {
             <div className="max-w-5xl mx-auto h-[600px] flex flex-col md:flex-row gap-6">
                 {/* Stats */}
                 <div className="w-full md:w-64 space-y-4">
-                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="text-slate-500 text-xs font-bold uppercase mb-1">Words</div>
-                        <div className="text-3xl font-black text-slate-800">{stats.words}</div>
+                    <div className="bg-card p-4 rounded-2xl shadow-sm border border-border">
+                        <div className="text-muted-foreground text-xs font-bold uppercase mb-1">Words</div>
+                        <div className="text-3xl font-black text-foreground">{stats.words}</div>
                     </div>
-                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="text-slate-500 text-xs font-bold uppercase mb-1">Characters</div>
-                        <div className="text-3xl font-black text-slate-800">{stats.chars}</div>
+                    <div className="bg-card p-4 rounded-2xl shadow-sm border border-border">
+                        <div className="text-muted-foreground text-xs font-bold uppercase mb-1">Characters</div>
+                        <div className="text-3xl font-black text-foreground">{stats.chars}</div>
                     </div>
-                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="text-slate-500 text-xs font-bold uppercase mb-1">Lines</div>
-                        <div className="text-3xl font-black text-slate-800">{stats.lines}</div>
+                    <div className="bg-card p-4 rounded-2xl shadow-sm border border-border">
+                        <div className="text-muted-foreground text-xs font-bold uppercase mb-1">Lines</div>
+                        <div className="text-3xl font-black text-foreground">{stats.lines}</div>
                     </div>
-                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="text-slate-500 text-xs font-bold uppercase mb-1">Reading Time</div>
-                        <div className="text-xl font-black text-slate-800">{stats.time} min</div>
+                    <div className="bg-card p-4 rounded-2xl shadow-sm border border-border">
+                        <div className="text-muted-foreground text-xs font-bold uppercase mb-1">Reading Time</div>
+                        <div className="text-xl font-black text-foreground">{stats.time} min</div>
                     </div>
                 </div>
 
                 {/* Editor */}
-                <div className="flex-1 flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
+                <div className="flex-1 flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
                     {/* Toolbar */}
-                    <div className="bg-slate-50 p-4 border-b border-slate-200 flex flex-wrap gap-2">
-                        <button onClick={() => transform('upper')} className="px-3 py-1 rounded bg-white border border-slate-200 text-xs font-bold hover:bg-slate-100">UPPERCASE</button>
-                        <button onClick={() => transform('lower')} className="px-3 py-1 rounded bg-white border border-slate-200 text-xs font-bold hover:bg-slate-100">lowercase</button>
-                        <button onClick={() => transform('title')} className="px-3 py-1 rounded bg-white border border-slate-200 text-xs font-bold hover:bg-slate-100">Title Case</button>
-                        <button onClick={() => transform('sentence')} className="px-3 py-1 rounded bg-white border border-slate-200 text-xs font-bold hover:bg-slate-100">Sentence case</button>
-                        <button onClick={() => transform('reverse')} className="px-3 py-1 rounded bg-white border border-slate-200 text-xs font-bold hover:bg-slate-100">esreveR</button>
+                    <div className="bg-secondary p-4 border-b border-border flex flex-wrap gap-2">
+                        <button onClick={() => transform('upper')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-slate-100">UPPERCASE</button>
+                        <button onClick={() => transform('lower')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-slate-100">lowercase</button>
+                        <button onClick={() => transform('title')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-slate-100">Title Case</button>
+                        <button onClick={() => transform('sentence')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-slate-100">Sentence case</button>
+                        <button onClick={() => transform('reverse')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-slate-100">esreveR</button>
                     </div>
 
                     <textarea
                         value={text}
                         onChange={e => setText(e.target.value)}
                         placeholder="Type or paste your text here to analyze..."
-                        className="flex-1 w-full p-6 resize-none outline-none font-sans text-lg leading-relaxed text-slate-700"
+                        className="flex-1 w-full p-6 resize-none outline-none font-sans text-lg leading-relaxed text-foreground"
                     />
 
-                    <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-between">
+                    <div className="p-4 bg-secondary border-t border-border flex justify-between">
                         <button onClick={() => setText('')} className="flex items-center gap-2 text-red-500 font-bold text-sm hover:text-red-600">
                             <Trash2 className="w-4 h-4" /> Clear
                         </button>

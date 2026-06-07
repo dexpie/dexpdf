@@ -132,18 +132,18 @@ export default function PdfToPptTool() {
   }
 
   return (
-    <ToolLayout title="PDF to PowerPoint" description="Convert PDF slides into editable PowerPoint presentations">
+    <ToolLayout title="PDF to PowerPoint" description="Place each PDF page as a high-quality visual slide">
 
       {/* Mode Switcher */}
       <div className="flex justify-center gap-4 mb-8">
         <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
           onClick={() => setBatchMode(false)}
         >
           📄 Single File
         </button>
         <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
           onClick={() => setBatchMode(true)}
         >
           🔄 Batch Convert
@@ -182,23 +182,23 @@ export default function PdfToPptTool() {
             />
           ) : (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-6">
+              <div className="bg-card p-6 rounded-2xl border border-border shadow-sm flex flex-col items-center text-center gap-6">
 
                 <div className="w-20 h-20 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-2">
                   <Presentation className="w-10 h-10" />
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-xl text-slate-800 mb-2">{file.name}</h3>
-                  <p className="text-slate-500">Ready to convert to PowerPoint (.pptx)</p>
+                  <h3 className="font-bold text-xl text-foreground mb-2">{file.name}</h3>
+                  <p className="text-muted-foreground">Ready to convert to PowerPoint (.pptx)</p>
                 </div>
 
-                <div className="bg-slate-50 p-4 rounded-xl w-full max-w-md border border-slate-100">
+                <div className="bg-secondary p-4 rounded-xl w-full max-w-md border border-border">
                   <div className="flex items-start gap-3">
                     <MonitorPlay className="w-5 h-5 text-blue-500 mt-1" />
                     <div className="text-left">
-                      <h4 className="font-semibold text-slate-700 text-sm">Visual Preservation Mode</h4>
-                      <p className="text-xs text-slate-500 mt-1">
+                      <h4 className="font-semibold text-foreground text-sm">Visual Preservation Mode</h4>
+                      <p className="text-xs text-muted-foreground mt-1">
                         Pages will be converted to high-quality images on each slide to ensure 100% layout fidelity. Text will not be editable.
                       </p>
                     </div>
@@ -217,7 +217,7 @@ export default function PdfToPptTool() {
                 <div className="flex gap-3 w-full max-w-md">
                   <button
                     onClick={() => setFile(null)}
-                    className="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-colors"
+                    className="flex-1 py-3 rounded-xl font-bold text-muted-foreground hover:bg-secondary transition-colors"
                     disabled={busy}
                   >
                     Cancel

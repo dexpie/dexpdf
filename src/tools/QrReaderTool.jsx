@@ -41,7 +41,7 @@ export default function QrReaderTool() {
         <ToolLayout title="QR Code Reader" description="Scan QR codes from your webcam or image file.">
             <div className="max-w-2xl mx-auto space-y-8">
 
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 overflow-hidden">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border overflow-hidden">
                     <div id="reader" className="w-full"></div>
                 </div>
 
@@ -51,11 +51,11 @@ export default function QrReaderTool() {
                             <QrCode className="w-12 h-12 text-green-600" />
                         </div>
                         <h3 className="font-bold text-green-800 text-lg mb-2">Scanned Content</h3>
-                        <div className="p-4 bg-white rounded-xl border border-green-100 font-mono text-sm break-all text-slate-700 shadow-sm relative">
+                        <div className="p-4 bg-card rounded-xl border border-green-100 font-mono text-sm break-all text-foreground shadow-sm relative">
                             {scanResult}
                             <button
                                 onClick={() => navigator.clipboard.writeText(scanResult)}
-                                className="absolute top-2 right-2 p-2 bg-slate-100 hover:bg-slate-200 rounded text-slate-500"
+                                className="absolute top-2 right-2 p-2 bg-slate-100 hover:bg-slate-200 rounded text-muted-foreground"
                             >
                                 <Clipboard className="w-4 h-4" />
                             </button>

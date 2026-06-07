@@ -58,18 +58,18 @@ export default function ExcelToJsonTool() {
                     />
                 ) : (
                     <div className="flex flex-col gap-6">
-                        <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex justify-between items-center">
+                        <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex justify-between items-center">
                             <div className="flex items-center gap-4">
                                 <div className="p-3 bg-green-100 text-green-600 rounded-xl">
                                     <FileSpreadsheet className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-slate-700">{file.name}</h3>
-                                    <p className="text-sm text-slate-400">Converted successfully</p>
+                                    <h3 className="font-bold text-foreground">{file.name}</h3>
+                                    <p className="text-sm text-muted-foreground">Converted successfully</p>
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={() => setJson(null)} className="px-4 py-2 text-slate-400 font-bold hover:text-red-500">Reset</button>
+                                <button onClick={() => setJson(null)} className="px-4 py-2 text-muted-foreground font-bold hover:text-red-500">Reset</button>
                                 <button onClick={download} className="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-800 shadow-lg">
                                     <Download className="w-4 h-4" /> Download JSON
                                 </button>

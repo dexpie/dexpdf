@@ -8,16 +8,17 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #f3f4f6;
+  background-color: var(--bg);
   /* Light gray background like iLovePDF */
-  color: #1f2937;
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
 }
 
 :root {
-  /* Clean Professional Theme */
-  --bg: #f3f4f6;
-  --card: #ffffff;
+  /* Clean Professional Theme - Light Mode */
+  /* Soft off-white, not pure white */
+  --bg: #f4f5f7;
+  --card: #fcfdfe;
   --text: #1f2937;
   --muted: #6b7280;
   --border: #e5e7eb;
@@ -36,6 +37,28 @@ body {
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   --radius: 8px;
   /* Slightly sharper corners */
+}
+
+/* Dark Mode - Sophisticated charcoal/slate, NOT pure black */
+.dark {
+  --bg: #131419;
+  --card: #1a1c24;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --border: #2d303a;
+
+  /* Brand Color - Professional Blue - slightly brighter for dark mode */
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+
+  /* Status Colors */
+  --danger: #ef4444;
+  --success: #22c55e;
+
+  /* Shadows - Darker for dark mode */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
 }
 
 /* Typography */
@@ -107,7 +130,7 @@ button {
   border: none;
   font-size: 1rem;
   background: white;
-  color: #1f2937;
+  color: var(--text);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -320,7 +343,7 @@ button {
 
 .drop-content h3 {
   font-size: 1.5rem;
-  color: #1f2937;
+  color: var(--text);
   margin-bottom: 8px;
 }
 

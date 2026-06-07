@@ -49,7 +49,7 @@ export default function JsonFormatterTool() {
         <ToolLayout title="JSON Formatter" description="Validate, prettify, and minify JSON data.">
             <div className="max-w-5xl mx-auto h-[600px] flex flex-col">
                 {/* Toolbar */}
-                <div className="bg-white p-4 rounded-t-3xl border border-slate-200 border-b-0 flex justify-between items-center">
+                <div className="bg-card p-4 rounded-t-3xl border border-border border-b-0 flex justify-between items-center">
                     <div className="flex gap-2">
                         <button
                             onClick={handleFormat}
@@ -59,7 +59,7 @@ export default function JsonFormatterTool() {
                         </button>
                         <button
                             onClick={handleMinify}
-                            className="flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-600 rounded-lg hover:bg-slate-100 font-bold transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 bg-secondary text-slate-600 rounded-lg hover:bg-slate-100 font-bold transition-colors"
                         >
                             <Minimize2 className="w-4 h-4" /> Minify
                         </button>
@@ -91,7 +91,7 @@ export default function JsonFormatterTool() {
                         placeholder="Paste your JSON here..."
                         className={`
                             w-full h-full p-6 font-mono text-sm resize-none focus:outline-none border-2 rounded-b-3xl
-                            ${error ? 'border-red-300 bg-red-50 text-red-900' : 'border-slate-200 bg-slate-900 text-green-400'}
+                            ${error ? 'border-red-300 bg-red-50 text-red-900' : 'border-border bg-slate-900 text-green-400'}
                         `}
                     />
 
@@ -108,7 +108,7 @@ export default function JsonFormatterTool() {
                                 <span className="text-green-200">Valid JSON</span>
                             </>
                         ) : (
-                            <span className="text-slate-400">Waiting for input...</span>
+                            <span className="text-muted-foreground">Waiting for input...</span>
                         )}
                     </div>
                 </div>

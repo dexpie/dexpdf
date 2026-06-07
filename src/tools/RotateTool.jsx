@@ -1,30 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { PDFDocument } from 'pdf-lib'
+import React, { useState, useEffect, useCallback } from 'react'
+import { PDFDocument, degrees } from 'pdf-lib'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
-import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 import { triggerConfetti } from '../utils/confetti'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
-import ActionButtons from '../components/common/ActionButtons'
 import { motion, AnimatePresence } from 'framer-motion'
-import { RotateCw, RotateCcw, RefreshCw, FileText, CheckCircle, AlertTriangle, X } from 'lucide-react'
+import { RotateCw, RotateCcw, RefreshCw, FileText, CheckCircle, AlertTriangle, X, ArrowLeftRight, Layers, Grid, CheckSquare, Square } from 'lucide-react'
+import ResultPage from '../components/common/ResultPage'
 
+/**
+ * RotateTool - Rotate PDF pages with visual editor
+ */
 export default function RotateTool() {
-  const [batchMode, setBatchMode] = useState(false)
-  const [batchRotation, setBatchRotation] = useState(90) // 90, 180, 270
   const [file, setFile] = useState(null)
-  const [pages, setPages] = useState([])
+  const [pages, setPages] = useState([]) // { thumb, rotation, selected }
   const [busy, setBusy] = useState(false)
+  const [progress, setProgress] = useState(0)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
+  const [downloadUrl, setDownloadUrl] = useState(null)
   const [outputFileName, setOutputFileName] = useState('')
-
-  const errorRef = useRef(null)
-  const successRef = useRef(null)
-
-  useEffect(() => { if (errorMsg && errorRef.current) errorRef.current.focus() }, [errorMsg])
-  useEffect(() => { if (successMsg && successRef.current) successRef.current.focus() }, [successMsg])
+  const [selectedCount, setSelectedCount] = useState(0)
+  const [isSelecting, setIsSelecting] = useState(false)
 
   async function loadFile(files) {
     const f = files[0]
@@ -33,7 +31,7 @@ export default function RotateTool() {
     setErrorMsg('')
     setSuccessMsg('')
 
-    if (!f.type.includes('pdf')) {
+    if (!f.name.toLowerCase().endsWith('.pdf')) {
       setErrorMsg('Please select a PDF file.')
       return
     }
@@ -46,10 +44,34 @@ export default function RotateTool() {
     try {
       setFile(f)
       setOutputFileName(getDefaultFilename(f, '_rotated'))
-      const bytes = await f.arrayBuffer()
-      const pdf = await PDFDocument.load(bytes)
-      setPages(new Array(pdf.getPageCount()).fill(false))
-      setSuccessMsg(`Loaded ${pdf.getPageCount()} pages successfully!`)
+
+      // Generate thumbnails with rotations
+      const data = await f.arrayBuffer()
+      const pdfjs = await import('pdfjs-dist')
+      const pdf = await pdfjs.getDocument({ data }).promise
+      const numPages = pdf.numPages
+
+      const loadedPages = []
+      for (let i = 1; i <= numPages; i++) {
+        const page = await pdf.getPage(i)
+        const viewport = page.getViewport({ scale: 0.35 })
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.ceil(viewport.width)
+        canvas.height = Math.ceil(viewport.height)
+        const ctx = canvas.getContext('2d')
+        await page.render({ canvasContext: ctx, viewport }).promise
+
+        loadedPages.push({
+          id: `page-${i}-${Date.now()}`,
+          pageNumber: i,
+          thumb: canvas.toDataURL('image/jpeg', 0.7),
+          rotation: 0,
+          selected: true // All selected by default
+        })
+      }
+      setPages(loadedPages)
+      setSelectedCount(numPages)
+      setSuccessMsg(`Loaded ${numPages} pages`)
     } catch (err) {
       console.error(err)
       setErrorMsg('Failed to load PDF: ' + err.message)
@@ -58,240 +80,397 @@ export default function RotateTool() {
     }
   }
 
-  function toggle(i) { setPages(prev => prev.map((v, idx) => idx === i ? !v : v)) }
-  function selectAll() { setPages(prev => prev.map(() => true)) }
-  function deselectAll() { setPages(prev => prev.map(() => false)) }
-
-  async function rotateAll(direction) {
-    if (!file) return
-
-    const selectedCount = pages.filter(p => p).length
-    if (selectedCount === 0) {
-      setErrorMsg('Please select at least one page to rotate.')
-      return
+  // Selection handlers
+  const handlePageClick = useCallback((index, e) => {
+    if (e.shiftKey && pages.length > 0) {
+      // Range select
+      const lastSelected = pages.findIndex(p => p.selected)
+      const start = Math.min(lastSelected, index)
+      const end = Math.max(lastSelected, index)
+      setPages(prev => prev.map((p, i) => ({
+        ...p,
+        selected: i >= start && i <= end
+      })))
+    } else if (e.ctrlKey || e.metaKey) {
+      // Toggle
+      setPages(prev => prev.map((p, i) =>
+        i === index ? { ...p, selected: !p.selected } : p
+      ))
+    } else {
+      // Single select
+      setPages(prev => prev.map((p, i) => ({
+        ...p,
+        selected: i === index
+      })))
     }
+  }, [pages])
 
+  const handleMouseDown = (index, e) => {
+    if (e.target.closest('.page-actions')) return
+    setIsSelecting(true)
+    handlePageClick(index, e)
+  }
+
+  const handleMouseEnter = (index) => {
+    if (isSelecting) {
+      setPages(prev => prev.map((p, i) =>
+        i === index ? { ...p, selected: true } : p
+      ))
+    }
+  }
+
+  const handleMouseUp = () => {
+    setIsSelecting(false)
+  }
+
+  // Update selected count
+  useEffect(() => {
+    setSelectedCount(pages.filter(p => p.selected).length)
+  }, [pages])
+
+  // Rotation
+  const rotateSelected = (degrees) => {
+    setPages(prev => prev.map(p => {
+      if (p.selected) {
+        return { ...p, rotation: (p.rotation + degrees + 360) % 360 }
+      }
+      return p
+    }))
+  }
+
+  const rotatePage = (index, degrees) => {
+    setPages(prev => prev.map((p, i) => {
+      if (i === index) {
+        return { ...p, rotation: (p.rotation + degrees + 360) % 360 }
+      }
+      return p
+    }))
+  }
+
+  // Selection helpers
+  const selectAll = () => setPages(prev => prev.map(p => ({ ...p, selected: true })))
+  const selectNone = () => setPages(prev => prev.map(p => ({ ...p, selected: false })))
+  const invertSelection = () => setPages(prev => prev.map(p => ({ ...p, selected: !p.selected })))
+
+  // Quick rotate buttons
+  const rotate90CW = () => rotateSelected(90)
+  const rotate90CCW = () => rotateSelected(-90)
+  const rotate180 = () => rotateSelected(180)
+
+  async function savePdf() {
+    if (!file || pages.length === 0) return
+
+    setBusy(true)
     setErrorMsg('')
     setSuccessMsg('')
-    setBusy(true)
+    setProgress(0)
 
     try {
+      setProgress(20)
       const bytes = await file.arrayBuffer()
-      const src = await PDFDocument.load(bytes)
-      const out = await PDFDocument.create()
-      const count = src.getPageCount()
-      const pagesToCopy = [...Array(count).keys()]
-      const copied = await out.copyPages(src, pagesToCopy)
+      const srcPdf = await PDFDocument.load(bytes)
 
-      copied.forEach((p, idx) => {
-        const should = pages[idx]
-        if (should) {
-          const deg = direction === 'cw' ? 90 : 270
-          p.setRotation(deg)
-        }
-        out.addPage(p)
+      setProgress(40)
+      const outPdf = await PDFDocument.create()
+      const pageIndices = pages.map((_, i) => i)
+
+      setProgress(60)
+      const copiedPages = await outPdf.copyPages(srcPdf, pageIndices)
+
+      setProgress(80)
+      copiedPages.forEach((p, i) => {
+        const currentRotation = p.getRotation().angle
+        const newRotation = (currentRotation + pages[i].rotation) % 360
+        p.setRotation(degrees(newRotation))
+        outPdf.addPage(p)
       })
 
-      const outBytes = await out.save()
+      setProgress(95)
+      const outBytes = await outPdf.save()
       const blob = new Blob([outBytes], { type: 'application/pdf' })
       const url = URL.createObjectURL(blob)
+
+      setProgress(100)
+
       const a = document.createElement('a')
       a.href = url
-      a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_rotated')
+      a.download = getOutputFilename(outputFileName, 'pdf')
       a.click()
-      URL.revokeObjectURL(url)
 
-      setSuccessMsg(`Successfully rotated ${selectedCount} page(s) and downloaded!`)
+      setDownloadUrl(url)
+      setSuccessMsg('PDF rotated successfully!')
       triggerConfetti()
     } catch (err) {
       console.error(err)
-      setErrorMsg('Rotation failed: ' + err.message)
+      setErrorMsg('Failed to save PDF: ' + err.message)
     } finally {
       setBusy(false)
+      setProgress(0)
     }
   }
 
-  function handleReset() {
+  const resetFile = () => {
     setFile(null)
     setPages([])
+    setSelectedCount(0)
     setOutputFileName('')
-    setErrorMsg('')
     setSuccessMsg('')
-  }
-
-  // Batch processing
-  const processBatchFile = async (file, index, onProgress) => {
-    try {
-      onProgress(10)
-      const bytes = await file.arrayBuffer()
-      const pdf = await PDFDocument.load(bytes)
-      onProgress(30)
-      const pageCount = pdf.getPageCount()
-      for (let i = 0; i < pageCount; i++) {
-        const page = pdf.getPage(i)
-        page.setRotation({ angle: batchRotation })
-        onProgress(30 + (i / pageCount) * 50)
-      }
-      onProgress(80)
-      const pdfBytes = await pdf.save()
-      onProgress(95)
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-      onProgress(100)
-      return blob
-    } catch (error) {
-      console.error(`Error rotating ${file.name}:`, error)
-      throw error
-    }
+    setDownloadUrl(null)
+    setErrorMsg('')
   }
 
   return (
-    <ToolLayout title="Rotate PDF" description="Select specific pages to rotate or rotate all pages at once">
+    <ToolLayout
+      title="Rotate PDF"
+      description="Rotate PDF pages by 90, 180, or 270 degrees"
+    >
+      <div className="max-w-6xl mx-auto" onMouseUp={handleMouseUp} onMouseLeave={() => setIsSelecting(false)}>
 
-      {/* Mode Switcher */}
-      <div className="flex justify-center gap-4 mb-8">
-        <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-          onClick={() => setBatchMode(false)}
-        >
-          📄 Single PDF
-        </button>
-        <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
-          onClick={() => setBatchMode(true)}
-        >
-          🔄 Batch Rotate
-        </button>
-      </div>
+        {/* Error Alert */}
+        {errorMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-destructive/10 text-destructive p-4 rounded-xl border border-destructive/20 flex items-center gap-2 mb-6"
+          >
+            <AlertTriangle className="w-5 h-5 shrink-0" />
+            {errorMsg}
+          </motion.div>
+        )}
 
-      {/* Batch Mode */}
-      {batchMode && (
-        <UniversalBatchProcessor
-          toolName="Rotate PDFs"
-          processFile={processBatchFile}
-          acceptedTypes=".pdf"
-          outputExtension=".pdf"
-          maxFiles={100}
-          customOptions={
-            <div className="bg-slate-50 p-4 rounded-xl mb-4 border border-slate-200">
-              <div className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                <RotateCw className="w-4 h-4" /> Rotation Angle
-              </div>
-              <div className="flex gap-2">
-                {[90, 180, 270].map(deg => (
-                  <button
-                    key={deg}
-                    onClick={() => setBatchRotation(deg)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${batchRotation === deg ? 'bg-blue-500 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:border-blue-300'}`}
-                  >
-                    {deg}°
-                  </button>
-                ))}
-              </div>
-              <p className="text-xs text-slate-500 mt-2">All pages in all PDFs will be rotated by this angle.</p>
-            </div>
-          }
-        />
-      )}
+        {/* Success State */}
+        {successMsg && downloadUrl && (
+          <ResultPage
+            title="PDF Rotated Successfully!"
+            description="Your rotated PDF is ready to download."
+            downloadUrl={downloadUrl}
+            downloadFilename={getOutputFilename(outputFileName, 'pdf')}
+            sourceFile={{
+              name: file?.name || 'rotated.pdf',
+              size: file?.size || 0,
+              type: 'application/pdf'
+            }}
+            toolId="rotate"
+            onReset={resetFile}
+          />
+        )}
 
-      {/* Single File Mode */}
-      {!batchMode && (
-        <div className="max-w-4xl mx-auto">
-          <AnimatePresence>
-            {errorMsg && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
-                <AlertTriangle className="w-5 h-5" /> {errorMsg}
-              </motion.div>
-            )}
-            {successMsg && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
-                <CheckCircle className="w-5 h-5" /> {successMsg}
-              </motion.div>
-            )}
-          </AnimatePresence>
+        {/* Upload Zone */}
+        {!file && (
+          <FileDropZone
+            onFiles={loadFile}
+            accept="application/pdf"
+            disabled={busy}
+            hint="Upload PDF to rotate pages"
+          />
+        )}
 
-          {!file ? (
-            <FileDropZone
-              onFiles={loadFile}
-              accept="application/pdf"
-              hint="Upload PDF to rotate pages"
-              disabled={busy}
-            />
-          ) : (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-700">{file.name}</h3>
-                    <div className="text-xs text-slate-500">{(file.size / 1024).toFixed(1)} KB • {pages.length} Pages</div>
-                  </div>
+        {/* Editor */}
+        {file && pages.length > 0 && !successMsg && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col gap-6"
+          >
+            {/* Header */}
+            <div className="bg-card rounded-2xl border border-border p-4 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-primary" />
+                  <span className="font-semibold text-foreground">{file.name}</span>
                 </div>
-                <button
-                  onClick={handleReset}
-                  className="text-slate-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors"
-                >
-                  <X className="w-5 h-5" />
+                <div className="h-4 w-px bg-border" />
+                <span className="text-sm text-muted-foreground">{pages.length} pages</span>
+                {selectedCount > 0 && (
+                  <>
+                    <div className="h-4 w-px bg-border" />
+                    <span className="text-sm text-primary font-medium">{selectedCount} selected</span>
+                  </>
+                )}
+              </div>
+              <button
+                onClick={resetFile}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary px-3 py-1.5 rounded-lg transition-colors"
+              >
+                Change File
+              </button>
+            </div>
+
+            {/* Progress Bar */}
+            {busy && (
+              <div className="h-1 bg-secondary rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-primary"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                />
+              </div>
+            )}
+
+            {/* Toolbar */}
+            <div className="bg-card rounded-2xl border border-border p-4 flex flex-wrap items-center justify-between gap-4 shadow-sm">
+              {/* Selection */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <button onClick={selectAll} className="px-3 py-1.5 text-sm font-medium bg-secondary hover:bg-muted text-foreground rounded-lg transition-colors">
+                  Select All
+                </button>
+                <button onClick={selectNone} className="px-3 py-1.5 text-sm font-medium bg-secondary hover:bg-muted text-foreground rounded-lg transition-colors">
+                  Select None
+                </button>
+                <button onClick={invertSelection} className="px-3 py-1.5 text-sm font-medium bg-secondary hover:bg-muted text-foreground rounded-lg transition-colors">
+                  Invert
                 </button>
               </div>
 
-              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 mb-8">
-                <div className="flex justify-between items-center mb-4">
-                  <h4 className="font-semibold text-slate-700">Select Pages to Rotate</h4>
-                  <div className="flex gap-2">
-                    <button onClick={selectAll} className="text-xs font-medium text-blue-600 hover:underline">Select All</button>
-                    <span className="text-slate-300">|</span>
-                    <button onClick={deselectAll} className="text-xs font-medium text-slate-500 hover:text-slate-700">None</button>
-                  </div>
+              {/* Rotation Actions */}
+              {selectedCount > 0 && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm text-muted-foreground mr-2">Rotate:</span>
+                  <button
+                    onClick={rotate90CCW}
+                    className="p-2 hover:bg-secondary rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+                    title="Rotate -90°"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={rotate90CW}
+                    className="p-2 hover:bg-secondary rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+                    title="Rotate 90°"
+                  >
+                    <RotateCw className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={rotate180}
+                    className="p-2 hover:bg-secondary rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+                    title="Rotate 180°"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </button>
                 </div>
+              )}
+            </div>
 
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 max-h-[400px] overflow-y-auto p-2">
-                  {pages.map((selected, i) => (
-                    <motion.button
-                      key={i}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => toggle(i)}
-                      className={`relative aspect-[3/4] rounded-lg border-2 flex items-center justify-center flex-col transition-all ${selected ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white hover:border-blue-200'}`}
+            {/* Pages Grid */}
+            <div className="bg-secondary/30 rounded-2xl border border-border p-4">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                <AnimatePresence>
+                  {pages.map((page, i) => (
+                    <motion.div
+                      key={page.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      onMouseDown={(e) => handleMouseDown(i, e)}
+                      onMouseEnter={() => handleMouseEnter(i)}
+                      className={`
+                        aspect-[3/4] relative rounded-xl border-2 transition-all cursor-pointer group
+                        ${page.selected
+                          ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
+                          : 'border-border bg-card hover:border-primary/40'
+                        }
+                      `}
                     >
-                      <span className={`text-lg font-bold ${selected ? 'text-blue-600' : 'text-slate-300'}`}>{i + 1}</span>
-                      {selected && <div className="absolute top-1 right-1 w-2 h-2 bg-blue-500 rounded-full"></div>}
-                    </motion.button>
+                      {/* Selection Checkbox */}
+                      <div className="absolute top-2 left-2 z-10">
+                        {page.selected ? (
+                          <div className="w-5 h-5 bg-primary rounded-md flex items-center justify-center">
+                            <CheckCircle className="w-3.5 h-3.5 text-white" />
+                          </div>
+                        ) : (
+                          <div className="w-5 h-5 border-2 border-muted-foreground/30 rounded-md bg-card/80" />
+                        )}
+                      </div>
+
+                      {/* Page Number */}
+                      <div className="absolute top-2 right-2 z-10">
+                        <span className="text-xs font-bold px-1.5 py-0.5 bg-black/60 text-white rounded">
+                          {i + 1}
+                        </span>
+                      </div>
+
+                      {/* Rotation Badge */}
+                      {page.rotation !== 0 && (
+                        <div className="absolute top-8 right-2 z-10">
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 bg-primary text-white rounded">
+                            {page.rotation}°
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Thumbnail */}
+                      <div
+                        className="absolute inset-2 flex items-center justify-center"
+                        style={{ transform: `rotate(${page.rotation}deg)`, transition: 'transform 0.3s' }}
+                      >
+                        <div className="w-full h-full bg-muted rounded-lg border border-border flex items-center justify-center overflow-hidden shadow-sm">
+                          {page.thumb ? (
+                            <img src={page.thumb} alt={`Page ${i + 1}`} className="w-full h-full object-contain" draggable={false} />
+                          ) : (
+                            <span className="text-xs font-bold text-muted-foreground">{i + 1}</span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Quick Actions */}
+                      <div className="page-actions absolute bottom-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); rotatePage(i, 90); }}
+                          className="p-1.5 bg-card/90 rounded-lg shadow-sm hover:bg-secondary text-muted-foreground hover:text-foreground"
+                          title="Rotate 90°"
+                        >
+                          <RotateCw className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </motion.div>
                   ))}
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-card rounded-2xl border border-border shadow-lg p-6 flex flex-col gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FilenameInput
+                  value={outputFileName}
+                  onChange={(e) => setOutputFileName(e.target.value)}
+                  disabled={busy}
+                  placeholder="rotated"
+                  label="Output Filename"
+                />
+
+                <div className="flex items-end">
+                  <button
+                    onClick={resetFile}
+                    disabled={busy}
+                    className="w-full px-5 py-2.5 font-medium text-muted-foreground hover:text-foreground hover:bg-secondary rounded-xl border border-border transition-colors disabled:opacity-50"
+                  >
+                    Choose Different File
+                  </button>
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 flex flex-col md:flex-row gap-6 items-end sticky bottom-6 z-10">
-                <div className="w-full">
-                  <label className="block text-sm font-medium text-slate-600 mb-2">Output Filename</label>
-                  <FilenameInput
-                    value={outputFileName}
-                    onChange={e => setOutputFileName(e.target.value)}
-                    placeholder="rotated"
-                  />
-                </div>
-                <div className="flex gap-2 w-full md:w-auto">
-                  <ActionButtons
-                    primaryText="CW (90°)"
-                    onPrimary={() => rotateAll('cw')}
-                    loading={busy}
-                    disabled={pages.filter(p => p).length === 0}
-                    icon={RotateCw}
-                  />
-                  <ActionButtons
-                    primaryText="CCW (90°)"
-                    onPrimary={() => rotateAll('ccw')}
-                    loading={busy}
-                    disabled={pages.filter(p => p).length === 0}
-                    icon={RotateCcw}
-                    secondary
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      )}
+              <button
+                onClick={savePdf}
+                disabled={busy || pages.length === 0}
+                className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {busy ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                    Saving... {progress}%
+                  </>
+                ) : (
+                  <>
+                    <RotateCw className="w-5 h-5" />
+                    Save Rotated PDF ({pages.length} pages)
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </div>
     </ToolLayout>
   )
 }

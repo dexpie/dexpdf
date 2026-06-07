@@ -20,11 +20,18 @@ export default function UniversalBatchProcessor({
     processFile, // async function(file, index) => Blob
     acceptedTypes = '.pdf',
     outputExtension = '.pdf',
+    accept,
+    acceptedFileTypes,
+    outputFileExtension,
+    taskName,
     maxFiles = 100,
     showPreview = false,
     customOptions = null, // Component for tool-specific options
     onComplete = null
 }) {
+    const resolvedToolName = taskName || toolName
+    const resolvedAcceptedTypes = acceptedFileTypes || accept || acceptedTypes
+    const resolvedOutputExtension = outputFileExtension || outputExtension
     const [files, setFiles] = useState([])
     const [processing, setProcessing] = useState(false)
     const [progress, setProgress] = useState([])
@@ -142,7 +149,7 @@ export default function UniversalBatchProcessor({
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
-        a.download = files[index].name.replace(/\.[^/.]+$/, '') + '_processed' + outputExtension
+        a.download = files[index].name.replace(/\.[^/.]+$/, '') + '_processed' + resolvedOutputExtension
         document.body.appendChild(a)
         a.click()
         document.body.removeChild(a)
@@ -161,13 +168,13 @@ export default function UniversalBatchProcessor({
 
             results.forEach((blob, index) => {
                 if (blob) {
-                    const fileName = files[index].name.replace(/\.[^/.]+$/, '') + '_processed' + outputExtension
+                    const fileName = files[index].name.replace(/\.[^/.]+$/, '') + '_processed' + resolvedOutputExtension
                     zip.file(fileName, blob)
                 }
             })
 
             const zipBlob = await zip.generateAsync({ type: 'blob' })
-            saveAs(zipBlob, `${toolName.toLowerCase().replace(/\s/g, '_')}_batch_${Date.now()}.zip`)
+            saveAs(zipBlob, `${resolvedToolName.toLowerCase().replace(/\s/g, '_')}_batch_${Date.now()}.zip`)
         } catch (err) {
             console.error('Error creating ZIP:', err)
             setError('Failed to create ZIP file')
@@ -212,7 +219,7 @@ export default function UniversalBatchProcessor({
                     ref={fileInputRef}
                     type="file"
                     multiple
-                    accept={acceptedTypes}
+                    accept={resolvedAcceptedTypes}
                     onChange={(e) => handleFiles(e.target.files)}
                     style={{ display: 'none' }}
                 />

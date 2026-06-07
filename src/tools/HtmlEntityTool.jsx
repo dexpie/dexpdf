@@ -45,42 +45,42 @@ export default function HtmlEntityTool() {
     return (
         <ToolLayout title="HTML Entity Encoder" description="Escape/Unescape HTML characters.">
             <div className="max-w-4xl mx-auto space-y-8">
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100">
-                    <label className="text-sm font-bold text-slate-500 uppercase mb-2 block">Input String</label>
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border">
+                    <label className="text-sm font-bold text-muted-foreground uppercase mb-2 block">Input String</label>
                     <textarea
                         value={input}
                         onChange={e => setInput(e.target.value)}
                         placeholder="<Tag> & Characters..."
-                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 ring-orange-500 font-mono text-sm h-32 resize-none"
+                        className="w-full p-4 bg-secondary border border-border rounded-xl outline-none focus:ring-2 ring-orange-500 font-mono text-sm h-32 resize-none"
                     />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white rounded-3xl shadow-md border border-slate-100 overflow-hidden flex flex-col">
+                    <div className="bg-card rounded-3xl shadow-md border border-border overflow-hidden flex flex-col">
                         <div className="p-4 bg-orange-50 border-b border-orange-100 flex justify-between items-center">
                             <span className="font-bold text-orange-600">Escaped (Safe)</span>
-                            <button onClick={() => navigator.clipboard.writeText(escaped)} className="text-slate-400 hover:text-slate-600">
+                            <button onClick={() => navigator.clipboard.writeText(escaped)} className="text-muted-foreground hover:text-slate-600">
                                 <Copy className="w-4 h-4" />
                             </button>
                         </div>
                         <textarea
                             value={escaped}
                             readOnly
-                            className="flex-1 p-4 resize-none outline-none font-mono text-sm text-slate-700 bg-white h-40"
+                            className="flex-1 p-4 resize-none outline-none font-mono text-sm text-foreground bg-card h-40"
                         />
                     </div>
 
-                    <div className="bg-white rounded-3xl shadow-md border border-slate-100 overflow-hidden flex flex-col">
+                    <div className="bg-card rounded-3xl shadow-md border border-border overflow-hidden flex flex-col">
                         <div className="p-4 bg-blue-50 border-b border-blue-100 flex justify-between items-center">
                             <span className="font-bold text-blue-600">Unescaped (Raw)</span>
-                            <button onClick={() => navigator.clipboard.writeText(unescaped)} className="text-slate-400 hover:text-slate-600">
+                            <button onClick={() => navigator.clipboard.writeText(unescaped)} className="text-muted-foreground hover:text-slate-600">
                                 <Copy className="w-4 h-4" />
                             </button>
                         </div>
                         <textarea
                             value={unescaped}
                             readOnly
-                            className="flex-1 p-4 resize-none outline-none font-mono text-sm text-slate-700 bg-white h-40"
+                            className="flex-1 p-4 resize-none outline-none font-mono text-sm text-foreground bg-card h-40"
                         />
                     </div>
                 </div>

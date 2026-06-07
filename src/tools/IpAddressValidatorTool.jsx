@@ -30,10 +30,10 @@ export default function IpAddressValidatorTool() {
         <ToolLayout title="IP Validator" description="Check if an IP address is valid IPv4 or IPv6.">
             <div className="max-w-2xl mx-auto space-y-8">
 
-                <div className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 text-center">
+                <div className="bg-card p-8 rounded-3xl shadow-lg border border-border text-center">
                     <input
                         value={input} onChange={e => setInput(e.target.value)}
-                        className="w-full text-center text-3xl font-mono font-bold p-4 bg-slate-50 rounded-2xl outline-none focus:ring-4 ring-blue-100 text-slate-700 placeholder:text-slate-200"
+                        className="w-full text-center text-3xl font-mono font-bold p-4 bg-secondary rounded-2xl outline-none focus:ring-4 ring-blue-100 text-foreground placeholder:text-slate-200"
                         placeholder="192.168.1.1"
                     />
                 </div>

@@ -79,7 +79,7 @@ export default function PptToPdfTool() {
     }
   }
 
-  async function processBatchFile(f, onProgress) {
+  async function processBatchFile(f, index, onProgress) {
     try {
       onProgress(10)
       const data = await f.arrayBuffer()
@@ -125,7 +125,7 @@ export default function PptToPdfTool() {
 
   return (
     <div style={{ maxWidth: 520, margin: '0 auto', padding: 12 }}>
-      <h2 style={{ textAlign: 'center', marginBottom: 16 }}>PPTX → PDF</h2>
+      <h2 style={{ textAlign: 'center', marginBottom: 16 }}>PPTX Embedded Images to PDF</h2>
 
       {/* Mode Toggle */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 16, borderBottom: '2px solid var(--border)', paddingBottom: 8 }}>
@@ -171,15 +171,14 @@ export default function PptToPdfTool() {
       {batchMode ? (
         <div>
           <p style={{ marginBottom: 16, padding: 12, background: 'var(--paper)', border: '1px solid var(--border)', borderRadius: 4 }}>
-            <strong>Batch Mode:</strong> Convert multiple PowerPoint (.pptx) presentations to PDF. Slide images will be converted to PDF pages.
+            <strong>Batch Mode:</strong> Extract embedded images from multiple PPTX files and place them onto PDF pages. This does not render full PowerPoint slides.
           </p>
 
           <UniversalBatchProcessor
+            toolName="Extract PPTX Images to PDF"
             processFile={processBatchFile}
-            outputFilenameSuffix=""
-            acceptedFileTypes=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
-            description="Convert multiple PowerPoint presentations to PDF"
-            outputFileExtension=".pdf"
+            acceptedTypes=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            outputExtension=".pdf"
           />
         </div>
       ) : (

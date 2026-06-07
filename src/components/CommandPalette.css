@@ -1,125 +1,118 @@
 /* CMDK Styles */
 .cmdk-dialog {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    max-width: 640px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 16px 70px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    z-index: 9999;
-    font-family: var(--font-inter, sans-serif);
-    animation: scaleIn 0.2s ease-out;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 640px;
+  background: hsl(var(--card));
+  border-radius: 12px;
+  box-shadow: 0 16px 70px rgba(0, 0, 0, 0.3);
+  border: 1px solid hsl(var(--border));
+  overflow: hidden;
+  z-index: 9999;
+  font-family: var(--font-inter, sans-serif);
+  animation: scaleIn 0.2s ease-out;
+  color: hsl(var(--card-foreground));
 }
 
 @keyframes scaleIn {
-    from {
-        transform: translate(-50%, -48%) scale(0.96);
-        opacity: 0;
-    }
+  from {
+    transform: translate(-50%, -48%) scale(0.96);
+    opacity: 0;
+  }
 
-    to {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-    }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
 }
-
-/* Overlay handled by Dialog primitive usually, but we might need a wrapper if using basic Dialog */
-/* Actually cmdk puts the dialog in portal. We likely need a backdrop. 
-   If cmdk doesn't provide it, we wrap it or style the [cmdk-overlay] if present. 
-   But standard cmdk usage often relies on radix dialog for overlay. 
-   Here we assume basic usage and might need a manual overlay wrapper in parent or global CSS.
-   We'll treat .cmdk-dialog as the modal itself. 
-*/
 
 /* Styles for internal elements */
 .cmdk-header {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid hsl(var(--border));
 }
 
 .cmdk-input {
-    flex: 1;
-    border: none;
-    padding: 16px;
-    font-size: 16px;
-    outline: none;
-    background: transparent;
-    color: #1e293b;
+  flex: 1;
+  border: none;
+  padding: 16px;
+  font-size: 16px;
+  outline: none;
+  background: transparent;
+  color: hsl(var(--foreground));
 }
 
 .cmdk-input::placeholder {
-    color: #94a3b8;
+  color: hsl(var(--muted-foreground));
 }
 
 .cmdk-list {
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 8px;
-    scroll-behavior: smooth;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 8px;
+  scroll-behavior: smooth;
 }
 
 .cmdk-group-heading {
-    padding: 8px 12px;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #94a3b8;
-    letter-spacing: 0.05em;
-    margin-top: 8px;
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  letter-spacing: 0.05em;
+  margin-top: 8px;
 }
 
 .cmdk-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #334155;
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: hsl(var(--foreground));
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.1s;
 }
 
 .cmdk-item[data-selected="true"] {
-    background: #f1f5f9;
-    color: #0f172a;
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
 }
 
 .cmdk-item svg {
-    opacity: 0.5;
+  opacity: 0.5;
 }
 
 .cmdk-item[data-selected="true"] svg {
-    opacity: 1;
+  opacity: 1;
 }
 
 .cmdk-empty {
-    padding: 32px;
-    text-align: center;
-    color: #64748b;
-    font-size: 14px;
+  padding: 32px;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+  font-size: 14px;
 }
 
 .cmdk-footer {
-    padding: 8px 16px;
-    background: #f8fafc;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    justify-content: flex-end;
+  padding: 8px 16px;
+  background: hsl(var(--secondary));
+  border-top: 1px solid hsl(var(--border));
+  display: flex;
+  justify-content: flex-end;
 }
 
 kbd {
-    background: #e2e8f0;
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-family: monospace;
-    color: #475569;
+  background: hsl(var(--secondary));
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-family: monospace;
+  color: hsl(var(--muted-foreground));
 }

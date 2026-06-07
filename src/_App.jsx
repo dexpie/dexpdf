@@ -30,8 +30,11 @@ function ToolPage({ tools }) {
     }
   }, [tool])
 
+  useEffect(() => {
+    if (!tool && tools.length > 0) navigate('/', { replace: true })
+  }, [navigate, tool, tools.length])
+
   if (!tool && tools.length > 0) {
-    useEffect(() => navigate('/', { replace: true }), [navigate])
     return null
   }
 

@@ -49,17 +49,17 @@ export default function LatencyTesterTool() {
 
                 <div className="grid gap-4">
                     {TARGETS.map(target => (
-                        <div key={target.name} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+                        <div key={target.name} className="bg-card p-4 rounded-xl shadow-sm border border-border flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="p-2 bg-slate-100 rounded-lg text-slate-500">
+                                <div className="p-2 bg-slate-100 rounded-lg text-muted-foreground">
                                     <Globe className="w-5 h-5" />
                                 </div>
-                                <span className="font-bold text-slate-700">{target.name}</span>
+                                <span className="font-bold text-foreground">{target.name}</span>
                             </div>
 
                             <div className="font-mono font-bold">
                                 {results[target.name] === undefined ? (
-                                    <span className="text-slate-300">-</span>
+                                    <span className="text-muted-foreground">-</span>
                                 ) : results[target.name] === 'Running...' ? (
                                     <span className="text-blue-500 animate-pulse">Pinging...</span>
                                 ) : results[target.name] === 'Error' ? (
@@ -78,7 +78,7 @@ export default function LatencyTesterTool() {
                     ))}
                 </div>
 
-                <div className="text-center text-xs text-slate-400 max-w-sm mx-auto">
+                <div className="text-center text-xs text-muted-foreground max-w-sm mx-auto">
                     * Measures Time-To-First-Byte (TTFB) + Transfer for opaque responses. accuracy depends on network conditions.
                 </div>
             </div>

@@ -52,7 +52,7 @@ export default function BatteryStatusTool() {
 
     const levelPercent = Math.round(battery.level * 100)
     let Icon = Battery
-    let color = 'text-slate-800'
+    let color = 'text-foreground'
     let barColor = 'bg-slate-800'
 
     if (battery.charging) {
@@ -76,7 +76,7 @@ export default function BatteryStatusTool() {
     return (
         <ToolLayout title="Battery Status" description="Monitor battery level and charging state.">
             <div className="max-w-md mx-auto">
-                <div className="bg-white p-12 rounded-[3rem] shadow-xl border border-slate-100 flex flex-col items-center">
+                <div className="bg-card p-12 rounded-[3rem] shadow-xl border border-border flex flex-col items-center">
                     <div className={`mb-8 relative ${battery.charging ? 'animate-pulse' : ''}`}>
                         <Icon className={`w-32 h-32 ${color}`} strokeWidth={1} />
                         <span className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-black ${color}`}>
@@ -92,24 +92,24 @@ export default function BatteryStatusTool() {
                     </div>
 
                     <div className="w-full space-y-4">
-                        <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
-                            <span className="text-slate-500 font-bold">Status</span>
-                            <span className={`font-black ${battery.charging ? 'text-green-500' : 'text-slate-700'}`}>
+                        <div className="flex justify-between items-center p-4 bg-secondary rounded-2xl">
+                            <span className="text-muted-foreground font-bold">Status</span>
+                            <span className={`font-black ${battery.charging ? 'text-green-500' : 'text-foreground'}`}>
                                 {battery.charging ? 'Charging' : 'Discharging'}
                             </span>
                         </div>
 
                         {battery.charging && (
-                            <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
-                                <span className="text-slate-500 font-bold">Time to Full</span>
-                                <span className="font-black text-slate-700">{formatTime(battery.chargingTime)}</span>
+                            <div className="flex justify-between items-center p-4 bg-secondary rounded-2xl">
+                                <span className="text-muted-foreground font-bold">Time to Full</span>
+                                <span className="font-black text-foreground">{formatTime(battery.chargingTime)}</span>
                             </div>
                         )}
 
                         {!battery.charging && (
-                            <div className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
-                                <span className="text-slate-500 font-bold">Time Left</span>
-                                <span className="font-black text-slate-700">{formatTime(battery.dischargingTime)}</span>
+                            <div className="flex justify-between items-center p-4 bg-secondary rounded-2xl">
+                                <span className="text-muted-foreground font-bold">Time Left</span>
+                                <span className="font-black text-foreground">{formatTime(battery.dischargingTime)}</span>
                             </div>
                         )}
                     </div>

@@ -23,16 +23,16 @@ export default function InterestCalculatorTool() {
         <ToolLayout title="Interest Calculator" description="Compute simple or compound interest growth.">
             <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 space-y-6">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border space-y-6">
                     <Input label="Principal Amount ($)" value={principal} onChange={setPrincipal} />
                     <Input label="Annual Rate (%)" value={rate} onChange={setRate} step="0.1" />
                     <Input label="Time Period (Years)" value={time} onChange={setTime} />
 
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-400 uppercase">Type</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">Type</label>
                         <select
                             value={type} onChange={e => setType(e.target.value)}
-                            className="w-full p-4 bg-slate-50 rounded-xl font-bold border border-slate-100 outline-none"
+                            className="w-full p-4 bg-secondary rounded-xl font-bold border border-border outline-none"
                         >
                             <option value="compound">Compound Interest</option>
                             <option value="simple">Simple Interest</option>
@@ -48,7 +48,7 @@ export default function InterestCalculatorTool() {
                         </div>
                     </div>
 
-                    <div className="h-px bg-white/20" />
+                    <div className="h-px bg-card/20" />
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -74,10 +74,10 @@ export default function InterestCalculatorTool() {
 function Input({ label, value, onChange, step = 1 }) {
     return (
         <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-400 uppercase">{label}</label>
+            <label className="text-xs font-bold text-muted-foreground uppercase">{label}</label>
             <input
                 type="number" value={value} onChange={e => onChange(Number(e.target.value))} step={step}
-                className="w-full p-4 bg-slate-50 rounded-xl font-bold border border-slate-100 outline-none focus:ring-2 ring-green-500"
+                className="w-full p-4 bg-secondary rounded-xl font-bold border border-border outline-none focus:ring-2 ring-green-500"
             />
         </div>
     )

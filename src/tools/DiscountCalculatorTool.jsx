@@ -13,17 +13,17 @@ export default function DiscountCalculatorTool() {
         <ToolLayout title="Discount Calculator" description="Calculate sale price and savings.">
             <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                <div className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 space-y-6">
+                <div className="bg-card p-8 rounded-3xl shadow-lg border border-border space-y-6">
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-400 uppercase">Original Price ($)</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">Original Price ($)</label>
                         <input
                             type="number" value={price} onChange={e => setPrice(Number(e.target.value))}
-                            className="w-full text-3xl font-bold p-4 bg-slate-50 rounded-xl outline-none focus:ring-2 ring-orange-500 text-slate-700"
+                            className="w-full text-3xl font-bold p-4 bg-secondary rounded-xl outline-none focus:ring-2 ring-orange-500 text-foreground"
                         />
                     </div>
 
                     <div className="space-y-1">
-                        <label className="text-xs font-bold text-slate-400 uppercase">Discount (%)</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">Discount (%)</label>
                         <div className="flex items-center gap-4">
                             <input
                                 type="range" min="0" max="100" value={discount} onChange={e => setDiscount(Number(e.target.value))}
@@ -31,7 +31,7 @@ export default function DiscountCalculatorTool() {
                             />
                             <input
                                 type="number" value={discount} onChange={e => setDiscount(Number(e.target.value))}
-                                className="w-20 text-center font-bold p-2 bg-slate-50 rounded-lg outline-none ring-1 ring-slate-200"
+                                className="w-20 text-center font-bold p-2 bg-secondary rounded-lg outline-none ring-1 ring-slate-200"
                             />
                         </div>
                     </div>
@@ -40,7 +40,7 @@ export default function DiscountCalculatorTool() {
                         {[10, 20, 25, 30, 50, 75].map(d => (
                             <button
                                 key={d} onClick={() => setDiscount(d)}
-                                className={`px-4 py-2 rounded-lg font-bold text-sm ${discount === d ? 'bg-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}
+                                className={`px-4 py-2 rounded-lg font-bold text-sm ${discount === d ? 'bg-orange-600 text-white' : 'bg-slate-100 text-muted-foreground'}`}
                             >
                                 {d}%
                             </button>

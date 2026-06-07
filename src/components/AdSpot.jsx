@@ -4,9 +4,9 @@ export default function AdSpot({ image, href, alt = 'Advertisement', children })
     if (!image && !children) return null
 
     const inner = image ? (
-        <img className="w-full h-auto rounded-xl shadow-md border border-slate-200 hover:opacity-95 transition-opacity" src={image} alt={alt} />
+        <img className="w-full h-auto rounded-xl shadow-md border border-border hover:opacity-95 transition-opacity" src={image} alt={alt} />
     ) : (
-        <div className="w-full h-32 bg-slate-100 rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 text-sm font-medium">
+        <div className="w-full h-32 bg-secondary rounded-xl border border-border flex items-center justify-center text-muted-foreground text-sm font-medium">
             {children || 'Sponsored Content'}
         </div>
     )

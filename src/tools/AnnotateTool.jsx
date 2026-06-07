@@ -218,24 +218,24 @@ export default function AnnotateTool() {
         ) : (
           <div className="flex flex-col gap-6">
             {/* Toolbar */}
-            <div className="sticky top-4 z-50 bg-white p-3 rounded-2xl border border-slate-200 shadow-xl flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-2 border-r border-slate-100 pr-4">
+            <div className="sticky top-4 z-50 bg-card p-3 rounded-2xl border border-border shadow-xl flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-2 border-r border-border pr-4">
                 <button
                   onClick={() => setTool('pen')}
-                  className={`p-2 rounded-xl transition-all ${tool === 'pen' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-400 hover:bg-slate-50'}`}
+                  className={`p-2 rounded-xl transition-all ${tool === 'pen' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-muted-foreground hover:bg-secondary'}`}
                 >
                   <Pen className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setTool('eraser')}
-                  className={`p-2 rounded-xl transition-all ${tool === 'eraser' ? 'bg-slate-800 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-50'}`}
+                  className={`p-2 rounded-xl transition-all ${tool === 'eraser' ? 'bg-slate-800 text-white shadow-lg' : 'text-muted-foreground hover:bg-secondary'}`}
                 >
                   <Eraser className="w-5 h-5" />
                 </button>
               </div>
 
               {tool === 'pen' && (
-                <div className="flex items-center gap-3 border-r border-slate-100 pr-4">
+                <div className="flex items-center gap-3 border-r border-border pr-4">
                   <div className="flex gap-1">
                     {['#000000', '#ef4444', '#3b82f6', '#22c55e', '#f59e0b'].map(c => (
                       <button
@@ -270,9 +270,9 @@ export default function AnnotateTool() {
             </div>
 
             {/* Canvas Wrapper */}
-            <div className="bg-slate-100 rounded-2xl border border-slate-200 p-8 flex justify-center overflow-auto min-h-[600px]">
+            <div className="bg-slate-100 rounded-2xl border border-border p-8 flex justify-center overflow-auto min-h-[600px]">
               {pageImg ? (
-                <div className="shadow-2xl bg-white border border-slate-200">
+                <div className="shadow-2xl bg-card border border-border">
                   <canvas
                     ref={canvasRef}
                     onMouseDown={start}
@@ -283,7 +283,7 @@ export default function AnnotateTool() {
                   />
                 </div>
               ) : (
-                <div className="flex items-center justify-center text-slate-400 gap-2">
+                <div className="flex items-center justify-center text-muted-foreground gap-2">
                   <div className="w-6 h-6 border-2 border-slate-300 border-t-transparent rounded-full animate-spin"></div>
                   Rendering...
                 </div>

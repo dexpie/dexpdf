@@ -34,18 +34,18 @@ export default function DnsLookupTool() {
         <ToolLayout title="DNS Lookup" description="Query DNS records via Google DoH.">
             <div className="max-w-4xl mx-auto flex flex-col gap-8">
                 {/* Controls */}
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-col md:flex-row gap-4">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-col md:flex-row gap-4">
                     <input
                         value={domain}
                         onChange={e => setDomain(e.target.value)}
                         placeholder="example.com"
-                        className="flex-1 p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold"
+                        className="flex-1 p-3 bg-secondary border border-border rounded-xl font-bold"
                         onKeyDown={e => e.key === 'Enter' && lookup()}
                     />
                     <select
                         value={type}
                         onChange={e => setType(e.target.value)}
-                        className="p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold w-32"
+                        className="p-3 bg-secondary border border-border rounded-xl font-bold w-32"
                     >
                         {TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
@@ -69,14 +69,14 @@ export default function DnsLookupTool() {
                 {results && (
                     <div className="flex flex-col gap-6">
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                                <div className="text-xs uppercase text-slate-400 font-bold mb-1">Status</div>
+                            <div className="bg-card p-4 rounded-xl border border-border shadow-sm">
+                                <div className="text-xs uppercase text-muted-foreground font-bold mb-1">Status</div>
                                 <div className={`font-bold ${results.Status === 0 ? 'text-green-500' : 'text-red-500'}`}>
                                     {results.Status === 0 ? 'NOERROR' : `Error code ${results.Status}`}
                                 </div>
                             </div>
-                            <div className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                                <div className="text-xs uppercase text-slate-400 font-bold mb-1">DoH Provider</div>
+                            <div className="bg-card p-4 rounded-xl border border-border shadow-sm">
+                                <div className="text-xs uppercase text-muted-foreground font-bold mb-1">DoH Provider</div>
                                 <div className="font-bold text-blue-500">Google Public DNS</div>
                             </div>
                         </div>
@@ -86,12 +86,12 @@ export default function DnsLookupTool() {
                                 {results.Answer.map((rec, i) => (
                                     <div key={i} className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800 last:border-0 last:pb-0">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 font-bold">
+                                            <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-muted-foreground font-bold">
                                                 {TYPES[rec.type] || rec.type}
                                             </div>
                                             <div>
                                                 <div className="font-bold text-white">{rec.name}</div>
-                                                <div className="text-xs text-slate-500">TTL: {rec.TTL}s</div>
+                                                <div className="text-xs text-muted-foreground">TTL: {rec.TTL}s</div>
                                             </div>
                                         </div>
                                         <div className="font-mono text-green-400 font-bold break-all">
@@ -101,7 +101,7 @@ export default function DnsLookupTool() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center p-12 bg-slate-50 text-slate-400 rounded-3xl font-bold">
+                            <div className="text-center p-12 bg-secondary text-muted-foreground rounded-3xl font-bold">
                                 No records found.
                             </div>
                         )}

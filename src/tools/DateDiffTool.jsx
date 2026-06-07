@@ -18,22 +18,22 @@ export default function DateDiffTool() {
         <ToolLayout title="Date Difference" description="Calculate duration between two dates.">
             <div className="max-w-4xl mx-auto space-y-8">
 
-                <div className="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 flex flex-col md:flex-row gap-8 items-center justify-center">
+                <div className="bg-card p-8 rounded-3xl shadow-lg border border-border flex flex-col md:flex-row gap-8 items-center justify-center">
                     <div className="text-center">
-                        <label className="text-xs font-bold text-slate-400 uppercase block mb-2">Start Date</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase block mb-2">Start Date</label>
                         <input
                             type="date" value={start} onChange={e => setStart(e.target.value)}
-                            className="bg-slate-50 p-4 rounded-xl font-bold text-lg outline-none focus:ring-2 ring-blue-500"
+                            className="bg-secondary p-4 rounded-xl font-bold text-lg outline-none focus:ring-2 ring-blue-500"
                         />
                     </div>
 
-                    <ArrowRight className="text-slate-300 w-8 h-8 hidden md:block" />
+                    <ArrowRight className="text-muted-foreground w-8 h-8 hidden md:block" />
 
                     <div className="text-center">
-                        <label className="text-xs font-bold text-slate-400 uppercase block mb-2">End Date</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase block mb-2">End Date</label>
                         <input
                             type="date" value={end} onChange={e => setEnd(e.target.value)}
-                            className="bg-slate-50 p-4 rounded-xl font-bold text-lg outline-none focus:ring-2 ring-blue-500"
+                            className="bg-secondary p-4 rounded-xl font-bold text-lg outline-none focus:ring-2 ring-blue-500"
                         />
                     </div>
                 </div>

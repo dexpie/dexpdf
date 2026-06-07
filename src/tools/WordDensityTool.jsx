@@ -36,12 +36,12 @@ export default function WordDensityTool() {
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-6 h-[600px]">
 
                 {/* Input Area */}
-                <div className="flex-1 flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
-                    <div className="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
+                <div className="flex-1 flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
+                    <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
                         <label className="font-bold text-slate-600 flex items-center gap-2">
                             <FileText className="w-4 h-4" /> Source Text
                         </label>
-                        <label className="flex items-center gap-2 text-xs font-bold text-slate-500 cursor-pointer select-none">
+                        <label className="flex items-center gap-2 text-xs font-bold text-muted-foreground cursor-pointer select-none">
                             <input
                                 type="checkbox"
                                 checked={excludeStopWords}
@@ -55,18 +55,18 @@ export default function WordDensityTool() {
                         value={text}
                         onChange={e => setText(e.target.value)}
                         placeholder="Paste your article or text here..."
-                        className="flex-1 w-full p-6 resize-none outline-none text-slate-700 leading-relaxed"
+                        className="flex-1 w-full p-6 resize-none outline-none text-foreground leading-relaxed"
                     />
                 </div>
 
                 {/* Stats Panel */}
-                <div className="w-full md:w-80 bg-slate-50 rounded-3xl border border-slate-200 flex flex-col overflow-hidden">
-                    <div className="p-4 bg-white border-b border-slate-200">
-                        <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                <div className="w-full md:w-80 bg-secondary rounded-3xl border border-border flex flex-col overflow-hidden">
+                    <div className="p-4 bg-card border-b border-border">
+                        <h3 className="font-bold text-foreground flex items-center gap-2">
                             <BarChart2 className="w-5 h-5 text-blue-500" /> Analysis
                         </h3>
-                        <div className="text-sm text-slate-500 mt-1">
-                            Total Words: <strong className="text-slate-800">{stats.total}</strong>
+                        <div className="text-sm text-muted-foreground mt-1">
+                            Total Words: <strong className="text-foreground">{stats.total}</strong>
                         </div>
                     </div>
 
@@ -74,22 +74,22 @@ export default function WordDensityTool() {
                         {stats.words.map(([word, count], i) => {
                             const percent = ((count / stats.total) * 100).toFixed(1)
                             return (
-                                <div key={word} className="flex items-center justify-between p-2 hover:bg-white rounded-lg transition-colors group">
+                                <div key={word} className="flex items-center justify-between p-2 hover:bg-card rounded-lg transition-colors group">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-xs font-bold text-slate-400 w-4">{i + 1}</span>
-                                        <span className="font-medium text-slate-700">{word}</span>
+                                        <span className="text-xs font-bold text-muted-foreground w-4">{i + 1}</span>
+                                        <span className="font-medium text-foreground">{word}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <div className="h-1.5 w-12 bg-slate-200 rounded-full overflow-hidden">
                                             <div style={{ width: `${percent}%` }} className="h-full bg-blue-500"></div>
                                         </div>
-                                        <span className="text-xs font-bold text-slate-500 w-8 text-right">{count}</span>
+                                        <span className="text-xs font-bold text-muted-foreground w-8 text-right">{count}</span>
                                     </div>
                                 </div>
                             )
                         })}
                         {stats.words.length === 0 && (
-                            <div className="text-center p-8 text-slate-400 text-sm">
+                            <div className="text-center p-8 text-muted-foreground text-sm">
                                 No words found.
                             </div>
                         )}

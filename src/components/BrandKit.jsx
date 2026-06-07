@@ -27,7 +27,7 @@ export default function BrandKit({ isOpen, onClose }) {
             onClick={onClose}
         >
             <div
-                className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                className="bg-card rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
@@ -37,7 +37,7 @@ export default function BrandKit({ isOpen, onClose }) {
                             <Building2 className="text-blue-400" />
                             Brand Identity Kit
                         </h2>
-                        <p className="text-slate-400 text-sm mt-1">Manage your company assets centrally.</p>
+                        <p className="text-muted-foreground text-sm mt-1">Manage your company assets centrally.</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-lg transition-colors">
                         <X className="w-5 h-5" />
@@ -49,10 +49,10 @@ export default function BrandKit({ isOpen, onClose }) {
 
                     {/* 1. Visual Assets */}
                     <div className="space-y-4">
-                        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Visual Assets</h3>
+                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest border-b border-slate-100 pb-2">Visual Assets</h3>
                         <div className="grid md:grid-cols-2 gap-6">
                             {/* Logo */}
-                            <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 transition-colors relative group">
+                            <div className="border-2 border-dashed border-border rounded-xl p-4 text-center hover:bg-secondary transition-colors relative group">
                                 <input
                                     type="file"
                                     ref={logoInputRef}
@@ -73,7 +73,7 @@ export default function BrandKit({ isOpen, onClose }) {
                                 ) : (
                                     <div
                                         onClick={() => logoInputRef.current?.click()}
-                                        className="h-32 flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-blue-500"
+                                        className="h-32 flex flex-col items-center justify-center cursor-pointer text-muted-foreground hover:text-blue-500"
                                     >
                                         <ImageIcon className="w-8 h-8 mb-2" />
                                         <span className="text-sm font-medium">Upload Logo</span>
@@ -82,7 +82,7 @@ export default function BrandKit({ isOpen, onClose }) {
                             </div>
 
                             {/* Signature */}
-                            <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center hover:bg-slate-50 transition-colors relative group">
+                            <div className="border-2 border-dashed border-border rounded-xl p-4 text-center hover:bg-secondary transition-colors relative group">
                                 <input
                                     type="file"
                                     ref={sigInputRef}
@@ -103,7 +103,7 @@ export default function BrandKit({ isOpen, onClose }) {
                                 ) : (
                                     <div
                                         onClick={() => sigInputRef.current?.click()}
-                                        className="h-32 flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:text-blue-500"
+                                        className="h-32 flex flex-col items-center justify-center cursor-pointer text-muted-foreground hover:text-blue-500"
                                     >
                                         <PenTool className="w-8 h-8 mb-2" />
                                         <span className="text-sm font-medium">Upload Signature</span>
@@ -115,22 +115,22 @@ export default function BrandKit({ isOpen, onClose }) {
 
                     {/* 2. Company Details */}
                     <div className="space-y-4">
-                        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Company Details</h3>
+                        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest border-b border-slate-100 pb-2">Company Details</h3>
                         <div className="grid gap-4">
                             <div className="grid md:grid-cols-2 gap-4">
-                                <div className="flex bg-slate-50 rounded-lg border border-slate-200 px-3 py-2 items-center focus-within:ring-2 ring-blue-500/20 focus-within:border-blue-500 transition-all">
-                                    <Building2 className="w-5 h-5 text-slate-400 mr-3" />
+                                <div className="flex bg-secondary rounded-lg border border-border px-3 py-2 items-center focus-within:ring-2 ring-blue-500/20 focus-within:border-blue-500 transition-all">
+                                    <Building2 className="w-5 h-5 text-muted-foreground mr-3" />
                                     <input
-                                        className="bg-transparent border-none outline-none w-full text-slate-700 placeholder:text-slate-400"
+                                        className="bg-transparent border-none outline-none w-full text-foreground placeholder:text-muted-foreground"
                                         placeholder="Company Name"
                                         value={brand.companyName}
                                         onChange={(e) => updateBrand({ companyName: e.target.value })}
                                     />
                                 </div>
-                                <div className="flex bg-slate-50 rounded-lg border border-slate-200 px-3 py-2 items-center focus-within:ring-2 ring-blue-500/20 focus-within:border-blue-500 transition-all">
-                                    <Globe className="w-5 h-5 text-slate-400 mr-3" />
+                                <div className="flex bg-secondary rounded-lg border border-border px-3 py-2 items-center focus-within:ring-2 ring-blue-500/20 focus-within:border-blue-500 transition-all">
+                                    <Globe className="w-5 h-5 text-muted-foreground mr-3" />
                                     <input
-                                        className="bg-transparent border-none outline-none w-full text-slate-700 placeholder:text-slate-400"
+                                        className="bg-transparent border-none outline-none w-full text-foreground placeholder:text-muted-foreground"
                                         placeholder="Website"
                                         value={brand.website}
                                         onChange={(e) => updateBrand({ website: e.target.value })}
@@ -139,19 +139,19 @@ export default function BrandKit({ isOpen, onClose }) {
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-4">
-                                <div className="flex bg-slate-50 rounded-lg border border-slate-200 px-3 py-2 items-center focus-within:ring-2 ring-blue-500/20 focus-within:border-blue-500 transition-all">
-                                    <Mail className="w-5 h-5 text-slate-400 mr-3" />
+                                <div className="flex bg-secondary rounded-lg border border-border px-3 py-2 items-center focus-within:ring-2 ring-blue-500/20 focus-within:border-blue-500 transition-all">
+                                    <Mail className="w-5 h-5 text-muted-foreground mr-3" />
                                     <input
-                                        className="bg-transparent border-none outline-none w-full text-slate-700 placeholder:text-slate-400"
+                                        className="bg-transparent border-none outline-none w-full text-foreground placeholder:text-muted-foreground"
                                         placeholder="Email Address"
                                         value={brand.email}
                                         onChange={(e) => updateBrand({ email: e.target.value })}
                                     />
                                 </div>
-                                <div className="flex bg-slate-50 rounded-lg border border-slate-200 px-3 py-2 items-center focus-within:ring-2 ring-blue-500/20 focus-within:border-blue-500 transition-all">
-                                    <Phone className="w-5 h-5 text-slate-400 mr-3" />
+                                <div className="flex bg-secondary rounded-lg border border-border px-3 py-2 items-center focus-within:ring-2 ring-blue-500/20 focus-within:border-blue-500 transition-all">
+                                    <Phone className="w-5 h-5 text-muted-foreground mr-3" />
                                     <input
-                                        className="bg-transparent border-none outline-none w-full text-slate-700 placeholder:text-slate-400"
+                                        className="bg-transparent border-none outline-none w-full text-foreground placeholder:text-muted-foreground"
                                         placeholder="Phone Number"
                                         value={brand.phone}
                                         onChange={(e) => updateBrand({ phone: e.target.value })}
@@ -159,10 +159,10 @@ export default function BrandKit({ isOpen, onClose }) {
                                 </div>
                             </div>
 
-                            <div className="flex bg-slate-50 rounded-lg border border-slate-200 px-3 py-2 items-center focus-within:ring-2 ring-blue-500/20 focus-within:border-blue-500 transition-all">
-                                <MapPin className="w-5 h-5 text-slate-400 mr-3 shrink-0" />
+                            <div className="flex bg-secondary rounded-lg border border-border px-3 py-2 items-center focus-within:ring-2 ring-blue-500/20 focus-within:border-blue-500 transition-all">
+                                <MapPin className="w-5 h-5 text-muted-foreground mr-3 shrink-0" />
                                 <textarea
-                                    className="bg-transparent border-none outline-none w-full text-slate-700 placeholder:text-slate-400 resize-none h-20 py-1"
+                                    className="bg-transparent border-none outline-none w-full text-foreground placeholder:text-muted-foreground resize-none h-20 py-1"
                                     placeholder="Business Address"
                                     value={brand.address}
                                     onChange={(e) => updateBrand({ address: e.target.value })}
@@ -174,7 +174,7 @@ export default function BrandKit({ isOpen, onClose }) {
                 </div>
 
                 {/* Footer */}
-                <div className="bg-slate-50 p-6 border-t border-slate-200 flex justify-end">
+                <div className="bg-secondary p-6 border-t border-border flex justify-end">
                     <button
                         onClick={onClose}
                         className="px-6 py-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors"

@@ -43,7 +43,7 @@ export default function LoremIpsumTool() {
             <div className="max-w-4xl mx-auto flex flex-col gap-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Controls */}
-                    <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 col-span-1 space-y-6">
+                    <div className="bg-card p-6 rounded-3xl shadow-lg border border-border col-span-1 space-y-6">
                         <div>
                             <label className="block text-sm font-bold text-slate-600 mb-2">Paragraphs</label>
                             <input
@@ -51,7 +51,7 @@ export default function LoremIpsumTool() {
                                 min="1" max="20"
                                 value={paragraphs}
                                 onChange={e => setParagraphs(e.target.value)}
-                                className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold"
+                                className="w-full p-3 bg-secondary border border-border rounded-xl font-bold"
                             />
                         </div>
                         <div>
@@ -61,7 +61,7 @@ export default function LoremIpsumTool() {
                                     <button
                                         key={l}
                                         onClick={() => setLength(l)}
-                                        className={`p-2 rounded-lg text-sm font-bold capitalize border ${length === l ? 'bg-blue-50 border-blue-500 text-blue-600' : 'border-transparent hover:bg-slate-50'}`}
+                                        className={`p-2 rounded-lg text-sm font-bold capitalize border ${length === l ? 'bg-blue-50 border-blue-500 text-blue-600' : 'border-transparent hover:bg-secondary'}`}
                                     >
                                         {l}
                                     </button>
@@ -78,7 +78,7 @@ export default function LoremIpsumTool() {
                         <textarea
                             value={generated}
                             readOnly
-                            className="w-full h-[500px] p-8 -mt-2 bg-white rounded-3xl shadow-xl border border-slate-200 resize-none outline-none font-serif text-slate-600 leading-relaxed text-lg"
+                            className="w-full h-[500px] p-8 -mt-2 bg-card rounded-3xl shadow-xl border border-border resize-none outline-none font-serif text-slate-600 leading-relaxed text-lg"
                         />
                         <button
                             onClick={() => {

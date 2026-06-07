@@ -17,13 +17,13 @@ const ApiKeyModal = ({ onSave, onClose }) => {
     const [input, setInput] = useState('')
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700">
+            <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-border dark:border-slate-700">
                 <div className="text-center mb-6">
                     <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Sparkles className="w-6 h-6" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">Enable AI Intelligence</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    <h3 className="text-xl font-bold text-foreground dark:text-slate-200">Enable AI Intelligence</h3>
+                    <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-2">
                         To use the real AI features, please enter your free Google Gemini API Key.
                     </p>
                 </div>
@@ -32,7 +32,7 @@ const ApiKeyModal = ({ onSave, onClose }) => {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     placeholder="Enter Gemini API Key"
-                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 mb-4 focus:ring-2 ring-blue-500 outline-none"
+                    className="w-full p-3 rounded-xl border border-border dark:border-slate-600 bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200 mb-4 focus:ring-2 ring-blue-500 outline-none"
                 />
                 <button
                     onClick={() => { if (input) onSave(input) }}
@@ -137,6 +137,7 @@ export default function ChatPdfTool() {
                 const pageText = textContent.items.map(item => item.str).join(' ')
                 fullText += pageText + '\n'
             }
+            if (!fullText.trim()) throw new Error('No extractable text found. Run OCR first for scanned PDFs.')
 
             setExtractedText(fullText)
 
@@ -164,7 +165,7 @@ export default function ChatPdfTool() {
     }
 
     return (
-        <ToolLayout title="Chat with PDF 2.0" description="Ask questions and get answers from your document using Google Gemini AI">
+        <ToolLayout title="Chat with PDF" description="Ask Gemini about extracted text from the first fifteen pages.">
 
             <AnimatePresence>
                 {showKeyModal && <ApiKeyModal onSave={handleSaveKey} onClose={() => setShowKeyModal(false)} />}
@@ -183,27 +184,27 @@ export default function ChatPdfTool() {
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex-1 flex flex-col"
+                            className="bg-card dark:bg-slate-800 p-6 rounded-2xl border border-border dark:border-slate-700 shadow-sm flex-1 flex flex-col"
                         >
                             <div className="flex items-center gap-4 mb-6">
                                 <div className="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center shadow-sm">
                                     <BrainCircuit className="w-6 h-6" />
                                 </div>
                                 <div className="overflow-hidden">
-                                    <h3 className="font-bold text-slate-800 dark:text-slate-200 truncate" title={file.name}>{file.name}</h3>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                    <h3 className="font-bold text-foreground dark:text-slate-200 truncate" title={file.name}>{file.name}</h3>
+                                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                 </div>
                             </div>
 
                             <div className="flex-1 overflow-y-auto mb-6">
-                                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">Quick Actions</h4>
+                                <h4 className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase tracking-wider mb-3">Quick Actions</h4>
                                 <div className="space-y-2">
                                     {QUICK_PROMPTS.map((prompt, i) => (
                                         <button
                                             key={i}
                                             onClick={() => handleSendMessage(prompt.query)}
                                             disabled={isProcessing || isTyping}
-                                            className="w-full text-left p-3 rounded-xl bg-slate-50 dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-sm font-medium flex items-center justify-between group text-slate-700 dark:text-slate-300"
+                                            className="w-full text-left p-3 rounded-xl bg-secondary dark:bg-slate-900 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors text-sm font-medium flex items-center justify-between group text-foreground dark:text-muted-foreground"
                                         >
                                             {prompt.label}
                                             <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -212,9 +213,9 @@ export default function ChatPdfTool() {
                                 </div>
                             </div>
 
-                            <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 border border-slate-100 dark:border-slate-700 h-32 overflow-y-auto">
-                                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Raw Content</h4>
-                                <p className="text-[10px] text-slate-600 dark:text-slate-400 leading-relaxed font-mono">
+                            <div className="bg-secondary dark:bg-slate-900 rounded-xl p-4 border border-border dark:border-slate-700 h-32 overflow-y-auto">
+                                <h4 className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase tracking-wider mb-2">Raw Content</h4>
+                                <p className="text-[10px] text-slate-600 dark:text-muted-foreground leading-relaxed font-mono">
                                     {isProcessing ? (
                                         <span className="flex items-center gap-2 text-indigo-500">
                                             <Loader2 className="w-3 h-3 animate-spin" /> Analyzing...

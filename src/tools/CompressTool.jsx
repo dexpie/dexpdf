@@ -108,34 +108,31 @@ export default function CompressTool() {
     try {
       setProgress(10)
       const inputBuffer = await file.arrayBuffer()
-
-      // Load original PDF
-      setProgress(20)
-      const pdfDoc = await PDFDocument.load(inputBuffer)
-      const pageCount = pdfDoc.getPageCount()
-
-      // Create new PDF with compressed pages
-      setProgress(30)
+      const source = await pdfjsLib.getDocument({ data: inputBuffer }).promise
       const newPdf = await PDFDocument.create()
 
-      // Process each page
-      for (let i = 0; i < pageCount; i++) {
-        const progressPercent = 30 + Math.round((i / pageCount) * 50)
-        setProgress(progressPercent)
-
-        const [page] = await newPdf.copyPages(pdfDoc, [i])
-        newPdf.addPage(page)
+      // Raster compression makes image quality and scale controls effective.
+      // It intentionally flattens interactive content and selectable text.
+      for (let pageNumber = 1; pageNumber <= source.numPages; pageNumber++) {
+        setProgress(15 + Math.round((pageNumber / source.numPages) * 70))
+        const sourcePage = await source.getPage(pageNumber)
+        const baseViewport = sourcePage.getViewport({ scale: 1 })
+        const renderViewport = sourcePage.getViewport({ scale })
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.ceil(renderViewport.width)
+        canvas.height = Math.ceil(renderViewport.height)
+        const context = canvas.getContext('2d', { alpha: false })
+        context.fillStyle = '#ffffff'
+        context.fillRect(0, 0, canvas.width, canvas.height)
+        await sourcePage.render({ canvasContext: context, viewport: renderViewport }).promise
+        const jpegBlob = await new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Could not encode page image.')), 'image/jpeg', quality))
+        const image = await newPdf.embedJpg(await jpegBlob.arrayBuffer())
+        const outputPage = newPdf.addPage([baseViewport.width, baseViewport.height])
+        outputPage.drawImage(image, { x: 0, y: 0, width: baseViewport.width, height: baseViewport.height })
       }
 
-      // Save with compression
       setProgress(85)
-      const compressionOptions = {
-        useObjectStreams: true,
-        addDefaultPage: false,
-        objectsPerTick: 50,
-      }
-
-      const compressedBytes = await newPdf.save(compressionOptions)
+      const compressedBytes = await newPdf.save({ useObjectStreams: true, objectsPerTick: 50 })
       setProgress(95)
 
       // Create download
@@ -165,7 +162,7 @@ export default function CompressTool() {
   return (
     <ToolLayout
       title="Compress PDF"
-      description="Reduce PDF file size while maintaining quality"
+      description="Raster-compress PDF pages with adjustable image quality. Interactive content will be flattened."
     >
       <div className="flex flex-col gap-6">
         {/* Error Alert */}
@@ -298,6 +295,9 @@ export default function CompressTool() {
                       <span>Smaller file</span>
                       <span>Better quality</span>
                     </div>
+                    <p className="mt-3 rounded-lg bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300">
+                      Compression rasterizes pages. Links, forms, and selectable text will be flattened.
+                    </p>
                   </div>
 
                   {/* Output Filename */}

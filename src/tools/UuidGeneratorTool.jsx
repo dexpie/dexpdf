@@ -36,9 +36,9 @@ export default function UuidGeneratorTool() {
             <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-8">
                 {/* Controls */}
                 <div className="w-full md:w-80 space-y-6">
-                    <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 space-y-6">
+                    <div className="bg-card p-6 rounded-3xl shadow-lg border border-border space-y-6">
                         <div>
-                            <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Quantity: {count}</label>
+                            <label className="text-xs font-bold text-muted-foreground uppercase mb-2 block">Quantity: {count}</label>
                             <input
                                 type="range" min="1" max="100"
                                 value={count}
@@ -48,24 +48,24 @@ export default function UuidGeneratorTool() {
                         </div>
 
                         <div className="space-y-3">
-                            <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                            <label className="flex items-center gap-3 p-3 bg-secondary rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
                                 <input
                                     type="checkbox"
                                     checked={hyphens}
                                     onChange={e => setHyphens(e.target.checked)}
                                     className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500"
                                 />
-                                <span className="font-bold text-slate-700 text-sm">Hyphens</span>
+                                <span className="font-bold text-foreground text-sm">Hyphens</span>
                             </label>
 
-                            <label className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                            <label className="flex items-center gap-3 p-3 bg-secondary rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
                                 <input
                                     type="checkbox"
                                     checked={uppercase}
                                     onChange={e => setUppercase(e.target.checked)}
                                     className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500"
                                 />
-                                <span className="font-bold text-slate-700 text-sm">UPPERCASE</span>
+                                <span className="font-bold text-foreground text-sm">UPPERCASE</span>
                             </label>
                         </div>
 
@@ -79,7 +79,7 @@ export default function UuidGeneratorTool() {
                 </div>
 
                 {/* Output */}
-                <div className="flex-1 flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden relative">
+                <div className="flex-1 flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-4 bg-gradient-to-b from-white via-white to-transparent w-full flex justify-end">
                         <button
                             onClick={copyAll}
@@ -90,8 +90,8 @@ export default function UuidGeneratorTool() {
                     </div>
                     <div className="p-6 pt-16 h-[500px] overflow-y-auto space-y-2 font-mono text-slate-600">
                         {uuids.map((id, idx) => (
-                            <div key={idx} className="flex gap-4 items-center group pb-2 border-b border-slate-50 last:border-0 hover:bg-slate-50 p-2 rounded-lg">
-                                <span className="text-slate-300 text-xs w-6 text-right select-none">{idx + 1}</span>
+                            <div key={idx} className="flex gap-4 items-center group pb-2 border-b border-slate-50 last:border-0 hover:bg-secondary p-2 rounded-lg">
+                                <span className="text-muted-foreground text-xs w-6 text-right select-none">{idx + 1}</span>
                                 <span className="flex-1 select-all">{id}</span>
                             </div>
                         ))}

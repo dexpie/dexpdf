@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
@@ -25,16 +25,12 @@ export default function ExtractImagesTool() {
     setErrorMsg(''); setSuccessMsg('');
     setBusy(true)
     try {
-      const { PDFDocument } = await import('pdf-lib')
       const JSZip = (await import('jszip')).default
       const zip = new JSZip()
       for (const f of files) {
         try {
-          const arr = await f.arrayBuffer()
-          const pdf = await PDFDocument.load(arr)
-          // TODO: Extract images from PDF (pdf-lib limitation)
-          const bytes = await pdf.save()
-          zip.file(f.name.replace(/\.pdf$/i, '') + '-original.pdf', bytes)
+          const extractedZip = await processBatchFile(f, 0, () => {})
+          zip.file(f.name.replace(/\.pdf$/i, '') + '-images.zip', extractedZip)
         } catch (err) {
           setErrorMsg('Failed to extract images from ' + f.name)
           console.error('Error extracting images', err)
@@ -49,7 +45,7 @@ export default function ExtractImagesTool() {
       a.click()
       a.remove()
       URL.revokeObjectURL(url)
-      setSuccessMsg('Success! ZIP file downloaded.');
+      setSuccessMsg('Success! Extracted image ZIP files downloaded.');
     } catch (err) {
       setErrorMsg('Failed: ' + (err.message || err));
       console.error(err);
@@ -58,7 +54,7 @@ export default function ExtractImagesTool() {
     }
   }
 
-  async function processBatchFile(f, onProgress) {
+  async function processBatchFile(f, index, onProgress) {
     try {
       onProgress(10)
       const pdfjsLib = await import('pdfjs-dist')
@@ -189,11 +185,10 @@ export default function ExtractImagesTool() {
             In batch mode, each PDF's extracted images will be saved as a separate ZIP file. Images are extracted from all pages.
           </p>
           <UniversalBatchProcessor
+            toolName="Extract Images"
             processFile={processBatchFile}
-            outputFilenameSuffix="_images"
-            acceptedFileTypes="application/pdf"
-            description="Extract images from multiple PDFs"
-            outputFileExtension=".zip"
+            acceptedTypes="application/pdf"
+            outputExtension=".zip"
           />
         </div>
       ) : (

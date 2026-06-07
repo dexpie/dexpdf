@@ -105,7 +105,7 @@ export default function ExcelToPdfTool() {
     }
 
     return (
-        <ToolLayout title="Excel to PDF" description="Convert XLS/XLSX spreadsheets to PDF documents.">
+        <ToolLayout title="XLSX to PDF" description="Render the first worksheet of an .xlsx file to PDF.">
             <div className="max-w-4xl mx-auto">
                 <AnimatePresence>
                     {errorMsg && (
@@ -124,30 +124,30 @@ export default function ExcelToPdfTool() {
                     <FileDropZone onFiles={handleFileChange} accept=".xlsx" hint="Upload Excel (.xlsx)" disabled={busy} />
                 ) : (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
-                        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center text-center gap-6">
+                        <div className="bg-card p-6 rounded-2xl border border-border shadow-sm flex flex-col items-center text-center gap-6">
                             <div className="w-20 h-20 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-2">
                                 <FileSpreadsheet className="w-10 h-10" />
                             </div>
 
                             <div>
-                                <h3 className="font-bold text-xl text-slate-800 mb-2">{file.name}</h3>
-                                <p className="text-slate-500">{(file.size / 1024).toFixed(1)} KB • {rows.length > 0 ? 'Preview Loaded' : 'Ready'}</p>
+                                <h3 className="font-bold text-xl text-foreground mb-2">{file.name}</h3>
+                                <p className="text-muted-foreground">{(file.size / 1024).toFixed(1)} KB • {rows.length > 0 ? 'Preview Loaded' : 'Ready'}</p>
                             </div>
 
                             {rows.length > 0 && (
-                                <div className="w-full max-w-lg bg-slate-50 border border-slate-200 rounded-xl overflow-hidden text-xs text-slate-600">
+                                <div className="w-full max-w-lg bg-secondary border border-border rounded-xl overflow-hidden text-xs text-slate-600">
                                     <table className="w-full">
                                         <tbody>
                                             {rows.map((r, i) => (
                                                 <tr key={i} className={i === 0 ? "bg-slate-100 font-bold" : ""}>
                                                     {r.map((c, j) => (
-                                                        <td key={j} className="p-2 border-b border-r border-slate-200 last:border-r-0 truncate max-w-[100px]">{c}</td>
+                                                        <td key={j} className="p-2 border-b border-r border-border last:border-r-0 truncate max-w-[100px]">{c}</td>
                                                     ))}
                                                 </tr>
                                             ))}
                                         </tbody>
                                     </table>
-                                    <div className="p-2 text-center text-slate-400 italic">Preview (First 10 rows)</div>
+                                    <div className="p-2 text-center text-muted-foreground italic">Preview (First 10 rows)</div>
                                 </div>
                             )}
 
@@ -159,7 +159,7 @@ export default function ExcelToPdfTool() {
                             <div className="flex gap-3 w-full max-w-md">
                                 <button
                                     onClick={() => setFile(null)}
-                                    className="flex-1 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-colors"
+                                    className="flex-1 py-3 rounded-xl font-bold text-muted-foreground hover:bg-secondary transition-colors"
                                     disabled={busy}
                                 >
                                     Cancel

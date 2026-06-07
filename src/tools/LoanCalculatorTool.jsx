@@ -44,33 +44,33 @@ export default function LoanCalculatorTool() {
         <ToolLayout title="Loan Calculator" description="Calculate mortgage or auto loan payments.">
             <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-col gap-6">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-col gap-6">
                     <Input label="Loan Amount ($)" value={amount} onChange={setAmount} />
                     <Input label="Interest Rate (%)" value={rate} onChange={setRate} step="0.1" />
                     <Input label="Loan Term (Years)" value={term} onChange={setTerm} />
 
                     <div className="mt-8 p-6 bg-slate-900 rounded-2xl text-white">
-                        <div className="text-slate-400 text-sm font-bold uppercase mb-1">Monthly Payment</div>
+                        <div className="text-muted-foreground text-sm font-bold uppercase mb-1">Monthly Payment</div>
                         <div className="text-4xl font-black font-mono text-green-400">
                             ${monthly.toFixed(2)}
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-col items-center justify-center">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-col items-center justify-center">
                     <div className="w-64 h-64">
                         <Pie data={data} />
                     </div>
                     <div className="mt-8 w-full space-y-2">
-                        <div className="flex justify-between font-bold text-slate-600 border-b border-slate-100 pb-2">
+                        <div className="flex justify-between font-bold text-slate-600 border-b border-border pb-2">
                             <span>Total Principal</span>
                             <span>${amount.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between font-bold text-red-500 border-b border-slate-100 pb-2">
+                        <div className="flex justify-between font-bold text-red-500 border-b border-border pb-2">
                             <span>Total Interest</span>
                             <span>${totalInterest.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between font-black text-slate-800 pt-2 text-lg">
+                        <div className="flex justify-between font-black text-foreground pt-2 text-lg">
                             <span>Total Cost</span>
                             <span>${totalPayment.toFixed(2)}</span>
                         </div>
@@ -85,10 +85,10 @@ export default function LoanCalculatorTool() {
 function Input({ label, value, onChange, step = 1 }) {
     return (
         <div className="space-y-1">
-            <label className="text-xs font-bold text-slate-400 uppercase">{label}</label>
+            <label className="text-xs font-bold text-muted-foreground uppercase">{label}</label>
             <input
                 type="number" value={value} onChange={e => onChange(Number(e.target.value))} step={step}
-                className="w-full p-4 bg-slate-50 rounded-xl font-bold border border-slate-100 outline-none focus:ring-2 ring-blue-500"
+                className="w-full p-4 bg-secondary rounded-xl font-bold border border-border outline-none focus:ring-2 ring-blue-500"
             />
         </div>
     )

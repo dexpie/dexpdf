@@ -51,13 +51,13 @@ export default function TextToSpeechTool() {
             <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-8">
                 {/* Controls */}
                 <div className="w-full md:w-80 space-y-6">
-                    <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 space-y-6">
+                    <div className="bg-card p-6 rounded-3xl shadow-lg border border-border space-y-6">
                         <div>
-                            <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Voice</label>
+                            <label className="text-xs font-bold text-muted-foreground uppercase mb-2 block">Voice</label>
                             <select
                                 value={selectedVoice || ''}
                                 onChange={e => setSelectedVoice(e.target.value)}
-                                className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold truncate"
+                                className="w-full p-2 bg-secondary border border-border rounded-lg text-sm font-bold truncate"
                             >
                                 {voices.map(v => (
                                     <option key={v.name} value={v.name}>
@@ -68,7 +68,7 @@ export default function TextToSpeechTool() {
                         </div>
 
                         <div>
-                            <label className="text-xs font-bold text-slate-500 uppercase mb-2 flex justify-between">
+                            <label className="text-xs font-bold text-muted-foreground uppercase mb-2 flex justify-between">
                                 <span>Speed</span>
                                 <span>{rate}x</span>
                             </label>
@@ -81,7 +81,7 @@ export default function TextToSpeechTool() {
                         </div>
 
                         <div>
-                            <label className="text-xs font-bold text-slate-500 uppercase mb-2 flex justify-between">
+                            <label className="text-xs font-bold text-muted-foreground uppercase mb-2 flex justify-between">
                                 <span>Pitch</span>
                                 <span>{pitch}</span>
                             </label>
@@ -119,7 +119,7 @@ export default function TextToSpeechTool() {
                         value={text}
                         onChange={e => setText(e.target.value)}
                         placeholder="Type something to say..."
-                        className="w-full h-80 relative bg-white p-8 rounded-3xl shadow-xl border border-slate-100 resize-none outline-none text-xl leading-relaxed text-slate-700"
+                        className="w-full h-80 relative bg-card p-8 rounded-3xl shadow-xl border border-border resize-none outline-none text-xl leading-relaxed text-foreground"
                     />
                     {isSpeaking && (
                         <div className="absolute bottom-6 right-6 flex gap-1 items-end h-8">

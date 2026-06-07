@@ -10,15 +10,16 @@ import { cn } from '@/lib/utils'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-    title: 'DexPDF - #1 Free Online PDF Tools (Editor, Converter, AI)',
-    description: 'The world\'s most advanced, secure, and free online PDF platform. Merge, Split, Edit, Sign, and Translate PDFs with AI. Offline PWA enabled.',
+    metadataBase: new URL('https://dexpdf.com'),
+    title: 'DexPDF - Practical PDF Tools',
+    description: 'Merge, split, edit, convert, sign, and organize PDF documents in one workspace.',
     keywords: ['pdf editor', 'merge pdf', 'split pdf', 'compress pdf', 'pdf to word', 'ai pdf', 'redact pdf', 'sign pdf', 'offline pdf tools', 'dexpdf'],
     authors: [{ name: 'DexPie Team' }],
     creator: 'DexPie',
     manifest: '/manifest.json',
     openGraph: {
         title: 'DexPDF - The Ultimate PDF Ecosystem',
-        description: 'Edit, Convert, and Protect PDFs with AI-powered tools. 100% Free and Private.',
+        description: 'Edit, convert, protect, and organize PDF documents in one practical workspace.',
         url: 'https://dexpdf.com',
         siteName: 'DexPDF',
         locale: 'en_US',
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
     twitter: {
         card: 'summary_large_image',
         title: 'DexPDF - Premium PDF Tools',
-        description: 'Edit, Convert, and Protect PDFs with AI. 100% Free.',
+        description: 'Edit, convert, protect, and organize PDF documents.',
         creator: '@dexpie',
     },
 }

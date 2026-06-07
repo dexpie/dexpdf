@@ -38,30 +38,30 @@ export default function FAQ() {
           <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <HelpCircle className="w-8 h-8" />
           </div>
-          <h2 className="text-3xl font-bold text-slate-900 mb-4">Frequently Asked Questions</h2>
-          <p className="text-slate-500 text-lg">Everything you need to know about DexPDF features and security.</p>
+          <h2 className="text-3xl font-bold text-foreground mb-4">Frequently Asked Questions</h2>
+          <p className="text-muted-foreground text-lg">Everything you need to know about DexPDF features and security.</p>
         </div>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className={`bg-white rounded-2xl border transition-colors ${openIndex === index ? 'border-blue-200 shadow-md' : 'border-slate-200 shadow-sm hover:border-blue-100'}`}
+              className={`bg-card rounded-2xl border transition-colors ${openIndex === index ? 'border-blue-200 shadow-md' : 'border-border shadow-sm hover:border-blue-100'}`}
             >
               <button
                 className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
               >
-                <span className={`text-lg font-semibold transition-colors ${openIndex === index ? 'text-blue-600' : 'text-slate-800'}`}>
+                <span className={`text-lg font-semibold transition-colors ${openIndex === index ? 'text-blue-600' : 'text-foreground'}`}>
                   {faq.question}
                 </span>
-                <div className={`p-2 rounded-full transition-colors ${openIndex === index ? 'bg-blue-50 text-blue-600' : 'bg-slate-50 text-slate-400'}`}>
+                <div className={`p-2 rounded-full transition-colors ${openIndex === index ? 'bg-blue-50 text-blue-600' : 'bg-secondary text-muted-foreground'}`}>
                   {openIndex === index ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                 </div>
               </button>
 
               <div className={`accordion-content ${openIndex === index ? 'open' : ''}`}>
-                <div className="px-6 pb-6 pt-0 text-slate-500 leading-relaxed border-t border-slate-50 mt-2 pt-4">
+                <div className="px-6 pb-6 pt-0 text-muted-foreground leading-relaxed border-t border-border mt-2 pt-4">
                   {faq.answer}
                 </div>
               </div>

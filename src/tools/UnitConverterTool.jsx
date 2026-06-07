@@ -113,7 +113,7 @@ export default function UnitConverterTool() {
                                     flex items-center gap-2 px-6 py-3 rounded-full font-bold capitalize transition-all
                                     ${category === c
                                         ? 'bg-blue-600 text-white shadow-lg scale-105'
-                                        : 'bg-white text-slate-500 hover:bg-slate-50 shadow-sm'}
+                                        : 'bg-card text-muted-foreground hover:bg-secondary shadow-sm'}
                                 `}
                             >
                                 <Icon className="w-5 h-5" /> {c}
@@ -126,7 +126,7 @@ export default function UnitConverterTool() {
                             flex items-center gap-2 px-6 py-3 rounded-full font-bold capitalize transition-all
                             ${category === 'temp'
                                 ? 'bg-orange-500 text-white shadow-lg scale-105'
-                                : 'bg-white text-slate-500 hover:bg-slate-50 shadow-sm'}
+                                : 'bg-card text-muted-foreground hover:bg-secondary shadow-sm'}
                         `}
                     >
                         <Thermometer className="w-5 h-5" /> Temp
@@ -134,21 +134,21 @@ export default function UnitConverterTool() {
                 </div>
 
                 {/* Converter Card */}
-                <div className="bg-white rounded-3xl p-8 shadow-2xl border border-slate-100 max-w-2xl mx-auto">
+                <div className="bg-card rounded-3xl p-8 shadow-2xl border border-border max-w-2xl mx-auto">
                     <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center">
                         {/* From */}
                         <div className="space-y-4">
-                            <label className="block text-sm font-bold text-slate-400 uppercase">From</label>
+                            <label className="block text-sm font-bold text-muted-foreground uppercase">From</label>
                             <input
                                 type="number"
                                 value={amount}
                                 onChange={e => setAmount(e.target.value)}
-                                className="w-full text-3xl font-bold bg-slate-50 p-4 rounded-xl border border-slate-200 outline-none focus:ring-2 ring-blue-500"
+                                className="w-full text-3xl font-bold bg-secondary p-4 rounded-xl border border-border outline-none focus:ring-2 ring-blue-500"
                             />
                             <select
                                 value={fromUnit}
                                 onChange={e => setFromUnit(e.target.value)}
-                                className="w-full p-3 rounded-xl bg-slate-100 font-bold text-slate-700 cursor-pointer"
+                                className="w-full p-3 rounded-xl bg-slate-100 font-bold text-foreground cursor-pointer"
                             >
                                 {category === 'temp'
                                     ? ['C', 'F', 'K'].map(u => <option key={u} value={u}>{u}</option>)
@@ -171,14 +171,14 @@ export default function UnitConverterTool() {
 
                         {/* To */}
                         <div className="space-y-4">
-                            <label className="block text-sm font-bold text-slate-400 uppercase">To</label>
+                            <label className="block text-sm font-bold text-muted-foreground uppercase">To</label>
                             <div className="w-full text-3xl font-bold bg-blue-50 text-blue-600 p-4 rounded-xl border border-blue-100 flex items-center overflow-hidden">
                                 {typeof result === 'number' ? result.toLocaleString('en-US', { maximumFractionDigits: 6 }) : result}
                             </div>
                             <select
                                 value={toUnit}
                                 onChange={e => setToUnit(e.target.value)}
-                                className="w-full p-3 rounded-xl bg-slate-100 font-bold text-slate-700 cursor-pointer"
+                                className="w-full p-3 rounded-xl bg-slate-100 font-bold text-foreground cursor-pointer"
                             >
                                 {category === 'temp'
                                     ? ['C', 'F', 'K'].map(u => <option key={u} value={u}>{u}</option>)

@@ -148,20 +148,20 @@ export default function InvoiceGeneratorTool() {
 
                 {/* --- Left: Editor --- */}
                 <div className="flex-1 space-y-6">
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-slate-800 dark:text-slate-200">
+                    <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-border dark:border-slate-700">
+                        <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-foreground dark:text-slate-200">
                             <Briefcase className="w-5 h-5 text-blue-500" /> Invoice Details
                         </h3>
 
                         <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Invoice #</label>
-                                <input type="text" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg mt-1 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Invoice #</label>
+                                <input type="text" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg mt-1 bg-card dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.number} onChange={e => updateField(null, 'number', e.target.value)} />
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Currency</label>
-                                <select className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg mt-1 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Currency</label>
+                                <select className="w-full p-2 border border-border dark:border-slate-700 rounded-lg mt-1 bg-card dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.currency} onChange={e => updateField(null, 'currency', e.target.value)}>
                                     <option value="$">$ USD</option>
                                     <option value="€">€ EUR</option>
@@ -171,13 +171,13 @@ export default function InvoiceGeneratorTool() {
                                 </select>
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Date</label>
-                                <input type="date" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg mt-1 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Date</label>
+                                <input type="date" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg mt-1 bg-card dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.date} onChange={e => updateField(null, 'date', e.target.value)} />
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Due Date</label>
-                                <input type="date" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg mt-1 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Due Date</label>
+                                <input type="date" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg mt-1 bg-card dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.dueDate} onChange={e => updateField(null, 'dueDate', e.target.value)} />
                             </div>
                         </div>
@@ -185,9 +185,9 @@ export default function InvoiceGeneratorTool() {
 
                     <div className="grid md:grid-cols-2 gap-6">
                         {/* From */}
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                        <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-border dark:border-slate-700">
                             <div className="flex justify-between items-center mb-3">
-                                <h4 className="font-bold text-sm flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                                <h4 className="font-bold text-sm flex items-center gap-2 text-slate-600 dark:text-muted-foreground">
                                     <User className="w-4 h-4" /> From (You)
                                 </h4>
                                 {hasBrand && (
@@ -200,38 +200,38 @@ export default function InvoiceGeneratorTool() {
                                 )}
                             </div>
                             <div className="space-y-3">
-                                <input placeholder="Your Name / Business" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <input placeholder="Your Name / Business" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.from.name} onChange={e => updateField('from', 'name', e.target.value)} />
-                                <input placeholder="Email" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <input placeholder="Email" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.from.email} onChange={e => updateField('from', 'email', e.target.value)} />
-                                <input placeholder="Address" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <input placeholder="Address" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.from.address} onChange={e => updateField('from', 'address', e.target.value)} />
-                                <input placeholder="Phone" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <input placeholder="Phone" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.from.phone} onChange={e => updateField('from', 'phone', e.target.value)} />
                             </div>
                         </div>
 
                         {/* To */}
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
-                            <h4 className="font-bold text-sm mb-3 flex items-center gap-2 text-slate-600 dark:text-slate-300">
+                        <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-border dark:border-slate-700">
+                            <h4 className="font-bold text-sm mb-3 flex items-center gap-2 text-slate-600 dark:text-muted-foreground">
                                 <User className="w-4 h-4" /> Bill To (Client)
                             </h4>
                             <div className="space-y-3">
-                                <input placeholder="Client Name" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <input placeholder="Client Name" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.to.name} onChange={e => updateField('to', 'name', e.target.value)} />
-                                <input placeholder="Email" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <input placeholder="Email" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.to.email} onChange={e => updateField('to', 'email', e.target.value)} />
-                                <input placeholder="Address" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <input placeholder="Address" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.to.address} onChange={e => updateField('to', 'address', e.target.value)} />
-                                <input placeholder="Phone" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <input placeholder="Phone" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.to.phone} onChange={e => updateField('to', 'phone', e.target.value)} />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-border dark:border-slate-700">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800 dark:text-slate-200">
+                            <h3 className="font-bold text-lg flex items-center gap-2 text-foreground dark:text-slate-200">
                                 <DollarSign className="w-5 h-5 text-green-500" /> Items
                             </h3>
                             <button onClick={addItem} className="text-xs flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50">
@@ -243,15 +243,15 @@ export default function InvoiceGeneratorTool() {
                             {data.items.map(item => (
                                 <div key={item.id} className="flex gap-2 items-start group">
                                     <div className="flex-1">
-                                        <input placeholder="Description" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                        <input placeholder="Description" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg text-sm bg-card dark:bg-slate-900 text-foreground dark:text-slate-200"
                                             value={item.desc} onChange={e => updateItem(item.id, 'desc', e.target.value)} />
                                     </div>
                                     <div className="w-20">
-                                        <input type="number" placeholder="Qty" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-center bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                        <input type="number" placeholder="Qty" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg text-sm text-center bg-card dark:bg-slate-900 text-foreground dark:text-slate-200"
                                             value={item.qty} onChange={e => updateItem(item.id, 'qty', Number(e.target.value))} />
                                     </div>
                                     <div className="w-24">
-                                        <input type="number" placeholder="Rate" className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-right bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                        <input type="number" placeholder="Rate" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg text-sm text-right bg-card dark:bg-slate-900 text-foreground dark:text-slate-200"
                                             value={item.rate} onChange={e => updateItem(item.id, 'rate', Number(e.target.value))} />
                                     </div>
                                     <button onClick={() => removeItem(item.id)} className="p-2 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
@@ -261,16 +261,16 @@ export default function InvoiceGeneratorTool() {
                             ))}
                         </div>
 
-                        <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700 grid grid-cols-2 gap-8 items-center">
+                        <div className="mt-6 pt-4 border-t border-border dark:border-slate-700 grid grid-cols-2 gap-8 items-center">
                             <div>
-                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Tax Rate (%)</label>
-                                <input type="number" className="w-24 p-2 border border-slate-200 dark:border-slate-700 rounded-lg mt-1 block bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200"
+                                <label className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase">Tax Rate (%)</label>
+                                <input type="number" className="w-24 p-2 border border-border dark:border-slate-700 rounded-lg mt-1 block bg-card dark:bg-slate-900 text-foreground dark:text-slate-200"
                                     value={data.taxRate} onChange={e => updateField(null, 'taxRate', Number(e.target.value))} />
                             </div>
                             <div className="text-right space-y-2">
-                                <div className="text-sm text-slate-500 dark:text-slate-400">Subtotal: {data.currency}{subtotal.toLocaleString()}</div>
-                                <div className="text-sm text-slate-500 dark:text-slate-400">Tax ({data.taxRate}%): {data.currency}{taxAmount.toLocaleString()}</div>
-                                <div className="text-2xl font-bold text-slate-800 dark:text-slate-200">Total: {data.currency}{total.toLocaleString()}</div>
+                                <div className="text-sm text-muted-foreground dark:text-muted-foreground">Subtotal: {data.currency}{subtotal.toLocaleString()}</div>
+                                <div className="text-sm text-muted-foreground dark:text-muted-foreground">Tax ({data.taxRate}%): {data.currency}{taxAmount.toLocaleString()}</div>
+                                <div className="text-2xl font-bold text-foreground dark:text-slate-200">Total: {data.currency}{total.toLocaleString()}</div>
                             </div>
                         </div>
                     </div>
@@ -280,9 +280,9 @@ export default function InvoiceGeneratorTool() {
                 <div className="xl:w-[500px] flex flex-col gap-6 sticky top-8 h-fit">
 
                     {/* Action Card */}
-                    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+                    <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-border dark:border-slate-700">
                         <div className="mb-4">
-                            <label className="text-sm font-medium text-slate-600 dark:text-slate-300 block mb-2">Filename</label>
+                            <label className="text-sm font-medium text-slate-600 dark:text-muted-foreground block mb-2">Filename</label>
                             <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} />
                         </div>
 
@@ -302,10 +302,10 @@ export default function InvoiceGeneratorTool() {
                     </div>
 
                     {/* Live Preview (A4 Ratio) */}
-                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-slate-500/10 dark:bg-slate-900/50 p-4">
-                        <div className="uppercase text-xs font-bold text-slate-500 mb-2 text-center">Preview</div>
+                    <div className="border border-border dark:border-slate-700 rounded-lg overflow-hidden bg-secondary0/10 dark:bg-slate-900/50 p-4">
+                        <div className="uppercase text-xs font-bold text-muted-foreground mb-2 text-center">Preview</div>
                         <div className="origin-top transform scale-[0.6] sm:scale-[0.8] xl:scale-[0.55]" style={{ height: 600 }}> {/* Fixed height container to crop overflow */}
-                            <div className="bg-white shadow-2xl mx-auto text-slate-800"
+                            <div className="bg-card shadow-2xl mx-auto text-foreground"
                                 style={{
                                     width: '210mm',
                                     minHeight: '297mm',
@@ -320,32 +320,32 @@ export default function InvoiceGeneratorTool() {
                                             <img src={brand.logo} alt="Company Logo" className="w-20 h-auto object-contain" />
                                         )}
                                         <div>
-                                            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">INVOICE</h1>
-                                            <p className="text-slate-500 mt-2 font-medium">#{data.number}</p>
+                                            <h1 className="text-4xl font-extrabold text-foreground tracking-tight">INVOICE</h1>
+                                            <p className="text-muted-foreground mt-2 font-medium">#{data.number}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
                                         <h2 className="font-bold text-lg">{data.from.name}</h2>
-                                        <p className="text-sm text-slate-500 whitespace-pre-wrap">{data.from.address}</p>
-                                        <p className="text-sm text-slate-500">{data.from.email}</p>
-                                        <p className="text-sm text-slate-500">{data.from.phone}</p>
+                                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">{data.from.address}</p>
+                                        <p className="text-sm text-muted-foreground">{data.from.email}</p>
+                                        <p className="text-sm text-muted-foreground">{data.from.phone}</p>
                                     </div>
                                 </div>
 
                                 {/* Bill To & Date */}
                                 <div className="flex justify-between mb-12">
                                     <div>
-                                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Bill To</h3>
+                                        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Bill To</h3>
                                         <div className="font-bold text-lg">{data.to.name}</div>
                                         <div className="text-sm text-slate-600 whitespace-pre-wrap max-w-[250px]">{data.to.address}</div>
                                     </div>
                                     <div className="text-right space-y-2">
                                         <div>
-                                            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Date</div>
+                                            <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Date</div>
                                             <div className="font-medium">{data.date}</div>
                                         </div>
                                         <div>
-                                            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Due Date</div>
+                                            <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Due Date</div>
                                             <div className="font-medium">{data.dueDate}</div>
                                         </div>
                                     </div>
@@ -353,20 +353,20 @@ export default function InvoiceGeneratorTool() {
 
                                 {/* Items Table */}
                                 <table className="w-full mb-12">
-                                    <thead className="border-b-2 border-slate-100">
+                                    <thead className="border-b-2 border-border">
                                         <tr>
-                                            <th className="text-left py-3 text-sm font-bold text-slate-500 uppercase">Item</th>
-                                            <th className="text-center py-3 text-sm font-bold text-slate-500 uppercase">Qty</th>
-                                            <th className="text-right py-3 text-sm font-bold text-slate-500 uppercase">Rate</th>
-                                            <th className="text-right py-3 text-sm font-bold text-slate-500 uppercase">Amount</th>
+                                            <th className="text-left py-3 text-sm font-bold text-muted-foreground uppercase">Item</th>
+                                            <th className="text-center py-3 text-sm font-bold text-muted-foreground uppercase">Qty</th>
+                                            <th className="text-right py-3 text-sm font-bold text-muted-foreground uppercase">Rate</th>
+                                            <th className="text-right py-3 text-sm font-bold text-muted-foreground uppercase">Amount</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-50">
                                         {data.items.map(item => (
                                             <tr key={item.id}>
                                                 <td className="py-4 font-medium">{item.desc || 'Item'}</td>
-                                                <td className="py-4 text-center text-slate-500">{item.qty}</td>
-                                                <td className="py-4 text-right text-slate-500">{data.currency}{item.rate.toLocaleString()}</td>
+                                                <td className="py-4 text-center text-muted-foreground">{item.qty}</td>
+                                                <td className="py-4 text-right text-muted-foreground">{data.currency}{item.rate.toLocaleString()}</td>
                                                 <td className="py-4 text-right font-bold">{data.currency}{(item.qty * item.rate).toLocaleString()}</td>
                                             </tr>
                                         ))}
@@ -376,15 +376,15 @@ export default function InvoiceGeneratorTool() {
                                 {/* Totals */}
                                 <div className="flex justify-end mb-12">
                                     <div className="w-1/2 space-y-3">
-                                        <div className="flex justify-between text-slate-500">
+                                        <div className="flex justify-between text-muted-foreground">
                                             <span>Subtotal</span>
                                             <span>{data.currency}{subtotal.toLocaleString()}</span>
                                         </div>
-                                        <div className="flex justify-between text-slate-500">
+                                        <div className="flex justify-between text-muted-foreground">
                                             <span>Tax ({data.taxRate}%)</span>
                                             <span>{data.currency}{taxAmount.toLocaleString()}</span>
                                         </div>
-                                        <div className="flex justify-between font-extrabold text-2xl text-slate-900 border-t-2 border-slate-100 pt-3">
+                                        <div className="flex justify-between font-extrabold text-2xl text-foreground border-t-2 border-border pt-3">
                                             <span>Total</span>
                                             <span>{data.currency}{total.toLocaleString()}</span>
                                         </div>
@@ -406,7 +406,7 @@ export default function InvoiceGeneratorTool() {
                                     </div>
                                 )}
 
-                                <div className="mt-20 text-center text-xs text-slate-300 font-medium">
+                                <div className="mt-20 text-center text-xs text-muted-foreground font-medium">
                                     Created with DexPDF
                                 </div>
                             </div>
@@ -417,7 +417,7 @@ export default function InvoiceGeneratorTool() {
 
             {/* --- Ghost Print Area (Hidden) --- */}
             <div style={{ position: 'absolute', left: '-9999px', top: 0 }}>
-                <div ref={previewRef} className="bg-white text-slate-800"
+                <div ref={previewRef} className="bg-card text-foreground"
                     style={{
                         width: '210mm',
                         minHeight: '297mm',
@@ -432,32 +432,32 @@ export default function InvoiceGeneratorTool() {
                                 <img src={brand.logo} alt="Company Logo" className="w-20 h-auto object-contain" />
                             )}
                             <div>
-                                <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">INVOICE</h1>
-                                <p className="text-slate-500 mt-2 font-medium">#{data.number}</p>
+                                <h1 className="text-4xl font-extrabold text-foreground tracking-tight">INVOICE</h1>
+                                <p className="text-muted-foreground mt-2 font-medium">#{data.number}</p>
                             </div>
                         </div>
                         <div className="text-right">
                             <h2 className="font-bold text-lg">{data.from.name}</h2>
-                            <p className="text-sm text-slate-500 whitespace-pre-wrap">{data.from.address}</p>
-                            <p className="text-sm text-slate-500">{data.from.email}</p>
-                            <p className="text-sm text-slate-500">{data.from.phone}</p>
+                            <p className="text-sm text-muted-foreground whitespace-pre-wrap">{data.from.address}</p>
+                            <p className="text-sm text-muted-foreground">{data.from.email}</p>
+                            <p className="text-sm text-muted-foreground">{data.from.phone}</p>
                         </div>
                     </div>
 
                     {/* Bill To & Date */}
                     <div className="flex justify-between mb-12">
                         <div>
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Bill To</h3>
+                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Bill To</h3>
                             <div className="font-bold text-lg">{data.to.name}</div>
                             <div className="text-sm text-slate-600 whitespace-pre-wrap max-w-[250px]">{data.to.address}</div>
                         </div>
                         <div className="text-right space-y-2">
                             <div>
-                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Date</div>
+                                <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Date</div>
                                 <div className="font-medium">{data.date}</div>
                             </div>
                             <div>
-                                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Due Date</div>
+                                <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Due Date</div>
                                 <div className="font-medium">{data.dueDate}</div>
                             </div>
                         </div>
@@ -465,20 +465,20 @@ export default function InvoiceGeneratorTool() {
 
                     {/* Items Table */}
                     <table className="w-full mb-12">
-                        <thead className="border-b-2 border-slate-100">
+                        <thead className="border-b-2 border-border">
                             <tr>
-                                <th className="text-left py-3 text-sm font-bold text-slate-500 uppercase">Item</th>
-                                <th className="text-center py-3 text-sm font-bold text-slate-500 uppercase">Qty</th>
-                                <th className="text-right py-3 text-sm font-bold text-slate-500 uppercase">Rate</th>
-                                <th className="text-right py-3 text-sm font-bold text-slate-500 uppercase">Amount</th>
+                                <th className="text-left py-3 text-sm font-bold text-muted-foreground uppercase">Item</th>
+                                <th className="text-center py-3 text-sm font-bold text-muted-foreground uppercase">Qty</th>
+                                <th className="text-right py-3 text-sm font-bold text-muted-foreground uppercase">Rate</th>
+                                <th className="text-right py-3 text-sm font-bold text-muted-foreground uppercase">Amount</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
                             {data.items.map(item => (
                                 <tr key={item.id}>
                                     <td className="py-4 font-medium">{item.desc || 'Item'}</td>
-                                    <td className="py-4 text-center text-slate-500">{item.qty}</td>
-                                    <td className="py-4 text-right text-slate-500">{data.currency}{item.rate.toLocaleString()}</td>
+                                    <td className="py-4 text-center text-muted-foreground">{item.qty}</td>
+                                    <td className="py-4 text-right text-muted-foreground">{data.currency}{item.rate.toLocaleString()}</td>
                                     <td className="py-4 text-right font-bold">{data.currency}{(item.qty * item.rate).toLocaleString()}</td>
                                 </tr>
                             ))}
@@ -488,15 +488,15 @@ export default function InvoiceGeneratorTool() {
                     {/* Totals */}
                     <div className="flex justify-end mb-12">
                         <div className="w-1/2 space-y-3">
-                            <div className="flex justify-between text-slate-500">
+                            <div className="flex justify-between text-muted-foreground">
                                 <span>Subtotal</span>
                                 <span>{data.currency}{subtotal.toLocaleString()}</span>
                             </div>
-                            <div className="flex justify-between text-slate-500">
+                            <div className="flex justify-between text-muted-foreground">
                                 <span>Tax ({data.taxRate}%)</span>
                                 <span>{data.currency}{taxAmount.toLocaleString()}</span>
                             </div>
-                            <div className="flex justify-between font-extrabold text-2xl text-slate-900 border-t-2 border-slate-100 pt-3">
+                            <div className="flex justify-between font-extrabold text-2xl text-foreground border-t-2 border-border pt-3">
                                 <span>Total</span>
                                 <span>{data.currency}{total.toLocaleString()}</span>
                             </div>
@@ -518,7 +518,7 @@ export default function InvoiceGeneratorTool() {
                         </div>
                     )}
 
-                    <div className="mt-20 text-center text-xs text-slate-300 font-medium">
+                    <div className="mt-20 text-center text-xs text-muted-foreground font-medium">
                         Created with DexPDF
                     </div>
                 </div>

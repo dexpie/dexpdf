@@ -88,20 +88,20 @@ function BaseInput({ label, value, onChange, icon, color }) {
     const theme = colorClasses[color] || colorClasses.blue
 
     return (
-        <div className={`bg-white p-6 rounded-3xl shadow-lg border border-slate-100 transition-all focus-within:ring-4 ${theme.ring}`}>
+        <div className={`bg-card p-6 rounded-3xl shadow-lg border border-border transition-all focus-within:ring-4 ${theme.ring}`}>
             <div className="flex justify-between items-center mb-4">
                 <div className={`flex items-center gap-2 font-bold ${theme.text}`}>
                     <div className={`p-2 rounded-lg ${theme.bg}`}>{icon}</div>
                     {label}
                 </div>
-                <button onClick={() => navigator.clipboard.writeText(value)} className="text-slate-400 hover:text-slate-600">
+                <button onClick={() => navigator.clipboard.writeText(value)} className="text-muted-foreground hover:text-slate-600">
                     <Copy className="w-4 h-4" />
                 </button>
             </div>
             <input
                 value={value}
                 onChange={e => onChange(e.target.value)}
-                className="w-full text-2xl font-mono font-bold text-slate-800 outline-none placeholder:text-slate-200"
+                className="w-full text-2xl font-mono font-bold text-foreground outline-none placeholder:text-slate-200"
                 placeholder="0"
                 spellCheck={false}
             />

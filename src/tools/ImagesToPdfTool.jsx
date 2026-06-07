@@ -187,9 +187,9 @@ export default function ImagesToPdfTool() {
 
 				{images.length > 0 && (
 					<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
-						<div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-8">
+						<div className="bg-card p-5 rounded-2xl border border-border shadow-sm mb-8">
 							<div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-								<h3 className="font-bold text-slate-700 flex items-center gap-2">
+								<h3 className="font-bold text-foreground flex items-center gap-2">
 									<ImageIcon className="w-5 h-5 text-blue-500" />
 									{images.length} Images Selected
 								</h3>
@@ -203,7 +203,7 @@ export default function ImagesToPdfTool() {
 										<button
 											key={m.id}
 											onClick={() => setMode(m.id)}
-											className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${mode === m.id ? 'bg-white dark:bg-slate-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600'}`}
+											className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${mode === m.id ? 'bg-card dark:bg-slate-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-muted-foreground dark:text-muted-foreground hover:text-foreground hover:bg-slate-200 dark:hover:bg-slate-600'}`}
 										>
 											<m.icon className="w-4 h-4" />
 											{m.label}
@@ -221,13 +221,13 @@ export default function ImagesToPdfTool() {
 									initial={{ opacity: 0, scale: 0.9 }}
 									animate={{ opacity: 1, scale: 1 }}
 									exit={{ opacity: 0, scale: 0.9 }}
-									className="group relative bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all cursor-move hover:border-blue-300 dark:hover:border-blue-500"
+									className="group relative bg-card dark:bg-slate-800 p-2 rounded-xl border border-border dark:border-slate-700 shadow-sm hover:shadow-md transition-all cursor-move hover:border-blue-300 dark:hover:border-blue-500"
 								>
 									<div className="absolute top-2 left-2 z-10 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
 										{images.indexOf(entry) + 1}
 									</div>
 
-									<div className="aspect-[3/4] bg-slate-50 rounded-lg overflow-hidden mb-2 relative flex items-center justify-center">
+									<div className="aspect-[3/4] bg-secondary rounded-lg overflow-hidden mb-2 relative flex items-center justify-center">
 										<img src={entry.thumb} className="w-full h-full object-cover" alt="thumb" />
 
 										<div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
@@ -236,7 +236,7 @@ export default function ImagesToPdfTool() {
 
 										{/* Rotate Button */}
 										<button
-											className="absolute bottom-2 right-2 bg-white/90 text-slate-700 rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-white hover:text-blue-600"
+											className="absolute bottom-2 right-2 bg-card/90 text-foreground rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-card hover:text-blue-600"
 											onClick={(e) => { e.stopPropagation(); rotateImage(images.indexOf(entry)); }}
 											disabled={busy}
 											title="Rotate 90°"
@@ -245,7 +245,7 @@ export default function ImagesToPdfTool() {
 										</button>
 
 										<button
-											className="absolute top-2 right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-red-50 transform hover:scale-110"
+											className="absolute top-2 right-2 bg-card text-red-500 rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-red-50 transform hover:scale-110"
 											onClick={(e) => { e.stopPropagation(); remove(images.indexOf(entry)); }}
 											disabled={busy}
 										>
@@ -256,16 +256,16 @@ export default function ImagesToPdfTool() {
 								</Reorder.Item>
 							))}
 
-							<div className="flex flex-col items-center justify-center aspect-[3/4] bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer text-slate-400 hover:text-blue-500" onClick={() => document.querySelector('input[type=file]').click()}>
+							<div className="flex flex-col items-center justify-center aspect-[3/4] bg-secondary rounded-xl border-2 border-dashed border-border hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer text-muted-foreground hover:text-blue-500" onClick={() => document.querySelector('input[type=file]').click()}>
 								<ImageIcon className="w-8 h-8 mb-2" />
 								<span className="text-xs font-semibold">Add More</span>
 							</div>
 						</Reorder.Group>
 
 						<div className="flex justify-end sticky bottom-6 z-10">
-							<div className="bg-white p-4 rounded-2xl shadow-xl border border-slate-200 flex gap-4">
+							<div className="bg-card p-4 rounded-2xl shadow-xl border border-border flex gap-4">
 								<button
-									className="px-6 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-100 transition-colors"
+									className="px-6 py-2.5 rounded-xl font-bold text-muted-foreground hover:bg-slate-100 transition-colors"
 									onClick={() => { setImages([]); setErrorMsg(''); setSuccessMsg(''); }}
 								>
 									Reset

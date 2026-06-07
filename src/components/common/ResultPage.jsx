@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Download, RefreshCcw, FileText, Scissors, Layers, TrendingDown, Eye, CheckCircle } from 'lucide-react'
+import { Download, RefreshCcw, FileText, TrendingDown, Eye, CheckCircle, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useFileHistory } from '@/hooks/useFileHistory'
+import { TOOLS } from '@/config/tools'
 import * as pdfjsLib from 'pdfjs-dist'
 import { configurePdfWorker } from '@/utils/pdfWorker'
 
@@ -15,23 +16,32 @@ configurePdfWorker()
 export default function ResultPage({
   title = "Files Processed Successfully!",
   description = "Your document is ready to download.",
+  message,
   downloadUrl,
   downloadFilename,
+  outputFilename,
   onReset,
   sourceFile,
   toolId,
   resultBlob,
-  stats = []
+  stats = [],
+  multipleDownloads = []
 }) {
+  const resolvedDescription = message || description
+  const resolvedFilename = downloadFilename || outputFilename || 'download'
   const { addToHistory } = useFileHistory()
   const [previewUrl, setPreviewUrl] = useState(null)
   const [loadingPreview, setLoadingPreview] = useState(true)
   const [pageCount, setPageCount] = useState(0)
   const [resultSize, setResultSize] = useState(null)
+  const recordedHistoryKey = useRef(null)
 
   // Add to history on mount
   useEffect(() => {
     if (sourceFile && toolId) {
+      const historyKey = `${toolId}:${sourceFile.name}:${sourceFile.size}`
+      if (recordedHistoryKey.current === historyKey) return
+      recordedHistoryKey.current = historyKey
       addToHistory({
         name: sourceFile.name,
         size: sourceFile.size,
@@ -40,7 +50,7 @@ export default function ResultPage({
         status: 'completed'
       })
     }
-  }, [])
+  }, [addToHistory, sourceFile, toolId])
 
   // Get result size
   useEffect(() => {
@@ -73,7 +83,7 @@ export default function ResultPage({
         const response = await fetch(downloadUrl)
         const blob = await response.blob()
 
-        if (!blob.type.includes('pdf') && !downloadFilename?.toLowerCase()?.endsWith('.pdf')) {
+        if (!blob.type.includes('pdf') && !resolvedFilename.toLowerCase().endsWith('.pdf')) {
           setLoadingPreview(false)
           return
         }
@@ -101,7 +111,7 @@ export default function ResultPage({
     }
 
     generatePreview()
-  }, [downloadUrl])
+  }, [downloadUrl, resolvedFilename])
 
   function formatBytes(n) {
     if (n == null) return '-'
@@ -113,12 +123,26 @@ export default function ResultPage({
   const sizeSaved = sourceFile && resultSize ? sourceFile.size - resultSize : null
   const savingsPercent = sizeSaved && sourceFile.size > 0 ? ((sizeSaved / sourceFile.size) * 100).toFixed(1) : null
 
-  // Suggested tools
-  const suggestions = [
-    { label: "Compress", icon: TrendingDown, href: "/compress", color: "text-green-600", bg: "bg-green-50" },
-    { label: "Merge", icon: Layers, href: "/merge", color: "text-red-600", bg: "bg-red-50" },
-    { label: "Split", icon: Scissors, href: "/split", color: "text-blue-600", bg: "bg-blue-50" },
-  ]
+  const nextToolIds = {
+    merge: ['compress', 'pagenums', 'protect'],
+    split: ['merge', 'compress', 'pdf2text'],
+    compress: ['protect', 'signature', 'pdf2word'],
+    edit: ['flatten', 'compress', 'protect'],
+    redact: ['scrub', 'flatten', 'protect'],
+    scrub: ['protect', 'signature', 'compress'],
+    protect: ['signature', 'compress', 'unlock'],
+    unlock: ['edit', 'compress', 'protect'],
+    pdf2word: ['word2pdf', 'compress', 'protect'],
+    word2pdf: ['compress', 'merge', 'protect'],
+    pdf2imgs: ['imgs2pdf', 'compress', 'ocr'],
+    imgs2pdf: ['compress', 'ocr', 'protect'],
+    ocr: ['pdf2word', 'pdf2text', 'translate-pdf'],
+    signature: ['flatten', 'protect', 'compress'],
+  }
+  const suggestionIds = nextToolIds[toolId] || ['compress', 'merge', 'protect']
+  const suggestions = suggestionIds
+    .map(id => TOOLS.find(tool => tool.id === id))
+    .filter(Boolean)
 
   return (
     <div className="text-center py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -134,7 +158,7 @@ export default function ResultPage({
       </motion.div>
 
       <h2 className="text-2xl font-bold text-foreground mb-2">{title}</h2>
-      <p className="text-muted-foreground mb-6 max-w-md mx-auto">{description}</p>
+      <p className="text-muted-foreground mb-6 max-w-md mx-auto">{resolvedDescription}</p>
 
       {/* Custom Stats (if provided) */}
       {stats.length > 0 && (
@@ -226,13 +250,21 @@ export default function ResultPage({
       {/* Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
         {downloadUrl && (
-          <a href={downloadUrl} download={downloadFilename} className="w-full sm:w-auto">
+          <a href={downloadUrl} download={resolvedFilename} className="w-full sm:w-auto">
             <button className="w-full sm:w-auto text-lg h-14 px-8 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2">
               <Download className="w-5 h-5" />
               Download File
             </button>
           </a>
         )}
+        {multipleDownloads.slice(1).map((item, index) => (
+          <a key={`${item.name}-${index}`} href={item.url} download={item.name} className="w-full sm:w-auto">
+            <button className="w-full sm:w-auto h-14 px-6 border border-border text-foreground font-semibold rounded-xl hover:bg-secondary transition-colors flex items-center justify-center gap-2">
+              <Download className="w-5 h-5" />
+              {item.name}
+            </button>
+          </a>
+        ))}
         {onReset && (
           <button
             onClick={onReset}
@@ -246,19 +278,20 @@ export default function ResultPage({
 
       {/* Suggestions */}
       <div className="bg-secondary/50 rounded-2xl p-8 border border-border max-w-3xl mx-auto">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-6">
-          Continue with other tools
-        </h3>
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Common next steps</h3>
+        <p className="mb-6 text-sm text-muted-foreground">Choose another useful action for your document.</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {suggestions.map((tool) => (
-            <Link href={tool.href} key={tool.label}>
-              <div className="bg-card p-4 rounded-xl border border-border shadow-sm hover:shadow-md hover:border-primary/30 transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group cursor-pointer">
-                <div className={`p-2 rounded-lg ${tool.bg} ${tool.color}`}>
+            <Link href={tool.href || `/${tool.id}`} key={tool.id}>
+              <div className="group flex h-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-md">
+                <div className="rounded-lg bg-primary/10 p-2 text-primary">
                   <tool.icon className="w-4 h-4" />
                 </div>
-                <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                  {tool.label} PDF
-                </span>
+                <div className="min-w-0">
+                  <p className="font-semibold text-foreground transition-colors group-hover:text-primary">{tool.title}</p>
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">{tool.description}</p>
+                </div>
+                <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
               </div>
             </Link>
           ))}

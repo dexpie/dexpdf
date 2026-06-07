@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const STORAGE_KEY = 'dexpdf_history'
 
@@ -18,34 +18,30 @@ export function useFileHistory() {
         }
     }, [])
 
-    const generateHash = () => {
-        return Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
-    }
-
     const generateOpId = () => {
         return 'OP-' + Math.random().toString(36).substr(2, 9).toUpperCase()
     }
 
-    const addToHistory = (fileMetadata) => {
+    const addToHistory = useCallback((fileMetadata) => {
         // fileMetadata: { name, size, type, tool, date, id }
         const newItem = {
             id: Date.now().toString(),
             date: new Date().toISOString(),
             opId: generateOpId(),
-            hash: generateHash(),
-            integrity: 'Verified',
             ...fileMetadata
         }
 
-        const newHistory = [newItem, ...history].slice(0, 50) // Keep last 50
-        setHistory(newHistory)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory))
-    }
+        setHistory(previous => {
+            const newHistory = [newItem, ...previous].slice(0, 50)
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(newHistory))
+            return newHistory
+        })
+    }, [])
 
-    const clearHistory = () => {
+    const clearHistory = useCallback(() => {
         setHistory([])
         localStorage.removeItem(STORAGE_KEY)
-    }
+    }, [])
 
     return { history, addToHistory, clearHistory }
 }

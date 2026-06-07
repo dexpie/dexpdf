@@ -53,31 +53,31 @@ export default function ImageResizerTool() {
                     <FileDropZone onFiles={handleFile} accept="image/*" hint="Upload image to resize" />
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="bg-white p-6 rounded-3xl shadow flex flex-col items-center">
-                            <h3 className="font-bold text-slate-500 mb-4">Preview</h3>
+                        <div className="bg-card p-6 rounded-3xl shadow flex flex-col items-center">
+                            <h3 className="font-bold text-muted-foreground mb-4">Preview</h3>
                             <img src={image.src} className="max-w-full max-h-64 object-contain rounded" alt="Original" />
-                            <p className="mt-2 text-xs text-slate-400 font-bold">{originalSize.w} x {originalSize.h}</p>
+                            <p className="mt-2 text-xs text-muted-foreground font-bold">{originalSize.w} x {originalSize.h}</p>
                             <button onClick={() => setImage(null)} className="mt-4 text-red-500 text-sm font-bold hover:underline">Remove</button>
                         </div>
 
-                        <div className="bg-white p-6 rounded-3xl shadow space-y-6">
-                            <h3 className="font-bold text-slate-700 text-lg flex items-center gap-2">
+                        <div className="bg-card p-6 rounded-3xl shadow space-y-6">
+                            <h3 className="font-bold text-foreground text-lg flex items-center gap-2">
                                 <ImageIcon className="w-5 h-5 text-blue-500" /> Resize Options
                             </h3>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-slate-400 uppercase">Width</label>
+                                    <label className="text-xs font-bold text-muted-foreground uppercase">Width</label>
                                     <input
                                         type="number" value={targetSize.w} onChange={e => handleResize('w', Number(e.target.value))}
-                                        className="w-full p-3 bg-slate-50 rounded-xl font-bold"
+                                        className="w-full p-3 bg-secondary rounded-xl font-bold"
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-slate-400 uppercase">Height</label>
+                                    <label className="text-xs font-bold text-muted-foreground uppercase">Height</label>
                                     <input
                                         type="number" value={targetSize.h} onChange={e => handleResize('h', Number(e.target.value))}
-                                        className="w-full p-3 bg-slate-50 rounded-xl font-bold"
+                                        className="w-full p-3 bg-secondary rounded-xl font-bold"
                                     />
                                 </div>
                             </div>

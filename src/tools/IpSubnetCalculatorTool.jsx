@@ -64,25 +64,25 @@ export default function IpSubnetCalculatorTool() {
         <ToolLayout title="IP Subnet Calculator" description="Calculate CIDR, network mask, and host ranges.">
             <div className="max-w-4xl mx-auto flex flex-col gap-8">
                 {/* Input */}
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-col md:flex-row gap-6 items-start md:items-center">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-col md:flex-row gap-6 items-start md:items-center">
                     <div className="flex-1 w-full">
-                        <label className="text-sm font-bold text-slate-500 uppercase mb-2 block">IP Address</label>
+                        <label className="text-sm font-bold text-muted-foreground uppercase mb-2 block">IP Address</label>
                         <input
                             value={ip}
                             onChange={e => setIp(e.target.value)}
-                            className="w-full text-xl font-mono font-bold p-3 bg-slate-50 border border-slate-200 rounded-xl"
+                            className="w-full text-xl font-mono font-bold p-3 bg-secondary border border-border rounded-xl"
                             placeholder="192.168.1.1"
                         />
                     </div>
                     <div className="w-full md:w-32">
-                        <label className="text-sm font-bold text-slate-500 uppercase mb-2 block">CIDR</label>
+                        <label className="text-sm font-bold text-muted-foreground uppercase mb-2 block">CIDR</label>
                         <div className="relative">
-                            <span className="absolute left-3 top-3 text-slate-400 font-bold">/</span>
+                            <span className="absolute left-3 top-3 text-muted-foreground font-bold">/</span>
                             <input
                                 type="number" min="0" max="32"
                                 value={prefix}
                                 onChange={e => setPrefix(parseInt(e.target.value))}
-                                className="w-full text-xl font-mono font-bold p-3 pl-6 bg-slate-50 border border-slate-200 rounded-xl"
+                                className="w-full text-xl font-mono font-bold p-3 pl-6 bg-secondary border border-border rounded-xl"
                             />
                         </div>
                     </div>
@@ -103,7 +103,7 @@ export default function IpSubnetCalculatorTool() {
                         <DetailCard label="First Host" value={result.firstHost} icon="green" />
                         <DetailCard label="Last Host" value={result.lastHost} icon="green" />
                         <div className="md:col-span-2 bg-slate-900 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
-                            <span className="font-bold uppercase tracking-widest text-slate-400">Usable Hosts</span>
+                            <span className="font-bold uppercase tracking-widest text-muted-foreground">Usable Hosts</span>
                             <span className="text-3xl font-mono font-bold text-green-400">{result.hosts}</span>
                         </div>
                     </div>
@@ -123,9 +123,9 @@ function DetailCard({ label, value, icon }) {
     }
 
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-            <div className="text-xs font-bold text-slate-400 uppercase mb-1">{label}</div>
-            <div className="text-xl font-mono font-bold text-slate-800">{value}</div>
+        <div className="bg-card p-6 rounded-2xl shadow-sm border border-border">
+            <div className="text-xs font-bold text-muted-foreground uppercase mb-1">{label}</div>
+            <div className="text-xl font-mono font-bold text-foreground">{value}</div>
         </div>
     )
 }

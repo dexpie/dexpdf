@@ -65,7 +65,7 @@ export default function UnlockPdfTool() {
 
     // Check if encrypted
     try {
-      await PDFDocument.load(array)
+      await PDFDocument.load(data)
       setErrorMsg('This PDF is not password protected.')
       setIsEncrypted(false)
     } catch (err) {
@@ -101,17 +101,28 @@ export default function UnlockPdfTool() {
       const array = await file.arrayBuffer()
 
       setProgress(40)
-      const srcPdf = await PDFDocument.load(array, {
-        password: password,
-      })
-
-      setProgress(60)
+      const pdfjs = await import('pdfjs-dist')
+      const source = await pdfjs.getDocument({ data: array, password }).promise
       const pdf = await PDFDocument.create()
-      const copied = await pdf.copyPages(srcPdf, srcPdf.getPageIndices())
-      copied.forEach(page => pdf.addPage(page))
 
-      setProgress(80)
-      const outBytes = await pdf.save()
+      for (let pageNumber = 1; pageNumber <= source.numPages; pageNumber++) {
+        setProgress(30 + Math.round((pageNumber / source.numPages) * 55))
+        const sourcePage = await source.getPage(pageNumber)
+        const viewport = sourcePage.getViewport({ scale: 1.5 })
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.ceil(viewport.width)
+        canvas.height = Math.ceil(viewport.height)
+        const context = canvas.getContext('2d', { alpha: false })
+        context.fillStyle = '#fff'
+        context.fillRect(0, 0, canvas.width, canvas.height)
+        await sourcePage.render({ canvasContext: context, viewport }).promise
+        const pngBytes = await fetch(canvas.toDataURL('image/png')).then(response => response.arrayBuffer())
+        const image = await pdf.embedPng(pngBytes)
+        const page = pdf.addPage([viewport.width, viewport.height])
+        page.drawImage(image, { x: 0, y: 0, width: viewport.width, height: viewport.height })
+      }
+
+      const outBytes = await pdf.save({ useObjectStreams: true })
 
       setProgress(95)
       const blob = new Blob([outBytes], { type: 'application/pdf' })
@@ -125,7 +136,7 @@ export default function UnlockPdfTool() {
       a.click()
 
       setDownloadUrl(url)
-      setSuccessMsg('PDF unlocked successfully!')
+      setSuccessMsg('Unlocked flattened copy created successfully!')
       triggerConfetti()
     } catch (err) {
       console.error(err)
@@ -154,7 +165,7 @@ export default function UnlockPdfTool() {
   return (
     <ToolLayout
       title="Unlock PDF"
-      description="Remove password protection from your PDF documents"
+      description="Create an unprotected flattened copy using the correct open password"
     >
       <div className="max-w-2xl mx-auto">
 
@@ -327,7 +338,7 @@ export default function UnlockPdfTool() {
                 ) : (
                   <>
                     <Unlock className="w-5 h-5" />
-                    Unlock PDF
+                    Create Unlocked Copy
                   </>
                 )}
               </button>

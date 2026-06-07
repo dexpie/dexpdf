@@ -25,15 +25,15 @@ export default function SqlFormatterTool() {
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-6 h-[600px]">
 
                 {/* Input */}
-                <div className="flex-1 flex flex-col bg-white rounded-3xl shadow-lg border border-slate-200 overflow-hidden">
-                    <div className="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
+                <div className="flex-1 flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
+                    <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
                         <label className="font-bold text-slate-600 flex items-center gap-2">
                             <Terminal className="w-4 h-4" /> Raw SQL
                         </label>
                         <select
                             value={language}
                             onChange={e => setLanguage(e.target.value)}
-                            className="text-xs font-bold bg-white border border-slate-300 rounded-lg p-1 text-slate-600"
+                            className="text-xs font-bold bg-card border border-slate-300 rounded-lg p-1 text-slate-600"
                         >
                             <option value="sql">Standard SQL</option>
                             <option value="postgresql">PostgreSQL</option>
@@ -46,7 +46,7 @@ export default function SqlFormatterTool() {
                         value={input}
                         onChange={e => setInput(e.target.value)}
                         placeholder="SELECT * FROM table..."
-                        className="flex-1 w-full p-6 resize-none outline-none font-mono text-sm leading-relaxed text-slate-700 bg-slate-50/50"
+                        className="flex-1 w-full p-6 resize-none outline-none font-mono text-sm leading-relaxed text-foreground bg-secondary/50"
                     />
                 </div>
 
@@ -64,10 +64,10 @@ export default function SqlFormatterTool() {
                 {/* Output */}
                 <div className="flex-1 flex flex-col bg-slate-900 rounded-3xl shadow-lg border border-slate-800 overflow-hidden">
                     <div className="bg-slate-800 p-4 border-b border-slate-700 flex justify-between items-center">
-                        <label className="font-bold text-slate-300 flex items-center gap-2">
+                        <label className="font-bold text-muted-foreground flex items-center gap-2">
                             <Database className="w-4 h-4" /> Formatted
                         </label>
-                        <button onClick={() => navigator.clipboard.writeText(output)} className="text-slate-400 hover:text-white">
+                        <button onClick={() => navigator.clipboard.writeText(output)} className="text-muted-foreground hover:text-white">
                             <Copy className="w-4 h-4" />
                         </button>
                     </div>

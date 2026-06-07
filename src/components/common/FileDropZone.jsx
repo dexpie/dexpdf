@@ -48,6 +48,7 @@ function getAcceptExtensions(accept) {
  */
 export default function FileDropZone({
   onFiles,
+  onChange,
   accept = 'application/pdf',
   multiple = false,
   disabled = false,
@@ -61,6 +62,10 @@ export default function FileDropZone({
 
   const FileIcon = getFileIcon(accept)
   const acceptExtensions = getAcceptExtensions(accept)
+  const notifyFiles = (validFiles) => {
+    const callback = onFiles || onChange
+    if (typeof callback === 'function') callback(validFiles)
+  }
 
   /**
    * Validate files against size and type requirements
@@ -114,7 +119,7 @@ export default function FileDropZone({
     const files = e.dataTransfer.files
     const validFiles = validateFiles(files)
     if (validFiles) {
-      onFiles(multiple ? validFiles : validFiles[0])
+      notifyFiles(validFiles)
     }
   }
 
@@ -122,7 +127,7 @@ export default function FileDropZone({
     const files = e.target.files
     const validFiles = validateFiles(files)
     if (validFiles) {
-      onFiles(multiple ? validFiles : validFiles[0])
+      notifyFiles(validFiles)
     }
     e.target.value = ''
   }

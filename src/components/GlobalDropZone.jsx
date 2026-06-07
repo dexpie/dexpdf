@@ -70,22 +70,22 @@ export default function GlobalDropZone() {
 
     return (
         <div className="fixed inset-0 z-[9999] bg-black/60 flex items-center justify-center">
-            <div className="bg-white rounded-2xl p-12 text-center shadow-2xl border-2 border-dashed border-red-300 max-w-md mx-4">
+            <div className="bg-card rounded-2xl p-12 text-center shadow-2xl border-2 border-dashed border-red-300 max-w-md mx-4">
                 <div className="w-16 h-16 bg-red-50 rounded-xl mx-auto mb-4 flex items-center justify-center">
                     {dragType === 'pdf' ? (
                         <FileText className="w-8 h-8 text-red-500" />
                     ) : dragType === 'image' ? (
                         <ImageIcon className="w-8 h-8 text-blue-500" />
                     ) : (
-                        <Upload className="w-8 h-8 text-slate-400" />
+                        <Upload className="w-8 h-8 text-muted-foreground" />
                     )}
                 </div>
-                <h2 className="text-xl font-bold text-slate-800 mb-2">
+                <h2 className="text-xl font-bold text-foreground mb-2">
                     {dragType === 'pdf' ? 'Drop your PDF here' :
                      dragType === 'image' ? 'Drop image to convert' :
                      'Drop your file here'}
                 </h2>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-muted-foreground">
                     {dragType === 'pdf' ? 'We\'ll open the best tool for your file' :
                      dragType === 'image' ? 'Convert to PDF instantly' :
                      'Release to process your file'}

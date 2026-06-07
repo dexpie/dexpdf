@@ -44,7 +44,7 @@ export default function StopwatchTool() {
                     <div className="text-6xl font-black font-mono tracking-wider tabular-nums">
                         {formatTime(time)}
                     </div>
-                    <div className="text-slate-500 font-bold uppercase mt-2 text-sm tracking-widest">
+                    <div className="text-muted-foreground font-bold uppercase mt-2 text-sm tracking-widest">
                         {running ? 'Running' : 'Stopped'}
                     </div>
                 </div>
@@ -70,7 +70,7 @@ export default function StopwatchTool() {
                     {!running && time > 0 && (
                         <button
                             onClick={reset}
-                            className="w-16 h-16 rounded-full bg-slate-500 flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
+                            className="w-16 h-16 rounded-full bg-secondary0 flex items-center justify-center text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
                         >
                             <RefreshCw />
                         </button>
@@ -78,12 +78,12 @@ export default function StopwatchTool() {
                 </div>
 
                 {laps.length > 0 && (
-                    <div className="bg-white rounded-3xl shadow-lg border border-slate-100 overflow-hidden">
-                        <div className="bg-slate-50 p-4 font-bold text-slate-500 text-center uppercase text-xs">Laps</div>
+                    <div className="bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
+                        <div className="bg-secondary p-4 font-bold text-muted-foreground text-center uppercase text-xs">Laps</div>
                         <div className="max-h-60 overflow-auto">
                             {laps.slice().reverse().map((l, i) => (
-                                <div key={i} className="flex justify-between p-4 border-b border-slate-100 last:border-0 font-mono font-bold text-slate-700">
-                                    <span className="text-slate-400">#{laps.length - i}</span>
+                                <div key={i} className="flex justify-between p-4 border-b border-border last:border-0 font-mono font-bold text-foreground">
+                                    <span className="text-muted-foreground">#{laps.length - i}</span>
                                     <span>{formatTime(l)}</span>
                                 </div>
                             ))}

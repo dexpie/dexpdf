@@ -65,8 +65,9 @@ export default function ScanTool() {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = getOutputFilename(null, '_scan', 'scanned_doc')
+            a.download = getOutputFilename(null, 'scanned_document', 'pdf')
             a.click()
+            URL.revokeObjectURL(url)
             triggerConfetti()
 
         } catch (err) {
@@ -101,7 +102,7 @@ export default function ScanTool() {
                         <div className="absolute bottom-6 left-0 right-0 flex justify-center items-center gap-6 z-10">
                             <button
                                 onClick={() => setFacingMode(m => m === 'user' ? 'environment' : 'user')}
-                                className="p-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition-all"
+                                className="p-3 bg-card/20 backdrop-blur-md rounded-full text-white hover:bg-card/30 transition-all"
                                 title="Switch Camera"
                             >
                                 <RefreshCw className="w-6 h-6" />
@@ -109,7 +110,7 @@ export default function ScanTool() {
 
                             <button
                                 onClick={capture}
-                                className="w-16 h-16 bg-white rounded-full border-4 border-slate-200 shadow-xl active:scale-95 transition-all flex items-center justify-center"
+                                className="w-16 h-16 bg-card rounded-full border-4 border-border shadow-xl active:scale-95 transition-all flex items-center justify-center"
                             >
                                 <div className="w-12 h-12 bg-red-500 rounded-full" />
                             </button>
@@ -121,9 +122,9 @@ export default function ScanTool() {
 
                 {/* Sidebar / Gallery */}
                 <div className="w-full md:w-80 flex flex-col gap-4">
-                    <div className="bg-white p-4 rounded-3xl shadow-lg border border-slate-100 flex-1 flex flex-col">
+                    <div className="bg-card p-4 rounded-3xl shadow-lg border border-border flex-1 flex flex-col">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg text-slate-800">Scanned Pages ({images.length})</h3>
+                            <h3 className="font-bold text-lg text-foreground">Scanned Pages ({images.length})</h3>
                             {images.length > 0 && (
                                 <button onClick={() => setImages([])} className="text-red-500 text-xs hover:underline">Clear All</button>
                             )}
@@ -131,13 +132,13 @@ export default function ScanTool() {
 
                         <div className="flex-1 overflow-y-auto space-y-3 min-h-[300px] max-h-[600px] pr-2">
                             {images.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-full text-slate-400 text-sm italic">
+                                <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm italic">
                                     <Camera className="w-8 h-8 mb-2 opacity-50" />
                                     No pages scanned yet.
                                 </div>
                             ) : (
                                 images.map((img, idx) => (
-                                    <div key={idx} className="relative group bg-slate-50 rounded-xl overflow-hidden border border-slate-200">
+                                    <div key={idx} className="relative group bg-secondary rounded-xl overflow-hidden border border-border">
                                         <img src={img} alt={`Page ${idx + 1}`} className="w-full h-auto object-cover" />
                                         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <button
@@ -155,7 +156,7 @@ export default function ScanTool() {
                             )}
                         </div>
 
-                        <div className="pt-4 mt-auto border-t border-slate-100">
+                        <div className="pt-4 mt-auto border-t border-border">
                             <button
                                 onClick={generatePdf}
                                 disabled={images.length === 0 || isBusy}

@@ -41,16 +41,16 @@ export default function TokenGeneratorTool() {
             <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
 
                 {/* Controls */}
-                <div className="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 flex flex-col gap-6">
-                    <h3 className="font-bold text-lg text-slate-700 flex items-center gap-2">
+                <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-col gap-6">
+                    <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
                         <KeyRound className="w-5 h-5 text-purple-500" /> Settings
                     </h3>
 
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-400 uppercase">Type</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">Type</label>
                         <select
                             value={type} onChange={e => setType(e.target.value)}
-                            className="w-full p-3 bg-slate-50 rounded-xl font-bold text-slate-700 outline-none"
+                            className="w-full p-3 bg-secondary rounded-xl font-bold text-foreground outline-none"
                         >
                             <option value="uuid">UUID v4</option>
                             <option value="hex">Hex (0-9, a-f)</option>
@@ -61,19 +61,19 @@ export default function TokenGeneratorTool() {
 
                     {type !== 'uuid' && (
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-slate-400 uppercase">Length</label>
+                            <label className="text-xs font-bold text-muted-foreground uppercase">Length</label>
                             <input
                                 type="number" value={length} onChange={e => setLength(Number(e.target.value))}
-                                className="w-full p-3 bg-slate-50 rounded-xl font-bold"
+                                className="w-full p-3 bg-secondary rounded-xl font-bold"
                             />
                         </div>
                     )}
 
                     <div className="space-y-2">
-                        <label className="text-xs font-bold text-slate-400 uppercase">Quantity</label>
+                        <label className="text-xs font-bold text-muted-foreground uppercase">Quantity</label>
                         <input
                             type="number" value={count} onChange={e => setCount(Number(e.target.value))} min="1" max="100"
-                            className="w-full p-3 bg-slate-50 rounded-xl font-bold"
+                            className="w-full p-3 bg-secondary rounded-xl font-bold"
                         />
                     </div>
 
@@ -88,8 +88,8 @@ export default function TokenGeneratorTool() {
                 {/* Output */}
                 <div className="md:col-span-2 bg-slate-900 rounded-3xl shadow-xl flex flex-col overflow-hidden relative min-h-[400px]">
                     <div className="bg-slate-800 p-4 border-b border-slate-700 flex justify-between items-center">
-                        <div className="text-slate-400 font-bold">Generated Tokens</div>
-                        <button onClick={() => navigator.clipboard.writeText(tokens.join('\n'))} className="text-slate-400 hover:text-white">
+                        <div className="text-muted-foreground font-bold">Generated Tokens</div>
+                        <button onClick={() => navigator.clipboard.writeText(tokens.join('\n'))} className="text-muted-foreground hover:text-white">
                             <Copy className="w-4 h-4" />
                         </button>
                     </div>

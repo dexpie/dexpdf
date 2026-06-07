@@ -14,13 +14,13 @@ const ApiKeyModal = ({ onSave, onClose }) => {
     const [input, setInput] = useState('')
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700">
+            <div className="bg-card dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl border border-border dark:border-slate-700">
                 <div className="text-center mb-6">
                     <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Brain className="w-6 h-6" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">Enable AI Intelligence</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                    <h3 className="text-xl font-bold text-foreground dark:text-slate-200">Enable AI Intelligence</h3>
+                    <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-2">
                         To generate smart quizzes from your documents, please enter your free Google Gemini API Key.
                     </p>
                 </div>
@@ -29,7 +29,7 @@ const ApiKeyModal = ({ onSave, onClose }) => {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     placeholder="Enter Gemini API Key"
-                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 mb-4 focus:ring-2 ring-purple-500 outline-none"
+                    className="w-full p-3 rounded-xl border border-border dark:border-slate-600 bg-secondary dark:bg-slate-900 text-foreground dark:text-slate-200 mb-4 focus:ring-2 ring-purple-500 outline-none"
                 />
                 <button
                     onClick={() => { if (input) onSave(input) }}
@@ -151,26 +151,26 @@ export default function QuizGeneratorTool() {
                 {!file ? (
                     <FileDropZone onFiles={handleFileChange} accept="application/pdf" hint="Upload lecture notes or textbook" />
                 ) : (
-                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-100 dark:border-slate-700">
+                    <div className="bg-card dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-border dark:border-slate-700">
                         {/* Header */}
-                        <div className="bg-slate-50 dark:bg-slate-900 p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                        <div className="bg-secondary dark:bg-slate-900 p-6 border-b border-border dark:border-slate-700 flex justify-between items-center">
                             <div className="flex items-center gap-3">
                                 <div className="bg-purple-100 p-2 rounded-xl text-purple-600">
                                     <Brain className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-slate-800 dark:text-slate-200">{file.name}</h3>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">AI Knowledge Engine Ready</p>
+                                    <h3 className="font-bold text-foreground dark:text-slate-200">{file.name}</h3>
+                                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">AI Knowledge Engine Ready</p>
                                 </div>
                             </div>
-                            <button onClick={() => setFile(null)} className="text-xs font-bold text-slate-400 hover:text-red-500">Change File</button>
+                            <button onClick={() => setFile(null)} className="text-xs font-bold text-muted-foreground hover:text-red-500">Change File</button>
                         </div>
 
                         <div className="p-8">
                             {!quiz ? (
                                 <div className="text-center py-10">
-                                    <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-4">Ready to test your knowledge?</h3>
-                                    <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">
+                                    <h3 className="text-2xl font-bold text-foreground dark:text-slate-200 mb-4">Ready to test your knowledge?</h3>
+                                    <p className="text-muted-foreground dark:text-muted-foreground mb-8 max-w-md mx-auto">
                                         Our AI will analyze the document and generate multiple choice questions to help you study.
                                     </p>
                                     <button
@@ -190,9 +190,9 @@ export default function QuizGeneratorTool() {
                             ) : (
                                 <div className="space-y-8">
                                     {quiz.questions.map((q, qIdx) => (
-                                        <div key={q.id} className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-700">
-                                            <h4 className="font-bold text-slate-800 dark:text-slate-200 text-lg mb-4 flex gap-3">
-                                                <span className="bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-500 w-8 h-8 rounded-lg flex items-center justify-center border border-slate-200 dark:border-slate-700 text-sm">{qIdx + 1}</span>
+                                        <div key={q.id} className="bg-secondary dark:bg-slate-900 rounded-2xl p-6 border border-border dark:border-slate-700">
+                                            <h4 className="font-bold text-foreground dark:text-slate-200 text-lg mb-4 flex gap-3">
+                                                <span className="bg-card dark:bg-slate-800 text-muted-foreground dark:text-muted-foreground w-8 h-8 rounded-lg flex items-center justify-center border border-border dark:border-slate-700 text-sm">{qIdx + 1}</span>
                                                 {q.text}
                                             </h4>
 
@@ -207,10 +207,10 @@ export default function QuizGeneratorTool() {
                                                     if (score) {
                                                         if (isCorrect) className += "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-bold"
                                                         else if (isWrong) className += "border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
-                                                        else className += "border-slate-200 dark:border-slate-700 opacity-50 dark:opacity-40 text-slate-500 dark:text-slate-400"
+                                                        else className += "border-border dark:border-slate-700 opacity-50 dark:opacity-40 text-muted-foreground dark:text-muted-foreground"
                                                     } else {
                                                         if (isSelected) className += "border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 font-semibold"
-                                                        else className += "border-slate-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-500/50 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                                                        else className += "border-border dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-500/50 bg-card dark:bg-slate-800 text-foreground dark:text-muted-foreground"
                                                     }
 
                                                     return (
@@ -244,10 +244,10 @@ export default function QuizGeneratorTool() {
                                             className="bg-slate-900 text-white p-8 rounded-3xl text-center"
                                         >
                                             <h3 className="text-3xl font-bold mb-2">You Scored {Math.round((score.correct / score.total) * 100)}%</h3>
-                                            <p className="text-slate-400 mb-6">{score.correct} out of {score.total} correct</p>
+                                            <p className="text-muted-foreground mb-6">{score.correct} out of {score.total} correct</p>
 
                                             <div className="flex justify-center gap-4">
-                                                <button onClick={() => { setScore(null); setSelectedAnswers({}); }} className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold">Retry Quiz</button>
+                                                <button onClick={() => { setScore(null); setSelectedAnswers({}); }} className="px-6 py-3 bg-card/10 hover:bg-card/20 rounded-xl font-bold">Retry Quiz</button>
                                                 <button className="px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded-xl font-bold flex items-center gap-2"><Download className="w-4 h-4" /> Save Results</button>
                                             </div>
                                         </motion.div>

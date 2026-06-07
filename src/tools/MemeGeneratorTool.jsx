@@ -56,14 +56,14 @@ export default function MemeGeneratorTool() {
                 </div>
 
                 {image && (
-                    <div className="w-full md:w-80 bg-white p-6 rounded-3xl shadow-lg border border-slate-100 space-y-4 h-fit">
+                    <div className="w-full md:w-80 bg-card p-6 rounded-3xl shadow-lg border border-border space-y-4 h-fit">
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-slate-400 uppercase">Top Text</label>
-                            <input value={topText} onChange={e => setTopText(e.target.value.toUpperCase())} className="w-full p-3 bg-slate-50 font-bold border border-slate-200 rounded-xl" />
+                            <label className="text-xs font-bold text-muted-foreground uppercase">Top Text</label>
+                            <input value={topText} onChange={e => setTopText(e.target.value.toUpperCase())} className="w-full p-3 bg-secondary font-bold border border-border rounded-xl" />
                         </div>
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-slate-400 uppercase">Bottom Text</label>
-                            <input value={bottomText} onChange={e => setBottomText(e.target.value.toUpperCase())} className="w-full p-3 bg-slate-50 font-bold border border-slate-200 rounded-xl" />
+                            <label className="text-xs font-bold text-muted-foreground uppercase">Bottom Text</label>
+                            <input value={bottomText} onChange={e => setBottomText(e.target.value.toUpperCase())} className="w-full p-3 bg-secondary font-bold border border-border rounded-xl" />
                         </div>
 
                         <button
@@ -77,7 +77,7 @@ export default function MemeGeneratorTool() {
                         >
                             <Download className="w-5 h-5" /> Download Meme
                         </button>
-                        <button onClick={() => setImage(null)} className="w-full py-2 text-slate-400 text-xs font-bold hover:text-red-500">Pick New Image</button>
+                        <button onClick={() => setImage(null)} className="w-full py-2 text-muted-foreground text-xs font-bold hover:text-red-500">Pick New Image</button>
                     </div>
                 )}
 

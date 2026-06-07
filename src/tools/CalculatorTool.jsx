@@ -74,7 +74,7 @@ export default function CalculatorTool() {
                 <div className="bg-slate-900 rounded-3xl p-6 shadow-2xl border border-slate-800">
                     {/* Display */}
                     <div className="bg-slate-800 rounded-2xl p-4 mb-6 text-right h-32 flex flex-col justify-end overflow-hidden">
-                        <div className="text-slate-400 text-sm h-6">{equation}</div>
+                        <div className="text-muted-foreground text-sm h-6">{equation}</div>
                         <div className="text-white text-4xl font-mono font-bold tracking-wider">{display}</div>
                     </div>
 
@@ -86,9 +86,9 @@ export default function CalculatorTool() {
                         <button onClick={() => handleNumber(')')} className="p-4 rounded-xl bg-slate-700 text-white font-bold hover:bg-slate-600 transition-colors">)</button>
                         <button onClick={() => handleOperator('/')} className="p-4 rounded-xl bg-orange-500 text-white font-bold hover:bg-orange-600 transition-colors">÷</button>
 
-                        <button onClick={() => handleNumber('sin(')} className="p-4 rounded-xl bg-slate-800 text-slate-300 font-bold text-sm hover:bg-slate-700 transition-colors">sin</button>
-                        <button onClick={() => handleNumber('cos(')} className="p-4 rounded-xl bg-slate-800 text-slate-300 font-bold text-sm hover:bg-slate-700 transition-colors">cos</button>
-                        <button onClick={() => handleNumber('tan(')} className="p-4 rounded-xl bg-slate-800 text-slate-300 font-bold text-sm hover:bg-slate-700 transition-colors">tan</button>
+                        <button onClick={() => handleNumber('sin(')} className="p-4 rounded-xl bg-slate-800 text-muted-foreground font-bold text-sm hover:bg-slate-700 transition-colors">sin</button>
+                        <button onClick={() => handleNumber('cos(')} className="p-4 rounded-xl bg-slate-800 text-muted-foreground font-bold text-sm hover:bg-slate-700 transition-colors">cos</button>
+                        <button onClick={() => handleNumber('tan(')} className="p-4 rounded-xl bg-slate-800 text-muted-foreground font-bold text-sm hover:bg-slate-700 transition-colors">tan</button>
                         <button onClick={() => handleOperator('*')} className="p-4 rounded-xl bg-orange-500 text-white font-bold hover:bg-orange-600 transition-colors">×</button>
 
                         {[7, 8, 9].map(n => <button key={n} onClick={() => handleNumber(String(n))} className="p-4 rounded-xl bg-slate-700 text-white font-bold text-xl hover:bg-slate-600 transition-colors shadow-lg">{n}</button>)}

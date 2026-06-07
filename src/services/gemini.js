@@ -4,16 +4,23 @@ const STORAGE_KEY = 'dexpdf_gemini_api_key';
 
 export const getStoredApiKey = () => {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem(STORAGE_KEY);
+    const legacyKey = localStorage.getItem(STORAGE_KEY);
+    if (legacyKey) {
+        sessionStorage.setItem(STORAGE_KEY, legacyKey);
+        localStorage.removeItem(STORAGE_KEY);
+    }
+    return sessionStorage.getItem(STORAGE_KEY);
 };
 
 export const setStoredApiKey = (key) => {
     if (typeof window === 'undefined') return;
-    localStorage.setItem(STORAGE_KEY, key);
+    if (key) sessionStorage.setItem(STORAGE_KEY, key);
+    else sessionStorage.removeItem(STORAGE_KEY);
 };
 
 export const removeStoredApiKey = () => {
     if (typeof window === 'undefined') return;
+    sessionStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(STORAGE_KEY);
 };
 
@@ -23,7 +30,7 @@ export const initializeGemini = (apiKey) => {
 };
 
 // Try server-side proxy first, then fall back to client-side key
-export const generateContent = async (apiKey, prompt, modelName = "gemini-1.5-flash") => {
+export const generateContent = async (apiKey, prompt, modelName = "gemini-2.5-flash") => {
     // 1. Try Server Proxy (if no specific apiKey provided or if we want to prefer server)
     // We prefer server if apiKey is empty/null, OR we can try server first always.
     // Strategy: Try server. If 401/429, check if we have client apiKey.
@@ -64,7 +71,7 @@ export const generateContent = async (apiKey, prompt, modelName = "gemini-1.5-fl
     }
 };
 
-export const generateJSON = async (apiKey, prompt, modelName = "gemini-1.5-flash") => {
+export const generateJSON = async (apiKey, prompt, modelName = "gemini-2.5-flash") => {
     // 1. Try Server Proxy
     try {
         if (!apiKey) {

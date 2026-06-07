@@ -26,9 +26,7 @@ export default function PdfToPdfATool() {
         maxFiles: 1
     })
 
-    // This is a "best effort" client-side PDF/A conversion
-    // True PDF/A requires embedding all fonts and colors, which is hard in-browser.
-    // We will add the Metadata standard structure that *marks* it as PDF/A.
+    // This tool normalizes archival metadata only. It does not claim PDF/A conformance.
     const convertToPdfA = async () => {
         if (!file) return
 
@@ -37,21 +35,13 @@ export default function PdfToPdfATool() {
             const fileBuffer = await file.arrayBuffer()
             const pdfDoc = await PDFDocument.load(fileBuffer)
 
-            // Set Metadata for PDF/A Compliance
+            // Normalize common archival metadata.
             pdfDoc.setTitle(file.name.replace('.pdf', ''))
             pdfDoc.setProducer('DexPDF (dexpdf.com)')
             pdfDoc.setCreator('DexPDF Web Engine')
             const now = new Date()
             pdfDoc.setCreationDate(now)
             pdfDoc.setModificationDate(now)
-
-            // Embed a standard OutputIntent (SRGB) - required for PDF/A
-            // In a real production environment, we would load a .icc profile here.
-            // For this demo/client-side version, we mark the intent without the heavy binary blob if possible,
-            // or rely on pdf-lib's default behavior for saving.
-
-            // Note: pdf-lib doesn't support full PDF/A validation/conversion out of the box.
-            // We are simulating the "tagging" process that makes it acceptable for many archivers.
 
             const pdfBytes = await pdfDoc.save()
             const blob = new Blob([pdfBytes], { type: 'application/pdf' })
@@ -75,17 +65,17 @@ export default function PdfToPdfATool() {
         <div className="max-w-4xl mx-auto">
             {/* Hero Header */}
             <div className="text-center mb-12">
-                <h1 className="text-4xl font-extrabold text-slate-800 mb-4 flex items-center justify-center gap-3">
+                <h1 className="text-4xl font-extrabold text-foreground mb-4 flex items-center justify-center gap-3">
                     <FileArchive className="w-10 h-10 text-rose-600" />
-                    PDF to PDF/A
+                    Archival Metadata Prep
                 </h1>
                 <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                    Convert your documents to PDF/A format for long-term archiving and preservation.
+                    Normalize metadata before validating or converting with a certified PDF/A tool.
                 </p>
             </div>
 
             {/* Main Card */}
-            <div className="glass-card rounded-3xl p-8 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden transition-all duration-300 border border-slate-200 shadow-xl">
+            <div className="glass-card rounded-3xl p-8 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden transition-all duration-300 border border-border shadow-xl">
 
                 <AnimatePresence mode="wait">
                     {/* STATE: IDLE (Upload) */}
@@ -99,17 +89,17 @@ export default function PdfToPdfATool() {
                         >
                             <div
                                 {...getRootProps()}
-                                className={`border-4 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all duration-300 ${isDragActive ? 'border-rose-400 bg-rose-50 scale-102' : 'border-slate-200 hover:border-rose-400 hover:bg-slate-50'
+                                className={`border-4 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all duration-300 ${isDragActive ? 'border-rose-400 bg-rose-50 scale-102' : 'border-border hover:border-rose-400 hover:bg-secondary'
                                     }`}
                             >
                                 <input {...getInputProps()} />
                                 <div className="w-20 h-20 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
                                     <Upload className="w-10 h-10" />
                                 </div>
-                                <h3 className="text-2xl font-bold text-slate-800 mb-2">
+                                <h3 className="text-2xl font-bold text-foreground mb-2">
                                     {isDragActive ? 'Drop to convert...' : 'Drop PDF to Convert'}
                                 </h3>
-                                <p className="text-slate-500">or click to browse files</p>
+                                <p className="text-muted-foreground">or click to browse files</p>
                             </div>
                         </motion.div>
                     )}
@@ -124,7 +114,7 @@ export default function PdfToPdfATool() {
                             className="w-full max-w-md text-center"
                         >
                             <div className="mb-8 relative">
-                                <FileArchive className="w-24 h-24 text-slate-300 mx-auto" />
+                                <FileArchive className="w-24 h-24 text-muted-foreground mx-auto" />
                                 {status === 'converting' && (
                                     <div className="absolute inset-0 flex items-center justify-center">
                                         <div className="w-24 h-24 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
@@ -132,12 +122,12 @@ export default function PdfToPdfATool() {
                                 )}
                             </div>
 
-                            <h3 className="text-xl font-bold text-slate-800 mb-2 truncate px-4">{file.name}</h3>
-                            <p className="text-sm text-slate-500 mb-8">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                            <h3 className="text-xl font-bold text-foreground mb-2 truncate px-4">{file.name}</h3>
+                            <p className="text-sm text-muted-foreground mb-8">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
 
                             {status === 'idle' && (
                                 <div className="mb-8">
-                                    <label className="block text-sm font-medium text-slate-700 mb-2">Compliance Level</label>
+                                    <label className="block text-sm font-medium text-foreground mb-2">Compliance Level</label>
                                     <div className="flex justify-center gap-2">
                                         {['PDF/A-1b', 'PDF/A-2b', 'PDF/A-3b'].map((level) => (
                                             <button
@@ -145,14 +135,14 @@ export default function PdfToPdfATool() {
                                                 onClick={() => setConformance(level)}
                                                 className={`px-4 py-2 rounded-lg text-sm font-semibold border ${conformance === level
                                                         ? 'bg-rose-50 border-rose-500 text-rose-700'
-                                                        : 'bg-white border-slate-200 text-slate-600 hover:border-rose-300'
+                                                        : 'bg-card border-border text-slate-600 hover:border-rose-300'
                                                     }`}
                                             >
                                                 {level}
                                             </button>
                                         ))}
                                     </div>
-                                    <p className="text-xs text-slate-400 mt-2">PDF/A-1b is the most compatible standard for text documents.</p>
+                                    <p className="text-xs text-muted-foreground mt-2">PDF/A-1b is the most compatible standard for text documents.</p>
                                 </div>
                             )}
 
@@ -169,7 +159,7 @@ export default function PdfToPdfATool() {
                                         className="px-8 py-3 bg-rose-600 text-white rounded-xl font-bold hover:bg-rose-700 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-rose-500/30 flex items-center gap-2"
                                     >
                                         <ShieldCheck className="w-5 h-5" />
-                                        Convert to PDF/A
+                                        Prepare Metadata
                                     </button>
                                 </div>
                             )}
@@ -187,13 +177,13 @@ export default function PdfToPdfATool() {
                             <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <Check className="w-10 h-10" />
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-800 mb-2">Conversion Successful!</h3>
-                            <p className="text-slate-600 mb-8">Your document is now PDF/A compliant and archive-ready.</p>
+                            <h3 className="text-2xl font-bold text-foreground mb-2">Metadata Prepared</h3>
+                            <p className="text-slate-600 mb-8">This file is normalized, but it is not certified as PDF/A. Validate it with a standards-compliant validator.</p>
 
                             <div className="flex gap-4 justify-center">
                                 <button
                                     onClick={convertToPdfA} // Retry download
-                                    className="px-6 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition-colors flex items-center gap-2"
+                                    className="px-6 py-3 bg-slate-100 text-foreground rounded-xl font-bold hover:bg-slate-200 transition-colors flex items-center gap-2"
                                 >
                                     <Download className="w-4 h-4" /> Download Again
                                 </button>
@@ -211,26 +201,26 @@ export default function PdfToPdfATool() {
 
             {/* Feature Info */}
             <div className="grid md:grid-cols-3 gap-8 mt-16 px-4">
-                <div className="p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+                <div className="p-6 bg-card rounded-2xl shadow-sm border border-border">
                     <div className="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4">
                         <FileArchive className="w-5 h-5" />
                     </div>
-                    <h3 className="font-bold text-slate-800 mb-2">Long-Term Archiving</h3>
-                    <p className="text-sm text-slate-500">Ensures your document remains readable for decades by embedding all fonts and resources.</p>
+                    <h3 className="font-bold text-foreground mb-2">Long-Term Archiving</h3>
+                    <p className="text-sm text-muted-foreground">Normalizes common document metadata before a formal archival workflow.</p>
                 </div>
-                <div className="p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+                <div className="p-6 bg-card rounded-2xl shadow-sm border border-border">
                     <div className="w-10 h-10 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center mb-4">
                         <ShieldCheck className="w-5 h-5" />
                     </div>
-                    <h3 className="font-bold text-slate-800 mb-2">ISO Standard</h3>
-                    <p className="text-sm text-slate-500">Supports ISO 19005 standards used by governments and legal libraries worldwide.</p>
+                    <h3 className="font-bold text-foreground mb-2">ISO Standard</h3>
+                    <p className="text-sm text-muted-foreground">Supports ISO 19005 standards used by governments and legal libraries worldwide.</p>
                 </div>
-                <div className="p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+                <div className="p-6 bg-card rounded-2xl shadow-sm border border-border">
                     <div className="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4">
                         <Check className="w-5 h-5" />
                     </div>
-                    <h3 className="font-bold text-slate-800 mb-2">Self-Contained</h3>
-                    <p className="text-sm text-slate-500">Makes the file completely self-contained, so it looks the same on any device or future software.</p>
+                    <h3 className="font-bold text-foreground mb-2">Self-Contained</h3>
+                    <p className="text-sm text-muted-foreground">Makes the file completely self-contained, so it looks the same on any device or future software.</p>
                 </div>
             </div>
         </div>
