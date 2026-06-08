@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import Link from 'next/link'
 import ClientLayout from '@/components/ClientLayout'
@@ -7,7 +7,11 @@ import BottomNav from '@/components/BottomNav'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { cn } from '@/lib/utils'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
+const plusJakarta = Plus_Jakarta_Sans({
+    subsets: ['latin'],
+    variable: '--font-sans',
+    display: 'swap',
+})
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://dexpdf.com'),
@@ -42,7 +46,7 @@ export default function RootLayout({
         <html lang="en" suppressHydrationWarning>
             <body className={cn(
                 "min-h-screen bg-background font-sans antialiased",
-                inter.variable
+                plusJakarta.variable
             )}>
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                     <ClientLayout>
