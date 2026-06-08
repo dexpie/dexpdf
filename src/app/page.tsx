@@ -5,7 +5,9 @@ import Link from 'next/link'
 import {
   ArrowRight,
   CheckCircle2,
+  CloudOff,
   FileStack,
+  History,
   LockKeyhole,
   Search,
   ShieldCheck,
@@ -22,6 +24,23 @@ import {
 } from '@/utils/toolPreferences'
 
 const QUICK_TOOLS = ['merge', 'compress', 'qr-code', 'qr-reader']
+const TRUST_SIGNALS = [
+  {
+    label: '54 tools',
+    description: 'PDF, QR, convert, security, and daily document helpers.',
+    icon: FileStack,
+  },
+  {
+    label: 'Local-first',
+    description: 'Most files stay in your browser, not on a random server.',
+    icon: CloudOff,
+  },
+  {
+    label: 'Return-ready',
+    description: 'Recent tools and history are saved only on this device.',
+    icon: History,
+  },
+]
 
 export default function LandingPage() {
   const [recentTools, setRecentTools] = useState<any[]>([])
@@ -63,7 +82,7 @@ export default function LandingPage() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-background">
-      <section className="hero-grid relative overflow-hidden border-b border-border bg-gradient-to-br from-white via-blue-50/70 to-violet-50 px-4 pb-16 pt-16 text-foreground dark:border-white/10 dark:bg-[#0a1020] dark:from-[#0a1020] dark:via-[#0a1020] dark:to-[#11182d] dark:text-white md:px-6 md:pb-24 md:pt-24">
+      <section className="hero-grid relative overflow-hidden border-b border-border bg-gradient-to-br from-white via-blue-50/70 to-sky-50 px-4 pb-16 pt-16 text-foreground dark:border-white/10 dark:bg-[#0a1020] dark:from-[#07111f] dark:via-[#081a33] dark:to-[#0b2242] dark:text-white md:px-6 md:pb-20 md:pt-24">
         <div className="hero-orb hero-orb-one" />
         <div className="hero-orb hero-orb-two" />
 
@@ -106,6 +125,18 @@ export default function LandingPage() {
               <span className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-emerald-500" /> Private by design</span>
               <span className="flex items-center gap-1.5"><Zap className="h-4 w-4 text-amber-500" /> Works in your browser</span>
             </div>
+
+            <div className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">
+              {TRUST_SIGNALS.map(signal => (
+                <div key={signal.label} className="rounded-2xl border border-blue-100 bg-white/70 p-4 shadow-sm shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-white/[0.06]">
+                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-300">
+                    <signal.icon className="h-4 w-4" />
+                  </div>
+                  <p className="text-sm font-black text-slate-950 dark:text-white">{signal.label}</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">{signal.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="relative">
@@ -129,14 +160,14 @@ export default function LandingPage() {
                 <span className="ml-auto hidden rounded-md border border-border bg-card px-2 py-0.5 font-mono text-[10px] sm:inline">Ctrl K</span>
               </button>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid gap-3 sm:grid-cols-2">
                 {quickTools.map((tool: any, index) => (
                   <Link
                     key={tool.id}
                     href={tool.href || `/${tool.id}`}
                     className="quick-tool-card group rounded-2xl border border-border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-blue-50/50 hover:shadow-lg dark:border-white/10 dark:bg-black/20 dark:hover:border-white/25 dark:hover:bg-black/30"
                   >
-                    <div className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl ${index === 0 ? 'bg-red-500/10 text-red-500' : index === 1 ? 'bg-emerald-500/10 text-emerald-500' : index === 2 ? 'bg-blue-500/10 text-blue-500' : 'bg-violet-500/10 text-violet-500'}`}>
+                    <div className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl ${index === 0 ? 'bg-blue-500/10 text-blue-600' : index === 1 ? 'bg-cyan-500/10 text-cyan-600' : index === 2 ? 'bg-sky-500/10 text-sky-600' : 'bg-indigo-500/10 text-indigo-600'}`}>
                       <tool.icon className="h-5 w-5" />
                     </div>
                     <div className="flex items-end justify-between gap-2">

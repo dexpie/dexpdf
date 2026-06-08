@@ -90,7 +90,7 @@ export default function ToolGrid() {
     <section id="tool-catalog" className="relative px-4 py-16 md:px-6 md:py-24">
       <div className="mx-auto max-w-7xl">
         {featuredTools.length > 0 && activeCategory === 'all' && !searchQuery && (
-          <div className="mb-8 rounded-3xl border border-blue-200/70 bg-gradient-to-br from-blue-50 via-card to-violet-50 p-5 shadow-sm dark:border-blue-500/20 dark:from-blue-950/30 dark:via-card dark:to-violet-950/20 md:p-6">
+          <div className="mb-8 rounded-3xl border border-blue-200/70 bg-gradient-to-br from-blue-50 via-card to-sky-50 p-5 shadow-sm dark:border-blue-500/20 dark:from-blue-950/30 dark:via-card dark:to-sky-950/20 md:p-6">
             <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-primary">
