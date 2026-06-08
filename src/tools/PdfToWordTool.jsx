@@ -294,11 +294,6 @@ export default function PdfToWordTool() {
         setProgress(100)
         setDownloadUrl(url)
 
-        const a = document.createElement('a')
-        a.href = url
-        a.download = getOutputFilename(outputFileName, 'docx')
-        a.click()
-
         triggerConfetti()
         setSuccessMsg('PDF converted successfully!')
       } catch (error) {
@@ -326,11 +321,6 @@ export default function PdfToWordTool() {
 
       setProgress(100)
       setDownloadUrl(url)
-
-      const a = document.createElement('a')
-      a.href = url
-      a.download = getOutputFilename(outputFileName, 'docx')
-      a.click()
 
       triggerConfetti()
       setSuccessMsg('PDF converted successfully!')

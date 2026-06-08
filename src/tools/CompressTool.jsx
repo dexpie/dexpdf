@@ -142,12 +142,6 @@ export default function CompressTool() {
       setCompressedSize(blob.size)
       setProgress(100)
 
-      // Download
-      const a = document.createElement('a')
-      a.href = url
-      a.download = getOutputFilename(outputFileName, 'pdf')
-      a.click()
-
       setDownloadUrl(url)
       triggerConfetti()
       setSuccessMsg('PDF Compressed Successfully!')
@@ -182,7 +176,7 @@ export default function CompressTool() {
             downloadFilename={getOutputFilename(outputFileName, 'pdf')}
             sourceFile={{
               name: file?.name || 'compressed.pdf',
-              size: compressedSize,
+              size: originalSize,
               type: 'application/pdf'
             }}
             toolId="compress"

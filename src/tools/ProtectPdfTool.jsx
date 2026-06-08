@@ -169,11 +169,6 @@ export default function ProtectPdfTool() {
 
       setProgress(100)
 
-      const a = document.createElement('a')
-      a.href = url
-      a.download = getOutputFilename(outputFileName, 'pdf')
-      a.click()
-
       setDownloadUrl(url)
       setSuccessMsg('PDF protected successfully!')
       triggerConfetti()

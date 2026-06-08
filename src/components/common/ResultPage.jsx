@@ -34,23 +34,27 @@ export default function ResultPage({
   const [loadingPreview, setLoadingPreview] = useState(true)
   const [pageCount, setPageCount] = useState(0)
   const [resultSize, setResultSize] = useState(null)
+  const [previewNote, setPreviewNote] = useState('Preview not available')
   const recordedHistoryKey = useRef(null)
 
   // Add to history on mount
   useEffect(() => {
     if (sourceFile && toolId) {
-      const historyKey = `${toolId}:${sourceFile.name}:${sourceFile.size}`
+      if (downloadUrl && resultSize == null) return
+      const historyKey = `${toolId}:${sourceFile.name}:${sourceFile.size}:${resolvedFilename}:${resultSize || 0}`
       if (recordedHistoryKey.current === historyKey) return
       recordedHistoryKey.current = historyKey
       addToHistory({
         name: sourceFile.name,
         size: sourceFile.size,
         type: sourceFile.type,
+        outputName: resolvedFilename,
+        outputSize: resultSize || null,
         tool: toolId,
         status: 'completed'
       })
     }
-  }, [addToHistory, sourceFile, toolId])
+  }, [addToHistory, downloadUrl, resolvedFilename, resultSize, sourceFile, toolId])
 
   // Get result size
   useEffect(() => {
@@ -84,6 +88,7 @@ export default function ResultPage({
         const blob = await response.blob()
 
         if (!blob.type.includes('pdf') && !resolvedFilename.toLowerCase().endsWith('.pdf')) {
+          setPreviewNote('Preview available after download')
           setLoadingPreview(false)
           return
         }
@@ -104,6 +109,7 @@ export default function ResultPage({
         await page.render({ canvasContext: ctx, viewport }).promise
         setPreviewUrl(canvas.toDataURL('image/jpeg', 0.8))
       } catch (err) {
+        setPreviewNote('Preview could not be generated')
         console.warn('Could not generate preview:', err)
       } finally {
         setLoadingPreview(false)
@@ -122,6 +128,7 @@ export default function ResultPage({
 
   const sizeSaved = sourceFile && resultSize ? sourceFile.size - resultSize : null
   const savingsPercent = sizeSaved && sourceFile.size > 0 ? ((sizeSaved / sourceFile.size) * 100).toFixed(1) : null
+  const downloadLabel = resolvedFilename && resolvedFilename !== 'download' ? `Download ${resolvedFilename}` : 'Download File'
 
   const nextToolIds = {
     merge: ['compress', 'pagenums', 'protect'],
@@ -244,7 +251,7 @@ export default function ResultPage({
             ) : (
               <div className="flex flex-col items-center gap-2 text-muted-foreground">
                 <FileText className="w-12 h-12" />
-                <span className="text-sm">Preview not available</span>
+                <span className="text-sm">{previewNote}</span>
               </div>
             )}
           </div>
@@ -257,7 +264,7 @@ export default function ResultPage({
           <a href={downloadUrl} download={resolvedFilename} className="w-full sm:w-auto">
             <button className="w-full sm:w-auto text-lg h-14 px-8 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-primary/25 flex items-center justify-center gap-2">
               <Download className="w-5 h-5" />
-              Download File
+              <span className="max-w-[15rem] truncate">{downloadLabel}</span>
             </button>
           </a>
         )}

@@ -137,11 +137,6 @@ export default function MergeTool() {
 
       setProgress(100)
 
-      const a = document.createElement('a')
-      a.href = url
-      a.download = getOutputFilename(outputFileName, 'pdf')
-      a.click()
-
       setDownloadUrl(url)
       triggerConfetti()
 

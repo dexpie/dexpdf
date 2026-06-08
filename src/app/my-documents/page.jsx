@@ -25,8 +25,8 @@ export default function MyDocumentsPage() {
             item.opId || '-',
             item.date,
             item.tool,
-            item.name,
-            item.size,
+            item.outputName || item.name,
+            item.outputSize || item.size,
             item.status || 'completed'
         ])
 
@@ -180,12 +180,17 @@ export default function MyDocumentsPage() {
                                                         <FileText className="w-4 h-4" />
                                                     </div>
                                                     <div>
-                                                        <div className="font-bold text-foreground">{item.name}</div>
-                                                        <div className="text-xs text-muted-foreground uppercase font-bold">{item.tool}</div>
+                                                        <div className="font-bold text-foreground">{item.outputName || item.name}</div>
+                                                        <div className="text-xs text-muted-foreground">
+                                                            <span className="uppercase font-bold">{item.tool}</span>
+                                                            {item.outputName && item.name && item.outputName !== item.name && (
+                                                                <span className="ml-2">from {item.name}</span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-muted-foreground">{item.size ? `${(item.size / 1024).toFixed(1)} KB` : 'N/A'}</td>
+                                            <td className="px-6 py-4 text-muted-foreground">{(item.outputSize || item.size) ? `${((item.outputSize || item.size) / 1024).toFixed(1)} KB` : 'N/A'}</td>
                                             <td className="px-6 py-4 text-right">
                                                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                     Completed

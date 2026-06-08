@@ -1,8 +1,10 @@
 const withPWA = require('next-pwa')({
     dest: 'public',
-    disable: false, // Enable PWA in all environments for testing
+    disable: process.env.NODE_ENV === 'development',
     register: true,
+    clientsClaim: true,
     skipWaiting: true,
+    cleanupOutdatedCaches: true,
 })
 
 /** @type {import('next').NextConfig} */

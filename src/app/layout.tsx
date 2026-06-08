@@ -44,28 +44,6 @@ export default function RootLayout({
                 "min-h-screen bg-background font-sans antialiased",
                 inter.variable
             )}>
-                {/* Aggressive SW Unregister for Dev Mode */}
-                {process.env.NODE_ENV === 'development' && (
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `
-                                if ('serviceWorker' in navigator) {
-                                    window.addEventListener('load', function() {
-                                        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                                            for(let registration of registrations) {
-                                                registration.unregister().then(function() {
-                                                    console.log('ServiceWorker unregistered.');
-                                                });
-                                            }
-                                        }).catch(function(err) {
-                                            console.log('ServiceWorker unregistration failed: ', err);
-                                        });
-                                    });
-                                }
-                            `
-                        }}
-                    />
-                )}
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                     <ClientLayout>
                         {children}

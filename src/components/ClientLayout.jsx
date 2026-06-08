@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import '@/i18n'
 import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
@@ -8,10 +8,12 @@ import Analytics from '@/components/Analytics'
 import ProgressBar from '@/components/ProgressBar'
 import CommandPalette from '@/components/CommandPalette'
 import GlobalDropZone from '@/components/GlobalDropZone'
+import { registerServiceWorker } from '@/utils/serviceWorkerUpdates'
 
 export default function ClientLayout({ children }) {
     const [tools, setTools] = useState([])
     const [showCommandPalette, setShowCommandPalette] = useState(false)
+    const [refreshApp, setRefreshApp] = useState(null)
 
     useEffect(() => {
         fetch('/tools.json')
@@ -19,12 +21,9 @@ export default function ClientLayout({ children }) {
             .then(data => setTools(data))
             .catch(err => console.error('Error loading tools:', err))
 
-        // Register Service Worker for PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => console.log('SW registered: ', registration))
-                .catch(registrationError => console.log('SW registration failed: ', registrationError))
-        }
+        registerServiceWorker({
+            onUpdateReady: refresh => setRefreshApp(() => refresh),
+        })
     }, [])
 
     useEffect(() => {
@@ -45,6 +44,23 @@ export default function ClientLayout({ children }) {
             <ProgressBar />
             <NavBar />
             <GlobalDropZone />
+
+            {refreshApp && (
+                <div className="fixed bottom-20 left-1/2 z-[80] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-border bg-card p-4 shadow-2xl shadow-slate-900/15 md:bottom-6">
+                    <div className="flex items-center gap-3">
+                        <div className="min-w-0 flex-1">
+                            <p className="text-sm font-black text-foreground">New DexPDF version ready</p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">Refresh once to get the latest tools and fixes.</p>
+                        </div>
+                        <button
+                            onClick={refreshApp}
+                            className="shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:opacity-90"
+                        >
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <CommandPalette
                 tools={tools}
