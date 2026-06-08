@@ -282,7 +282,7 @@
 
 .hero-gradient-text {
   color: transparent;
-  background: linear-gradient(90deg, #a9c2ff 0%, #9b8cff 45%, #ff9dce 100%);
+  background: linear-gradient(90deg, #93c5fd 0%, #3b82f6 45%, #1d4ed8 100%);
   background-clip: text;
   -webkit-background-clip: text;
 }
