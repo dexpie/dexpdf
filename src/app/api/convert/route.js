@@ -68,6 +68,10 @@ export async function POST(request) {
                     "Value": ocrLanguage
                 },
                 {
+                    "Name": "OcrEngine",
+                    "Value": "native"
+                },
+                {
                     "Name": "Annotations",
                     "Value": "textBox"
                 },
@@ -103,14 +107,23 @@ export async function POST(request) {
         }
 
         if (!response.ok) {
-            let errorDetails = {}
+            const errorText = await response.text()
+            let errorDetails = { Message: errorText }
             try {
-                errorDetails = await response.json()
-            } catch (e) {
-                errorDetails = { Message: await response.text() }
-            }
+                errorDetails = JSON.parse(errorText)
+            } catch {}
+
             console.error('ConvertAPI Error:', errorDetails)
-            return NextResponse.json({ error: errorDetails.Message || response.statusText }, { status: response.status })
+            const code = response.status === 401
+                ? 'CLOUD_AUTH_INVALID'
+                : response.status === 429
+                    ? 'CLOUD_QUOTA_EXHAUSTED'
+                    : 'CLOUD_CONVERSION_FAILED'
+            const message = response.status === 401
+                ? 'ConvertAPI credentials are missing, invalid, or expired.'
+                : errorDetails.Message || errorDetails.message || response.statusText
+
+            return NextResponse.json({ error: message, code }, { status: response.status })
         }
 
         const data = await response.json()

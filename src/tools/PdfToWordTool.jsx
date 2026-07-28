@@ -8,11 +8,70 @@ import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 import { configurePdfWorker } from '../utils/pdfWorker'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
-import { FileText, Laptop, AlertCircle, CheckCircle, Settings, FileOutput, ScanText } from 'lucide-react'
+import {
+  AlertCircle,
+  CheckCircle,
+  Cloud,
+  ExternalLink,
+  FileOutput,
+  FileText,
+  Images,
+  KeyRound,
+  Laptop,
+  ScanText,
+  Settings,
+  ShieldCheck
+} from 'lucide-react'
 import { motion } from 'framer-motion'
 import ResultPage from '../components/common/ResultPage'
 
 configurePdfWorker()
+
+async function cloudPdfToWord(file, {
+  apiKey = '',
+  ocrMode = 'auto',
+  onProgress
+} = {}) {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('format', 'docx')
+  formData.append('layout', 'exact')
+  formData.append('ocrMode', ocrMode)
+  formData.append('ocrLanguage', 'auto')
+  if (apiKey.trim()) formData.append('apiKey', apiKey.trim())
+
+  onProgress?.(12, 'Uploading securely for exact-layout conversion...')
+  const response = await fetch('/api/convert', {
+    method: 'POST',
+    body: formData
+  })
+
+  onProgress?.(78, 'Receiving the converted Word document...')
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    let details = { error: errorText }
+    try {
+      details = JSON.parse(errorText)
+    } catch {}
+
+    const error = new Error(details.error || 'Cloud conversion failed.')
+    error.status = response.status
+    error.code = details.code
+    throw error
+  }
+
+  const blob = await response.blob()
+  const signature = new Uint8Array(await blob.slice(0, 4).arrayBuffer())
+  const isZipFile = signature[0] === 0x50 && signature[1] === 0x4b
+
+  if (!isZipFile || blob.size < 100) {
+    throw new Error('The cloud provider returned an invalid Word document.')
+  }
+
+  onProgress?.(100, 'Exact-layout Word document is ready.')
+  return blob
+}
 
 /**
  * Advanced PDF to Word conversion with multiple engine options
@@ -366,7 +425,7 @@ async function optimizedOcrPdfToWord(file, { language = 'ind', onProgress } = {}
 
 /**
  * PdfToWordTool - Convert PDF to editable Word documents
- * Supports text PDFs, scanned PDFs, and mixed documents locally.
+ * Supports local extraction plus cloud exact-layout conversion for visual PDFs.
  */
 export default function PdfToWordTool() {
   const [batchMode, setBatchMode] = useState(false)
@@ -378,11 +437,14 @@ export default function PdfToWordTool() {
   const [successMsg, setSuccessMsg] = useState('')
   const [downloadUrl, setDownloadUrl] = useState(null)
   const [outputFileName, setOutputFileName] = useState('')
-  const [conversionMode, setConversionMode] = useState('layout')
+  const [conversionMode, setConversionMode] = useState('certificate')
   const [thumbnail, setThumbnail] = useState(null)
   const [pageCount, setPageCount] = useState(0)
   const [documentKind, setDocumentKind] = useState('unknown')
+  const [hasVisualAssets, setHasVisualAssets] = useState(false)
   const [ocrLanguage, setOcrLanguage] = useState('ind')
+  const [cloudApiKey, setCloudApiKey] = useState('')
+  const [showCloudKey, setShowCloudKey] = useState(false)
 
   async function handleFileChange(files) {
     setErrorMsg('')
@@ -402,7 +464,7 @@ export default function PdfToWordTool() {
     setFile(f)
     setOutputFileName(getDefaultFilename(f))
     setDocumentKind('analyzing')
-    setConversionMode('layout')
+    setHasVisualAssets(false)
 
     try {
       const data = await f.arrayBuffer()
@@ -420,6 +482,14 @@ export default function PdfToWordTool() {
 
       const sampleSize = Math.min(pdf.numPages, 3)
       let pagesWithText = 0
+      let pagesWithVisualAssets = 0
+      const imageOperations = new Set([
+        pdfjsLib.OPS.paintImageXObject,
+        pdfjsLib.OPS.paintInlineImageXObject,
+        pdfjsLib.OPS.paintImageMaskXObject,
+        pdfjsLib.OPS.paintSolidColorImageMask
+      ])
+
       for (let pageNumber = 1; pageNumber <= sampleSize; pageNumber++) {
         const samplePage = pageNumber === 1 ? page : await pdf.getPage(pageNumber)
         const textContent = await samplePage.getTextContent()
@@ -429,11 +499,28 @@ export default function PdfToWordTool() {
           .replace(/\s/g, '')
           .length
         if (characters >= 24) pagesWithText += 1
+
+        const operatorList = await samplePage.getOperatorList()
+        if (operatorList.fnArray.some(operation => imageOperations.has(operation))) {
+          pagesWithVisualAssets += 1
+        }
       }
 
-      if (pagesWithText === 0) setDocumentKind('scanned')
-      else if (pagesWithText < sampleSize) setDocumentKind('mixed')
-      else setDocumentKind('text')
+      const detectedKind = pagesWithText === 0
+        ? 'scanned'
+        : pagesWithText < sampleSize
+          ? 'mixed'
+          : 'text'
+      const visualAssetsDetected = pagesWithVisualAssets > 0
+
+      setDocumentKind(detectedKind)
+      setHasVisualAssets(visualAssetsDetected)
+      setConversionMode(
+        detectedKind === 'scanned' || detectedKind === 'mixed' || visualAssetsDetected
+          ? 'certificate'
+          : 'layout'
+      )
+      await pdf.destroy()
     } catch (e) {
       console.warn('Could not generate thumbnail', e)
       setDocumentKind('unknown')
@@ -457,6 +544,38 @@ export default function PdfToWordTool() {
     setBusy(true)
     setProgress(0)
     setProgressText('')
+
+    if (conversionMode === 'certificate') {
+      try {
+        const blob = await cloudPdfToWord(file, {
+          apiKey: cloudApiKey,
+          ocrMode: documentKind === 'scanned' ? 'force' : 'auto',
+          onProgress: (percent, status) => {
+            setProgress(Math.round(percent))
+            setProgressText(status)
+          }
+        })
+        setDownloadUrl(URL.createObjectURL(blob))
+        triggerConfetti()
+        setSuccessMsg('Certificate layout, visual assets, and recognized text were converted to Word.')
+      } catch (error) {
+        console.error(error)
+        if (error.status === 401) {
+          setShowCloudKey(true)
+          setErrorMsg(
+            'Cloud OCR is not authorized. Enter a valid ConvertAPI token below or update the server CONVERT_API_SECRET.'
+          )
+        } else if (error.status === 429) {
+          setErrorMsg('Cloud OCR quota is exhausted. Use another token or try Smart OCR Local.')
+        } else {
+          setErrorMsg(`Cloud conversion failed: ${error.message}`)
+        }
+      } finally {
+        setBusy(false)
+        setProgressText('')
+      }
+      return
+    }
 
     if (conversionMode === 'layout') {
       try {
@@ -535,6 +654,7 @@ export default function PdfToWordTool() {
     setDownloadUrl(null)
     setErrorMsg('')
     setDocumentKind('unknown')
+    setHasVisualAssets(false)
     setProgress(0)
     setProgressText('')
   }
@@ -542,19 +662,29 @@ export default function PdfToWordTool() {
   // Conversion mode options
   const modes = [
     {
+      id: 'certificate',
+      icon: Cloud,
+      title: 'Certificate Layout (Cloud)',
+      description: 'Keeps backgrounds, logos, stamps, signatures, and positioned text with exact-layout OCR.',
+      badges: [
+        { label: 'Best for certificates', class: 'bg-blue-100 text-blue-700' },
+        { label: 'Uploads file', class: 'bg-amber-100 text-amber-700' }
+      ]
+    },
+    {
       id: 'layout',
       icon: ScanText,
-      title: 'Smart OCR',
+      title: 'Smart OCR Local',
       description: 'Extracts normal text instantly and OCRs only image-only pages with optimized local workers.',
       badges: [
-        { label: 'Recommended', class: 'bg-blue-100 text-blue-700' },
+        { label: 'Private', class: 'bg-blue-100 text-blue-700' },
         { label: 'Mixed PDF ready', class: 'bg-blue-50 text-blue-700' }
       ]
     },
     {
       id: 'text',
       icon: Laptop,
-      title: 'Private Text Extraction',
+      title: 'Text Only',
       description: 'For PDFs with selectable text. Runs entirely in your browser without OCR.',
       badges: [
         { label: 'No upload', class: 'bg-secondary text-muted-foreground' },
@@ -566,7 +696,26 @@ export default function PdfToWordTool() {
   return (
     <ToolLayout
       title="PDF to Word"
-      description="Convert normal and scanned PDFs into editable Microsoft Word files"
+      description="Convert normal, scanned, and visual PDFs into editable Microsoft Word files without losing the right workflow for each document"
+      features={conversionMode === 'certificate'
+        ? [
+            {
+              icon: Images,
+              label: 'Visual layout preserved',
+              desc: 'Exact layout keeps certificate artwork, images, and positioned text together'
+            },
+            {
+              icon: Cloud,
+              label: 'Cloud conversion',
+              desc: 'The PDF is uploaded and its encrypted result may be stored temporarily for up to 3 hours'
+            },
+            {
+              icon: ShieldCheck,
+              label: 'Explicit privacy choice',
+              desc: 'Use local Smart OCR instead when the document should not leave your device'
+            }
+          ]
+        : undefined}
     >
       {/* Mode Toggle */}
       <div className="flex justify-center gap-2 mb-8">
@@ -608,10 +757,24 @@ export default function PdfToWordTool() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-destructive/10 text-destructive p-4 rounded-xl border border-destructive/20 flex items-start gap-2"
+              className="rounded-xl border border-destructive/20 bg-destructive/10 p-4 text-destructive"
             >
-              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-              <span className="font-semibold">{errorMsg}</span>
+              <div className="flex items-start gap-2">
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+                <span className="font-semibold">{errorMsg}</span>
+              </div>
+              {conversionMode === 'certificate' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConversionMode('layout')
+                    setErrorMsg('')
+                  }}
+                  className="mt-3 rounded-lg bg-card px-3 py-2 text-xs font-bold text-foreground shadow-sm transition hover:bg-secondary"
+                >
+                  Switch to Smart OCR Local
+                </button>
+              )}
             </motion.div>
           )}
 
@@ -667,7 +830,7 @@ export default function PdfToWordTool() {
                       <span>•</span>
                       <span>{pageCount} {pageCount === 1 ? 'page' : 'pages'}</span>
                     </div>
-                    <div className="mt-3">
+                    <div className="mt-3 flex flex-wrap gap-2">
                       {documentKind === 'analyzing' && (
                         <span className="inline-flex rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-muted-foreground">
                           Checking text layer...
@@ -686,6 +849,11 @@ export default function PdfToWordTool() {
                       {documentKind === 'text' && (
                         <span className="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
                           Selectable text detected
+                        </span>
+                      )}
+                      {hasVisualAssets && (
+                        <span className="inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                          Visual assets detected
                         </span>
                       )}
                     </div>
@@ -722,11 +890,15 @@ export default function PdfToWordTool() {
                     Conversion Engine
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     {modes.map((mode) => (
                       <div
                         key={mode.id}
-                        onClick={() => !busy && setConversionMode(mode.id)}
+                        onClick={() => {
+                          if (busy) return
+                          setConversionMode(mode.id)
+                          setErrorMsg('')
+                        }}
                         className={`
                           cursor-pointer p-4 rounded-xl border-2 transition-all relative
                           ${conversionMode === mode.id
@@ -780,6 +952,66 @@ export default function PdfToWordTool() {
                       Runs locally in your browser. Pages with selectable text skip OCR automatically.
                     </p>
                   )}
+
+                  {conversionMode === 'certificate' && (
+                    <div className="mt-4 space-y-4 border-t border-border pt-4">
+                      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-950 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-100">
+                        <div className="flex items-start gap-3">
+                          <Images className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-300" />
+                          <div>
+                            <p className="font-bold">Designed for certificates and visual documents</p>
+                            <p className="mt-1 text-xs leading-5 opacity-80">
+                              This mode uploads the PDF and uses exact-layout conversion so artwork stays
+                              with editable OCR text. The provider may retain an encrypted temporary result
+                              for up to 3 hours. Avoid it for confidential files unless cloud processing is approved.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {!showCloudKey ? (
+                        <button
+                          type="button"
+                          onClick={() => setShowCloudKey(true)}
+                          disabled={busy}
+                          className="inline-flex items-center gap-2 text-xs font-bold text-primary transition hover:underline disabled:opacity-50"
+                        >
+                          <KeyRound className="h-4 w-4" />
+                          Use my own ConvertAPI token
+                        </button>
+                      ) : (
+                        <div>
+                          <div className="mb-2 flex items-center justify-between gap-3">
+                            <label htmlFor="pdf-word-cloud-key" className="text-sm font-medium text-foreground">
+                              ConvertAPI token
+                            </label>
+                            <a
+                              href="https://www.convertapi.com/a"
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                            >
+                              Get a token
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </a>
+                          </div>
+                          <input
+                            id="pdf-word-cloud-key"
+                            type="password"
+                            value={cloudApiKey}
+                            onChange={event => setCloudApiKey(event.target.value)}
+                            disabled={busy}
+                            autoComplete="off"
+                            placeholder="Paste token for this conversion"
+                            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                          />
+                          <p className="mt-2 text-xs text-muted-foreground">
+                            Kept only in this page's memory and sent through the DexPDF conversion endpoint.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -819,9 +1051,11 @@ export default function PdfToWordTool() {
                   ) : (
                     <>
                       <FileOutput className="w-5 h-5" />
-                      {documentKind === 'scanned' || documentKind === 'mixed'
-                        ? 'OCR & Convert to DOCX'
-                        : 'Convert to DOCX'}
+                      {conversionMode === 'certificate'
+                        ? 'Preserve Layout & Convert'
+                        : documentKind === 'scanned' || documentKind === 'mixed'
+                          ? 'OCR & Convert to DOCX'
+                          : 'Convert to DOCX'}
                     </>
                   )}
                 </button>
