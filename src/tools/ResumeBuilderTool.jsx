@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
     Download, Plus, Trash, User, Briefcase, GraduationCap,
-    Award, Layout, Mail, Phone, MapPin, Globe, GripVertical
+    Award, Layout, Mail, Phone, MapPin, Globe, GripVertical, AlertTriangle
 } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import ToolLayout from '../components/common/ToolLayout'
@@ -50,6 +50,7 @@ export default function ResumeBuilderTool() {
     const [data, setData] = useState(DEFAULT_RESUME)
     const [layout, setLayout] = useState('modern') // 'modern' | 'classic'
     const [busy, setBusy] = useState(false)
+    const [error, setError] = useState('')
     const [outputFileName, setOutputFileName] = useState('resume')
 
     // Persistence
@@ -94,6 +95,7 @@ export default function ResumeBuilderTool() {
     async function generatePdf() {
         if (!previewRef.current) return
         setBusy(true)
+        setError('')
         try {
             const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true })
             const imgData = canvas.toDataURL('image/png')
@@ -107,7 +109,7 @@ export default function ResumeBuilderTool() {
             triggerConfetti()
         } catch (err) {
             console.error(err)
-            alert('Failed to generate PDF')
+            setError(err.message || 'Failed to generate the resume PDF.')
         } finally {
             setBusy(false)
         }
@@ -212,6 +214,8 @@ export default function ResumeBuilderTool() {
                             <label className="text-sm font-medium text-slate-600 dark:text-muted-foreground block mb-2">Filename</label>
                             <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} />
                         </div>
+
+                        {error && <div role="alert" className="mb-4 flex gap-2 rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"><AlertTriangle className="h-5 w-5 shrink-0" />{error}</div>}
 
                         <ActionButtons primaryText="Download Resume" primaryIcon={Download} onPrimary={generatePdf} loading={busy} />
                     </div>

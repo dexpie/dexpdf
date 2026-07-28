@@ -15,7 +15,6 @@ export default function Analytics() {
         gtag('js', new Date());
         gtag('config', 'G-XXXXX');
         */
-        console.log("Analytics initialized (stub)")
     }, [])
     return null
 }

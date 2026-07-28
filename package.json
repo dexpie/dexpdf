@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "audit:tools": "node scripts/audit-tools.mjs",
+    "smoke:tools": "node scripts/smoke-tools.mjs",
+    "verify": "npm run audit:tools && npx tsc --noEmit && npm run build && npm run smoke:tools"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

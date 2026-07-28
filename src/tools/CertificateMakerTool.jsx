@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-    Download, Award, PenTool, Type, Calendar, User
+    Download, Award, PenTool, Type, Calendar, User, AlertTriangle
 } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import ToolLayout from '../components/common/ToolLayout'
@@ -27,6 +27,7 @@ export default function CertificateMakerTool() {
     const [data, setData] = useState(DEFAULT_CERT)
     const [theme, setTheme] = useState('gold') // gold, blue, classic
     const [busy, setBusy] = useState(false)
+    const [error, setError] = useState('')
     const [outputFileName, setOutputFileName] = useState('certificate')
 
     // Persistence
@@ -47,6 +48,7 @@ export default function CertificateMakerTool() {
     async function generatePdf() {
         if (!previewRef.current) return
         setBusy(true)
+        setError('')
         try {
             const canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true })
             const imgData = canvas.toDataURL('image/png')
@@ -61,7 +63,7 @@ export default function CertificateMakerTool() {
             triggerConfetti()
         } catch (err) {
             console.error(err)
-            alert('Failed to generate PDF')
+            setError(err.message || 'Failed to generate the certificate PDF.')
         } finally {
             setBusy(false)
         }
@@ -141,6 +143,7 @@ export default function CertificateMakerTool() {
                         <div className="mb-4">
                             <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} />
                         </div>
+                        {error && <div role="alert" className="mb-4 flex gap-2 rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"><AlertTriangle className="h-5 w-5 shrink-0" />{error}</div>}
                         <ActionButtons primaryText="Download Certificate" primaryIcon={Download} onPrimary={generatePdf} loading={busy} />
                     </div>
 

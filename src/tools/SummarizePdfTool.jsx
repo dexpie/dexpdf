@@ -6,7 +6,7 @@ import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import ActionButtons from '../components/common/ActionButtons'
 import { useTranslation } from 'react-i18next'
-import { FileText, Sparkles, BrainCircuit, AlignLeft, List, Loader2 } from 'lucide-react'
+import { AlertTriangle, FileText, Sparkles, BrainCircuit, AlignLeft, List, Loader2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getStoredApiKey, setStoredApiKey, generateJSON } from '../services/gemini'
 
@@ -57,6 +57,7 @@ export default function SummarizePdfTool() {
     const [mode, setMode] = useState('bullets') // bullets | paragraph
     const [apiKey, setApiKey] = useState('')
     const [showKeyModal, setShowKeyModal] = useState(false)
+    const [error, setError] = useState('')
 
     useEffect(() => {
         const key = getStoredApiKey()
@@ -73,12 +74,14 @@ export default function SummarizePdfTool() {
         if (files[0]) {
             setFile(files[0])
             setSummary(null)
+            setError('')
         }
     }
 
     const generateSummary = async () => {
         if (!file) return
         setIsProcessing(true)
+        setError('')
 
         try {
             // 1. Extract Text
@@ -129,7 +132,7 @@ export default function SummarizePdfTool() {
 
         } catch (err) {
             console.error(err)
-            alert('Failed to summarize PDF. Please check your API usage or try a different file.')
+            setError(err.message || 'Failed to summarize this PDF. Check the API key or try another file.')
         } finally {
             setIsProcessing(false)
         }
@@ -148,6 +151,8 @@ export default function SummarizePdfTool() {
                         accept="application/pdf"
                         hint="Upload PDF to analyze"
                     />
+
+                    {error && <div role="alert" className="flex gap-2 rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"><AlertTriangle className="h-5 w-5 shrink-0" />{error}</div>}
 
                     {file && (
                         <motion.div

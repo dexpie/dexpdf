@@ -17,36 +17,47 @@ export default function ActionButtons({
   onSecondary,
   disabled = false,
   loading = false,
-  danger = false
+  danger = false,
+  primaryIcon,
+  icon,
+  className = '',
+  primaryClassName = '',
+  secondaryClassName = '',
 }) {
+  const PrimaryIcon = primaryIcon || icon
+
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className={`flex flex-wrap gap-3 ${className}`}>
       {onSecondary && (
         <button
+          type="button"
           onClick={onSecondary}
           disabled={disabled || loading}
-          className="px-5 py-2.5 font-medium text-muted-foreground hover:text-foreground hover:bg-secondary rounded-xl border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`min-h-11 px-5 py-2.5 font-bold text-muted-foreground hover:text-foreground hover:bg-secondary rounded-xl border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${secondaryClassName}`}
         >
           {secondaryText}
         </button>
       )}
       {onPrimary && (
         <button
+          type="button"
           onClick={onPrimary}
           disabled={disabled || loading}
           className={`
-            px-6 py-2.5 font-semibold rounded-xl transition-all
-            flex items-center gap-2
+            min-h-11 px-6 py-2.5 font-bold rounded-xl transition-all
+            flex items-center justify-center gap-2
             ${danger
               ? 'bg-destructive text-destructive-foreground hover:opacity-90'
               : 'bg-primary text-primary-foreground hover:opacity-90'
             }
             disabled:opacity-50 disabled:cursor-not-allowed
+            ${primaryClassName}
           `}
         >
           {loading && (
             <div className="w-4 h-4 border-2 border-current/30 border-current rounded-full animate-spin" />
           )}
+          {!loading && PrimaryIcon && <PrimaryIcon className="h-4 w-4" />}
           {loading ? 'Processing...' : primaryText}
         </button>
       )}

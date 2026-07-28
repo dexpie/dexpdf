@@ -13,7 +13,7 @@ export default function HowItWorks() {
             icon: Settings,
             title: 'Select tools',
             desc: 'Crop, merge, rotate, or convert your files with our easy-to-use interface.',
-            color: 'bg-indigo-100 text-indigo-600'
+            color: 'bg-blue-100 text-blue-600'
         },
         {
             icon: Download,

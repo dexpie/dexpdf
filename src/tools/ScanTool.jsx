@@ -1,174 +1,139 @@
 'use client'
-import React, { useState, useRef, useCallback } from 'react'
-import ToolLayout from '../components/common/ToolLayout'
+
+import React, { useCallback, useRef, useState } from 'react'
 import Webcam from 'react-webcam'
 import { PDFDocument } from 'pdf-lib'
-import { Camera, Download, Trash2, RefreshCw, X, Plus } from 'lucide-react'
+import { AlertTriangle, Camera, Download, Images, RefreshCw, Trash2 } from 'lucide-react'
+import ToolLayout from '../components/common/ToolLayout'
 import { triggerConfetti } from '../utils/confetti'
 import { getOutputFilename } from '../utils/fileHelpers'
 
+function readImageFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = () => reject(new Error(`Could not read ${file.name}.`))
+    reader.readAsDataURL(file)
+  })
+}
+
 export default function ScanTool() {
-    const webcamRef = useRef(null)
-    const [images, setImages] = useState([])
-    const [isBusy, setIsBusy] = useState(false)
-    const [facingMode, setFacingMode] = useState('environment') // Default to back camera on mobile
+  const webcamRef = useRef(null)
+  const fileInputRef = useRef(null)
+  const [images, setImages] = useState([])
+  const [isBusy, setIsBusy] = useState(false)
+  const [facingMode, setFacingMode] = useState('environment')
+  const [error, setError] = useState('')
 
-    const capture = useCallback(() => {
-        const imageSrc = webcamRef.current.getScreenshot()
-        if (imageSrc) {
-            setImages(prev => [...prev, imageSrc])
-        }
-    }, [webcamRef])
-
-    const removeImage = (index) => {
-        setImages(prev => prev.filter((_, i) => i !== index))
+  const capture = useCallback(() => {
+    const imageSrc = webcamRef.current?.getScreenshot()
+    if (imageSrc) {
+      setImages(current => [...current, imageSrc])
+      setError('')
+    } else {
+      setError('The camera is not ready yet. Allow camera access or import photos instead.')
     }
+  }, [])
 
-    const generatePdf = async () => {
-        if (images.length === 0) return
-        setIsBusy(true)
-        try {
-            const pdfDoc = await PDFDocument.create()
-
-            for (const imgDataUrl of images) {
-                const img = await pdfDoc.embedJpg(imgDataUrl)
-                // A4 dimensions at 72 PPI: 595 x 842
-                // We want to fit the image to page.
-                const page = pdfDoc.addPage([595, 842])
-
-                const { width, height } = img.scale(1)
-
-                // Fit logic (Contain)
-                const pageWidth = 595
-                const pageHeight = 842
-
-                const scaleX = pageWidth / width
-                const scaleY = pageHeight / height
-                const scale = Math.min(scaleX, scaleY)
-
-                const displayWidth = width * scale
-                const displayHeight = height * scale
-
-                const x = (pageWidth - displayWidth) / 2
-                const y = (pageHeight - displayHeight) / 2
-
-                page.drawImage(img, {
-                    x,
-                    y,
-                    width: displayWidth,
-                    height: displayHeight,
-                })
-            }
-
-            const pdfBytes = await pdfDoc.save()
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' })
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = getOutputFilename(null, 'scanned_document', 'pdf')
-            a.click()
-            URL.revokeObjectURL(url)
-            triggerConfetti()
-
-        } catch (err) {
-            console.error(err)
-            alert("Failed to generate PDF")
-        } finally {
-            setIsBusy(false)
-        }
+  const importPhotos = async event => {
+    try {
+      const selected = Array.from(event.target.files || [])
+      if (!selected.length) return
+      const dataUrls = await Promise.all(selected.map(readImageFile))
+      setImages(current => [...current, ...dataUrls])
+      setError('')
+    } catch (importError) {
+      setError(importError.message || 'Could not import these photos.')
+    } finally {
+      event.target.value = ''
     }
+  }
 
-    const videoConstraints = {
-        width: 1280,
-        height: 720,
-        facingMode: facingMode
+  const generatePdf = async () => {
+    if (images.length === 0) return
+    setIsBusy(true)
+    setError('')
+    try {
+      const pdfDoc = await PDFDocument.create()
+      for (const imageDataUrl of images) {
+        const image = imageDataUrl.startsWith('data:image/png')
+          ? await pdfDoc.embedPng(imageDataUrl)
+          : await pdfDoc.embedJpg(imageDataUrl)
+        const page = pdfDoc.addPage([595, 842])
+        const { width, height } = image.scale(1)
+        const scale = Math.min(555 / width, 802 / height)
+        const displayWidth = width * scale
+        const displayHeight = height * scale
+        page.drawImage(image, {
+          x: (595 - displayWidth) / 2,
+          y: (842 - displayHeight) / 2,
+          width: displayWidth,
+          height: displayHeight,
+        })
+      }
+
+      const blob = new Blob([await pdfDoc.save()], { type: 'application/pdf' })
+      const url = URL.createObjectURL(blob)
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = getOutputFilename(null, 'scanned-document', '.pdf')
+      document.body.appendChild(anchor)
+      anchor.click()
+      anchor.remove()
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+      triggerConfetti()
+    } catch (generationError) {
+      console.error(generationError)
+      setError(generationError.message || 'Failed to generate the scanned PDF.')
+    } finally {
+      setIsBusy(false)
     }
+  }
 
-    return (
-        <ToolLayout title="Scan to PDF" description="Use your camera to scan documents into a unified PDF.">
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8">
-                {/* Camera Section */}
-                <div className="flex-1 bg-black rounded-3xl overflow-hidden relative shadow-2xl">
-                    <div className="relative aspect-[3/4] md:aspect-video bg-slate-900 flex items-center justify-center">
-                        <Webcam
-                            audio={false}
-                            ref={webcamRef}
-                            screenshotFormat="image/jpeg"
-                            videoConstraints={videoConstraints}
-                            className="w-full h-full object-cover"
-                        />
-
-                        {/* Overlay Controls */}
-                        <div className="absolute bottom-6 left-0 right-0 flex justify-center items-center gap-6 z-10">
-                            <button
-                                onClick={() => setFacingMode(m => m === 'user' ? 'environment' : 'user')}
-                                className="p-3 bg-card/20 backdrop-blur-md rounded-full text-white hover:bg-card/30 transition-all"
-                                title="Switch Camera"
-                            >
-                                <RefreshCw className="w-6 h-6" />
-                            </button>
-
-                            <button
-                                onClick={capture}
-                                className="w-16 h-16 bg-card rounded-full border-4 border-border shadow-xl active:scale-95 transition-all flex items-center justify-center"
-                            >
-                                <div className="w-12 h-12 bg-red-500 rounded-full" />
-                            </button>
-
-                            <div className="w-12" /> {/* Spacer */}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Sidebar / Gallery */}
-                <div className="w-full md:w-80 flex flex-col gap-4">
-                    <div className="bg-card p-4 rounded-3xl shadow-lg border border-border flex-1 flex flex-col">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-lg text-foreground">Scanned Pages ({images.length})</h3>
-                            {images.length > 0 && (
-                                <button onClick={() => setImages([])} className="text-red-500 text-xs hover:underline">Clear All</button>
-                            )}
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto space-y-3 min-h-[300px] max-h-[600px] pr-2">
-                            {images.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm italic">
-                                    <Camera className="w-8 h-8 mb-2 opacity-50" />
-                                    No pages scanned yet.
-                                </div>
-                            ) : (
-                                images.map((img, idx) => (
-                                    <div key={idx} className="relative group bg-secondary rounded-xl overflow-hidden border border-border">
-                                        <img src={img} alt={`Page ${idx + 1}`} className="w-full h-auto object-cover" />
-                                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button
-                                                onClick={() => removeImage(idx)}
-                                                className="p-1.5 bg-red-500 text-white rounded-lg shadow-sm hover:bg-red-600"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                        <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded-full backdrop-blur-sm">
-                                            Page {idx + 1}
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-
-                        <div className="pt-4 mt-auto border-t border-border">
-                            <button
-                                onClick={generatePdf}
-                                disabled={images.length === 0 || isBusy}
-                                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
-                            >
-                                {isBusy ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
-                                Download PDF
-                            </button>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <ToolLayout title="Scan to PDF" description="Capture pages with your camera or import photos, then combine them into one PDF.">
+      <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1fr_22rem]">
+        <div className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 shadow-xl">
+          <div className="relative flex aspect-[3/4] items-center justify-center md:aspect-video">
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              screenshotQuality={0.92}
+              videoConstraints={{ width: 1920, height: 1080, facingMode }}
+              onUserMedia={() => setError('')}
+              onUserMediaError={() => setError('Camera access failed. Check browser permission or import photos instead.')}
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-x-0 bottom-5 flex items-center justify-center gap-5">
+              <button type="button" onClick={() => setFacingMode(mode => mode === 'user' ? 'environment' : 'user')} className="rounded-full bg-black/55 p-3 text-white backdrop-blur hover:bg-black/70" aria-label="Switch camera"><RefreshCw className="h-5 w-5" /></button>
+              <button type="button" onClick={capture} className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-white/20 shadow-xl transition active:scale-95" aria-label="Capture page"><span className="h-12 w-12 rounded-full bg-blue-600" /></button>
+              <button type="button" onClick={() => fileInputRef.current?.click()} className="rounded-full bg-black/55 p-3 text-white backdrop-blur hover:bg-black/70" aria-label="Import photos"><Images className="h-5 w-5" /></button>
+              <input ref={fileInputRef} type="file" accept="image/jpeg,image/png" multiple onChange={importPhotos} className="hidden" />
             </div>
-        </ToolLayout>
-    )
+          </div>
+        </div>
+
+        <aside className="flex min-h-[28rem] flex-col rounded-3xl border border-border bg-background p-4">
+          <div className="mb-4 flex items-center justify-between gap-3"><h2 className="font-black text-foreground">Pages ({images.length})</h2>{images.length > 0 && <button onClick={() => setImages([])} className="text-xs font-bold text-destructive">Clear all</button>}</div>
+          <div className="flex-1 space-y-3 overflow-y-auto pr-1">
+            {images.length === 0 ? (
+              <div className="flex h-full min-h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-border text-center text-sm text-muted-foreground"><Camera className="mb-3 h-8 w-8 opacity-50" />Capture a page or import photos.</div>
+            ) : images.map((image, index) => (
+              <div key={`${image.slice(0, 32)}-${index}`} className="group relative overflow-hidden rounded-xl border border-border bg-card">
+                <img src={image} alt={`Scanned page ${index + 1}`} className="h-36 w-full object-cover" />
+                <span className="absolute bottom-2 left-2 rounded-full bg-black/60 px-2 py-1 text-[10px] font-bold text-white">Page {index + 1}</span>
+                <button onClick={() => setImages(current => current.filter((_, itemIndex) => itemIndex !== index))} className="absolute right-2 top-2 rounded-lg bg-destructive p-2 text-white opacity-100 shadow-sm sm:opacity-0 sm:group-hover:opacity-100" aria-label={`Remove page ${index + 1}`}><Trash2 className="h-4 w-4" /></button>
+              </div>
+            ))}
+          </div>
+
+          {error && <div role="alert" className="mt-4 flex gap-2 rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-xs leading-5 text-destructive"><AlertTriangle className="h-4 w-4 shrink-0" />{error}</div>}
+          <button onClick={generatePdf} disabled={images.length === 0 || isBusy} className="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 font-black text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
+            {isBusy ? <RefreshCw className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5" />}{isBusy ? 'Building PDF...' : 'Download PDF'}
+          </button>
+        </aside>
+      </div>
+    </ToolLayout>
+  )
 }

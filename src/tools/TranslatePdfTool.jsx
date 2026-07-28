@@ -58,6 +58,7 @@ export default function TranslatePdfTool() {
     const [translatedText, setTranslatedText] = useState('')
     const [apiKey, setApiKey] = useState('')
     const [showKeyModal, setShowKeyModal] = useState(false)
+    const [error, setError] = useState('')
 
     useEffect(() => {
         const key = getStoredApiKey()
@@ -83,12 +84,14 @@ export default function TranslatePdfTool() {
         if (files[0]) setFile(files[0])
         setCompleted(false)
         setProgress(0)
+        setError('')
     }
 
     const startTranslation = async () => {
         setBusy(true)
         setCompleted(false)
         setTranslatedText('')
+        setError('')
 
         try {
             // 1. Extract Text
@@ -143,7 +146,7 @@ export default function TranslatePdfTool() {
 
         } catch (error) {
             console.error("Translation Error:", error)
-            alert("Translation failed. Please try again.")
+            setError(error.message || 'Translation failed. Check the API key or try another file.')
         } finally {
             setBusy(false)
         }
@@ -215,6 +218,7 @@ export default function TranslatePdfTool() {
                                     )}
 
                                     {/* Action */}
+                                    {error && <div role="alert" className="mb-4 flex gap-2 rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"><AlertTriangle className="h-5 w-5 shrink-0" />{error}</div>}
                                     <ActionButtons
                                         primaryText={busy ? 'Translating...' : 'Start Translation'}
                                         onPrimary={startTranslation}

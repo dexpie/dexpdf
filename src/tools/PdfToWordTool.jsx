@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { Document, Packer, Paragraph, HeadingLevel, TextRun } from 'docx'
 import FilenameInput from '../components/FilenameInput'
@@ -8,10 +8,8 @@ import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 import { configurePdfWorker } from '../utils/pdfWorker'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
-import ActionButtons from '../components/common/ActionButtons'
-import { useTranslation } from 'react-i18next'
-import { FileText, Laptop, Cloud, AlertCircle, CheckCircle, Settings, Lock, FileOutput, Zap, Shield, Sparkles } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { FileText, Laptop, AlertCircle, CheckCircle, Settings, FileOutput, ScanText } from 'lucide-react'
+import { motion } from 'framer-motion'
 import ResultPage from '../components/common/ResultPage'
 
 configurePdfWorker()
@@ -174,36 +172,217 @@ function formatParagraph(lineItems, avgFontHeight) {
   }
 }
 
+function paragraphsFromOcrText(text, pageNumber, totalPages) {
+  const blocks = text
+    .replace(/\r/g, '')
+    .split(/\n\s*\n/)
+    .map(block => block.split('\n').map(line => line.trim()).filter(Boolean).join(' '))
+    .filter(Boolean)
+
+  const paragraphs = blocks.map(block => new Paragraph({
+    children: [new TextRun({ text: block, size: 22 })],
+    spacing: { after: 160, line: 276 }
+  }))
+
+  if (pageNumber < totalPages && paragraphs.length > 0) {
+    paragraphs.push(new Paragraph({ text: '', pageBreakBefore: true }))
+  }
+
+  return paragraphs
+}
+
+function paragraphsFromNativeText(textContent, pageNumber, totalPages) {
+  const lineMap = new Map()
+  const fontHeights = []
+
+  textContent.items.forEach(item => {
+    if (!item.str?.trim()) return
+    const fontHeight = Math.abs(item.transform?.[3]) || item.height || 12
+    const y = Math.round((item.transform?.[5] || 0) / 3) * 3
+    fontHeights.push(fontHeight)
+    if (!lineMap.has(y)) lineMap.set(y, [])
+    lineMap.get(y).push({
+      text: item.str.trim(),
+      x: item.transform?.[4] || 0,
+      width: item.width || 0,
+      fontHeight,
+      fontName: item.fontName || ''
+    })
+  })
+
+  const avgFontHeight = fontHeights.length
+    ? fontHeights.reduce((sum, value) => sum + value, 0) / fontHeights.length
+    : 12
+
+  const paragraphs = Array.from(lineMap.entries())
+    .sort(([firstY], [secondY]) => secondY - firstY)
+    .map(([, items]) => {
+      const sortedItems = items.sort((first, second) => first.x - second.x)
+      const text = sortedItems.map(item => item.text).join(' ').replace(/\s+/g, ' ').trim()
+      return formatParagraph([{
+        text,
+        fontHeight: Math.max(...sortedItems.map(item => item.fontHeight)),
+        fontName: sortedItems.map(item => item.fontName).join(' ')
+      }], avgFontHeight)
+    })
+
+  if (pageNumber < totalPages && paragraphs.length > 0) {
+    paragraphs.push(new Paragraph({ text: '', pageBreakBefore: true }))
+  }
+
+  return paragraphs
+}
+
+async function optimizedOcrPdfToWord(file, { language = 'ind', onProgress } = {}) {
+  const data = await file.arrayBuffer()
+  const pdf = await pdfjsLib.getDocument({ data }).promise.catch(error => {
+    if (error.name === 'PasswordException') throw new Error('PDF is password protected. Unlock it first.')
+    throw new Error('Corrupted or invalid PDF file.')
+  })
+
+  let scheduler = null
+  const workers = []
+  let recognizedCharacterCount = 0
+
+  try {
+    const pageResults = new Array(pdf.numPages)
+    const ocrPageIndexes = []
+    onProgress?.(8, 'Checking which pages need OCR...')
+
+    for (let pageIndex = 0; pageIndex < pdf.numPages; pageIndex++) {
+      const page = await pdf.getPage(pageIndex + 1)
+      const textContent = await page.getTextContent()
+      const nativeCharacterCount = textContent.items
+        .map(item => item.str || '')
+        .join('')
+        .replace(/\s/g, '')
+        .length
+
+      if (nativeCharacterCount >= 24) {
+        pageResults[pageIndex] = paragraphsFromNativeText(textContent, pageIndex + 1, pdf.numPages)
+        recognizedCharacterCount += nativeCharacterCount
+      } else {
+        ocrPageIndexes.push(pageIndex)
+      }
+      page.cleanup()
+    }
+
+    if (ocrPageIndexes.length > 0) {
+      const { createWorker, createScheduler } = await import('tesseract.js')
+      scheduler = createScheduler()
+      const workerCount = ocrPageIndexes.length >= 4 && (navigator.hardwareConcurrency || 2) >= 6 ? 2 : 1
+      let completedOcrPages = 0
+      let nextOcrIndex = 0
+
+      onProgress?.(
+        15,
+        `${ocrPageIndexes.length} of ${pdf.numPages} pages need OCR. Loading language model...`
+      )
+
+      for (let index = 0; index < workerCount; index++) {
+        const worker = await createWorker(language, 1, {
+          logger: message => {
+            if (message.status === 'loading tesseract core') {
+              onProgress?.(18, 'Starting the OCR engine...')
+            }
+          }
+        })
+        await worker.setParameters({
+          preserve_interword_spaces: '1',
+          tessedit_pageseg_mode: '3'
+        })
+        scheduler.addWorker(worker)
+        workers.push(worker)
+      }
+
+      async function processNextOcrPage() {
+        while (nextOcrIndex < ocrPageIndexes.length) {
+          const pageIndex = ocrPageIndexes[nextOcrIndex++]
+          const pageNumber = pageIndex + 1
+          onProgress?.(
+            22 + Math.round((completedOcrPages / ocrPageIndexes.length) * 66),
+            `OCR page ${pageNumber} (${completedOcrPages + 1} of ${ocrPageIndexes.length} scanned pages)...`
+          )
+
+          const page = await pdf.getPage(pageNumber)
+          const baseViewport = page.getViewport({ scale: 1 })
+          const longestSide = Math.max(baseViewport.width, baseViewport.height)
+          const scale = Math.min(2, Math.max(1.55, 1800 / longestSide))
+          const viewport = page.getViewport({ scale })
+          const canvas = document.createElement('canvas')
+          canvas.width = Math.ceil(viewport.width)
+          canvas.height = Math.ceil(viewport.height)
+          const context = canvas.getContext('2d', { willReadFrequently: true })
+          context.fillStyle = '#ffffff'
+          context.fillRect(0, 0, canvas.width, canvas.height)
+          await page.render({ canvasContext: context, viewport }).promise
+
+          const result = await scheduler.addJob('recognize', canvas)
+          const recognizedText = result?.data?.text?.trim() || ''
+          recognizedCharacterCount += recognizedText.replace(/\s/g, '').length
+          pageResults[pageIndex] = paragraphsFromOcrText(recognizedText, pageNumber, pdf.numPages)
+
+          canvas.width = 1
+          canvas.height = 1
+          page.cleanup()
+          completedOcrPages += 1
+        }
+      }
+
+      await Promise.all(Array.from({ length: workerCount }, () => processNextOcrPage()))
+    } else {
+      onProgress?.(80, 'All pages already contain selectable text.')
+    }
+
+    const paragraphs = pageResults.flat().filter(Boolean)
+
+    if (recognizedCharacterCount === 0 || paragraphs.length === 0) {
+      throw new Error('No readable text was found in the scanned pages.')
+    }
+
+    onProgress?.(92, 'Building editable Word document...')
+    const doc = new Document({
+      sections: [{
+        properties: {
+          page: {
+            margin: { top: 720, right: 720, bottom: 720, left: 720 }
+          }
+        },
+        children: paragraphs
+      }]
+    })
+    const blob = await Packer.toBlob(doc)
+    onProgress?.(100, 'Word document is ready.')
+    return blob
+  } finally {
+    if (scheduler) {
+      await scheduler.terminate().catch(() => {
+        workers.forEach(worker => worker.terminate().catch(() => {}))
+      })
+    }
+    pdf.destroy()
+  }
+}
+
 /**
  * PdfToWordTool - Convert PDF to editable Word documents
- * Supports both local extraction and cloud-based layout preservation
+ * Supports text PDFs, scanned PDFs, and mixed documents locally.
  */
 export default function PdfToWordTool() {
-  const { t } = useTranslation()
   const [batchMode, setBatchMode] = useState(false)
   const [file, setFile] = useState(null)
   const [busy, setBusy] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [progressText, setProgressText] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [downloadUrl, setDownloadUrl] = useState(null)
   const [outputFileName, setOutputFileName] = useState('')
-  const [conversionMode, setConversionMode] = useState('text') // 'text' or 'layout'
-  const [showKeyInput, setShowKeyInput] = useState(false)
-  const [apiKey, setApiKey] = useState('')
+  const [conversionMode, setConversionMode] = useState('layout')
   const [thumbnail, setThumbnail] = useState(null)
   const [pageCount, setPageCount] = useState(0)
-
-  // Keep user-provided service credentials only for the current browser session.
-  useEffect(() => {
-    const saved = sessionStorage.getItem('convertApiSecret') || ''
-    setApiKey(saved)
-  }, [])
-
-  useEffect(() => {
-    if (apiKey) sessionStorage.setItem('convertApiSecret', apiKey)
-    else sessionStorage.removeItem('convertApiSecret')
-  }, [apiKey])
+  const [documentKind, setDocumentKind] = useState('unknown')
+  const [ocrLanguage, setOcrLanguage] = useState('ind')
 
   async function handleFileChange(files) {
     setErrorMsg('')
@@ -222,14 +401,14 @@ export default function PdfToWordTool() {
 
     setFile(f)
     setOutputFileName(getDefaultFilename(f))
+    setDocumentKind('analyzing')
+    setConversionMode('layout')
 
-    // Generate thumbnail and get page count
     try {
       const data = await f.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data }).promise
       setPageCount(pdf.numPages)
 
-      // Generate first page thumbnail
       const page = await pdf.getPage(1)
       const viewport = page.getViewport({ scale: 0.5 })
       const canvas = document.createElement('canvas')
@@ -238,8 +417,26 @@ export default function PdfToWordTool() {
       const ctx = canvas.getContext('2d')
       await page.render({ canvasContext: ctx, viewport }).promise
       setThumbnail(canvas.toDataURL('image/jpeg', 0.7))
+
+      const sampleSize = Math.min(pdf.numPages, 3)
+      let pagesWithText = 0
+      for (let pageNumber = 1; pageNumber <= sampleSize; pageNumber++) {
+        const samplePage = pageNumber === 1 ? page : await pdf.getPage(pageNumber)
+        const textContent = await samplePage.getTextContent()
+        const characters = textContent.items
+          .map(item => item.str || '')
+          .join('')
+          .replace(/\s/g, '')
+          .length
+        if (characters >= 24) pagesWithText += 1
+      }
+
+      if (pagesWithText === 0) setDocumentKind('scanned')
+      else if (pagesWithText < sampleSize) setDocumentKind('mixed')
+      else setDocumentKind('text')
     } catch (e) {
       console.warn('Could not generate thumbnail', e)
+      setDocumentKind('unknown')
     }
   }
 
@@ -259,58 +456,42 @@ export default function PdfToWordTool() {
     setSuccessMsg('')
     setBusy(true)
     setProgress(0)
+    setProgressText('')
 
-    // CLOUD MODE - Layout Preserving
     if (conversionMode === 'layout') {
       try {
-        if (!apiKey) {
-          setProgress(10)
-        }
-
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('format', 'docx')
-        if (apiKey) formData.append('apiKey', apiKey)
-
-        setProgress(30)
-        const res = await fetch('/api/convert', {
-          method: 'POST',
-          body: formData
-        })
-
-        if (!res.ok) {
-          const err = await res.json()
-          if (res.status === 401) {
-            setShowKeyInput(true)
-            throw new Error('Server limit reached. Please use your own Free Key.')
+        const blob = await optimizedOcrPdfToWord(file, {
+          language: ocrLanguage,
+          onProgress: (percent, status) => {
+            setProgress(Math.round(percent))
+            setProgressText(status)
           }
-          throw new Error(err.error || res.statusText)
-        }
-
-        setProgress(80)
-        const blob = await res.blob()
-        const url = URL.createObjectURL(blob)
-
-        setProgress(100)
-        setDownloadUrl(url)
-
+        })
+        setDownloadUrl(URL.createObjectURL(blob))
         triggerConfetti()
-        setSuccessMsg('PDF converted successfully!')
+        setSuccessMsg(
+          documentKind === 'scanned' || documentKind === 'mixed'
+            ? 'Scanned pages recognized and converted to editable Word.'
+            : 'PDF converted locally to editable Word.'
+        )
       } catch (error) {
         console.error(error)
-        setErrorMsg(error.message)
-        if (error.message.includes('Limit') || error.message.includes('Key')) {
-          setShowKeyInput(true)
-        }
+        setErrorMsg(`Conversion failed: ${error.message}`)
       } finally {
         setBusy(false)
-        setProgress(0)
+        setProgressText('')
       }
       return
     }
 
-    // LOCAL MODE - Text Extraction
+    if (documentKind === 'scanned' || documentKind === 'mixed') {
+      setBusy(false)
+      setErrorMsg('This PDF contains scanned pages. Select Smart OCR so image text can become editable.')
+      return
+    }
+
     try {
+      setProgressText('Extracting the existing PDF text layer...')
       setProgress(10)
       const blob = await advancedPdfToWord(file, (percent) => {
         setProgress(Math.round(percent))
@@ -327,26 +508,22 @@ export default function PdfToWordTool() {
     } catch (err) {
       console.error(err)
       const msg = err.message || 'Unknown error'
-      if (msg.includes('scanned')) {
-        setErrorMsg('This appears to be a scanned PDF (image). Use OCR Tool instead.')
-      } else if (msg.includes('password')) {
-        setErrorMsg('🔒 ' + msg)
+      if (msg.includes('password')) {
+        setErrorMsg(msg)
       } else {
         setErrorMsg('Conversion failed: ' + msg)
       }
     } finally {
       setBusy(false)
-      setProgress(0)
+      setProgressText('')
     }
   }
 
   const processBatchFile = async (file, index, onProgress) => {
-    try {
-      return await advancedPdfToWord(file, onProgress)
-    } catch (error) {
-      console.error(`Error converting ${file.name}:`, error)
-      throw error
-    }
+    return optimizedOcrPdfToWord(file, {
+      language: ocrLanguage,
+      onProgress: percent => onProgress?.(percent)
+    })
   }
 
   const resetFile = () => {
@@ -357,28 +534,31 @@ export default function PdfToWordTool() {
     setSuccessMsg('')
     setDownloadUrl(null)
     setErrorMsg('')
+    setDocumentKind('unknown')
+    setProgress(0)
+    setProgressText('')
   }
 
   // Conversion mode options
   const modes = [
     {
-      id: 'text',
-      icon: Laptop,
-      title: 'Local Extraction',
-      description: 'Extract text paragraphs. Fast & private, runs entirely in your browser.',
+      id: 'layout',
+      icon: ScanText,
+      title: 'Smart OCR',
+      description: 'Extracts normal text instantly and OCRs only image-only pages with optimized local workers.',
       badges: [
-        { label: '⚡ Fast', class: 'bg-green-100 text-green-700' },
-        { label: '🔒 Private', class: 'bg-secondary text-muted-foreground' }
+        { label: 'Recommended', class: 'bg-blue-100 text-blue-700' },
+        { label: 'Mixed PDF ready', class: 'bg-blue-50 text-blue-700' }
       ]
     },
     {
-      id: 'layout',
-      icon: Cloud,
-      title: 'Pro Layout (Cloud)',
-      description: 'Uses ConvertAPI for stronger layout preservation. Results can still vary.',
+      id: 'text',
+      icon: Laptop,
+      title: 'Private Text Extraction',
+      description: 'For PDFs with selectable text. Runs entirely in your browser without OCR.',
       badges: [
-        { label: '🎯 Best Quality', class: 'bg-purple-100 text-purple-700' },
-        { label: '☁️ Cloud', class: 'bg-blue-100 text-blue-700' }
+        { label: 'No upload', class: 'bg-secondary text-muted-foreground' },
+        { label: 'Text PDFs only', class: 'bg-secondary text-muted-foreground' }
       ]
     }
   ]
@@ -386,7 +566,7 @@ export default function PdfToWordTool() {
   return (
     <ToolLayout
       title="PDF to Word"
-      description="Convert PDF documents to editable Microsoft Word files"
+      description="Convert normal and scanned PDFs into editable Microsoft Word files"
     >
       {/* Mode Toggle */}
       <div className="flex justify-center gap-2 mb-8">
@@ -398,7 +578,7 @@ export default function PdfToWordTool() {
               : 'bg-secondary text-muted-foreground hover:bg-muted'
           }`}
         >
-          📄 Single File
+          Single File
         </button>
         <button
           onClick={() => setBatchMode(true)}
@@ -408,7 +588,7 @@ export default function PdfToWordTool() {
               : 'bg-secondary text-muted-foreground hover:bg-muted'
           }`}
         >
-          🔄 Batch Convert
+          Batch Convert
         </button>
       </div>
 
@@ -431,14 +611,7 @@ export default function PdfToWordTool() {
               className="bg-destructive/10 text-destructive p-4 rounded-xl border border-destructive/20 flex items-start gap-2"
             >
               <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-              <div>
-                <span className="font-semibold">{errorMsg}</span>
-                {errorMsg.includes('scanned') && (
-                  <a href="/ocr" className="block mt-2 text-sm font-medium text-primary hover:underline">
-                    → Go to OCR Tool
-                  </a>
-                )}
-              </div>
+              <span className="font-semibold">{errorMsg}</span>
             </motion.div>
           )}
 
@@ -494,6 +667,28 @@ export default function PdfToWordTool() {
                       <span>•</span>
                       <span>{pageCount} {pageCount === 1 ? 'page' : 'pages'}</span>
                     </div>
+                    <div className="mt-3">
+                      {documentKind === 'analyzing' && (
+                        <span className="inline-flex rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+                          Checking text layer...
+                        </span>
+                      )}
+                      {documentKind === 'scanned' && (
+                        <span className="inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                          Scanned PDF detected: OCR enabled
+                        </span>
+                      )}
+                      {documentKind === 'mixed' && (
+                        <span className="inline-flex rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                          Mixed PDF detected: OCR enabled where needed
+                        </span>
+                      )}
+                      {documentKind === 'text' && (
+                        <span className="inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                          Selectable text detected
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <button
                     onClick={resetFile}
@@ -505,12 +700,18 @@ export default function PdfToWordTool() {
 
                 {/* Progress Bar */}
                 {busy && (
-                  <div className="h-2 bg-secondary rounded-full overflow-hidden mb-4">
-                    <motion.div
-                      className="h-full bg-primary"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progress}%` }}
-                    />
+                  <div className="mb-5 space-y-2">
+                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-primary"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${progress}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{progressText || 'Preparing conversion...'}</span>
+                      <span>{progress}%</span>
+                    </div>
                   </div>
                 )}
 
@@ -556,40 +757,28 @@ export default function PdfToWordTool() {
                     ))}
                   </div>
 
-                  {/* API Key Input (for cloud mode) */}
-                  {conversionMode === 'layout' && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      className="mt-4 pt-4 border-t border-border"
-                    >
-                      <label className="block text-sm font-medium text-foreground mb-1">
-                        ConvertAPI Secret Key
+                  {conversionMode === 'layout' && (documentKind === 'scanned' || documentKind === 'mixed') && (
+                    <div className="mt-4 border-t border-border pt-4">
+                      <label htmlFor="pdf-word-ocr-language" className="mb-2 block text-sm font-medium text-foreground">
+                        Scanned document language
                       </label>
-                      <p className="text-xs text-muted-foreground mb-2">
-                        Using your own key gives you higher limits. Get free 1500 seconds at convertapi.com
-                      </p>
-                      <div className="flex gap-2">
-                        <div className="relative flex-1">
-                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <input
-                            type="password"
-                            value={apiKey}
-                            onChange={(e) => setApiKey(e.target.value)}
-                            placeholder="Paste your ConvertAPI Secret here..."
-                            className="w-full pl-10 pr-3 py-2.5 border border-border rounded-xl text-sm bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
-                          />
-                        </div>
-                        <a
-                          href="https://www.convertapi.com/a"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-4 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-medium hover:opacity-90 whitespace-nowrap"
-                        >
-                          Get Free Key
-                        </a>
-                      </div>
-                    </motion.div>
+                      <select
+                        id="pdf-word-ocr-language"
+                        value={ocrLanguage}
+                        onChange={event => setOcrLanguage(event.target.value)}
+                        disabled={busy}
+                        className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      >
+                        <option value="ind">Bahasa Indonesia</option>
+                        <option value="eng">English</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {conversionMode === 'layout' && (
+                    <p className="mt-4 border-t border-border pt-4 text-xs text-muted-foreground">
+                      Runs locally in your browser. Pages with selectable text skip OCR automatically.
+                    </p>
                   )}
                 </div>
               </div>
@@ -603,6 +792,7 @@ export default function PdfToWordTool() {
                     disabled={busy}
                     placeholder="output"
                     label="Output Filename"
+                    helperText="The .docx extension will be added automatically"
                   />
 
                   <div className="flex items-end">
@@ -624,12 +814,14 @@ export default function PdfToWordTool() {
                   {busy ? (
                     <>
                       <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                      Converting... {progress}%
+                      {progressText || `Converting... ${progress}%`}
                     </>
                   ) : (
                     <>
                       <FileOutput className="w-5 h-5" />
-                      Convert to DOCX
+                      {documentKind === 'scanned' || documentKind === 'mixed'
+                        ? 'OCR & Convert to DOCX'
+                        : 'Convert to DOCX'}
                     </>
                   )}
                 </button>

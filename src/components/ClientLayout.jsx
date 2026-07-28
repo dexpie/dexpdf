@@ -8,19 +8,22 @@ import Analytics from '@/components/Analytics'
 import ProgressBar from '@/components/ProgressBar'
 import CommandPalette from '@/components/CommandPalette'
 import GlobalDropZone from '@/components/GlobalDropZone'
+import { TOOLS } from '@/config/tools'
 import { registerServiceWorker } from '@/utils/serviceWorkerUpdates'
 
 export default function ClientLayout({ children }) {
-    const [tools, setTools] = useState([])
     const [showCommandPalette, setShowCommandPalette] = useState(false)
     const [refreshApp, setRefreshApp] = useState(null)
 
-    useEffect(() => {
-        fetch('/tools.json')
-            .then(res => res.json())
-            .then(data => setTools(data))
-            .catch(err => console.error('Error loading tools:', err))
+    const tools = TOOLS.map(tool => ({
+        id: tool.id,
+        name: tool.title,
+        desc: tool.description,
+        category: tool.category,
+        href: tool.href || `/${tool.id}`,
+    }))
 
+    useEffect(() => {
         registerServiceWorker({
             onUpdateReady: refresh => setRefreshApp(() => refresh),
         })

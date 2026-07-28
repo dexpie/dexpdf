@@ -14,7 +14,7 @@ const CATEGORY_STYLES = {
   organize: { icon: 'bg-red-500/10 text-red-500', label: 'Organize' },
   convert: { icon: 'bg-blue-500/10 text-blue-500', label: 'Convert' },
   security: { icon: 'bg-emerald-500/10 text-emerald-500', label: 'Secure' },
-  create: { icon: 'bg-violet-500/10 text-violet-500', label: 'Create' },
+  create: { icon: 'bg-blue-500/10 text-blue-600', label: 'Create' },
   default: { icon: 'bg-slate-500/10 text-slate-500', label: 'PDF tool' },
 }
 

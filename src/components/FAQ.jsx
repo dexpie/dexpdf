@@ -1,35 +1,33 @@
+'use client'
+
 import React, { useState } from 'react'
 import { Plus, Minus, HelpCircle } from 'lucide-react'
 
-export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState(null)
+const DEFAULT_FAQS = [
+  {
+    question: 'Is DexPDF really free?',
+    answer: 'Yes. DexPDF gives you access to the core PDF, QR, and document workflow tools without requiring a paid account for the standard experience.',
+  },
+  {
+    question: 'Are my files safe?',
+    answer: 'For most tools, processing happens directly in your browser. When a feature needs cloud or AI help, DexPDF should only send the data needed for that action.',
+  },
+  {
+    question: 'What file formats are supported?',
+    answer: 'DexPDF supports PDF, common image formats like JPG and PNG, and document workflows involving DOCX, PPTX, spreadsheet files, and text extraction.',
+  },
+  {
+    question: 'Do I need to create an account?',
+    answer: 'No. You can open the site and start using tools right away for the main workflow.',
+  },
+  {
+    question: 'Can I use DexPDF on mobile?',
+    answer: 'Yes. DexPDF is designed to work on modern mobile and desktop browsers and can behave like an installable web app on supported devices.',
+  },
+]
 
-  const faqs = [
-    {
-      question: 'Is DexPDF really free?',
-      answer: 'Yes! All tools are 100% free with no hidden charges, subscriptions, or file limits. We believe in accessible tools for everyone.',
-    },
-    {
-      question: 'Are my files safe?',
-      answer: 'Absolutely. For most tools, all processing happens directly in your browser. Your files never leave your device. For cloud-powered tools, files are processed securely and deleted immediately.',
-    },
-    {
-      question: 'What file formats are supported?',
-      answer: 'We support PDF, images (JPG, PNG, WebP), Word documents (DOCX), PowerPoint (PPTX), and Excel (CSV). We are constantly adding support for more formats.',
-    },
-    {
-      question: 'Is there a file size limit?',
-      answer: 'No strict limits! However, very large files (100MB+) may take longer to process depending on your device capabilities since we process client-side.',
-    },
-    {
-      question: 'Do I need to create an account?',
-      answer: 'No account needed! Just visit the site and start using any tool immediately. No signup, no login, no hassle.',
-    },
-    {
-      question: 'Can I use DexPDF on mobile?',
-      answer: 'Yes! DexPDF is a Progressive Web App (PWA) that works perfectly on all modern browsers - desktop, tablet, and mobile devices. You can even install it!',
-    },
-  ]
+export default function FAQ({ faqs = DEFAULT_FAQS }) {
+  const [openIndex, setOpenIndex] = useState(null)
 
   return (
     <section className="py-24 bg-[#F8FAFC]">

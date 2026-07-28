@@ -1,131 +1,219 @@
 'use client'
-import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+
+import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 import {
-    Zap, Clock, Star, FileText, ArrowRight,
-    Activity, Sun, Moon, Cloud, Search
+  ArrowRight,
+  CheckCircle2,
+  CloudOff,
+  FileStack,
+  History,
+  LockKeyhole,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Zap,
 } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { useRouter } from 'next/navigation'
+import ToolGrid from '@/components/ToolGrid'
+import { TOOLS } from '@/config/tools'
+import {
+  getFavoriteToolIds,
+  getRecentToolIds,
+  PREFERENCES_EVENT,
+} from '@/utils/toolPreferences'
 
-import Features from './Features'
-import RecentFiles from './RecentFiles'
-import ToolCard from './ToolCard'
+const QUICK_TOOLS = ['merge', 'compress', 'qr-code', 'qr-reader']
+const TRUST_SIGNALS = [
+  {
+    label: '54 tools',
+    description: 'PDF, QR, convert, security, and daily document helpers.',
+    icon: FileStack,
+  },
+  {
+    label: 'Local-first',
+    description: 'Most files stay in your browser, not on a random server.',
+    icon: CloudOff,
+  },
+  {
+    label: 'Return-ready',
+    description: 'Recent tools and history are saved only on this device.',
+    icon: History,
+  },
+]
 
-export default function HomeClient({ tools }) {
-    const { t } = useTranslation()
-    const router = useRouter()
-    const [greeting, setGreeting] = useState('Welcome back')
-    const [stats, setStats] = useState({ converted: 0, saved: '0 MB' })
+export default function HomeClient() {
+  const [recentTools, setRecentTools] = useState([])
+  const [favoriteTools, setFavoriteTools] = useState([])
 
-    useEffect(() => {
-        const hour = new Date().getHours()
-        if (hour < 12) setGreeting('Good Morning')
-        else if (hour < 18) setGreeting('Good Afternoon')
-        else setGreeting('Good Evening')
+  useEffect(() => {
+    const syncPreferences = () => {
+      setRecentTools(
+        getRecentToolIds()
+          .map(id => TOOLS.find(tool => tool.id === id))
+          .filter(Boolean)
+          .slice(0, 4)
+      )
+      setFavoriteTools(
+        getFavoriteToolIds()
+          .map(id => TOOLS.find(tool => tool.id === id))
+          .filter(Boolean)
+          .slice(0, 4)
+      )
+    }
 
-        // Pull real stats from localStorage history
-        try {
-            const history = JSON.parse(localStorage.getItem('dexpdf_history') || '[]')
-            const totalFiles = history.length
-            const totalSaved = history.reduce((acc, item) => acc + (item.size || 0), 0)
-            const savedMB = (totalSaved / (1024 * 1024)).toFixed(1)
-            setStats({ converted: totalFiles, saved: `${savedMB} MB` })
-        } catch (e) {
-            setStats({ converted: 0, saved: '0 MB' })
-        }
-    }, [])
+    syncPreferences()
+    window.addEventListener(PREFERENCES_EVENT, syncPreferences)
+    window.addEventListener('storage', syncPreferences)
+    return () => {
+      window.removeEventListener(PREFERENCES_EVENT, syncPreferences)
+      window.removeEventListener('storage', syncPreferences)
+    }
+  }, [])
 
-    // Featured Tools (God Mode Favorites)
-    const favorites = ['merge', 'invoice-generator', 'compress', 'edit']
-    const favTools = tools.filter(t => favorites.includes(t.id))
+  const quickTools = QUICK_TOOLS
+    .map(id => TOOLS.find(tool => tool.id === id))
+    .filter(Boolean)
 
-    // Group rest by filters if needed, but for now we show categories as before or cleaner list
-    // Reusing existing categories logic if we want, or simplifying for "Cockpit" view
+  const openSearch = () => {
+    document.getElementById('tool-catalog')?.scrollIntoView({ behavior: 'smooth' })
+    window.setTimeout(() => document.getElementById('tool-search')?.focus(), 450)
+  }
 
-    return (
-        <div className="min-h-screen pb-20">
-            {/* Hero Section - Dashboard Style */}
-            <section className="relative pt-32 pb-12 px-6">
-                <div className="max-w-6xl mx-auto">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mb-12"
-                    >
-                        <div className="flex items-center gap-2 text-blue-500 font-bold mb-2 uppercase tracking-wide text-sm">
-                            <Activity className="w-4 h-4" /> System Online
-                        </div>
-                        <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 tracking-tight">
-                            {greeting}, <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Captain.</span>
-                        </h1>
-                        <p className="text-xl text-muted-foreground max-w-2xl">
-                            DexPDF AI Core is active. You have processed {stats.converted} documents today
-                            and saved {stats.saved} of space.
-                        </p>
-                    </motion.div>
+  return (
+    <main className="min-h-screen overflow-hidden bg-background">
+      <section className="hero-grid relative overflow-hidden border-b border-border bg-gradient-to-br from-white via-blue-50/70 to-sky-50 px-4 pb-16 pt-16 text-foreground dark:border-white/10 dark:bg-[#0a1020] dark:from-[#07111f] dark:via-[#081a33] dark:to-[#0b2242] dark:text-white md:px-6 md:pb-20 md:pt-24">
+        <div className="hero-orb hero-orb-one" />
+        <div className="hero-orb hero-orb-two" />
 
-                    {/* Quick Stats / Status */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-                        <div className="bg-card p-6 rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow">
-                            <div className="text-muted-foreground text-xs font-bold uppercase mb-2 flex items-center gap-2"><Clock className="w-4 h-4" /> System Time</div>
-                            <div className="text-2xl font-mono font-bold text-foreground">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                        </div>
-                        <div className="bg-card p-6 rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow">
-                            <div className="text-muted-foreground text-xs font-bold uppercase mb-2 flex items-center gap-2"><Zap className="w-4 h-4" /> Files Processed</div>
-                            <div className="text-2xl font-mono font-bold text-green-600 dark:text-green-400">{stats.converted}</div>
-                        </div>
-                        {/* Add more widgets here */}
-                    </div>
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[1.08fr_.92fr]">
+          <div>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/80 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-blue-700 shadow-sm backdrop-blur dark:border-white/15 dark:bg-white/10 dark:text-blue-200">
+              <Sparkles className="h-3.5 w-3.5" />
+              Your private PDF workspace
+            </div>
 
-                    {/* Favorites / Quick Access */}
-                    <div className="mb-16">
-                        <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-                            <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" /> Mission Critical Tools
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {favTools.map((tool, i) => (
-                                <ToolCard key={tool.id} tool={tool} index={i} />
-                            ))}
-                        </div>
-                    </div>
+            <h1 className="max-w-3xl text-4xl font-black leading-[1.03] tracking-[-0.05em] text-slate-950 dark:text-white sm:text-5xl md:text-6xl lg:text-7xl">
+              PDF tools that feel
+              <span className="hero-gradient-text block">effortlessly fast.</span>
+            </h1>
 
-                    {/* Recent Activity */}
-                    <div className="mb-16">
-                        <div className="flex justify-between items-end mb-6">
-                            <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
-                                <Clock className="w-5 h-5 text-muted-foreground" /> Recent Transmissions
-                            </h3>
-                            <button onClick={() => router.push('/my-documents')} className="text-blue-600 font-bold text-sm flex items-center gap-1 hover:gap-2 transition-all">
-                                View All <ArrowRight className="w-4 h-4" />
-                            </button>
-                        </div>
-                        <RecentFiles limit={3} />
-                    </div>
+            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 md:text-lg">
+              Edit, convert, organize, and protect documents in one fast workspace.
+              Most tools run locally, so your files stay yours.
+            </p>
 
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button
+                onClick={openSearch}
+                className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:shadow-black/20 dark:hover:bg-blue-50"
+              >
+                Find a PDF tool
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </button>
+              <Link
+                href="/merge"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white/80 px-6 py-3 text-sm font-bold text-slate-800 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:border-white/30 dark:hover:bg-white/15"
+              >
+                <FileStack className="h-4 w-4 text-blue-500" />
+                Merge PDFs now
+              </Link>
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-500" /> No sign-up</span>
+              <span className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-emerald-500" /> Private by design</span>
+              <span className="flex items-center gap-1.5"><Zap className="h-4 w-4 text-amber-500" /> Works in your browser</span>
+            </div>
+
+            <div className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">
+              {TRUST_SIGNALS.map(signal => (
+                <div key={signal.label} className="rounded-2xl border border-blue-100 bg-white/70 p-4 shadow-sm shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-white/[0.06]">
+                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-300">
+                    <signal.icon className="h-4 w-4" />
+                  </div>
+                  <p className="text-sm font-black text-slate-950 dark:text-white">{signal.label}</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-400">{signal.description}</p>
                 </div>
-            </section>
+              ))}
+            </div>
+          </div>
 
-            {/* Full Tool Grid (Collapsed/Expandable or just visible below) */}
-            <section className="bg-secondary/50 py-20 px-6">
-                <div className="max-w-6xl mx-auto">
-                    <div className="flex justify-between items-center mb-12">
-                        <h2 className="text-3xl font-bold text-foreground">All Modules</h2>
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                            <input
-                                type="text"
-                                placeholder="Search modules..."
-                                className="pl-10 pr-4 py-2 rounded-full border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
-                                // Input logic to filter tools below or trigger command palette
-                                onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))}
-                            />
-                        </div>
-                    </div>
-                    <Features tools={tools} />
+          <div className="relative">
+            <div className="workspace-card relative rounded-[2rem] border border-border bg-white/85 p-4 shadow-2xl shadow-slate-900/10 backdrop-blur-xl dark:border-white/15 dark:bg-white/[0.08] dark:shadow-black/30 md:p-6">
+              <div className="mb-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Quick start</p>
+                  <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-950 dark:text-white">What do you need to do?</h2>
                 </div>
-            </section>
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <LockKeyhole className="h-5 w-5" />
+                </div>
+              </div>
 
+              <button
+                onClick={openSearch}
+                className="mb-4 flex w-full items-center gap-3 rounded-xl border border-border bg-white px-4 py-3.5 text-left text-sm text-slate-500 shadow-sm transition hover:border-primary/30 hover:bg-blue-50/60 dark:border-white/10 dark:bg-black/20 dark:text-slate-400 dark:hover:border-white/25 dark:hover:bg-black/30"
+              >
+                <Search className="h-4 w-4 text-primary" />
+                Search more than {TOOLS.length} PDF tools
+                <span className="ml-auto hidden rounded-md border border-border bg-card px-2 py-0.5 font-mono text-[10px] sm:inline">Ctrl K</span>
+              </button>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {quickTools.map((tool, index) => (
+                  <Link
+                    key={tool.id}
+                    href={tool.href || `/${tool.id}`}
+                    className="quick-tool-card group rounded-2xl border border-border bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-blue-50/50 hover:shadow-lg dark:border-white/10 dark:bg-black/20 dark:hover:border-white/25 dark:hover:bg-black/30"
+                  >
+                    <div className={`mb-5 flex h-11 w-11 items-center justify-center rounded-xl ${index === 0 ? 'bg-blue-500/10 text-blue-600' : index === 1 ? 'bg-cyan-500/10 text-cyan-600' : index === 2 ? 'bg-sky-500/10 text-sky-600' : 'bg-blue-500/10 text-blue-700'}`}>
+                      <tool.icon className="h-5 w-5" />
+                    </div>
+                    <div className="flex items-end justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-bold text-slate-950 dark:text-white">{tool.title}</p>
+                        <p className="mt-1 line-clamp-1 text-xs text-slate-500 dark:text-slate-400">{tool.description}</p>
+                      </div>
+                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {(favoriteTools.length > 0 || recentTools.length > 0) && (
+                <div className="mt-4 border-t border-border pt-4 dark:border-white/10">
+                  {favoriteTools.length > 0 && (
+                    <div className="mb-3 flex flex-wrap items-center gap-2">
+                      <span className="mr-1 flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
+                        <Star className="h-3 w-3 fill-current" />
+                        Favorites
+                      </span>
+                      {favoriteTools.map(tool => (
+                        <Link key={tool.id} href={tool.href || `/${tool.id}`} className="rounded-lg bg-amber-100 px-2.5 py-1.5 text-xs font-semibold text-amber-700 transition hover:bg-amber-200 dark:bg-amber-400/10 dark:text-amber-100 dark:hover:bg-amber-400/20 dark:hover:text-white">
+                          {tool.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                  {recentTools.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="mr-1 text-xs font-semibold text-slate-500 dark:text-slate-400">Recent</span>
+                      {recentTools.map(tool => (
+                        <Link key={tool.id} href={tool.href || `/${tool.id}`} className="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-200 dark:bg-white/10 dark:text-slate-300 dark:hover:bg-white/15 dark:hover:text-white">
+                          {tool.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-    )
+      </section>
+
+      <ToolGrid />
+    </main>
+  )
 }

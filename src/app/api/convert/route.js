@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
+const ALLOWED_LAYOUTS = new Set(['flowing', 'continuous', 'exact'])
+const ALLOWED_OCR_MODES = new Set(['auto', 'force', 'never'])
+const ALLOWED_OCR_LANGUAGES = new Set([
+    'auto', 'ar', 'ca', 'zh', 'da', 'nl', 'en', 'fi', 'fr', 'de', 'el',
+    'ko', 'it', 'ja', 'no', 'pl', 'pt', 'ro', 'ru', 'sl', 'es', 'sv',
+    'tr', 'ua', 'th'
+])
+
 export async function POST(request) {
     try {
         const contentType = request.headers.get('content-type') || ''
@@ -12,6 +20,9 @@ export async function POST(request) {
         const file = formData.get('file')
         const format = formData.get('format')
         const apiKey = formData.get('apiKey') || process.env.CONVERT_API_SECRET
+        const requestedLayout = String(formData.get('layout') || 'flowing').toLowerCase()
+        const requestedOcrMode = String(formData.get('ocrMode') || 'auto').toLowerCase()
+        const requestedOcrLanguage = String(formData.get('ocrLanguage') || 'auto').toLowerCase()
 
         if (!file || !format) {
             return NextResponse.json({ error: 'Missing file or format' }, { status: 400 })
@@ -27,13 +38,14 @@ export async function POST(request) {
             return NextResponse.json({ error: 'Server Key not configured. Please use your own key.' }, { status: 401 })
         }
 
-        // 1. Convert File to Buffer then Base64
+        const layout = ALLOWED_LAYOUTS.has(requestedLayout) ? requestedLayout : 'flowing'
+        const ocrMode = ALLOWED_OCR_MODES.has(requestedOcrMode) ? requestedOcrMode : 'auto'
+        const ocrLanguage = ALLOWED_OCR_LANGUAGES.has(requestedOcrLanguage) ? requestedOcrLanguage : 'auto'
+
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
         const base64File = buffer.toString('base64')
 
-        // 2. Prepare JSON Payload for ConvertAPI
-        // Docs: https://www.convertapi.com/doc/upload (Base64 content)
         const payload = {
             "Parameters": [
                 {
@@ -44,23 +56,51 @@ export async function POST(request) {
                     }
                 },
                 {
+                    "Name": "Layout",
+                    "Value": layout
+                },
+                {
+                    "Name": "OcrMode",
+                    "Value": ocrMode
+                },
+                {
+                    "Name": "OcrLanguage",
+                    "Value": ocrLanguage
+                },
+                {
+                    "Name": "Annotations",
+                    "Value": "textBox"
+                },
+                {
                     "Name": "StoreFile",
                     "Value": true
                 }
             ]
         }
 
-        // 3. Send Request
-        // Endpoint: https://v2.convertapi.com/convert/pdf/to/{format}?Secret={apiKey}
-        const convertUrl = `https://v2.convertapi.com/convert/pdf/to/${format}?Secret=${apiKey}`
+        const convertUrl = `https://v2.convertapi.com/convert/pdf/to/${format}`
 
-        const response = await fetch(convertUrl, {
+        const requestOptions = {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
-        })
+        }
+        let response = await fetch(convertUrl, requestOptions)
+
+        // Existing deployments may still use a legacy ConvertAPI secret instead
+        // of the newer bearer token. Retry once with the legacy auth format.
+        if (response.status === 401) {
+            response = await fetch(`${convertUrl}?Secret=${encodeURIComponent(apiKey)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: requestOptions.body
+            })
+        }
 
         if (!response.ok) {
             let errorDetails = {}
@@ -75,17 +115,19 @@ export async function POST(request) {
 
         const data = await response.json()
 
-        // 4. Handle Response
-        // ConvertAPI returns JSON with Files array. We need to fetch the file URL and stream it back.
         if (data.Files && data.Files.length > 0) {
             const fileUrl = data.Files[0].Url
             const fileRes = await fetch(fileUrl)
+            if (!fileRes.ok) {
+                return NextResponse.json({ error: 'Converted file could not be downloaded.' }, { status: 502 })
+            }
             const fileBlob = await fileRes.blob()
 
             return new NextResponse(fileBlob, {
                 headers: {
                     'Content-Type': data.Files[0].ContentType || 'application/octet-stream',
                     'Content-Disposition': `attachment; filename="${data.Files[0].FileName}"`,
+                    'Cache-Control': 'no-store',
                 },
             })
         }
