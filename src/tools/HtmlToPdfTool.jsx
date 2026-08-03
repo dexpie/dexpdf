@@ -6,6 +6,8 @@ import { triggerConfetti } from '../utils/confetti'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import ActionButtons from '../components/common/ActionButtons'
+import { canvasToPdfBlob } from '../utils/canvasPdf'
+import { downloadBlob } from '../utils/fileHelpers'
 import { useTranslation } from 'react-i18next'
 import { FileCode, FileOutput, AlertCircle, CheckCircle, Globe } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -41,6 +43,7 @@ export default function HtmlToPdfTool() {
 
         setBusy(true); setErrorMsg(''); setSuccessMsg('')
 
+        let wrapper = null
         try {
             let htmlContent = ''
             if (mode === 'file') {
@@ -48,56 +51,27 @@ export default function HtmlToPdfTool() {
             }
 
             // Render HTML off-screen
-            const wrapper = document.createElement('div')
+            wrapper = document.createElement('div')
             wrapper.style.position = 'absolute'
             wrapper.style.left = '-9999px'
             wrapper.style.width = '1000px' // Desktop-ish width
             wrapper.style.background = 'white'
             wrapper.innerHTML = htmlContent
-
-            // Sanitize scripts to avoid execution loops if possible, though text() is safer than live execution.
-            // Actually, rendering it into DOM *will* execute scripts. Be careful.
-            // For simple static HTML it is fine.
+            wrapper.querySelectorAll('script, iframe, object, embed').forEach(node => node.remove())
 
             document.body.appendChild(wrapper)
 
-            // Wait for images? html2canvas handles some.
-            // Convert
             const canvas = await html2canvas(wrapper, { scale: 2, useCORS: true })
-            const imgData = canvas.toDataURL('image/png')
-
-            const { jsPDF } = await import('jspdf')
-            const pdf = new jsPDF('p', 'mm', 'a4')
-            const imgProps = pdf.getImageProperties(imgData)
-            const pdfWidth = 210
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
-
-            // Simple 1-page dump for now. 
-            // If long, we need splitting logic.
-            // Existing WordToPdf logic handled 1 page or auto-split by jsPDF? 
-            // Actually jsPDF addImage does not auto-split.
-            // We will just do a single long page or 1 page fit for now to avoid complexity in this fix phase.
-            // Or we can let it span if we manage pages manually.
-            // Let's stick to simple 1 page fitting or height expansion.
-
-            if (pdfHeight > 297) {
-                // Change page size to fit content (Long PDF)
-                const pdfCustom = new jsPDF('p', 'mm', [pdfWidth, pdfHeight])
-                pdfCustom.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-                pdfCustom.save(getOutputFilename(outputFileName, 'webpage'))
-            } else {
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-                pdf.save(getOutputFilename(outputFileName, 'webpage'))
-            }
-
-            document.body.removeChild(wrapper)
-            setSuccessMsg('HTML converted to PDF successfully!')
+            const result = await canvasToPdfBlob(canvas)
+            downloadBlob(result.blob, getOutputFilename(outputFileName, 'webpage'))
+            setSuccessMsg(`HTML converted to PDF successfully (${result.pageCount} page${result.pageCount === 1 ? '' : 's'}).`)
             triggerConfetti()
 
         } catch (err) {
             console.error(err)
             setErrorMsg('Conversion failed: ' + (err.message || err))
         } finally {
+            if (wrapper?.isConnected) wrapper.remove()
             setBusy(false)
         }
     }

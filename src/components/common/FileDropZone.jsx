@@ -25,11 +25,24 @@ function getAcceptExtensions(accept) {
 
   const parts = accept.split(',').map(s => s.trim().toLowerCase())
   let exts = []
+  const mimeExtensions = {
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': ['.pptx'],
+    'text/csv': ['.csv'],
+    'text/html': ['.html', '.htm'],
+    'application/json': ['.json'],
+    'text/markdown': ['.md'],
+    'text/plain': ['.txt'],
+    'audio/*': ['.mp3', '.wav', '.ogg', '.m4a'],
+    'video/*': ['.mp4', '.webm', '.mov'],
+  }
 
   parts.forEach(part => {
     if (part === 'application/pdf') exts.push('.pdf')
     else if (part === 'image/*') exts.push('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.svg')
     else if (part.startsWith('.')) exts.push(part)
+    else if (mimeExtensions[part]) exts.push(...mimeExtensions[part])
   })
 
   return exts.length > 0 ? [...new Set(exts)] : null
@@ -53,7 +66,10 @@ export default function FileDropZone({
   multiple = false,
   disabled = false,
   hint,
-  maxSizeMB = 50
+  maxSizeMB = 50,
+  title,
+  subtitle,
+  icon
 }) {
   const { t } = useTranslation()
   const [isDragOver, setIsDragOver] = useState(false)
@@ -75,8 +91,13 @@ export default function FileDropZone({
   const validateFiles = (files) => {
     setValidationError('')
     const validFiles = []
+    const seen = new Set()
 
-    for (const file of files) {
+    for (const file of Array.from(files || [])) {
+      const identity = `${file.name}:${file.size}:${file.lastModified}`
+      if (seen.has(identity)) continue
+      seen.add(identity)
+
       // Check file size
       if (file.size > maxSizeMB * 1024 * 1024) {
         setValidationError(`File "${file.name}" exceeds ${maxSizeMB}MB limit.`)
@@ -94,7 +115,11 @@ export default function FileDropZone({
 
       validFiles.push(file)
     }
-    return validFiles.length > 0 ? validFiles : null
+    if (validFiles.length === 0) {
+      setValidationError('Please choose at least one supported file.')
+      return null
+    }
+    return multiple ? validFiles : [validFiles[0]]
   }
 
   const handleDragOver = (e) => {
@@ -139,7 +164,17 @@ export default function FileDropZone({
   return (
     <div className="w-full">
       <div
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-disabled={disabled}
+        aria-label={title || 'Choose a file'}
         onClick={handleClick}
+        onKeyDown={event => {
+          if (!disabled && (event.key === 'Enter' || event.key === ' ')) {
+            event.preventDefault()
+            handleClick()
+          }
+        }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -172,15 +207,15 @@ export default function FileDropZone({
           transition-colors duration-200
           ${isDragOver ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}
         `}>
-          <Upload className="w-7 h-7" />
+          {icon || <Upload className="w-7 h-7" />}
         </div>
 
         <div>
           <p className="text-foreground font-medium mb-1">
-            {isDragOver ? 'Drop files here' : 'Drag & drop your file here'}
+            {isDragOver ? 'Drop files here' : title || 'Drag & drop your file here'}
           </p>
           <p className="text-muted-foreground text-sm">
-            or <span className="text-primary font-medium hover:underline">browse</span> to choose
+            {subtitle || <>or <span className="text-primary font-medium hover:underline">browse</span> to choose</>}
           </p>
         </div>
 

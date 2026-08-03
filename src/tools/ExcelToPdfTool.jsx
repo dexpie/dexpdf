@@ -7,6 +7,10 @@ import { triggerConfetti } from '../utils/confetti'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import ActionButtons from '../components/common/ActionButtons'
+import { canvasToPdfBlob } from '../utils/canvasPdf'
+import { downloadBlob } from '../utils/fileHelpers'
+import CloudConversionOption from '../components/common/CloudConversionOption'
+import { convertWithCloud } from '../utils/cloudConversion'
 import { useTranslation } from 'react-i18next'
 import { FileSpreadsheet, FileOutput, AlertCircle, CheckCircle, Info } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -20,6 +24,7 @@ export default function ExcelToPdfTool() {
     const [successMsg, setSuccessMsg] = useState('')
     const [outputFileName, setOutputFileName] = useState('')
     const [rows, setRows] = useState([])
+    const [conversionMode, setConversionMode] = useState('local')
 
     async function handleFileChange(files) {
         setErrorMsg(''); setSuccessMsg(''); setRows([])
@@ -46,11 +51,29 @@ export default function ExcelToPdfTool() {
         if (!file) { setErrorMsg('Select an Excel file first.'); return; }
         setBusy(true); setErrorMsg(''); setSuccessMsg('')
 
+        if (conversionMode === 'cloud') {
+            try {
+                const blob = await convertWithCloud(file, { sourceFormat: 'xlsx', targetFormat: 'pdf' })
+                downloadBlob(blob, getOutputFilename(outputFileName, 'document'))
+                setSuccessMsg('Excel converted with high-fidelity cloud rendering.')
+                triggerConfetti()
+            } catch (err) {
+                console.error(err)
+                setErrorMsg(err.status === 401
+                    ? 'Cloud conversion is not configured. Add a valid CONVERT_API_SECRET, then try again or switch to Local.'
+                    : 'Cloud conversion failed: ' + (err.message || err))
+            } finally {
+                setBusy(false)
+            }
+            return
+        }
+
+        let wrapper = null
         try {
             const data = await readXlsxFile(file)
 
             // Render Full HTML Table off-screen
-            const wrapper = document.createElement('div')
+            wrapper = document.createElement('div')
             wrapper.style.padding = '20px'
             wrapper.style.width = '1000px' // Fixed width for consistent PDF scale
             wrapper.style.background = 'white'
@@ -80,26 +103,16 @@ export default function ExcelToPdfTool() {
 
             // Convert with html2canvas (Standard Strategy)
             const canvas = await html2canvas(wrapper, { scale: 2 })
-            const imgData = canvas.toDataURL('image/png')
-
-            const { jsPDF } = await import('jspdf')
-            const pdf = new jsPDF('p', 'mm', 'a4')
-            const imgProps = pdf.getImageProperties(imgData)
-            const pdfWidth = 210
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
-
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
-            pdf.save(getOutputFilename(outputFileName, 'document'))
-
-            document.body.removeChild(wrapper)
-
-            setSuccessMsg('Excel successfully converted to PDF!')
+            const result = await canvasToPdfBlob(canvas)
+            downloadBlob(result.blob, getOutputFilename(outputFileName, 'document'))
+            setSuccessMsg(`Excel successfully converted to PDF (${result.pageCount} page${result.pageCount === 1 ? '' : 's'}).`)
             triggerConfetti()
 
         } catch (err) {
             console.error(err)
             setErrorMsg('Conversion failed: ' + (err.message || err))
         } finally {
+            if (wrapper?.isConnected) wrapper.remove()
             setBusy(false)
         }
     }
@@ -119,6 +132,8 @@ export default function ExcelToPdfTool() {
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                <CloudConversionOption value={conversionMode} onChange={setConversionMode} disabled={busy} />
 
                 {!file ? (
                     <FileDropZone onFiles={handleFileChange} accept=".xlsx" hint="Upload Excel (.xlsx)" disabled={busy} />

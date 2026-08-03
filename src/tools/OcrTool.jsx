@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { triggerConfetti } from '../utils/confetti'
+import { downloadBlob } from '../utils/fileHelpers'
 import { configurePdfWorker } from '../utils/pdfWorker'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
@@ -47,6 +48,8 @@ export default function OcrTool() {
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [ocrEngine, setOcrEngine] = useState('auto') // auto, cloud, local
+  const ocrWorkerRef = useRef(null)
+  const ocrWorkerKeyRef = useRef('')
 
   // Optional OCR.space processing through the server proxy.
   const runCloudOCR = async (imageDataUrl) => {
@@ -65,7 +68,22 @@ export default function OcrTool() {
         body: formData
       })
 
-      const result = await response.json()
+      const rawResponse = await response.text()
+      let result = {}
+      try {
+        result = rawResponse ? JSON.parse(rawResponse) : {}
+      } catch {
+        result = { ErrorMessage: rawResponse }
+      }
+
+      const serviceMessage = Array.isArray(result.ErrorMessage)
+        ? result.ErrorMessage.join(', ')
+        : result.ErrorMessage || result.ErrorDetails
+      if (!response.ok || result.IsErroredOnProcessing) {
+        const error = new Error(serviceMessage || `Cloud OCR request failed (${response.status})`)
+        error.status = response.status
+        throw error
+      }
 
       if (result.ParsedResults && result.ParsedResults[0]) {
         const parsedText = result.ParsedResults[0].ParsedText
@@ -77,19 +95,57 @@ export default function OcrTool() {
 
         return { text: parsedText, confidence }
       } else {
-        throw new Error(result.ErrorMessage || 'Cloud OCR failed')
+        throw new Error(serviceMessage || 'Cloud OCR returned no recognized text.')
       }
     } catch (error) {
       console.warn('Cloud OCR failed, falling back to local OCR:', error)
       setProgressText('⚠️ Cloud OCR failed, using local OCR...')
-      return null
+      throw error
     }
+  }
+
+  const getLocalOcrWorker = async () => {
+    const workerKey = `${language}:${ocrMode}:${autoRotate ? 'auto' : 'fixed'}`
+    if (ocrWorkerRef.current && ocrWorkerKeyRef.current === workerKey) {
+      return ocrWorkerRef.current
+    }
+
+    if (ocrWorkerRef.current) {
+      await ocrWorkerRef.current.terminate()
+      ocrWorkerRef.current = null
+    }
+
+    const { createWorker } = await import('tesseract.js')
+    const oem = ocrMode === 'fast' ? 0 : ocrMode === 'accurate' ? 1 : 2
+    const worker = await createWorker(language, oem, {
+      logger: (message) => {
+        if (message.status === 'recognizing text') {
+          const percent = Math.floor(message.progress * 100)
+          setProgress(percent)
+          setProgressText(`Recognizing text... ${percent}%`)
+        }
+      }
+    })
+    await worker.setParameters({ tessedit_pageseg_mode: autoRotate ? 1 : 3 })
+    ocrWorkerRef.current = worker
+    ocrWorkerKeyRef.current = workerKey
+    return worker
+  }
+
+  const recognizeLocally = async (canvas) => {
+    const worker = await getLocalOcrWorker()
+    const { data } = await worker.recognize(canvas)
+    return { text: data.text, confidence: data.confidence == null ? null : Math.round(data.confidence) }
   }
 
   // Image preprocessing can improve OCR results on noisy scans.
   const preprocessCanvas = (canvas) => {
-    if (!imageEnhancement) return canvas
-    const ctx = canvas.getContext('2d')
+    if (!imageEnhancement || ocrMode === 'fast') return canvas
+    const processedCanvas = document.createElement('canvas')
+    processedCanvas.width = canvas.width
+    processedCanvas.height = canvas.height
+    const ctx = processedCanvas.getContext('2d')
+    ctx.drawImage(canvas, 0, 0)
     const width = canvas.width
     const height = canvas.height
     const imageData = ctx.getImageData(0, 0, width, height)
@@ -174,7 +230,7 @@ export default function OcrTool() {
     }
 
     ctx.putImageData(imageData, 0, 0)
-    return canvas
+    return processedCanvas
   }
 
   // 📄 Load single image or PDF page
@@ -187,12 +243,14 @@ export default function OcrTool() {
     try {
       const isPdf = targetFile.type === 'application/pdf'
       let canvas
+      let pdfDocument = null
+      let imageUrl = null
 
       if (isPdf) {
         const arrayBuffer = await targetFile.arrayBuffer()
-        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise
-        setTotalPages(pdf.numPages)
-        const page = await pdf.getPage(pageNum)
+        pdfDocument = await pdfjsLib.getDocument(arrayBuffer).promise
+        setTotalPages(pdfDocument.numPages)
+        const page = await pdfDocument.getPage(pageNum)
         // High-definition scale (Math.max 2.5) guarantees ~300 DPI for 90%+ OCR accuracy
         const viewport = page.getViewport({ scale: 2.5 })
         canvas = document.createElement('canvas')
@@ -205,7 +263,8 @@ export default function OcrTool() {
         canvas = document.createElement('canvas')
         const img = new Image()
         await new Promise((resolve, reject) => {
-          img.onload = resolve; img.onerror = reject; img.src = URL.createObjectURL(targetFile)
+          imageUrl = URL.createObjectURL(targetFile)
+          img.onload = resolve; img.onerror = reject; img.src = imageUrl
         })
         
         // Auto-scale up small images to improve Tesseract read rate
@@ -217,45 +276,38 @@ export default function OcrTool() {
         ctx.drawImage(img, 0, 0)
       }
 
-      const processedCanvas = preprocessCanvas(canvas)
-      setPreviewUrl(processedCanvas.toDataURL())
-      await runOcrOnCanvas(processedCanvas)
+       const processedCanvas = preprocessCanvas(canvas)
+       setPreviewUrl(processedCanvas.toDataURL())
+       await runOcrOnCanvas(processedCanvas, canvas)
     } catch (error) {
       setErrorMsg(`❌ Error loading file: ${error.message}`)
       console.error(error)
-    } finally { setBusy(false) }
+    } finally {
+      if (pdfDocument) await pdfDocument.destroy().catch(() => {})
+      if (imageUrl) URL.revokeObjectURL(imageUrl)
+      setBusy(false)
+    }
   }
 
   // 🔍 Advanced OCR with progress tracking (Cloud + Local fallback)
-  const runOcrOnCanvas = async (canvas) => {
+  const runOcrOnCanvas = async (canvas, cloudCanvas = canvas) => {
     setBusy(true); setProgress(0); setProgressText('Initializing OCR...')
     try {
       let result = null
       if (ocrEngine === 'cloud' || ocrEngine === 'auto') {
-        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9)
-        result = await runCloudOCR(imageDataUrl)
+        try {
+          const imageDataUrl = cloudCanvas.toDataURL('image/jpeg', 0.9)
+          result = await runCloudOCR(imageDataUrl)
+        } catch (error) {
+          if (ocrEngine === 'cloud') throw error
+          console.warn('Cloud OCR failed, falling back to local OCR:', error)
+          setProgressText('Cloud OCR unavailable, switching to local OCR...')
+        }
       }
       if ((!result && ocrEngine === 'auto') || ocrEngine === 'local') {
         setProgressText('Using local OCR (Tesseract.js)...')
-        const { createWorker } = await import('tesseract.js')
-        const worker = await createWorker({
-          logger: (m) => {
-            if (m.status === 'recognizing text') {
-              const prog = Math.floor(m.progress * 100)
-              setProgress(prog)
-              setProgressText(`Recognizing text... ${prog}%`)
-            }
-          }
-        })
-        setProgressText('Loading language data...')
-        await worker.loadLanguage(language)
-        await worker.initialize(language)
-        const oem = ocrMode === 'fast' ? 0 : ocrMode === 'accurate' ? 1 : 2
-        await worker.setParameters({ tessedit_ocr_engine_mode: oem, tessedit_pageseg_mode: autoRotate ? 1 : 3 })
         setProgressText('Recognizing text...')
-        const { data } = await worker.recognize(canvas)
-        result = { text: data.text, confidence: data.confidence ? Math.round(data.confidence) : null }
-        await worker.terminate()
+        result = await recognizeLocally(canvas)
       }
 
       if (result) {
@@ -299,25 +351,22 @@ export default function OcrTool() {
       ctx.drawImage(img, 0, 0)
       URL.revokeObjectURL(url)
     }
+    const rawCanvas = canvas
     const processedCanvas = preprocessCanvas(canvas)
     let textResult = ''
     if (ocrEngine === 'cloud' || ocrEngine === 'auto') {
       try {
-        const imageDataUrl = processedCanvas.toDataURL('image/jpeg', 0.9)
+        const imageDataUrl = rawCanvas.toDataURL('image/jpeg', 0.9)
         const result = await runCloudOCR(imageDataUrl)
         if (result && result.text) textResult = result.text
-      } catch (error) { console.warn('Cloud OCR failed in batch, using local:', error) }
+      } catch (error) {
+        if (ocrEngine === 'cloud') throw error
+        console.warn('Cloud OCR failed in batch, using local:', error)
+      }
     }
     if ((!textResult && ocrEngine === 'auto') || ocrEngine === 'local') {
-      const { createWorker } = await import('tesseract.js')
-      const worker = await createWorker()
-      await worker.loadLanguage(language)
-      await worker.initialize(language)
-      const oem = ocrMode === 'fast' ? 0 : ocrMode === 'accurate' ? 1 : 2
-      await worker.setParameters({ tessedit_ocr_engine_mode: oem, tessedit_pageseg_mode: autoRotate ? 1 : 3 })
-      const { data: { text } } = await worker.recognize(processedCanvas)
-      textResult = text
-      await worker.terminate()
+      const result = await recognizeLocally(processedCanvas)
+      textResult = result.text
     }
     if (!textResult) throw new Error('OCR did not return any text.')
     return new Blob([textResult], { type: 'text/plain' })
@@ -332,7 +381,7 @@ export default function OcrTool() {
       case 'csv': const csv = `"Text","Confidence","Language"\n"${text.replace(/"/g, '""')}","${confidence}%","${language}"`; blob = new Blob([csv], { type: 'text/csv' }); break;
       default: blob = new Blob([text], { type: 'text/plain' });
     }
-    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url)
+    downloadBlob(blob, filename)
   }
 
   const handleFileChange = (files) => {
@@ -344,6 +393,13 @@ export default function OcrTool() {
     setPreviewUrl(null)
     loadImageOrPdf(f, selectedPage)
   }
+
+  useEffect(() => () => {
+    if (ocrWorkerRef.current) {
+      ocrWorkerRef.current.terminate()
+      ocrWorkerRef.current = null
+    }
+  }, [])
 
   useEffect(() => {
     if (file && file.type === 'application/pdf' && selectedPage > 0) loadImageOrPdf(file, selectedPage)

@@ -3,11 +3,14 @@ import React, { useState } from 'react'
 import mammoth from 'mammoth'
 import html2canvas from 'html2canvas'
 import FilenameInput from '../components/FilenameInput'
-import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import { getOutputFilename, getDefaultFilename, downloadBlob } from '../utils/fileHelpers'
 import { triggerConfetti } from '../utils/confetti'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import ActionButtons from '../components/common/ActionButtons'
+import CloudConversionOption from '../components/common/CloudConversionOption'
+import { convertWithCloud } from '../utils/cloudConversion'
+import { canvasToPdfBlob } from '../utils/canvasPdf'
 import { useTranslation } from 'react-i18next'
 import { FileText, FileOutput, AlertCircle, CheckCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -19,6 +22,7 @@ export default function WordToPdfTool() {
     const [errorMsg, setErrorMsg] = useState('')
     const [successMsg, setSuccessMsg] = useState('')
     const [outputFileName, setOutputFileName] = useState('')
+    const [conversionMode, setConversionMode] = useState('local')
 
     async function handleFileChange(files) {
         setErrorMsg(''); setSuccessMsg('')
@@ -49,13 +53,31 @@ export default function WordToPdfTool() {
         setSuccessMsg('')
         setBusy(true)
 
+        if (conversionMode === 'cloud') {
+            try {
+                const blob = await convertWithCloud(file, { sourceFormat: 'docx', targetFormat: 'pdf' })
+                downloadBlob(blob, getOutputFilename(outputFileName, 'document'))
+                setSuccessMsg('DOCX converted with high-fidelity cloud rendering.')
+                triggerConfetti()
+            } catch (err) {
+                console.error(err)
+                setErrorMsg(err.status === 401
+                    ? 'Cloud conversion is not configured. Add a valid CONVERT_API_SECRET, then try again or switch to Local.'
+                    : 'Cloud conversion failed: ' + (err.message || err))
+            } finally {
+                setBusy(false)
+            }
+            return
+        }
+
+        let wrapper = null
         try {
             const arrayBuffer = await file.arrayBuffer()
             const result = await mammoth.convertToHtml({ arrayBuffer })
             const html = result.value
 
             // Create styled wrapper for accurate rendering
-            const wrapper = document.createElement('div')
+            wrapper = document.createElement('div')
             wrapper.innerHTML = `
                 <style>
                     * { font-family: 'Segoe UI', Arial, sans-serif; }
@@ -82,73 +104,22 @@ export default function WordToPdfTool() {
                 img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r })
             ))
 
-            // High quality canvas rendering
             const canvas = await html2canvas(wrapper, {
                 scale: 2.5, // Higher quality
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff'
             })
-            const imgData = canvas.toDataURL('image/png')
-
-            const { jsPDF } = await import('jspdf')
-
-            // A4 dimensions in mm
-            const A4_WIDTH = 210
-            const A4_HEIGHT = 297
-            const MARGIN = 10
-            const CONTENT_HEIGHT = A4_HEIGHT - MARGIN * 2
-
-            const imgProps = { width: canvas.width, height: canvas.height }
-            const pdfWidth = A4_WIDTH - MARGIN * 2
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width
-
-            // Multi-page splitting for long documents
-            if (pdfHeight > CONTENT_HEIGHT) {
-                const pdf = new jsPDF('p', 'mm', 'a4')
-
-                // Calculate how many pages we need
-                const totalPages = Math.ceil(pdfHeight / CONTENT_HEIGHT)
-                const sliceHeight = Math.floor(imgProps.height / totalPages)
-
-                for (let i = 0; i < totalPages; i++) {
-                    if (i > 0) pdf.addPage()
-
-                    // Create a canvas for this page slice
-                    const pageCanvas = document.createElement('canvas')
-                    pageCanvas.width = imgProps.width
-                    pageCanvas.height = sliceHeight
-                    const ctx = pageCanvas.getContext('2d')
-
-                    // Draw the slice from the full canvas
-                    ctx.drawImage(
-                        canvas,
-                        0, i * sliceHeight, // Source position
-                        imgProps.width, sliceHeight, // Source dimensions
-                        0, 0, // Destination position
-                        imgProps.width, sliceHeight // Destination dimensions
-                    )
-
-                    const pageImgData = pageCanvas.toDataURL('image/png')
-                    const pageHeight = (sliceHeight * pdfWidth) / imgProps.width
-                    pdf.addImage(pageImgData, 'PNG', MARGIN, MARGIN, pdfWidth, pageHeight)
-                }
-
-                pdf.save(getOutputFilename(outputFileName, 'document'))
-            } else {
-                const pdf = new jsPDF('p', 'mm', 'a4')
-                pdf.addImage(imgData, 'PNG', MARGIN, MARGIN, pdfWidth, pdfHeight)
-                pdf.save(getOutputFilename(outputFileName, 'document'))
-            }
-
-            document.body.removeChild(wrapper)
-            setSuccessMsg('Word document converted to PDF successfully!')
+            const renderedPdf = await canvasToPdfBlob(canvas)
+            downloadBlob(renderedPdf.blob, getOutputFilename(outputFileName, 'document'))
+            setSuccessMsg(`Word document converted to PDF successfully (${renderedPdf.pageCount} page${renderedPdf.pageCount === 1 ? '' : 's'}).`)
             triggerConfetti()
 
         } catch (err) {
             console.error(err)
             setErrorMsg('Conversion failed: ' + (err.message || err))
         } finally {
+            if (wrapper?.isConnected) wrapper.remove()
             setBusy(false)
         }
     }
@@ -168,6 +139,8 @@ export default function WordToPdfTool() {
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                <CloudConversionOption value={conversionMode} onChange={setConversionMode} disabled={busy} />
 
                 {!file ? (
                     <FileDropZone

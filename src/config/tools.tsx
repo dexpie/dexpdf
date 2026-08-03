@@ -45,7 +45,7 @@ export const TOOLS = [
   { id: 'pdf2excel', category: 'convert', title: "PDF Table to CSV", description: "Heuristically extract aligned table text to CSV.", icon: FileSpreadsheet, color: "text-green-500", iconBg: "bg-green-50", href: "/pdf2excel" },
   { id: 'excel2pdf', category: 'convert', title: "XLSX to PDF", description: "Render the first XLSX worksheet to PDF.", icon: FileSpreadsheet, color: "text-green-500", iconBg: "bg-green-50", href: "/excel2pdf" },
   { id: 'pdf2ppt', category: 'convert', title: "PDF to PowerPoint", description: "Place each PDF page as a visual slide.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/pdf2ppt" },
-  { id: 'ppt2pdf', category: 'convert', title: "PPTX Images to PDF", description: "Place embedded PPTX images onto PDF pages.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/ppt2pdf" },
+  { id: 'ppt2pdf', category: 'convert', title: "PPTX to PDF", description: "Convert full slides in the cloud or embedded media locally.", icon: LayoutTemplate, color: "text-orange-500", iconBg: "bg-orange-50", href: "/ppt2pdf" },
   { id: 'pdf2imgs', category: 'convert', title: "PDF to JPG", description: "Save pages as images.", icon: FileImage, color: "text-yellow-500", iconBg: "bg-yellow-50", href: "/pdf2imgs" },
 { id: 'pdf2png', category: 'convert', title: "PDF to PNG", description: "Convert PDF pages to PNG images.", icon: Image, color: "text-cyan-500", iconBg: "bg-cyan-50", href: "/pdf2png" },
 { id: 'pdf2webp', category: 'convert', title: "PDF to WebP", description: "Convert PDF to WebP images for web.", icon: Monitor, color: "text-emerald-500", iconBg: "bg-emerald-50", href: "/pdf2webp" },

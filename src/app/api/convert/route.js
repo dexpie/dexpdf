@@ -9,6 +9,12 @@ const ALLOWED_OCR_LANGUAGES = new Set([
     'ko', 'it', 'ja', 'no', 'pl', 'pt', 'ro', 'ru', 'sl', 'es', 'sv',
     'tr', 'ua', 'th'
 ])
+const ALLOWED_CONVERSIONS = new Set([
+    'pdf:docx',
+    'docx:pdf',
+    'xlsx:pdf',
+    'pptx:pdf',
+])
 
 export async function POST(request) {
     try {
@@ -19,15 +25,17 @@ export async function POST(request) {
         const formData = await request.formData()
         const file = formData.get('file')
         const format = formData.get('format')
+        const sourceFormat = String(formData.get('from') || 'pdf').toLowerCase()
+        const targetFormat = String(formData.get('to') || format || '').toLowerCase()
         const apiKey = formData.get('apiKey') || process.env.CONVERT_API_SECRET
         const requestedLayout = String(formData.get('layout') || 'flowing').toLowerCase()
         const requestedOcrMode = String(formData.get('ocrMode') || 'auto').toLowerCase()
         const requestedOcrLanguage = String(formData.get('ocrLanguage') || 'auto').toLowerCase()
 
-        if (!file || !format) {
+        if (!file || !targetFormat) {
             return NextResponse.json({ error: 'Missing file or format' }, { status: 400 })
         }
-        if (!['docx'].includes(String(format).toLowerCase())) {
+        if (!ALLOWED_CONVERSIONS.has(`${sourceFormat}:${targetFormat}`)) {
             return NextResponse.json({ error: 'Unsupported conversion format' }, { status: 400 })
         }
         if (file.size > 50 * 1024 * 1024) {
@@ -46,43 +54,30 @@ export async function POST(request) {
         const buffer = Buffer.from(bytes)
         const base64File = buffer.toString('base64')
 
-        const payload = {
-            "Parameters": [
-                {
-                    "Name": "File",
-                    "FileValue": {
-                        "Name": file.name,
-                        "Data": base64File
-                    }
-                },
-                {
-                    "Name": "Layout",
-                    "Value": layout
-                },
-                {
-                    "Name": "OcrMode",
-                    "Value": ocrMode
-                },
-                {
-                    "Name": "OcrLanguage",
-                    "Value": ocrLanguage
-                },
-                {
-                    "Name": "OcrEngine",
-                    "Value": "native"
-                },
-                {
-                    "Name": "Annotations",
-                    "Value": "textBox"
-                },
-                {
-                    "Name": "StoreFile",
-                    "Value": true
+        const parameters = [
+            {
+                "Name": "File",
+                "FileValue": {
+                    "Name": file.name,
+                    "Data": base64File
                 }
-            ]
+            },
+        ]
+
+        if (sourceFormat === 'pdf') {
+            parameters.push(
+                { "Name": "Layout", "Value": layout },
+                { "Name": "OcrMode", "Value": ocrMode },
+                { "Name": "OcrLanguage", "Value": ocrLanguage },
+                { "Name": "OcrEngine", "Value": "native" },
+                { "Name": "Annotations", "Value": "textBox" },
+            )
         }
 
-        const convertUrl = `https://v2.convertapi.com/convert/pdf/to/${format}`
+        parameters.push({ "Name": "StoreFile", "Value": true })
+        const payload = { "Parameters": parameters }
+
+        const convertUrl = `https://v2.convertapi.com/convert/${sourceFormat}/to/${targetFormat}`
 
         const requestOptions = {
             method: 'POST',

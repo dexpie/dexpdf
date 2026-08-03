@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import JSZip from 'jszip'
 import FilenameInput from '../components/FilenameInput'
-import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import { downloadBlob, getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
@@ -100,12 +100,7 @@ export default function PdfToImagesTool() {
 
       if (indices.length === 1) {
         const b = toZip[0].blob
-        const url = URL.createObjectURL(b)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + `_page_${toZip[0].pnum}`, ext)
-        a.click()
-        URL.revokeObjectURL(url)
+        downloadBlob(b, getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + `_page_${toZip[0].pnum}`, ext))
         setSuccessMsg(`Exported 1 page as ${format.toUpperCase()}!`)
       } else {
         const zip = new JSZip()
@@ -114,12 +109,7 @@ export default function PdfToImagesTool() {
           zip.file(`${file.name.replace(/\.pdf$/i, '')}_page_${item.pnum}${ext}`, arr)
         }
         const content = await zip.generateAsync({ type: 'blob' })
-        const url = URL.createObjectURL(content)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_pages', '.zip')
-        a.click()
-        URL.revokeObjectURL(url)
+        downloadBlob(content, getOutputFilename(outputFileName, file.name.replace(/\.pdf$/i, '') + '_pages', '.zip'))
         setSuccessMsg(`Exported ${indices.length} pages as ZIP!`)
       }
     } catch (err) {

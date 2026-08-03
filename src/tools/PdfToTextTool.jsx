@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import FilenameInput from '../components/FilenameInput'
-import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import { downloadBlob, getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
 import { triggerConfetti } from '../utils/confetti'
 import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
 import { configurePdfWorker } from '../utils/pdfWorker'
@@ -91,16 +91,11 @@ export default function PdfToTextTool() {
       }
 
       const blob = new Blob([out], { type: 'text/plain' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = getOutputFilename(
+      downloadBlob(blob, getOutputFilename(
         outputFileName,
         file.name.replace(/\.pdf$/i, ''),
         '.txt'
-      )
-      a.click()
-      URL.revokeObjectURL(url)
+      ))
 
       setSuccessMsg(t('tools.pdfToText.success', 'Success! Text extracted and downloaded.'))
       triggerConfetti()

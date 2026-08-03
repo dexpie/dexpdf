@@ -22,95 +22,59 @@ configurePdfWorker()
 async function extractTableFromPage(page) {
   const textContent = await page.getTextContent()
   const items = textContent.items
+    .filter(item => item.str?.trim())
+    .map(item => ({
+      text: item.str.trim(),
+      x: Number(item.transform?.[4] || 0),
+      y: Number(item.transform?.[5] || 0),
+      width: Number(item.width || 0),
+      height: Math.abs(Number(item.transform?.[3] || item.height || 10)),
+    }))
 
   if (items.length === 0) return []
 
-  // Collect all unique X positions (column boundaries)
-  const xPositions = new Set()
-  const Y_TOLERANCE = 4 // Tolerance for row detection
-  const X_TOLERANCE = 3 // Tolerance for column detection
-
-  items.forEach(item => {
-    if (item.str.trim()) {
-      xPositions.add(item.transform[4]) // Left edge
-      xPositions.add(item.transform[4] + (item.width || 0)) // Right edge
-    }
-  })
-
-  // Cluster X positions into columns
-  const sortedX = Array.from(xPositions).sort((a, b) => a - b)
-  const columns = []
-
-  if (sortedX.length > 0) {
-    let currentColumn = [sortedX[0]]
-    for (let i = 1; i < sortedX.length; i++) {
-      if (sortedX[i] - currentColumn[currentColumn.length - 1] < X_TOLERANCE * 3) {
-        currentColumn.push(sortedX[i])
-      } else {
-        // Average position for column
-        columns.push(currentColumn.reduce((a, b) => a + b, 0) / currentColumn.length)
-        currentColumn = [sortedX[i]]
-      }
-    }
-    if (currentColumn.length > 0) {
-      columns.push(currentColumn.reduce((a, b) => a + b, 0) / currentColumn.length)
-    }
+  // Group by baseline first. This avoids treating every text fragment as a
+  // separate row when a PDF splits one line into multiple drawing commands.
+  const rows = []
+  for (const item of [...items].sort((a, b) => b.y - a.y || a.x - b.x)) {
+    const tolerance = Math.max(3, item.height * 0.45)
+    const row = rows.find(candidate => Math.abs(candidate.y - item.y) <= tolerance)
+    if (row) row.items.push(item)
+    else rows.push({ y: item.y, items: [item] })
   }
 
-  // Group items by row (Y coordinate)
-  const rows = {}
+  rows.sort((a, b) => b.y - a.y)
+  rows.forEach(row => row.items.sort((a, b) => a.x - b.x))
 
-  items.forEach(item => {
-    if (!item.str.trim()) return
-
-    const y = item.transform[5]
-    const x = item.transform[4]
-    const str = item.str.trim()
-
-    // Find matching row
-    let matchedY = null
-    for (const rowY of Object.keys(rows)) {
-      if (Math.abs(rowY - y) < Y_TOLERANCE) {
-        matchedY = rowY
-        break
-      }
-    }
-
-    if (matchedY === null) {
-      matchedY = y
-      rows[matchedY] = []
-    }
-
-    // Assign to nearest column
-    let nearestCol = 0
-    let minDist = Infinity
-
-    for (let c = 0; c < columns.length; c++) {
-      const dist = Math.abs(columns[c] - x)
-      if (dist < minDist) {
-        minDist = dist
-        nearestCol = c
-      }
-    }
-
-    rows[matchedY].push({ col: nearestCol, text: str })
+  // Use the most common left edges as column anchors. Unlike the previous
+  // boundary-based approach, this prevents every word width from becoming a
+  // new column and keeps sparse rows aligned.
+  const anchors = []
+  const anchorTolerance = 12
+  items.map(item => item.x).sort((a, b) => a - b).forEach(x => {
+    const anchor = anchors.find(value => Math.abs(value - x) <= anchorTolerance)
+    if (anchor == null) anchors.push(x)
   })
+  anchors.sort((a, b) => a - b)
 
-  // Build CSV rows
-  const sortedY = Object.keys(rows).sort((a, b) => parseFloat(b) - parseFloat(a))
+  return rows.map(row => {
+    const cells = new Array(Math.max(anchors.length, 1)).fill('')
+    row.items.forEach(item => {
+      let column = 0
+      let distance = Infinity
+      anchors.forEach((anchor, index) => {
+        const candidateDistance = Math.abs(anchor - item.x)
+        if (candidateDistance < distance) {
+          distance = candidateDistance
+          column = index
+        }
+      })
 
-  return sortedY.map(y => {
-    const rowItems = rows[y]
-    const row = new Array(Math.max(columns.length, 5)).fill('')
-
-    rowItems.forEach(item => {
-      if (item.col < row.length) {
-        row[item.col] = item.text
-      }
+      const value = cells[column]
+      cells[column] = value ? `${value} ${item.text}` : item.text
     })
-
-    return row
-  }).filter(row => row.some(cell => cell.trim()))
+    return cells.map(cell => cell.trim())
+  }).filter(row => row.some(Boolean))
 }
 
 /**
@@ -171,6 +135,7 @@ export default function PdfToExcelTool() {
       // Preview first page
       const previewRows = await extractTableFromPage(page)
       setExtractedData(previewRows.slice(0, 10)) // First 10 rows for preview
+      await pdf.destroy()
 
     } catch (err) {
       console.error(err)
@@ -227,6 +192,7 @@ export default function PdfToExcelTool() {
 
         setProgress(10 + Math.round((end / numPages) * 70))
       }
+      await pdf.destroy()
 
       setProgress(85)
 
@@ -288,6 +254,7 @@ export default function PdfToExcelTool() {
 
         onProgress(10 + (end / numPages) * 80)
       }
+      await pdf.destroy()
 
       const csv = Papa.unparse(allRows)
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })

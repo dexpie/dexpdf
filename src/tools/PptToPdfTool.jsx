@@ -2,13 +2,14 @@
 
 import React, { useState } from 'react'
 import JSZip from 'jszip'
-import { saveAs } from 'file-saver'
 import { AlertTriangle, CheckCircle2, FileImage, Files, RefreshCw, X } from 'lucide-react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import FilenameInput from '../components/FilenameInput'
 import UniversalBatchProcessor from '../components/UniversalBatchProcessor'
-import { getDefaultFilename, getOutputFilename } from '../utils/fileHelpers'
+import CloudConversionOption from '../components/common/CloudConversionOption'
+import { convertWithCloud } from '../utils/cloudConversion'
+import { downloadBlob, getDefaultFilename, getOutputFilename } from '../utils/fileHelpers'
 
 const naturalSort = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' })
 const supportedImagePattern = /\.(png|jpe?g|webp|gif|bmp)$/i
@@ -79,6 +80,7 @@ export default function PptToPdfTool() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [outputFileName, setOutputFileName] = useState('')
+  const [conversionMode, setConversionMode] = useState('local')
 
   const chooseFile = files => {
     const nextFile = files[0] || null
@@ -93,9 +95,26 @@ export default function PptToPdfTool() {
     setBusy(true)
     setError('')
     setSuccess('')
+
+    if (conversionMode === 'cloud') {
+      try {
+        const blob = await convertWithCloud(file, { sourceFormat: 'pptx', targetFormat: 'pdf' })
+        downloadBlob(blob, getOutputFilename(outputFileName, `${getDefaultFilename(file)}-slides`))
+        setSuccess('PPTX converted with high-fidelity cloud slide rendering.')
+      } catch (conversionError) {
+        console.error(conversionError)
+        setError(conversionError.status === 401
+          ? 'Cloud conversion is not configured. Add a valid CONVERT_API_SECRET, then try again or switch to Local.'
+          : 'Cloud conversion failed: ' + (conversionError.message || conversionError))
+      } finally {
+        setBusy(false)
+      }
+      return
+    }
+
     try {
       const result = await convertPptxMediaToPdf(file)
-      saveAs(result.blob, getOutputFilename(outputFileName, `${getDefaultFilename(file)}-media`))
+      downloadBlob(result.blob, getOutputFilename(outputFileName, `${getDefaultFilename(file)}-media`))
       setSuccess(`${result.imageCount} embedded image${result.imageCount === 1 ? '' : 's'} placed into a PDF.`)
     } catch (conversionError) {
       console.error(conversionError)
@@ -112,9 +131,9 @@ export default function PptToPdfTool() {
 
   return (
     <ToolLayout
-      title="PPTX Images to PDF"
-      description="Extract compatible images embedded in a PPTX and place them onto PDF pages. This does not recreate complete PowerPoint slides."
-      steps={[{ num: '1', label: 'Choose PPTX' }, { num: '2', label: 'Extract media' }, { num: '3', label: 'Download PDF' }]}
+      title="PPTX to PDF"
+      description="Convert PowerPoint slides with cloud layout fidelity, or use the private local media fallback in your browser."
+      steps={[{ num: '1', label: 'Choose PPTX' }, { num: '2', label: 'Convert slides' }, { num: '3', label: 'Download PDF' }]}
     >
       <div className="mx-auto max-w-3xl space-y-5">
         <div className="grid grid-cols-2 rounded-2xl border border-border bg-secondary p-1.5">
@@ -129,13 +148,15 @@ export default function PptToPdfTool() {
 
         {batchMode ? (
           <UniversalBatchProcessor
-            toolName="PPTX Images to PDF"
+            toolName="PPTX to PDF"
             processFile={processBatchFile}
             acceptedTypes=".pptx"
             outputExtension=".pdf"
           />
         ) : (
           <div className="space-y-5">
+            <CloudConversionOption value={conversionMode} onChange={setConversionMode} disabled={busy} />
+
             {!file ? (
               <FileDropZone onFiles={chooseFile} accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" hint="PPTX files up to 100MB" maxSizeMB={100} />
             ) : (
@@ -155,7 +176,7 @@ export default function PptToPdfTool() {
             {file && (
               <button onClick={convert} disabled={busy} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 font-black text-white shadow-lg shadow-blue-500/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50">
                 {busy ? <RefreshCw className="h-5 w-5 animate-spin" /> : <Files className="h-5 w-5" />}
-                {busy ? 'Extracting media...' : 'Create PDF from embedded images'}
+                {busy ? (conversionMode === 'cloud' ? 'Converting slides...' : 'Extracting media...') : (conversionMode === 'cloud' ? 'Convert full slides to PDF' : 'Create PDF from embedded images')}
               </button>
             )}
           </div>

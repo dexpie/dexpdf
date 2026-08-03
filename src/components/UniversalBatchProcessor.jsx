@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import './UniversalBatchProcessor.css'
+import { downloadBlob, getReadableError } from '../utils/fileHelpers'
 
 /**
  * Universal Batch Processor Component
@@ -44,10 +45,38 @@ export default function UniversalBatchProcessor({
 
     // Add files
     const handleFiles = (newFiles) => {
-        const fileArray = Array.from(newFiles)
+        const incomingFiles = Array.from(newFiles || [])
+        const existingKeys = new Set(files.map(file => `${file.name}:${file.size}:${file.lastModified}`))
+        const fileArray = incomingFiles.filter(file => {
+            const key = `${file.name}:${file.size}:${file.lastModified}`
+            if (existingKeys.has(key)) return false
+            existingKeys.add(key)
+            return true
+        })
+
+        if (fileArray.length === 0) {
+            setError('Those files are already in the batch.')
+            return
+        }
+
+        const acceptedExtensions = resolvedAcceptedTypes
+            .split(',')
+            .map(value => value.trim().toLowerCase())
+            .filter(value => value.startsWith('.'))
+        const invalidFile = fileArray.find(file => acceptedExtensions.length > 0 && !acceptedExtensions.some(extension => file.name.toLowerCase().endsWith(extension)))
+        if (invalidFile) {
+            setError(`${invalidFile.name} is not a supported file type. Expected: ${acceptedExtensions.join(', ')}`)
+            return
+        }
+
+        const oversizedFile = fileArray.find(file => file.size > 50 * 1024 * 1024)
+        if (oversizedFile) {
+            setError(`${oversizedFile.name} exceeds the 50MB per-file limit.`)
+            return
+        }
 
         if (fileArray.length + files.length > maxFiles) {
-            setError(`Maximum ${maxFiles} files allowed`)
+            setError(`Maximum ${maxFiles} files allowed. Remove some files before adding more.`)
             return
         }
 
@@ -73,11 +102,18 @@ export default function UniversalBatchProcessor({
             setError('Please add files first')
             return
         }
+        if (typeof processFile !== 'function') {
+            setError('This batch tool is not configured correctly.')
+            return
+        }
 
         setProcessing(true)
         setIsPaused(false)
         pauseRef.current = false
         const newResults = []
+        setResults([])
+        setProgress(prev => prev.map(() => ({ status: 'pending', progress: 0, error: null })))
+        setGlobalProgress(0)
 
         for (let i = 0; i < files.length; i++) {
             // Check if paused
@@ -118,7 +154,7 @@ export default function UniversalBatchProcessor({
                     updated[i] = {
                         status: 'error',
                         progress: 0,
-                        error: err.message || 'Processing failed'
+                        error: getReadableError(err, 'Processing failed')
                     }
                     return updated
                 })
@@ -146,19 +182,13 @@ export default function UniversalBatchProcessor({
         if (!results[index]) return
 
         const blob = results[index]
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = files[index].name.replace(/\.[^/.]+$/, '') + '_processed' + resolvedOutputExtension
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        URL.revokeObjectURL(url)
+        const filename = files[index].name.replace(/\.[^/.]+$/, '') + '_processed' + resolvedOutputExtension
+        downloadBlob(blob, filename)
     }
 
     // Download all as ZIP
     const downloadAllAsZip = async () => {
-        if (results.length === 0) return
+        if (!results.some(Boolean)) return
 
         try {
             const JSZip = (await import('jszip')).default
@@ -166,9 +196,16 @@ export default function UniversalBatchProcessor({
 
             const zip = new JSZip()
 
+            const usedNames = new Set()
             results.forEach((blob, index) => {
                 if (blob) {
-                    const fileName = files[index].name.replace(/\.[^/.]+$/, '') + '_processed' + resolvedOutputExtension
+                    const baseName = files[index].name.replace(/\.[^/.]+$/, '') + '_processed'
+                    let fileName = baseName + resolvedOutputExtension
+                    let duplicateIndex = 2
+                    while (usedNames.has(fileName)) {
+                        fileName = `${baseName}_${duplicateIndex++}${resolvedOutputExtension}`
+                    }
+                    usedNames.add(fileName)
                     zip.file(fileName, blob)
                 }
             })
