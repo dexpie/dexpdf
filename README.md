@@ -10,7 +10,7 @@ DexPDF is an open-source, local-first workspace for everyday PDF and QR tasks. I
 
 Most tools run directly in the browser. Optional cloud integrations are available for AI, OCR, and office conversions where browser-only processing cannot provide the same fidelity.
 
-- Live application: [dexpdf.com](https://dexpdf.vercel.app)
+- Live application: [dexpdf](https://dexpdf.vercel.app)
 - License: [MIT](./LICENSE)
 - Contributing guide: [CONTRIBUTING.md](./CONTRIBUTING.md)
 - Security policy: [SECURITY.md](./SECURITY.md)
