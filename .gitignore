@@ -1,43 +1,69 @@
 # Dependencies
-node_modules
+node_modules/
 .pnp
 .pnp.js
 
 # Testing
-coverage
+coverage/
+test-results/
+playwright-report/
 
 # Next.js
 .next/
 out/
 build/
 dist/
+*.tsbuildinfo
 
 # Misc
 .DS_Store
+Thumbs.db
 *.pem
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
 
 # Debug
+*.log
+*.out
+*.err
+*.tmp
+*.temp
+*.cache
+logs/
+build_log*.txt
+*-log.txt
 npm-debug.log*
 yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 ts-debug.log*
 
-# Local Env Files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Local environment files
+.env*
+!.env*.example
 
 # Vercel
 .vercel
 
 # Claude / agent artifacts
 .claude/
+.codex/
 
 # Project specific
 *.old
 *.bak
 *.backup
+*.new
+*.orig
+*.rej
+*.tgz
 *SUMMARY.md
 *PROGRESS.md
 *TODO.md
+
+# Generated PWA assets
+public/sw.js
+public/workbox-*.js
