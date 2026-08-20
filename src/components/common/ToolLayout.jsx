@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ArrowLeft, CheckCircle2, Lock, Share2, Shield, Star, Zap } from 'lucide-react'
 import { TOOLS } from '@/config/tools'
+import ToolProcessingBadge from '@/components/ToolProcessingBadge'
+import { getToolFormats, getToolMaxFileSize, getToolProcessingCopy } from '@/config/toolMetadata'
 import {
   getFavoriteToolIds,
   PREFERENCES_EVENT,
@@ -108,6 +110,17 @@ export default function ToolLayout({ title, description, children, features, ste
             </div>
             <h1 className="text-3xl font-black tracking-[-0.04em] text-foreground md:text-5xl">{title}</h1>
             {description && <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">{description}</p>}
+
+            {tool && (
+              <div className="mx-auto mt-5 max-w-2xl rounded-2xl border border-border bg-card/80 p-4 text-left shadow-sm backdrop-blur">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <ToolProcessingBadge tool={tool} />
+                  <span className="text-xs font-bold text-muted-foreground">{getToolMaxFileSize(tool)}</span>
+                </div>
+                <p className="mt-3 text-xs leading-5 text-muted-foreground">{getToolProcessingCopy(tool)}</p>
+                <p className="mt-2 text-xs font-semibold text-foreground">Format: {getToolFormats(tool)}</p>
+              </div>
+            )}
 
             <ol className="mx-auto mt-7 grid max-w-2xl grid-cols-3 overflow-hidden rounded-2xl border border-border bg-card/90 shadow-sm backdrop-blur">
               {toolSteps.map((step, index) => (

@@ -10,11 +10,11 @@ const DEFAULT_FAQS = [
   },
   {
     question: 'Are my files safe?',
-    answer: 'For most tools, processing happens directly in your browser. When a feature needs cloud or AI help, DexPDF should only send the data needed for that action.',
+    answer: 'Every tool shows a processing badge before you use it. Local tools run in your browser and do not upload files to DexPDF. Cloud, OCR, and AI tools either offer or require server processing; those tools send the file or extracted text needed for the selected action.',
   },
   {
     question: 'What file formats are supported?',
-    answer: 'DexPDF supports PDF, common image formats like JPG and PNG, and document workflows involving DOCX, PPTX, spreadsheet files, and text extraction.',
+    answer: 'DexPDF supports PDF, JPG, PNG, WebP, DOCX, PPTX, XLSX, and common text formats depending on the tool. The input formats and the 50 MB per-file limit are shown on each tool page.',
   },
   {
     question: 'Do I need to create an account?',
@@ -23,6 +23,10 @@ const DEFAULT_FAQS = [
   {
     question: 'Can I use DexPDF on mobile?',
     answer: 'Yes. DexPDF is designed to work on modern mobile and desktop browsers and can behave like an installable web app on supported devices.',
+  },
+  {
+    question: 'How long are server-processed files retained?',
+    answer: 'DexPDF does not intentionally keep processed files in its own application storage after the response is delivered. Cloud conversion, OCR, or AI providers may temporarily process or retain data under their own policies, so use Local mode for confidential files when available and read the Privacy Policy for the current details.',
   },
 ]
 

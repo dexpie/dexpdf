@@ -5,11 +5,15 @@
     },
     "hero": {
         "title": "Complete PDF Toolkit for Modern Productivity",
-        "subtitle": "DexPDF brings powerful PDF tools directly to your browser. Fast, secure, and completely free merge, split, compress, convert, and edit PDFs without uploading files to any server. Privacy-first processing.",
+        "subtitle": "DexPDF brings practical PDF and QR tools to your browser. Local tools keep files on your device; Cloud and AI tools are labeled when server processing is used.",
         "search_placeholder": "Search PDF tools...",
         "hotkey_hint": "Press / to search"
     },
     "nav": {
+        "merge": "Merge",
+        "compress": "Compress",
+        "convert": "Convert",
+        "sign": "Sign",
         "github": "GitHub",
         "share": "Share",
         "share_success": "Link copied!",
@@ -51,13 +55,28 @@
         "title": "Everything you need",
         "subtitle": "Professional grade PDF tools right in your browser",
         "secure_title": "100% Secure",
-        "secure_desc": "All files are processed locally on your device. No data is ever uploaded to a server.",
+        "secure_desc": "Local tools process files on your device. Cloud, OCR, and AI tools clearly disclose when data is sent for processing.",
         "free_title": "Forever Free",
         "free_desc": "No limits, no sign-ups, no hidden costs. Just pure utility.",
         "fast_title": "Lightning Fast",
         "fast_desc": "Powered by WebAssembly for native-like performance in your browser."
     },
+    "home": {
+        "eyebrow": "Local-first document workspace",
+        "title": "PDF tools that feel",
+        "titleAccent": "effortlessly fast.",
+        "subtitle": "Edit, convert, organize, and protect documents in one fast workspace. Most tools run locally; Cloud and AI tools are labeled before you use them.",
+        "searchLabel": "Search tools",
+        "searchPlaceholder": "Search: merge, compress, QR, sign...",
+        "searchCta": "Search",
+        "browseTools": "Browse all tools",
+        "secondaryCta": "Merge PDFs now",
+        "noSignup": "No sign-up",
+        "privacyByDesign": "Privacy by design",
+        "browserFirst": "Browser-first",
+        "searchMore": "Search more than {{count}} PDF tools"
+    },
     "footer": {
-        "copyright": "© {{year}} DEXPDF lightweight client-side PDF tools"
+        "copyright": "© {{year}} DexPDF browser-first PDF tools"
     }
 }

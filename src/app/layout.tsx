@@ -1,17 +1,10 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans } from 'next/font/google'
 import './globals.css'
 import ClientLayout from '@/components/ClientLayout'
 import BottomNav from '@/components/BottomNav'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { cn } from '@/lib/utils'
 import { DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/seo'
-
-const plusJakarta = Plus_Jakarta_Sans({
-    subsets: ['latin'],
-    variable: '--font-sans',
-    display: 'swap',
-})
 
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_URL),
@@ -73,8 +66,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body className={cn(
-                "min-h-screen bg-background font-sans antialiased",
-                plusJakarta.variable
+                "min-h-screen bg-background font-sans antialiased"
             )}>
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                     <ClientLayout>

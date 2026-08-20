@@ -5,6 +5,7 @@
 
 @layer base {
   :root {
+    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     /* Soft Neutral Palette - Comfortable for Eyes */
     /* Light mode - soft off-white, not pure white */
     --background: 220 18% 96%;

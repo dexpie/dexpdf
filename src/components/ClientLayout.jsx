@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import '@/i18n'
+import i18n from '@/i18n'
 import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
 import Analytics from '@/components/Analytics'
@@ -27,6 +27,15 @@ export default function ClientLayout({ children }) {
         registerServiceWorker({
             onUpdateReady: refresh => setRefreshApp(() => refresh),
         })
+    }, [])
+
+    useEffect(() => {
+        const syncDocumentLanguage = language => {
+            document.documentElement.lang = language?.startsWith('id') ? 'id' : 'en'
+        }
+        syncDocumentLanguage(i18n.language)
+        i18n.on('languageChanged', syncDocumentLanguage)
+        return () => i18n.off('languageChanged', syncDocumentLanguage)
     }, [])
 
     useEffect(() => {

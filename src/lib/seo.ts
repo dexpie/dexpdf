@@ -15,7 +15,7 @@ export const HOME_FAQS = [
   {
     question: 'Do files stay private in DexPDF?',
     answer:
-      'Most DexPDF tools run directly in your browser, so files stay on your device. Some AI or cloud-powered tools may send only the data needed to complete that specific action.',
+      'Every tool shows whether it is Local, Cloud/AI, or Server. Local tools run directly in your browser, while Cloud, OCR, and AI tools may send the file or extracted text needed for that action.',
   },
   {
     question: 'What can I do with DexPDF?',
@@ -26,6 +26,11 @@ export const HOME_FAQS = [
     question: 'Does DexPDF work on mobile?',
     answer:
       'Yes. DexPDF is designed to work on modern mobile and desktop browsers, including installable PWA support for repeat workflows.',
+  },
+  {
+    question: 'What is the file limit and server retention policy?',
+    answer:
+      'The current limit is 50 MB per file and there is no daily free-tier limit currently enforced. DexPDF does not intentionally persist processed files in its own application storage after delivery, but third-party Cloud, OCR, or AI providers may temporarily process or retain data under their policies.',
   },
 ]
 

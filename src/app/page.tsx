@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import FAQ from '@/components/FAQ'
 import HomeClient from '@/components/HomeClient'
+import TrustSection from '@/components/TrustSection'
 import { TOOLS } from '@/config/tools'
 import {
   getHomeStructuredData,
@@ -73,6 +74,8 @@ export default function HomePage() {
 
       <HomeClient />
 
+      <TrustSection />
+
       <section className="border-t border-border bg-card px-4 py-16 md:px-6 md:py-20">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
@@ -118,6 +121,37 @@ export default function HomePage() {
                   <div className="mt-1 text-xs font-medium text-muted-foreground">{tool.description}</div>
                 </Link>
               ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-border bg-background px-4 py-16 md:px-6 md:py-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-primary">DexPDF Guides</p>
+              <h2 className="mt-2 text-3xl font-black tracking-[-0.035em] text-foreground md:text-4xl">How-to guides for everyday PDF work.</h2>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Artikel informatif yang menjawab intent pencarian lalu mengarahkan pembaca ke tool yang relevan.</p>
+            </div>
+            <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">Lihat semua artikel <span aria-hidden="true">→</span></Link>
+          </div>
+          <div className="mt-7 grid gap-4 md:grid-cols-3">
+            <Link href="/blog/cara-compress-pdf-tanpa-kehilangan-kualitas" className="group rounded-3xl border border-border bg-card p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md">
+              <span className="text-xs font-black uppercase tracking-[0.16em] text-primary">PDF guide · 5 min read</span>
+              <h3 className="mt-3 text-xl font-black tracking-tight text-foreground group-hover:text-primary">Cara Compress PDF Tanpa Kehilangan Kualitas</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">Pilih level kompresi, pahami trade-off kualitas, lalu coba langsung di Compress PDF.</p>
+              <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary">Baca panduan <span aria-hidden="true">→</span></span>
+            </Link>
+            <div className="rounded-3xl border border-dashed border-border bg-card p-6">
+              <span className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">Coming next</span>
+              <h3 className="mt-3 text-xl font-black tracking-tight text-foreground">Cara Menggabungkan PDF untuk Lamaran Kerja</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">Template artikel untuk intent “gabung PDF” dengan CTA ke Merge PDF.</p>
+            </div>
+            <div className="rounded-3xl border border-dashed border-border bg-card p-6">
+              <span className="text-xs font-black uppercase tracking-[0.16em] text-muted-foreground">Coming next</span>
+              <h3 className="mt-3 text-xl font-black tracking-tight text-foreground">Apakah PDF Online Aman untuk Dokumen Sensitif?</h3>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground">Template artikel privacy-first yang menjelaskan badge Local dan Cloud/AI.</p>
             </div>
           </div>
         </div>

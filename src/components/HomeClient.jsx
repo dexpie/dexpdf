@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 import {
   ArrowRight,
   CheckCircle2,
@@ -16,6 +17,7 @@ import {
   Zap,
 } from 'lucide-react'
 import ToolGrid from '@/components/ToolGrid'
+import ToolProcessingBadge from './ToolProcessingBadge'
 import { TOOLS } from '@/config/tools'
 import {
   getFavoriteToolIds,
@@ -24,27 +26,19 @@ import {
 } from '@/utils/toolPreferences'
 
 const QUICK_TOOLS = ['merge', 'compress', 'qr-code', 'qr-reader']
-const TRUST_SIGNALS = [
-  {
-    label: '54 tools',
-    description: 'PDF, QR, convert, security, and daily document helpers.',
-    icon: FileStack,
-  },
-  {
-    label: 'Local-first',
-    description: 'Most files stay in your browser, not on a random server.',
-    icon: CloudOff,
-  },
-  {
-    label: 'Return-ready',
-    description: 'Recent tools and history are saved only on this device.',
-    icon: History,
-  },
-]
-
 export default function HomeClient() {
+  const { t } = useTranslation()
+  const [mounted, setMounted] = useState(false)
   const [recentTools, setRecentTools] = useState([])
   const [favoriteTools, setFavoriteTools] = useState([])
+  const [heroQuery, setHeroQuery] = useState('')
+
+  useEffect(() => setMounted(true), [])
+
+  const copy = (key, fallback, options) => {
+    if (!mounted) return options?.count == null ? fallback : fallback.replace('{{count}}', String(options.count))
+    return t(key, options)
+  }
 
   useEffect(() => {
     const syncPreferences = () => {
@@ -80,6 +74,15 @@ export default function HomeClient() {
     window.setTimeout(() => document.getElementById('tool-search')?.focus(), 450)
   }
 
+  const submitSearch = event => {
+    event.preventDefault()
+    const query = heroQuery.trim()
+    window.__dexpdfHeroSearch = query
+    window.dispatchEvent(new Event('dexpdf:tool-search'))
+    document.getElementById('tool-catalog')?.scrollIntoView({ behavior: 'smooth' })
+    window.setTimeout(() => document.getElementById('tool-search')?.focus(), 450)
+  }
+
   return (
     <main className="min-h-screen overflow-hidden bg-background">
       <section className="hero-grid relative overflow-hidden border-b border-border bg-gradient-to-br from-white via-blue-50/70 to-sky-50 px-4 pb-16 pt-16 text-foreground dark:border-white/10 dark:bg-[#0a1020] dark:from-[#07111f] dark:via-[#081a33] dark:to-[#0b2242] dark:text-white md:px-6 md:pb-20 md:pt-24">
@@ -90,44 +93,65 @@ export default function HomeClient() {
           <div>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/80 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-blue-700 shadow-sm backdrop-blur dark:border-white/15 dark:bg-white/10 dark:text-blue-200">
               <Sparkles className="h-3.5 w-3.5" />
-              Your private PDF workspace
+              {copy('home.eyebrow', 'Local-first document workspace')}
             </div>
 
             <h1 className="max-w-3xl text-4xl font-black leading-[1.03] tracking-[-0.05em] text-slate-950 dark:text-white sm:text-5xl md:text-6xl lg:text-7xl">
-              PDF tools that feel
-              <span className="hero-gradient-text block">effortlessly fast.</span>
+              {copy('home.title', 'PDF tools that feel')}
+              <span className="hero-gradient-text block">{copy('home.titleAccent', 'effortlessly fast.')}</span>
             </h1>
 
             <p className="mt-6 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 md:text-lg">
-              Edit, convert, organize, and protect documents in one fast workspace.
-              Most tools run locally, so your files stay yours.
+              {copy('home.subtitle', 'Edit, convert, organize, and protect documents in one fast workspace. Most tools run locally; Cloud and AI tools are labeled before you use them.')}
             </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <form onSubmit={submitSearch} className="mt-8 max-w-2xl">
+              <label htmlFor="hero-tool-search" className="sr-only">{copy('home.searchLabel', 'Search tools')}</label>
+              <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-blue-200 bg-white/95 p-2 shadow-xl shadow-blue-900/10 backdrop-blur dark:border-white/15 dark:bg-white/10">
+                <Search className="ml-3 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+                <input
+                  id="hero-tool-search"
+                  value={heroQuery}
+                  onChange={event => setHeroQuery(event.target.value)}
+                  placeholder={copy('home.searchPlaceholder', 'Search: merge, compress, QR, sign...')}
+                  className="min-w-0 flex-1 bg-transparent px-1 text-sm font-semibold text-slate-950 outline-none placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-400"
+                />
+                <button type="submit" className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-blue-50">
+                  {copy('home.searchCta', 'Search')}
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={openSearch}
-                className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:shadow-black/20 dark:hover:bg-blue-50"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-white/80 px-5 py-2.5 text-sm font-bold text-slate-800 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:border-white/30 dark:hover:bg-white/15"
               >
-                Find a PDF tool
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                <Search className="h-4 w-4 text-blue-500" />
+                {copy('home.browseTools', 'Browse all tools')}
               </button>
               <Link
                 href="/merge"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-white/80 px-6 py-3 text-sm font-bold text-slate-800 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-white dark:border-white/15 dark:bg-white/10 dark:text-white dark:hover:border-white/30 dark:hover:bg-white/15"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold text-slate-600 transition hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"
               >
                 <FileStack className="h-4 w-4 text-blue-500" />
-                Merge PDFs now
+                {copy('home.secondaryCta', 'Merge PDFs now')}
               </Link>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium text-slate-600 dark:text-slate-400">
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-500" /> No sign-up</span>
-              <span className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-emerald-500" /> Private by design</span>
-              <span className="flex items-center gap-1.5"><Zap className="h-4 w-4 text-amber-500" /> Works in your browser</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-500" /> {copy('home.noSignup', 'No sign-up')}</span>
+              <span className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-emerald-500" /> {copy('home.privacyByDesign', 'Privacy by design')}</span>
+              <span className="flex items-center gap-1.5"><Zap className="h-4 w-4 text-amber-500" /> {copy('home.browserFirst', 'Browser-first')}</span>
             </div>
 
             <div className="mt-8 grid max-w-3xl gap-3 sm:grid-cols-3">
-              {TRUST_SIGNALS.map(signal => (
+              {[
+                { label: `${TOOLS.length} tools`, description: 'PDF, QR, convert, security, and daily document helpers.', icon: FileStack },
+                { label: 'Local-first', description: 'Local tools keep files in your browser; Cloud/AI paths are labeled.', icon: CloudOff },
+                { label: 'Return-ready', description: 'Recent tools and favorites stay on this device only.', icon: History },
+              ].map(signal => (
                 <div key={signal.label} className="rounded-2xl border border-blue-100 bg-white/70 p-4 shadow-sm shadow-blue-950/5 backdrop-blur dark:border-white/10 dark:bg-white/[0.06]">
                   <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-300">
                     <signal.icon className="h-4 w-4" />
@@ -156,7 +180,7 @@ export default function HomeClient() {
                 className="mb-4 flex w-full items-center gap-3 rounded-xl border border-border bg-white px-4 py-3.5 text-left text-sm text-slate-500 shadow-sm transition hover:border-primary/30 hover:bg-blue-50/60 dark:border-white/10 dark:bg-black/20 dark:text-slate-400 dark:hover:border-white/25 dark:hover:bg-black/30"
               >
                 <Search className="h-4 w-4 text-primary" />
-                Search more than {TOOLS.length} PDF tools
+                {copy('home.searchMore', 'Search more than {{count}} PDF tools', { count: TOOLS.length })}
                 <span className="ml-auto hidden rounded-md border border-border bg-card px-2 py-0.5 font-mono text-[10px] sm:inline">Ctrl K</span>
               </button>
 
@@ -175,7 +199,10 @@ export default function HomeClient() {
                         <p className="text-sm font-bold text-slate-950 dark:text-white">{tool.title}</p>
                         <p className="mt-1 line-clamp-1 text-xs text-slate-500 dark:text-slate-400">{tool.description}</p>
                       </div>
-                      <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
+                      <div className="flex shrink-0 flex-col items-end gap-2">
+                        <ToolProcessingBadge tool={tool} compact />
+                        <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
+                      </div>
                     </div>
                   </Link>
                 ))}

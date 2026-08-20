@@ -8,7 +8,7 @@ import { usePWA } from '@/hooks/usePWA'
 import ThemeToggle from './ThemeToggle'
 
 export default function NavBar() {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const router = useRouter()
   const { isInstallable, promptInstall } = usePWA()
   const [mounted, setMounted] = useState(false)
@@ -16,8 +16,10 @@ export default function NavBar() {
 
   useEffect(() => setMounted(true), [])
 
+  const isIndonesian = mounted && i18n.language?.startsWith('id')
+
   const toggleLanguage = () => {
-    i18n.changeLanguage(i18n.language === 'en' ? 'id' : 'en')
+    i18n.changeLanguage(isIndonesian ? 'en' : 'id')
   }
 
   const openSearch = () => {
@@ -30,10 +32,10 @@ export default function NavBar() {
   }
 
   const navLinks = [
-    { label: 'Merge', href: '/merge' },
-    { label: 'Compress', href: '/compress' },
-    { label: 'Convert', href: '/pdf2word' },
-    { label: 'Sign', href: '/signature' },
+    { label: mounted ? t('nav.merge', 'Merge') : 'Merge', href: '/merge' },
+    { label: mounted ? t('nav.compress', 'Compress') : 'Compress', href: '/compress' },
+    { label: mounted ? t('nav.convert', 'Convert') : 'Convert', href: '/pdf2word' },
+    { label: mounted ? t('nav.sign', 'Sign') : 'Sign', href: '/signature' },
   ]
 
   return (
@@ -71,8 +73,8 @@ export default function NavBar() {
           <ThemeToggle />
 
           {mounted && (
-            <button onClick={toggleLanguage} className="rounded-lg bg-secondary px-2.5 py-2 text-xs font-bold text-muted-foreground transition hover:text-foreground">
-              {i18n.language === 'en' ? 'ID' : 'EN'}
+          <button onClick={toggleLanguage} aria-label={isIndonesian ? 'Ganti ke Bahasa Inggris' : 'Switch to Indonesian'} title={isIndonesian ? 'Ganti ke Bahasa Inggris' : 'Switch to Indonesian'} className="rounded-lg bg-secondary px-2.5 py-2 text-xs font-bold text-muted-foreground transition hover:text-foreground">
+              {isIndonesian ? 'EN' : 'ID'}
             </button>
           )}
 

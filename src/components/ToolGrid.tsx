@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowRight, ChevronDown, Clock3, Search, SlidersHorizontal, Star, X } from 'lucide-react'
 import { TOOLS, CATEGORIES } from '../config/tools'
 import ToolCard from './ToolCard'
+import ToolProcessingBadge from './ToolProcessingBadge'
 import {
   getFavoriteToolIds,
   getMostUsedToolIds,
@@ -49,6 +50,17 @@ export default function ToolGrid() {
       window.removeEventListener(PREFERENCES_EVENT, syncShortcuts)
       window.removeEventListener('storage', syncShortcuts)
     }
+  }, [])
+
+  useEffect(() => {
+    const applyExternalSearch = event => {
+      setSearchQuery((window as any).__dexpdfHeroSearch || '')
+      setActiveCategory('all')
+      setShowAll(false)
+    }
+
+    window.addEventListener('dexpdf:tool-search', applyExternalSearch)
+    return () => window.removeEventListener('dexpdf:tool-search', applyExternalSearch)
   }, [])
 
   const filteredTools = useMemo(() => {
@@ -118,7 +130,10 @@ export default function ToolGrid() {
                     <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
                   </div>
                   <div>
-                    <p className="mt-4 text-sm font-black text-foreground">{tool.title}</p>
+                    <div className="mt-4 flex items-center justify-between gap-2">
+                      <p className="text-sm font-black text-foreground">{tool.title}</p>
+                      <ToolProcessingBadge tool={tool} compact />
+                    </div>
                     <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{tool.description}</p>
                   </div>
                 </Link>

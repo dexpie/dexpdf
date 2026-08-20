@@ -24,6 +24,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: 'monthly' as const,
             priority: 0.4,
         },
+        {
+            url: `${SITE_URL}/privacy`,
+            lastModified: now,
+            changeFrequency: 'yearly' as const,
+            priority: 0.4,
+        },
+        {
+            url: `${SITE_URL}/terms`,
+            lastModified: now,
+            changeFrequency: 'yearly' as const,
+            priority: 0.4,
+        },
+        {
+            url: `${SITE_URL}/blog`,
+            lastModified: now,
+            changeFrequency: 'weekly' as const,
+            priority: 0.7,
+        },
+        {
+            url: `${SITE_URL}/blog/cara-compress-pdf-tanpa-kehilangan-kualitas`,
+            lastModified: now,
+            changeFrequency: 'monthly' as const,
+            priority: 0.8,
+        },
     ]
 
     const toolRoutes = TOOLS.map(tool => ({

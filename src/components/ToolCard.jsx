@@ -9,6 +9,7 @@ import {
   toggleFavoriteTool,
 } from '@/utils/toolPreferences'
 import { getToolBadges } from '@/utils/toolDiscovery'
+import ToolProcessingBadge from './ToolProcessingBadge'
 
 const CATEGORY_STYLES = {
   organize: { icon: 'bg-red-500/10 text-red-500', label: 'Organize' },
@@ -48,7 +49,10 @@ export default function ToolCard({ tool }) {
             <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${styles.icon}`}>
               <tool.icon strokeWidth={2} className="h-5 w-5" />
             </div>
-            <ArrowUpRight className="mr-8 h-4 w-4 text-muted-foreground/50 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
+            <div className="flex items-center gap-2">
+              <ToolProcessingBadge tool={tool} compact />
+              <ArrowUpRight className="h-4 w-4 text-muted-foreground/50 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
+            </div>
           </div>
 
           <div className="relative mt-auto">

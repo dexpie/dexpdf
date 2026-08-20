@@ -1,13 +1,12 @@
 import React from 'react'
 
-// Stats component inspired by Vercel and Linear
 export default function Stats() {
   const stats = [
-    { value: '1M+', label: 'Files Processed' },
-    { value: '50K+', label: 'Active Users' },
-    { value: '20+', label: 'PDF Tools' },
-    { value: '99.9%', label: 'Uptime' },
-  ]
+    process.env.NEXT_PUBLIC_FILES_PROCESSED && { value: process.env.NEXT_PUBLIC_FILES_PROCESSED, label: 'Files Processed' },
+    process.env.NEXT_PUBLIC_ACTIVE_USERS && { value: process.env.NEXT_PUBLIC_ACTIVE_USERS, label: 'Active Users' },
+    { value: '50+', label: 'Tools available' },
+    { value: '50 MB', label: 'Max file size' },
+  ].filter(Boolean)
 
   return (
     <section className="stats-section">
@@ -20,6 +19,7 @@ export default function Stats() {
             </div>
           ))}
         </div>
+        {stats.length === 2 && <p className="mt-3 text-center text-xs text-muted-foreground">Usage figures are provided by configured analytics.</p>}
       </div>
     </section>
   )

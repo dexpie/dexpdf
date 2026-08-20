@@ -5,11 +5,15 @@
     },
     "hero": {
         "title": "Toolkit PDF Lengkap untuk Produktivitas Modern",
-        "subtitle": "DexPDF membawa alat PDF canggih langsung ke browser Anda. Cepat, aman, dan gratis untuk gabung, pisah, kompres, konversi, dan edit PDF tanpa upload file ke server. Privasi terjaga.",
+        "subtitle": "DexPDF membawa tool PDF dan QR praktis ke browser Anda. Tool Local menyimpan file di perangkat; tool Cloud dan AI diberi label saat membutuhkan proses server.",
         "search_placeholder": "Cari alat PDF...",
         "hotkey_hint": "Tekan / untuk cari"
     },
     "nav": {
+        "merge": "Gabung",
+        "compress": "Kompres",
+        "convert": "Konversi",
+        "sign": "Tanda tangan",
         "github": "GitHub",
         "share": "Bagikan",
         "share_success": "Link disalin!",
@@ -51,13 +55,28 @@
         "title": "Semua yang Anda butuhkan",
         "subtitle": "Alat PDF kelas profesional langsung di browser Anda",
         "secure_title": "100% Aman",
-        "secure_desc": "Semua file diproses secara lokal di perangkat Anda. Tidak ada data yang diunggah ke server.",
+        "secure_desc": "Tool Local memproses file di perangkat Anda. Tool Cloud, OCR, dan AI menjelaskan saat data dikirim untuk diproses.",
         "free_title": "Gratis Selamanya",
         "free_desc": "Tanpa batas, tanpa daftar, tanpa biaya tersembunyi. Murni utilitas.",
         "fast_title": "Super Cepat",
         "fast_desc": "Ditenagai oleh WebAssembly untuk performa secepat aplikasi native."
     },
+    "home": {
+        "eyebrow": "Workspace dokumen local-first",
+        "title": "Tool PDF yang terasa",
+        "titleAccent": "cepat tanpa ribet.",
+        "subtitle": "Edit, konversi, atur, dan lindungi dokumen dalam satu workspace. Sebagian besar tool berjalan lokal; tool Cloud dan AI diberi label sebelum digunakan.",
+        "searchLabel": "Cari tool",
+        "searchPlaceholder": "Cari: gabung, kompres, QR, tanda tangan...",
+        "searchCta": "Cari",
+        "browseTools": "Lihat semua tool",
+        "secondaryCta": "Gabung PDF sekarang",
+        "noSignup": "Tanpa daftar",
+        "privacyByDesign": "Privasi sejak awal",
+        "browserFirst": "Utamakan browser",
+        "searchMore": "Cari di {{count}}+ tool PDF"
+    },
     "footer": {
-        "copyright": "© {{year}} DEXPDF alat PDF client-side ringan"
+        "copyright": "© {{year}} DexPDF tool PDF yang mengutamakan browser"
     }
 }
