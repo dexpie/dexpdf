@@ -1,11 +1,10 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, ChevronDown, Clock3, Search, SlidersHorizontal, Star, X } from 'lucide-react'
 import { TOOLS, CATEGORIES } from '../config/tools'
 import ToolCard from './ToolCard'
-import ToolProcessingBadge from './ToolProcessingBadge'
 import {
   getFavoriteToolIds,
   getMostUsedToolIds,
@@ -15,7 +14,6 @@ import {
 import {
   getIntentToolIds,
   getToolSearchText,
-  POPULAR_WORKFLOWS,
 } from '@/utils/toolDiscovery'
 
 const CATEGORY_COPY: Record<string, string> = {
@@ -25,8 +23,6 @@ const CATEGORY_COPY: Record<string, string> = {
   security: 'Sign, protect, and remove sensitive information.',
   create: 'Create polished documents and use AI helpers.',
 }
-
-const FEATURED_TOOL_IDS = ['qr-code', 'qr-reader', 'merge', 'compress', 'pdf2word', 'protect']
 
 export default function ToolGrid() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -88,99 +84,10 @@ export default function ToolGrid() {
   const shortcuts = shortcutIds
     .map(id => TOOLS.find(tool => tool.id === id))
     .filter(Boolean)
-  const featuredTools = FEATURED_TOOL_IDS
-    .map(id => TOOLS.find(tool => tool.id === id))
-    .filter(Boolean)
-  const workflows = POPULAR_WORKFLOWS.map(workflow => ({
-    ...workflow,
-    tools: workflow.toolIds
-      .map(id => TOOLS.find(tool => tool.id === id))
-      .filter(Boolean),
-  })).filter(workflow => workflow.tools.length > 0)
 
   return (
     <section id="tool-catalog" className="relative px-4 py-16 md:px-6 md:py-24">
       <div className="mx-auto max-w-7xl">
-        {featuredTools.length > 0 && activeCategory === 'all' && !searchQuery && (
-          <div className="mb-8 rounded-3xl border border-blue-200/70 bg-gradient-to-br from-blue-50 via-card to-sky-50 p-5 shadow-sm dark:border-blue-500/20 dark:from-blue-950/30 dark:via-card dark:to-sky-950/20 md:p-6">
-            <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-primary">
-                  <Star className="h-3.5 w-3.5 fill-current" />
-                  Featured tools
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground">Start with the tools people reach for most, including QR creation and scanning.</p>
-              </div>
-              <Link href="/qr-code" className="inline-flex items-center gap-2 text-sm font-bold text-primary transition hover:translate-x-0.5">
-                Open QR Studio
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-              {featuredTools.map((tool: any) => (
-                <Link
-                  key={tool.id}
-                  href={tool.href || `/${tool.id}`}
-                  className="group flex min-h-24 flex-col justify-between rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                      <tool.icon className="h-5 w-5" />
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
-                  </div>
-                  <div>
-                    <div className="mt-4 flex items-center justify-between gap-2">
-                      <p className="text-sm font-black text-foreground">{tool.title}</p>
-                      <ToolProcessingBadge tool={tool} compact />
-                    </div>
-                    <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{tool.description}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {workflows.length > 0 && activeCategory === 'all' && !searchQuery && (
-          <div className="mb-8">
-            <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-primary">
-                  <SlidersHorizontal className="h-3.5 w-3.5" />
-                  Popular workflows
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground">One-click paths for common document jobs.</p>
-              </div>
-            </div>
-            <div className="grid gap-3 lg:grid-cols-4">
-              {workflows.map(workflow => {
-                const firstTool = workflow.tools[0] as any
-                return (
-                  <Link
-                    key={workflow.id}
-                    href={firstTool.href || `/${firstTool.id}`}
-                    className="group rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg"
-                  >
-                    <h3 className="text-sm font-black text-foreground">{workflow.title}</h3>
-                    <p className="mt-1 min-h-10 text-xs leading-5 text-muted-foreground">{workflow.description}</p>
-                    <div className="mt-4 flex flex-wrap items-center gap-2">
-                      {workflow.tools.map((tool: any, index) => (
-                        <React.Fragment key={tool.id}>
-                          <span className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-foreground">
-                            {tool.title}
-                          </span>
-                          {index < workflow.tools.length - 1 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
-                        </React.Fragment>
-                      ))}
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
         {shortcuts.length > 1 && (
           <div className="mb-8 rounded-3xl border border-border bg-card p-5 shadow-sm md:p-6">
             <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
