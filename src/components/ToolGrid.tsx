@@ -126,20 +126,18 @@ export default function ToolGrid() {
           </div>
         )}
 
-        <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-          <div>
-            <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
-              <SlidersHorizontal className="h-4 w-4" />
-              Tool library
-            </div>
-            <h2 className="text-3xl font-black tracking-[-0.035em] text-foreground md:text-4xl">
-              One workspace. Every PDF task.
-            </h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-              {CATEGORY_COPY[activeCategory]}
-            </p>
+        <div className="mb-8 text-center">
+          <div className="mb-3 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+            <SlidersHorizontal className="h-4 w-4" />
+            Tool library
           </div>
-          <p className="text-sm font-semibold text-muted-foreground">
+          <h2 className="text-balance text-3xl font-black tracking-[-0.035em] text-foreground md:text-4xl">
+            One workspace. Every PDF task.
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground md:text-base">
+            {CATEGORY_COPY[activeCategory]}
+          </p>
+          <p className="mt-2 text-sm font-semibold text-muted-foreground">
             <span className="text-foreground">{filteredTools.length}</span> tools available
           </p>
         </div>
