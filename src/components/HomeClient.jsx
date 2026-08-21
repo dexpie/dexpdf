@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
@@ -37,7 +37,7 @@ function BoundaryVisual() {
           </div>
         </div>
 
-        {/* The document, moving between tools â€” never leaving the box */}
+        {/* The document, moving between tools, never leaving the box */}
         <div className="doc-move mt-5 flex w-fit items-center gap-2 rounded-md bg-[#F3EFE4] px-3 py-2 shadow-sm">
           <FileText className="h-4 w-4 text-[#1B2027]" />
           <span className="font-mono text-[10px] font-bold tracking-wide text-[#1B2027]">contract.pdf</span>
@@ -49,15 +49,15 @@ function BoundaryVisual() {
         </p>
       </div>
 
-      {/* The cloud â€” outside the boundary, connection never completes */}
-      <div className="absolute -right-3 -top-8 flex flex-col items-center gap-1">
-        <CloudOff className="h-6 w-6 text-[#8E97A3]" />
+      {/* The cloud — outside the boundary, connection never completes */}
+      <div className="absolute -top-10 right-0 flex items-center gap-2">
+        <svg className="h-6 w-14 text-[#8E97A3]" viewBox="0 0 56 24" fill="none" aria-hidden="true">
+          <line x1="54" y1="12" x2="34" y2="12" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.5" />
+          <line x1="28" y1="12" x2="18" y2="12" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.25" />
+        </svg>
+        <CloudOff className="h-5 w-5 shrink-0 text-[#8E97A3]" />
         <span className="boundary-label">cloud</span>
       </div>
-      <svg className="absolute -right-1 top-0 h-10 w-16 text-[#8E97A3]" viewBox="0 0 64 40" fill="none" aria-hidden="true">
-        <line x1="62" y1="20" x2="30" y2="20" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.5" />
-        <line x1="24" y1="20" x2="14" y2="20" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.25" />
-      </svg>
     </div>
   )
 }
@@ -94,7 +94,7 @@ export default function HomeClient() {
 
             <p className="mt-6 max-w-lg font-serif text-lg leading-8 text-muted-foreground md:text-xl">
               {TOOLS.length} PDF and QR tools that run entirely in your browser.
-              No uploads, no accounts, no waiting rooms â€” your documents are
+              No uploads, no accounts, no waiting rooms. Your documents are
               processed on this device and nowhere else.
             </p>
 

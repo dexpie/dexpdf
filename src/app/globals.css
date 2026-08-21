@@ -108,6 +108,13 @@
     --ring: 155 64% 52%;
 
     --radius: 0.625rem;
+
+    /* Vault & Paper raw tokens */
+    --vault: #10151C;
+    --vault-2: #171E27;
+    --paper: #F3EFE4;
+    --paper-2: #EAE3D2;
+    --ink: #1B2027;
   }
 
   .dark {
@@ -139,6 +146,12 @@
     --border: 210 12% 18%;
     --input: 210 12% 22%;
     --ring: 155 64% 52%;
+
+    --vault: #10151C;
+    --vault-2: #171E27;
+    --paper: #F3EFE4;
+    --paper-2: #EAE3D2;
+    --ink: #1B2027;
   }
 }
 
@@ -183,6 +196,7 @@
   .paper-card {
     background: var(--paper);
     color: var(--ink);
+    border: 1px solid rgba(27, 32, 39, 0.08);
     border-radius: 0.5rem;
     transition: transform 0.15s ease, background-color 0.15s ease;
   }
