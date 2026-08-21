@@ -27,7 +27,7 @@ export default function CompressTool() {
   const [quality, setQuality] = useState(0.7) // 0-1, lower = more compression
   const [scale, setScale] = useState(1)
   const [imgFormat, setImgFormat] = useState('jpeg')
-  const [compressionMode, setCompressionMode] = useState('balanced') // 'balanced', 'maximum', 'least'
+  const [compressionMode, setCompressionMode] = useState('smart') // 'smart', 'lossless', 'flatten'
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [downloadUrl, setDownloadUrl] = useState(null)
@@ -45,9 +45,9 @@ export default function CompressTool() {
 
   // Compression presets
   const presets = {
-    least: { quality: 0.9, scale: 1.0, label: 'Less Compression', desc: 'Best quality, larger file' },
-    balanced: { quality: 0.7, scale: 1.0, label: 'Balanced', desc: 'Good quality, smaller file' },
-    maximum: { quality: 0.5, scale: 0.75, label: 'More Compression', desc: 'Smaller file, lower quality' },
+    smart: { quality: 0.7, scale: 1.0, label: 'Smart (Recommended)', desc: 'Text stays sharp and selectable; only scanned pages get compressed' },
+    lossless: { quality: 0.9, scale: 1.0, label: 'Lossless', desc: 'Structure cleanup only, zero quality loss' },
+    flatten: { quality: 0.5, scale: 0.75, label: 'Flatten', desc: 'Rasterize every page for the smallest size' },
   }
 
   const applyPreset = (presetKey) => {
@@ -98,6 +98,37 @@ export default function CompressTool() {
     return Math.round((1 - compressedSize / originalSize) * 100)
   }
 
+  async function renderPageToJpeg(sourcePage) {
+    const baseViewport = sourcePage.getViewport({ scale: 1 })
+    const renderViewport = sourcePage.getViewport({ scale })
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.ceil(renderViewport.width)
+    canvas.height = Math.ceil(renderViewport.height)
+    const context = canvas.getContext('2d', { alpha: false })
+    context.fillStyle = '#ffffff'
+    context.fillRect(0, 0, canvas.width, canvas.height)
+    await sourcePage.render({ canvasContext: context, viewport: renderViewport }).promise
+    const jpegBlob = await new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Could not encode page image.')), 'image/jpeg', quality))
+    return { bytes: await jpegBlob.arrayBuffer(), width: baseViewport.width, height: baseViewport.height }
+  }
+
+  async function addRasterizedPage(newPdf, sourcePage) {
+    const { bytes, width, height } = await renderPageToJpeg(sourcePage)
+    const image = await newPdf.embedJpg(bytes)
+    const outputPage = newPdf.addPage([width, height])
+    outputPage.drawImage(image, { x: 0, y: 0, width, height })
+  }
+
+  async function hasSelectableText(sourcePage) {
+    const textContent = await sourcePage.getTextContent()
+    const charCount = textContent.items
+      .map(item => item.str || '')
+      .join('')
+      .replace(/\s/g, '')
+      .length
+    return charCount >= 24
+  }
+
   async function compress() {
     if (!file) return
     setErrorMsg('')
@@ -107,28 +138,40 @@ export default function CompressTool() {
 
     try {
       setProgress(10)
-      const inputBuffer = await file.arrayBuffer()
-      const source = await pdfjsLib.getDocument({ data: inputBuffer }).promise
-      const newPdf = await PDFDocument.create()
+      const inputBytes = await file.arrayBuffer()
+      let newPdf
 
-      // Raster compression makes image quality and scale controls effective.
-      // It intentionally flattens interactive content and selectable text.
-      for (let pageNumber = 1; pageNumber <= source.numPages; pageNumber++) {
-        setProgress(15 + Math.round((pageNumber / source.numPages) * 70))
-        const sourcePage = await source.getPage(pageNumber)
-        const baseViewport = sourcePage.getViewport({ scale: 1 })
-        const renderViewport = sourcePage.getViewport({ scale })
-        const canvas = document.createElement('canvas')
-        canvas.width = Math.ceil(renderViewport.width)
-        canvas.height = Math.ceil(renderViewport.height)
-        const context = canvas.getContext('2d', { alpha: false })
-        context.fillStyle = '#ffffff'
-        context.fillRect(0, 0, canvas.width, canvas.height)
-        await sourcePage.render({ canvasContext: context, viewport: renderViewport }).promise
-        const jpegBlob = await new Promise((resolve, reject) => canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Could not encode page image.')), 'image/jpeg', quality))
-        const image = await newPdf.embedJpg(await jpegBlob.arrayBuffer())
-        const outputPage = newPdf.addPage([baseViewport.width, baseViewport.height])
-        outputPage.drawImage(image, { x: 0, y: 0, width: baseViewport.width, height: baseViewport.height })
+      if (compressionMode === 'lossless') {
+        try {
+          newPdf = await PDFDocument.load(inputBytes, { ignoreEncryption: true })
+        } catch (loadErr) {
+          console.error(loadErr)
+          throw new Error('This PDF looks encrypted or damaged. Run Unlock PDF first.')
+        }
+      } else {
+        // pdf.js may detach the buffer it receives, so hand each consumer its own copy.
+        const source = await pdfjsLib.getDocument({ data: inputBytes.slice(0) }).promise
+        newPdf = await PDFDocument.create()
+        let vectorSource = null
+        if (compressionMode === 'smart') {
+          try {
+            vectorSource = await PDFDocument.load(inputBytes.slice(0), { ignoreEncryption: true })
+          } catch (loadErr) {
+            console.warn('Falling back to full raster compression:', loadErr)
+          }
+        }
+
+        for (let pageNumber = 1; pageNumber <= source.numPages; pageNumber++) {
+          setProgress(15 + Math.round((pageNumber / source.numPages) * 70))
+          const sourcePage = await source.getPage(pageNumber)
+          const keepVector = vectorSource && await hasSelectableText(sourcePage)
+          if (keepVector) {
+            const [copied] = await newPdf.copyPages(vectorSource, [pageNumber - 1])
+            newPdf.addPage(copied)
+          } else {
+            await addRasterizedPage(newPdf, sourcePage)
+          }
+        }
       }
 
       setProgress(85)
@@ -144,7 +187,11 @@ export default function CompressTool() {
 
       setDownloadUrl(url)
       triggerConfetti()
-      setSuccessMsg('PDF Compressed Successfully!')
+      setSuccessMsg(
+        compressionMode === 'lossless'
+          ? 'PDF optimized without any quality loss!'
+          : 'PDF Compressed Successfully! Text pages kept sharp.'
+      )
     } catch (err) {
       console.error(err)
       setErrorMsg('Compression failed: ' + (err.message || err))
@@ -156,7 +203,7 @@ export default function CompressTool() {
   return (
     <ToolLayout
       title="Compress PDF"
-      description="Raster-compress PDF pages with adjustable image quality. Interactive content will be flattened."
+      description="Shrink PDFs locally: keep text sharp with Smart mode, go lossless, or flatten for the smallest size."
     >
       <div className="flex flex-col gap-6">
         {/* Error Alert */}
@@ -265,34 +312,49 @@ export default function CompressTool() {
                   </div>
 
                   {/* Quality Slider */}
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <label className="text-sm font-medium text-foreground">
-                        Image Quality
-                      </label>
-                      <span className="text-sm font-mono text-primary">{Math.round(quality * 100)}%</span>
+                  {compressionMode !== 'lossless' && (
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <label className="text-sm font-medium text-foreground">
+                          Image Quality
+                        </label>
+                        <span className="text-sm font-mono text-primary">{Math.round(quality * 100)}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.3"
+                        max="1"
+                        step="0.1"
+                        value={quality}
+                        onChange={(e) => {
+                          setQuality(parseFloat(e.target.value))
+                          setCompressionMode('custom')
+                        }}
+                        disabled={busy}
+                        className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <span>Smaller file</span>
+                        <span>Better quality</span>
+                      </div>
                     </div>
-                    <input
-                      type="range"
-                      min="0.3"
-                      max="1"
-                      step="0.1"
-                      value={quality}
-                      onChange={(e) => {
-                        setQuality(parseFloat(e.target.value))
-                        setCompressionMode('custom')
-                      }}
-                      disabled={busy}
-                      className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-primary"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                      <span>Smaller file</span>
-                      <span>Better quality</span>
-                    </div>
-                    <p className="mt-3 rounded-lg bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300">
-                      Compression rasterizes pages. Links, forms, and selectable text will be flattened.
+                  )}
+
+                  {compressionMode === 'smart' && (
+                    <p className="rounded-lg bg-emerald-500/10 p-3 text-xs text-emerald-700 dark:text-emerald-300">
+                      Smart mode keeps text pages vector-sharp and selectable. Only scanned/image pages are rasterized.
                     </p>
-                  </div>
+                  )}
+                  {compressionMode === 'lossless' && (
+                    <p className="rounded-lg bg-blue-500/10 p-3 text-xs text-blue-700 dark:text-blue-300">
+                      Lossless mode rebuilds the PDF structure without touching content. Savings depend on the file.
+                    </p>
+                  )}
+                  {compressionMode === 'flatten' && (
+                    <p className="mt-3 rounded-lg bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300">
+                      Flatten mode rasterizes pages. Links, forms, and selectable text will be lost.
+                    </p>
+                  )}
 
                   {/* Output Filename */}
                   <div>

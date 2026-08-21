@@ -92,7 +92,18 @@ export default function ExcelToPdfTool() {
                     td.style.padding = '8px'
                     td.style.textAlign = 'left'
                     if (rI === 0) td.style.background = '#f1f5f9'
-                    td.innerText = cell !== null ? String(cell) : ''
+                    if (typeof cell === 'number') {
+                        td.style.textAlign = 'right'
+                        td.innerText = cell.toLocaleString('en-US', { maximumFractionDigits: 2 })
+                    } else if (cell instanceof Date) {
+                        td.style.textAlign = 'right'
+                        const y = cell.getFullYear()
+                        const m = String(cell.getMonth() + 1).padStart(2, '0')
+                        const d = String(cell.getDate()).padStart(2, '0')
+                        td.innerText = `${y}-${m}-${d}`
+                    } else {
+                        td.innerText = cell !== null && cell !== undefined ? String(cell) : ''
+                    }
                     tr.appendChild(td)
                 })
                 table.appendChild(tr)

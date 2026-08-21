@@ -27,8 +27,6 @@ export default function KeyboardShortcuts({ isOpen, onClose }) {
             items: [
                 { key: `${modifier} + O`, description: 'Open file', icon: '📂' },
                 { key: `${modifier} + S`, description: 'Download result', icon: '💾' },
-                { key: `${modifier} + Z`, description: 'Undo (coming soon)', icon: '↶', disabled: true },
-                { key: `${modifier} + Y`, description: 'Redo (coming soon)', icon: '↷', disabled: true },
             ]
         },
         {
@@ -44,8 +42,6 @@ export default function KeyboardShortcuts({ isOpen, onClose }) {
             category: 'View',
             items: [
                 { key: `${modifier} + D`, description: 'Toggle dark mode', icon: '🌙' },
-                { key: `${modifier} + +`, description: 'Zoom in (coming soon)', icon: '🔍', disabled: true },
-                { key: `${modifier} + -`, description: 'Zoom out (coming soon)', icon: '🔍', disabled: true },
             ]
         }
     ]

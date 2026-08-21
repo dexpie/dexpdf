@@ -251,8 +251,11 @@ export default function OcrTool() {
         pdfDocument = await pdfjsLib.getDocument(arrayBuffer).promise
         setTotalPages(pdfDocument.numPages)
         const page = await pdfDocument.getPage(pageNum)
-        // High-definition scale (Math.max 2.5) guarantees ~300 DPI for 90%+ OCR accuracy
-        const viewport = page.getViewport({ scale: 2.5 })
+        // Adaptive render scale: aim for ~2400px on the longest side (clamped 1.5x-3x)
+        const baseViewport = page.getViewport({ scale: 1 })
+        const longestSide = Math.max(baseViewport.width, baseViewport.height)
+        const renderScale = Math.min(3, Math.max(1.5, 2400 / longestSide))
+        const viewport = page.getViewport({ scale: renderScale })
         canvas = document.createElement('canvas')
         canvas.width = viewport.width
         canvas.height = viewport.height
@@ -324,7 +327,10 @@ export default function OcrTool() {
       const data = await file.arrayBuffer()
       const pdf = await pdfjsLib.getDocument({ data }).promise
       const page = await pdf.getPage(1)
-      const viewport = page.getViewport({ scale: 2.5 })
+      const baseViewport = page.getViewport({ scale: 1 })
+      const longestSide = Math.max(baseViewport.width, baseViewport.height)
+      const renderScale = Math.min(3, Math.max(1.5, 2400 / longestSide))
+      const viewport = page.getViewport({ scale: renderScale })
       canvas = document.createElement('canvas')
       canvas.width = Math.ceil(viewport.width)
       canvas.height = Math.ceil(viewport.height)

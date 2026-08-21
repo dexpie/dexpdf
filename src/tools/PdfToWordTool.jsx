@@ -96,10 +96,11 @@ async function advancedPdfToWord(file, onProgress) {
       pagePromises.push(
         pdf.getPage(i).then(async page => {
           const txtContent = await page.getTextContent()
-          return { pageNum: i, txtContent }
+          const viewport = page.getViewport({ scale: 1 })
+          return { pageNum: i, txtContent, pageWidth: viewport.width }
         }).catch(e => {
           console.warn(`Skipping page ${i}`, e)
-          return { pageNum: i, txtContent: { items: [] } }
+          return { pageNum: i, txtContent: { items: [] }, pageWidth: 0 }
         })
       )
     }
@@ -107,7 +108,7 @@ async function advancedPdfToWord(file, onProgress) {
     const pagesData = await Promise.all(pagePromises)
     pagesData.sort((a, b) => a.pageNum - b.pageNum)
 
-    for (const { pageNum, txtContent } of pagesData) {
+    for (const { pageNum, txtContent, pageWidth } of pagesData) {
       const lineMap = new Map()
       let allFontHeights = []
 
@@ -134,21 +135,40 @@ async function advancedPdfToWord(file, onProgress) {
         : 12
 
       const sortedYPositions = Array.from(lineMap.keys()).sort((a, b) => b - a)
+      let maxLineRight = 0
+      lineMap.forEach(items => {
+        items.forEach(item => {
+          maxLineRight = Math.max(maxLineRight, item.x + item.width)
+        })
+      })
+      const shortLineThreshold = Math.max(maxLineRight * 0.55, pageWidth * 0.4)
+
       let currentLineItems = []
       let prevY = null
       let prevFontHeight = 12
+      let prevLineFirstX = null
+      let prevLineRight = null
+
+      const flushParagraph = () => {
+        if (currentLineItems.length > 0) {
+          paragraphs.push(formatParagraph(currentLineItems, avgFontHeight))
+          currentLineItems = []
+        }
+      }
 
       for (const y of sortedYPositions) {
         const items = lineMap.get(y).sort((a, b) => a.x - b.x)
         const lineFontHeight = items[0]?.fontHeight || 12
+        const firstX = items[0]?.x ?? 0
 
         if (prevY !== null) {
           const gap = prevY - y
-          if (gap > prevFontHeight * 1.3) {
-            if (currentLineItems.length > 0) {
-              paragraphs.push(formatParagraph(currentLineItems, avgFontHeight))
-              currentLineItems = []
-            }
+          const bigGap = gap > prevFontHeight * 1.3
+          const indented = prevLineFirstX !== null && firstX > prevLineFirstX + lineFontHeight * 1.5
+          const prevLineEndedShort = prevLineRight !== null && prevLineRight < shortLineThreshold
+          const startsWithBullet = LIST_ITEM_RE.test((items[0]?.text || '').trim())
+          if (bigGap || indented || prevLineEndedShort || startsWithBullet) {
+            flushParagraph()
           }
         }
 
@@ -169,13 +189,14 @@ async function advancedPdfToWord(file, onProgress) {
             fontName: items[0]?.fontName || ''
           })
           prevFontHeight = lineFontHeight
+          prevLineFirstX = firstX
+          const lastItem = items[items.length - 1]
+          prevLineRight = lastItem.x + (lastItem.width || 0)
         }
         prevY = y
       }
 
-      if (currentLineItems.length > 0) {
-        paragraphs.push(formatParagraph(currentLineItems, avgFontHeight))
-      }
+      flushParagraph()
 
       if (pageNum < numPages && paragraphs.length > 0) {
         paragraphs.push(new Paragraph({ text: '', pageBreakBefore: true }))
@@ -200,8 +221,26 @@ async function advancedPdfToWord(file, onProgress) {
   return blob
 }
 
+const LIST_ITEM_RE = /^([•▪◦‣·]|[-–—]\s|\(?\d{1,2}[.)]\s)/
+
+function joinWrappedLines(lineItems) {
+  let combined = ''
+  lineItems.forEach((line, index) => {
+    if (index === 0) {
+      combined = line.text
+      return
+    }
+    if (/[A-Za-z]-$/.test(combined) && /^[a-z]/.test(line.text)) {
+      combined = combined.slice(0, -1) + line.text
+    } else {
+      combined += ' ' + line.text
+    }
+  })
+  return combined.replace(/\s+/g, ' ').trim()
+}
+
 function formatParagraph(lineItems, avgFontHeight) {
-  const combinedText = lineItems.map(l => l.text).join(' ').trim()
+  const combinedText = joinWrappedLines(lineItems)
   const maxFontInPara = Math.max(...lineItems.map(l => l.fontHeight))
   const isBold = lineItems.some(l =>
     l.fontName.toLowerCase().includes('bold') ||
@@ -222,11 +261,13 @@ function formatParagraph(lineItems, avgFontHeight) {
     })
   } else if (isBold) {
     return new Paragraph({
-      children: [new TextRun({ text: combinedText, bold: true, size: docxFontSize })]
+      children: [new TextRun({ text: combinedText, bold: true, size: docxFontSize })],
+      spacing: { after: 120, line: 276 }
     })
   } else {
     return new Paragraph({
-      children: [new TextRun({ text: combinedText, size: docxFontSize })]
+      children: [new TextRun({ text: combinedText, size: docxFontSize })],
+      spacing: { after: 120, line: 276 }
     })
   }
 }
@@ -273,17 +314,62 @@ function paragraphsFromNativeText(textContent, pageNumber, totalPages) {
     ? fontHeights.reduce((sum, value) => sum + value, 0) / fontHeights.length
     : 12
 
-  const paragraphs = Array.from(lineMap.entries())
+  const sortedEntries = Array.from(lineMap.entries())
     .sort(([firstY], [secondY]) => secondY - firstY)
-    .map(([, items]) => {
-      const sortedItems = items.sort((first, second) => first.x - second.x)
-      const text = sortedItems.map(item => item.text).join(' ').replace(/\s+/g, ' ').trim()
-      return formatParagraph([{
-        text,
-        fontHeight: Math.max(...sortedItems.map(item => item.fontHeight)),
-        fontName: sortedItems.map(item => item.fontName).join(' ')
-      }], avgFontHeight)
+
+  let maxLineRight = 0
+  sortedEntries.forEach(([, items]) => {
+    items.forEach(item => {
+      maxLineRight = Math.max(maxLineRight, item.x + item.width)
     })
+  })
+  const shortLineThreshold = maxLineRight * 0.55
+
+  const paragraphs = []
+  let currentLineItems = []
+  let prevY = null
+  let prevFontHeight = 12
+  let prevLineFirstX = null
+  let prevLineRight = null
+
+  const flushParagraph = () => {
+    if (currentLineItems.length > 0) {
+      paragraphs.push(formatParagraph(currentLineItems, avgFontHeight))
+      currentLineItems = []
+    }
+  }
+
+  for (const [y, items] of sortedEntries) {
+    const sortedItems = items.sort((first, second) => first.x - second.x)
+    const lineFontHeight = Math.max(...sortedItems.map(item => item.fontHeight))
+    const firstX = sortedItems[0]?.x ?? 0
+    const lineText = sortedItems.map(item => item.text).join(' ').replace(/\s+/g, ' ').trim()
+    if (!lineText) continue
+
+    if (prevY !== null) {
+      const gap = prevY - y
+      const bigGap = gap > prevFontHeight * 1.3
+      const indented = prevLineFirstX !== null && firstX > prevLineFirstX + lineFontHeight * 1.5
+      const prevLineEndedShort = prevLineRight !== null && prevLineRight < shortLineThreshold
+      const startsWithBullet = LIST_ITEM_RE.test(lineText)
+      if (bigGap || indented || prevLineEndedShort || startsWithBullet) {
+        flushParagraph()
+      }
+    }
+
+    currentLineItems.push({
+      text: lineText,
+      fontHeight: lineFontHeight,
+      fontName: sortedItems.map(item => item.fontName).join(' ')
+    })
+    prevY = y
+    prevFontHeight = lineFontHeight
+    prevLineFirstX = firstX
+    const lastItem = sortedItems[sortedItems.length - 1]
+    prevLineRight = lastItem.x + (lastItem.width || 0)
+  }
+
+  flushParagraph()
 
   if (pageNumber < totalPages && paragraphs.length > 0) {
     paragraphs.push(new Paragraph({ text: '', pageBreakBefore: true }))

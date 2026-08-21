@@ -80,12 +80,15 @@ export default function WordToPdfTool() {
             wrapper = document.createElement('div')
             wrapper.innerHTML = `
                 <style>
-                    * { font-family: 'Segoe UI', Arial, sans-serif; }
-                    p { margin: 0 0 12px 0; line-height: 1.5; }
-                    h1, h2, h3 { margin: 16px 0 8px 0; }
-                    table { border-collapse: collapse; width: 100%; }
-                    td, th { border: 1px solid #ccc; padding: 8px; }
-                    img { max-width: 100%; height: auto; }
+                    * { font-family: 'Segoe UI', Arial, sans-serif; box-sizing: border-box; }
+                    p { margin: 0 0 12px 0; line-height: 1.5; overflow-wrap: break-word; }
+                    h1, h2, h3 { margin: 16px 0 8px 0; line-height: 1.3; }
+                    ul, ol { margin: 0 0 12px 28px; }
+                    li { margin-bottom: 4px; line-height: 1.5; }
+                    table { border-collapse: collapse; width: 100%; margin: 0 0 16px 0; table-layout: auto; }
+                    td, th { border: 1px solid #bfc9d4; padding: 6px 8px; vertical-align: top; overflow-wrap: break-word; }
+                    th { background: #f1f5f9; text-align: left; font-weight: 600; }
+                    img { max-width: 100%; height: auto; display: block; margin: 10px 0; }
                 </style>
                 ${html}
             `
