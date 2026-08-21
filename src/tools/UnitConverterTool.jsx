@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { ArrowLeftRight, Ruler, Scale, Thermometer, Gauge, HardDrive } from 'lucide-react'
 
@@ -148,7 +148,7 @@ export default function UnitConverterTool() {
                             <select
                                 value={fromUnit}
                                 onChange={e => setFromUnit(e.target.value)}
-                                className="w-full p-3 rounded-xl bg-slate-100 font-bold text-foreground cursor-pointer"
+                                className="w-full p-3 rounded-xl bg-secondary font-bold text-foreground cursor-pointer"
                             >
                                 {category === 'temp'
                                     ? ['C', 'F', 'K'].map(u => <option key={u} value={u}>{u}</option>)
@@ -172,13 +172,13 @@ export default function UnitConverterTool() {
                         {/* To */}
                         <div className="space-y-4">
                             <label className="block text-sm font-bold text-muted-foreground uppercase">To</label>
-                            <div className="w-full text-3xl font-bold bg-blue-50 text-blue-600 p-4 rounded-xl border border-blue-100 flex items-center overflow-hidden">
+                            <div className="w-full text-3xl font-bold bg-primary/10 text-blue-600 p-4 rounded-xl border border-blue-100 flex items-center overflow-hidden">
                                 {typeof result === 'number' ? result.toLocaleString('en-US', { maximumFractionDigits: 6 }) : result}
                             </div>
                             <select
                                 value={toUnit}
                                 onChange={e => setToUnit(e.target.value)}
-                                className="w-full p-3 rounded-xl bg-slate-100 font-bold text-foreground cursor-pointer"
+                                className="w-full p-3 rounded-xl bg-secondary font-bold text-foreground cursor-pointer"
                             >
                                 {category === 'temp'
                                     ? ['C', 'F', 'K'].map(u => <option key={u} value={u}>{u}</option>)

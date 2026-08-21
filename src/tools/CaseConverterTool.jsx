@@ -50,10 +50,10 @@ export default function CaseConverterTool() {
 
                 <div className="bg-card rounded-3xl shadow-xl overflow-hidden border border-border flex flex-col h-[300px]">
                     <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
-                        <label className="font-bold text-slate-600 flex items-center gap-2">
+                        <label className="font-bold text-muted-foreground flex items-center gap-2">
                             <Type className="w-4 h-4" /> Text Input
                         </label>
-                        <button onClick={handleCopy} className="text-blue-600 hover:text-blue-500 font-bold bg-blue-50 px-3 py-1 rounded-lg text-sm flex items-center gap-1">
+                        <button onClick={handleCopy} className="text-blue-600 hover:text-blue-500 font-bold bg-primary/10 px-3 py-1 rounded-lg text-sm flex items-center gap-1">
                             <Copy className="w-4 h-4" /> Copy
                         </button>
                     </div>
@@ -70,7 +70,7 @@ export default function CaseConverterTool() {
                         <button
                             key={c.name}
                             onClick={() => setText(c.fn(text))}
-                            className="bg-card border border-border hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 text-slate-600 font-bold py-3 px-2 rounded-xl text-sm transition-all shadow-sm"
+                            className="bg-card border border-border hover:border-blue-400 hover:bg-primary/10 hover:text-blue-700 text-muted-foreground font-bold py-3 px-2 rounded-xl text-sm transition-all shadow-sm"
                         >
                             {c.name}
                         </button>

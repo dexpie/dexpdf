@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import React, { useState } from 'react'
 import JSZip from 'jszip'
@@ -141,7 +141,7 @@ export default function PptToPdfTool() {
           <button onClick={() => setBatchMode(true)} className={`rounded-xl px-4 py-2.5 text-sm font-black transition ${batchMode ? 'bg-card text-primary shadow-sm' : 'text-muted-foreground'}`}>Batch files</button>
         </div>
 
-        <div className="flex gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100">
+        <div className="flex gap-3 rounded-2xl border border-amber-200 bg-amber-500/10 p-4 text-sm leading-6 text-amber-900 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-100">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
           <p><strong>Accuracy note:</strong> this tool exports embedded media in package order. Text boxes, charts, animations, and full slide layouts require a native PowerPoint renderer.</p>
         </div>

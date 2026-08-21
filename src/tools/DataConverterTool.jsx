@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { FileJson, FileSpreadsheet, ArrowLeftRight, Download, Copy, Trash2 } from 'lucide-react'
 import Papa from 'papaparse'
@@ -60,7 +60,7 @@ export default function DataConverterTool() {
                 {/* Controls */}
                 <div className="flex justify-center items-center gap-4 bg-card p-4 rounded-2xl shadow-sm border border-border">
                     <span className={`font-bold ${mode === 'csv2json' ? 'text-blue-600' : 'text-muted-foreground'}`}>CSV</span>
-                    <button onClick={swap} className="p-2 bg-slate-100 rounded-full hover:bg-blue-100 text-slate-600 hover:text-blue-600 transition-colors">
+                    <button onClick={swap} className="p-2 bg-secondary rounded-full hover:bg-blue-100 text-muted-foreground hover:text-blue-600 transition-colors">
                         <ArrowLeftRight className="w-5 h-5" />
                     </button>
                     <span className={`font-bold ${mode === 'json2csv' ? 'text-blue-600' : 'text-muted-foreground'}`}>JSON</span>
@@ -70,7 +70,7 @@ export default function DataConverterTool() {
                     {/* Input */}
                     <div className="flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
                         <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
-                            <label className="font-bold text-slate-600 flex items-center gap-2">
+                            <label className="font-bold text-muted-foreground flex items-center gap-2">
                                 {mode === 'csv2json' ? <FileSpreadsheet className="w-4 h-4" /> : <FileJson className="w-4 h-4" />}
                                 Input
                             </label>

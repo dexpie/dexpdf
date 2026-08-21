@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Shield, Fingerprint, Copy, RefreshCw } from 'lucide-react'
 import CryptoJS from 'crypto-js'
@@ -54,13 +54,13 @@ function HashRow({ label, value, color }) {
                 {label}
                 <Fingerprint className="w-4 h-4 md:hidden" />
             </div>
-            <div className="flex-1 p-4 font-mono text-xs break-all text-slate-600 w-full text-center md:text-left">
+            <div className="flex-1 p-4 font-mono text-xs break-all text-muted-foreground w-full text-center md:text-left">
                 {value || <span className="text-muted-foreground italic">Waiting...</span>}
             </div>
             <button
                 onClick={() => navigator.clipboard.writeText(value)}
                 disabled={!value}
-                className="w-full md:w-auto p-4 text-muted-foreground hover:text-slate-600 hover:bg-secondary disabled:opacity-50 transition-colors"
+                className="w-full md:w-auto p-4 text-muted-foreground hover:text-muted-foreground hover:bg-secondary disabled:opacity-50 transition-colors"
             >
                 <Copy className="w-5 h-5 mx-auto" />
             </button>

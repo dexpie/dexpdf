@@ -30,7 +30,7 @@ export default function FilenameInput({
         onChange={onChange}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full px-4 py-2.5 bg-background border border-border rounded-xl text-foreground text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground"
+        className="w-full rounded-md border border-[rgba(243,239,228,0.16)] bg-background px-4 py-2.5 text-sm text-foreground outline-none transition focus:border-primary/60 focus:ring-2 focus:ring-ring disabled:opacity-50 placeholder:text-muted-foreground"
       />
       {helperText && (
         <p className="text-xs text-muted-foreground mt-2">

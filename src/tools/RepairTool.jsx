@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import { Wrench, CheckCircle, AlertTriangle, Download, RefreshCw } from 'lucide-react'
@@ -76,7 +76,7 @@ export default function RepairTool() {
                 ) : (
                     <div className="bg-card rounded-3xl shadow-xl overflow-hidden border border-border">
                         {/* Status Header */}
-                        <div className={`p-8 text-center ${status === 'success' ? 'bg-green-50' : status === 'error' ? 'bg-red-50' : 'bg-blue-50'}`}>
+                        <div className={`p-8 text-center ${status === 'success' ? 'bg-emerald-500/10' : status === 'error' ? 'bg-destructive/10' : 'bg-primary/10'}`}>
                             {status === 'repairing' && (
                                 <RefreshCw className="w-16 h-16 mx-auto text-blue-500 animate-spin mb-4" />
                             )}

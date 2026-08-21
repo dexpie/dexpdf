@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
@@ -74,7 +74,7 @@ export default function ComparePdfTool() {
                             ) : (
                                 <div className="bg-secondary p-4 rounded-xl border border-border flex justify-between items-center">
                                     <span className="truncate flex-1 font-medium">{fileA.name}</span>
-                                    <button onClick={() => setFileA(null)} className="text-red-500 p-2 hover:bg-red-50 rounded-lg"><X className="w-4 h-4" /></button>
+                                    <button onClick={() => setFileA(null)} className="text-red-500 p-2 hover:bg-destructive/10 rounded-lg"><X className="w-4 h-4" /></button>
                                 </div>
                             )}
                         </div>
@@ -85,7 +85,7 @@ export default function ComparePdfTool() {
                             ) : (
                                 <div className="bg-secondary p-4 rounded-xl border border-border flex justify-between items-center">
                                     <span className="truncate flex-1 font-medium">{fileB.name}</span>
-                                    <button onClick={() => setFileB(null)} className="text-red-500 p-2 hover:bg-red-50 rounded-lg"><X className="w-4 h-4" /></button>
+                                    <button onClick={() => setFileB(null)} className="text-red-500 p-2 hover:bg-destructive/10 rounded-lg"><X className="w-4 h-4" /></button>
                                 </div>
                             )}
                         </div>
@@ -95,7 +95,7 @@ export default function ComparePdfTool() {
                 {/* Controls */}
                 {fileA && fileB && (
                     <div className="sticky top-4 z-40 bg-card p-4 rounded-2xl shadow-xl shadow-slate-200/50 border border-border flex flex-wrap gap-4 items-center justify-between">
-                        <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl">
+                        <div className="flex items-center gap-2 bg-secondary p-1 rounded-xl">
                             <button
                                 onClick={() => setViewMode('overlay')}
                                 className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'overlay' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground hover:text-foreground'}`}
@@ -111,7 +111,7 @@ export default function ComparePdfTool() {
                         </div>
 
                         {viewMode === 'overlay' && (
-                            <div className="flex items-center gap-3 bg-slate-100 px-4 py-2 rounded-xl">
+                            <div className="flex items-center gap-3 bg-secondary px-4 py-2 rounded-xl">
                                 <span className="text-xs font-bold text-muted-foreground">Opacity</span>
                                 <input
                                     type="range"
@@ -126,7 +126,7 @@ export default function ComparePdfTool() {
                             </div>
                         )}
 
-                        <div className="flex items-center gap-4 bg-slate-100 p-1 rounded-xl">
+                        <div className="flex items-center gap-4 bg-secondary p-1 rounded-xl">
                             <button
                                 onClick={() => setPageIndex(p => Math.max(1, p - 1))}
                                 disabled={pageIndex <= 1}
@@ -154,7 +154,7 @@ export default function ComparePdfTool() {
 
                 {/* Viewer */}
                 {fileA && fileB && (
-                    <div className="bg-slate-200/50 rounded-3xl p-8 min-h-[600px] flex justify-center overflow-auto border border-dashed border-slate-300">
+                    <div className="bg-secondary/50 rounded-3xl p-8 min-h-[600px] flex justify-center overflow-auto border border-dashed border-[rgba(243,239,228,0.16)]">
                         {viewMode === 'overlay' ? (
                             <div className="relative shadow-2xl bg-card">
                                 {/* Base Layer */}

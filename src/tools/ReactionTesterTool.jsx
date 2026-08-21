@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+﻿import React, { useState, useRef } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Zap } from 'lucide-react'
 

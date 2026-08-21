@@ -54,7 +54,7 @@ export default function GradientGeneratorTool() {
                         {/* Settings */}
                         <div>
                             <label className="text-xs font-bold text-muted-foreground uppercase mb-2 block">Type</label>
-                            <div className="flex gap-2 p-1 bg-slate-100 rounded-xl">
+                            <div className="flex gap-2 p-1 bg-secondary rounded-xl">
                                 <button onClick={() => setType('linear')} className={`flex-1 py-1 rounded-lg text-xs font-bold ${type === 'linear' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground'}`}>Linear</button>
                                 <button onClick={() => setType('radial')} className={`flex-1 py-1 rounded-lg text-xs font-bold ${type === 'radial' ? 'bg-card shadow-sm text-blue-600' : 'text-muted-foreground'}`}>Radial</button>
                             </div>
@@ -70,7 +70,7 @@ export default function GradientGeneratorTool() {
                             </div>
                         )}
 
-                        <button onClick={randomize} className="w-full py-3 bg-slate-100 text-slate-600 rounded-xl font-bold flex justify-center gap-2 hover:bg-slate-200">
+                        <button onClick={randomize} className="w-full py-3 bg-secondary text-muted-foreground rounded-xl font-bold flex justify-center gap-2 hover:bg-secondary">
                             <Shuffle className="w-4 h-4" /> Randomize
                         </button>
                     </div>

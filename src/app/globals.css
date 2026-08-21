@@ -212,6 +212,12 @@
     border-radius: 0.75rem;
   }
 
+  /* Faint engineering-dot texture for vault sections */
+  .vault-dots {
+    background-image: radial-gradient(rgba(243, 239, 228, 0.05) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
   .boundary-label {
     font-family: "Space Mono", monospace;
     font-size: 0.625rem;

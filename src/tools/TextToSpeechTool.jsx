@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Volume2, Play, Pause, Square, RefreshCw } from 'lucide-react'
 

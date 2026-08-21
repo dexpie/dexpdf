@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Type, AlignLeft, Hash, Clock, Copy, Trash2 } from 'lucide-react'
 import { triggerConfetti } from '../utils/confetti'
@@ -63,11 +63,11 @@ export default function TextAnalyzerTool() {
                 <div className="flex-1 flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
                     {/* Toolbar */}
                     <div className="bg-secondary p-4 border-b border-border flex flex-wrap gap-2">
-                        <button onClick={() => transform('upper')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-slate-100">UPPERCASE</button>
-                        <button onClick={() => transform('lower')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-slate-100">lowercase</button>
-                        <button onClick={() => transform('title')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-slate-100">Title Case</button>
-                        <button onClick={() => transform('sentence')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-slate-100">Sentence case</button>
-                        <button onClick={() => transform('reverse')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-slate-100">esreveR</button>
+                        <button onClick={() => transform('upper')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-secondary">UPPERCASE</button>
+                        <button onClick={() => transform('lower')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-secondary">lowercase</button>
+                        <button onClick={() => transform('title')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-secondary">Title Case</button>
+                        <button onClick={() => transform('sentence')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-secondary">Sentence case</button>
+                        <button onClick={() => transform('reverse')} className="px-3 py-1 rounded bg-card border border-border text-xs font-bold hover:bg-secondary">esreveR</button>
                     </div>
 
                     <textarea

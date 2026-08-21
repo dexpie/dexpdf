@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+﻿import React, { useState, useRef, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import { Eye, EyeOff } from 'lucide-react'
@@ -60,7 +60,7 @@ export default function BlindnessSimulatorTool() {
                             />
                             <button
                                 onClick={() => setImage(null)}
-                                className="absolute top-4 right-4 bg-card/90 backdrop-blur p-2 rounded-full text-slate-600 hover:text-red-500 shadow-lg"
+                                className="absolute top-4 right-4 bg-card/90 backdrop-blur p-2 rounded-full text-muted-foreground hover:text-red-500 shadow-lg"
                             >
                                 <EyeOff className="w-5 h-5" />
                             </button>

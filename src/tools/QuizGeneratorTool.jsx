@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import { Brain, Check, FileText, Download, Share2, RefreshCw } from 'lucide-react'
@@ -205,8 +205,8 @@ export default function QuizGeneratorTool() {
                                                     let className = "w-full text-left p-4 rounded-xl border-2 transition-all flex justify-between items-center "
 
                                                     if (score) {
-                                                        if (isCorrect) className += "border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-bold"
-                                                        else if (isWrong) className += "border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
+                                                        if (isCorrect) className += "border-green-500 bg-emerald-500/10 dark:bg-green-900/20 text-green-700 dark:text-green-400 font-bold"
+                                                        else if (isWrong) className += "border-red-500 bg-destructive/10 dark:bg-red-900/20 text-red-700 dark:text-red-400"
                                                         else className += "border-border dark:border-slate-700 opacity-50 dark:opacity-40 text-muted-foreground dark:text-muted-foreground"
                                                     } else {
                                                         if (isSelected) className += "border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 font-semibold"

@@ -89,8 +89,8 @@ export default function PageNumbersTool() {
   // Visual Position Selector Component
   const PositionSelector = () => (
     <div className="grid grid-cols-2 gap-4 w-full max-w-[200px] mx-auto bg-secondary p-4 rounded-xl border border-border aspect-[3/4] relative">
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-slate-200"></div>
-      <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1px] bg-slate-200"></div>
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-secondary"></div>
+      <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1px] bg-secondary"></div>
 
       {[
         { id: 'top-left', icon: ArrowUpLeft },
@@ -101,7 +101,7 @@ export default function PageNumbersTool() {
         <button
           key={pos.id}
           onClick={() => setPosition(pos.id)}
-          className={`w-full h-full rounded-lg flex items-center justify-center transition-all ${position === pos.id ? 'bg-blue-500 text-white shadow-md scale-110 z-10' : 'bg-card text-muted-foreground hover:bg-card hover:text-slate-600 hover:shadow-sm'}`}
+          className={`w-full h-full rounded-lg flex items-center justify-center transition-all ${position === pos.id ? 'bg-blue-500 text-white shadow-md scale-110 z-10' : 'bg-card text-muted-foreground hover:bg-card hover:text-muted-foreground hover:shadow-sm'}`}
         >
           <pos.icon className="w-5 h-5" />
         </button>
@@ -114,13 +114,13 @@ export default function PageNumbersTool() {
 
       <div className="flex justify-center gap-4 mb-8">
         <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-secondary text-muted-foreground hover:bg-secondary'}`}
           onClick={() => setBatchMode(false)}
         >
           📄 Single Single
         </button>
         <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-secondary text-muted-foreground hover:bg-secondary'}`}
           onClick={() => setBatchMode(true)}
         >
           📚 Batch Process
@@ -138,12 +138,12 @@ export default function PageNumbersTool() {
         <div className="max-w-4xl mx-auto">
           <AnimatePresence>
             {errorMsg && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-destructive/10 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
                 <AlertTriangle className="w-5 h-5" /> {errorMsg}
               </motion.div>
             )}
             {successMsg && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-emerald-500/10 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
                 <CheckCircle className="w-5 h-5" /> {successMsg}
               </motion.div>
             )}
@@ -175,7 +175,7 @@ export default function PageNumbersTool() {
                       type="number"
                       value={start}
                       onChange={e => setStart(e.target.value)}
-                      className="w-full px-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                      className="w-full px-4 py-2 rounded-xl border border-[rgba(243,239,228,0.16)] focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
                     />
                   </div>
 
@@ -190,7 +190,7 @@ export default function PageNumbersTool() {
                   </div>
 
                   <div className="flex gap-2">
-                    <button className="px-6 py-3 rounded-xl font-bold text-muted-foreground hover:bg-slate-100 transition-colors" onClick={() => setFile(null)}>Cancel</button>
+                    <button className="px-6 py-3 rounded-xl font-bold text-muted-foreground hover:bg-secondary transition-colors" onClick={() => setFile(null)}>Cancel</button>
                     <ActionButtons
                       primaryText="Add Numbers"
                       onPrimary={applyNumbers}

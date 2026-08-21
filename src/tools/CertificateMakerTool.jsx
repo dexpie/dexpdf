@@ -132,7 +132,7 @@ export default function CertificateMakerTool() {
                     <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-border dark:border-slate-700">
                         <div className="flex gap-4 mb-6">
                             {['gold', 'blue', 'classic'].map(t => (
-                                <button key={t} onClick={() => setTheme(t)} className={`flex-1 p-2 capitalize rounded-lg border-2 font-bold text-sm transition-all ${theme === t ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 text-slate-600 dark:text-muted-foreground'}`}>
+                                <button key={t} onClick={() => setTheme(t)} className={`flex-1 p-2 capitalize rounded-lg border-2 font-bold text-sm transition-all ${theme === t ? 'border-blue-500 bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 text-muted-foreground dark:text-muted-foreground'}`}>
                                     {t}
                                 </button>
                             ))}
@@ -176,14 +176,14 @@ export default function CertificateMakerTool() {
                                         <div className="text-7xl text-blue-600" style={{ fontFamily: '"Great Vibes", cursive' }}>
                                             {data.recipient}
                                         </div>
-                                        <div className="h-0.5 w-2/3 max-w-lg bg-slate-200 mx-auto mt-4"></div>
+                                        <div className="h-0.5 w-2/3 max-w-lg bg-secondary mx-auto mt-4"></div>
                                     </div>
 
                                     <div className="text-2xl font-bold text-foreground uppercase tracking-widest" style={{ fontFamily: '"Cinzel", serif' }}>
                                         {data.course}
                                     </div>
 
-                                    <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: '"Lato", sans-serif' }}>
+                                    <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: '"Lato", sans-serif' }}>
                                         {data.description}
                                     </p>
 
@@ -250,14 +250,14 @@ export default function CertificateMakerTool() {
                                 <div className="text-7xl text-blue-600" style={{ fontFamily: '"Great Vibes", cursive' }}>
                                     {data.recipient}
                                 </div>
-                                <div className="h-0.5 w-2/3 max-w-lg bg-slate-200 mx-auto mt-4"></div>
+                                <div className="h-0.5 w-2/3 max-w-lg bg-secondary mx-auto mt-4"></div>
                             </div>
 
                             <div className="text-2xl font-bold text-foreground uppercase tracking-widest" style={{ fontFamily: '"Cinzel", serif' }}>
                                 {data.course}
                             </div>
 
-                            <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: '"Lato", sans-serif' }}>
+                            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: '"Lato", sans-serif' }}>
                                 {data.description}
                             </p>
 

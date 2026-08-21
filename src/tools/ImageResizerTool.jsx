@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+﻿import React, { useState, useRef } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import { ArrowRight, Download, Image as ImageIcon } from 'lucide-react'
@@ -87,7 +87,7 @@ export default function ImageResizerTool() {
                                     type="checkbox" checked={keepRatio} onChange={e => setKeepRatio(e.target.checked)}
                                     className="w-5 h-5 rounded text-blue-600 focus:ring-blue-500"
                                 />
-                                <label className="text-sm font-bold text-slate-600">Maintain Aspect Ratio</label>
+                                <label className="text-sm font-bold text-muted-foreground">Maintain Aspect Ratio</label>
                             </div>
 
                             <button

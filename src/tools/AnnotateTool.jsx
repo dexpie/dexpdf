@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react'
+﻿import React, { useRef, useState, useEffect } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { PDFDocument } from 'pdf-lib'
 import FilenameInput from '../components/FilenameInput'
@@ -193,12 +193,12 @@ export default function AnnotateTool() {
       <div className="max-w-6xl mx-auto">
         <AnimatePresence>
           {errorMsg && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-destructive/10 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
               <AlertCircle className="w-5 h-5" /> {errorMsg}
             </motion.div>
           )}
           {successMsg && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-emerald-500/10 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
               <CheckCircle className="w-5 h-5" /> {successMsg}
             </motion.div>
           )}
@@ -242,19 +242,19 @@ export default function AnnotateTool() {
                       />
                     ))}
                   </div>
-                  <div className="h-6 w-[1px] bg-slate-200"></div>
+                  <div className="h-6 w-[1px] bg-secondary"></div>
                   <input
                     type="range" min="1" max="20"
                     value={brushSize}
                     onChange={e => setBrushSize(Number(e.target.value))}
-                    className="w-24 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                    className="w-24 h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-blue-600"
                   />
                 </div>
               )}
 
               <div className="flex items-center gap-2 ml-auto">
-                <button onClick={clearCanvas} className="text-red-500 hover:bg-red-50 p-2 rounded-lg text-xs font-bold transition-colors">Clear All</button>
-                <div className="h-6 w-[1px] bg-slate-200 mx-2"></div>
+                <button onClick={clearCanvas} className="text-red-500 hover:bg-destructive/10 p-2 rounded-lg text-xs font-bold transition-colors">Clear All</button>
+                <div className="h-6 w-[1px] bg-secondary mx-2"></div>
                 <button
                   onClick={exportAnnotated}
                   disabled={busy}
@@ -266,7 +266,7 @@ export default function AnnotateTool() {
             </div>
 
             {/* Canvas Wrapper */}
-            <div className="bg-slate-100 rounded-2xl border border-border p-8 flex justify-center overflow-auto min-h-[600px]">
+            <div className="bg-secondary rounded-2xl border border-border p-8 flex justify-center overflow-auto min-h-[600px]">
               {pageImg ? (
                 <div className="shadow-2xl bg-card border border-border">
                   <canvas
@@ -280,7 +280,7 @@ export default function AnnotateTool() {
                 </div>
               ) : (
                 <div className="flex items-center justify-center text-muted-foreground gap-2">
-                  <div className="w-6 h-6 border-2 border-slate-300 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-6 h-6 border-2 border-[rgba(243,239,228,0.16)] border-t-transparent rounded-full animate-spin"></div>
                   Rendering...
                 </div>
               )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Calendar, Globe, ArrowRight, Clock } from 'lucide-react'
 
@@ -96,7 +96,7 @@ export default function TimezoneConverterTool() {
                         </select>
                     </div>
 
-                    <div className="p-3 bg-blue-50 text-blue-600 rounded-full">
+                    <div className="p-3 bg-primary/10 text-blue-600 rounded-full">
                         <ArrowRight className="w-6 h-6" />
                     </div>
 
@@ -154,7 +154,7 @@ export default function TimezoneConverterTool() {
                             return (
                                 <div key={i} className="flex flex-col items-center gap-1">
                                     <div className={`w-8 h-20 rounded-lg flex items-center justify-center text-xs font-bold text-white
-                                        ${overlap ? 'bg-green-500' : isWorkS ? 'bg-blue-300' : 'bg-slate-200 text-muted-foreground'}
+                                        ${overlap ? 'bg-green-500' : isWorkS ? 'bg-blue-300' : 'bg-secondary text-muted-foreground'}
                                     `}>
                                         {i}
                                     </div>

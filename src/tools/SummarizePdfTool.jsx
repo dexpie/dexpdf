@@ -207,13 +207,13 @@ export default function SummarizePdfTool() {
                             <div className="flex bg-card dark:bg-slate-800 rounded-lg p-1 shadow-sm border border-indigo-100 dark:border-slate-700">
                                 <button
                                     onClick={() => setMode('bullets')}
-                                    className={`p-2 rounded-md transition-all ${mode === 'bullets' ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' : 'text-muted-foreground hover:text-slate-600 dark:hover:text-muted-foreground'}`}
+                                    className={`p-2 rounded-md transition-all ${mode === 'bullets' ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' : 'text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground'}`}
                                 >
                                     <List className="w-5 h-5" />
                                 </button>
                                 <button
                                     onClick={() => setMode('paragraph')}
-                                    className={`p-2 rounded-md transition-all ${mode === 'paragraph' ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' : 'text-muted-foreground hover:text-slate-600 dark:hover:text-muted-foreground'}`}
+                                    className={`p-2 rounded-md transition-all ${mode === 'paragraph' ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300' : 'text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground'}`}
                                 >
                                     <AlignLeft className="w-5 h-5" />
                                 </button>

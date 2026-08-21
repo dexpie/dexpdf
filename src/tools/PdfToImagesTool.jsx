@@ -168,13 +168,13 @@ export default function PdfToImagesTool() {
       {/* Mode Switcher */}
       <div className="flex justify-center gap-4 mb-8">
         <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${!batchMode ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'bg-secondary text-muted-foreground hover:bg-secondary'}`}
           onClick={() => setBatchMode(false)}
         >
           Single File
         </button>
         <button
-          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
+          className={`px-6 py-2 rounded-full font-medium transition-all ${batchMode ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'bg-secondary text-muted-foreground hover:bg-secondary'}`}
           onClick={() => setBatchMode(true)}
         >
           Batch Mode
@@ -183,12 +183,12 @@ export default function PdfToImagesTool() {
 
       <div className="flex flex-col gap-6">
         {errorMsg && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center">
+          <div className="bg-destructive/10 text-red-600 p-4 rounded-xl border border-red-100 flex items-center">
             ⚠️ {errorMsg}
           </div>
         )}
         {successMsg && (
-          <div className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center">
+          <div className="bg-emerald-500/10 text-green-600 p-4 rounded-xl border border-green-100 flex items-center">
             ✅ {successMsg}
           </div>
         )}
@@ -201,8 +201,8 @@ export default function PdfToImagesTool() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Format</label>
-              <select value={format} onChange={(e) => setFormat(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-secondary focus:ring-2 focus:ring-orange-200 focus:border-orange-500 transition-all outline-none">
+              <label className="block text-sm font-medium text-muted-foreground mb-1">Format</label>
+              <select value={format} onChange={(e) => setFormat(e.target.value)} className="w-full p-2.5 rounded-xl border border-[rgba(243,239,228,0.16)] bg-secondary focus:ring-2 focus:ring-orange-200 focus:border-orange-500 transition-all outline-none">
                 <option value="png">PNG (Best Quality)</option>
                 <option value="jpeg">JPEG (Smaller Size)</option>
                 <option value="webp">WEBP (Modern)</option>
@@ -210,7 +210,7 @@ export default function PdfToImagesTool() {
             </div>
             {format !== 'png' && (
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Quality: {Math.round(quality * 100)}%</label>
+                <label className="block text-sm font-medium text-muted-foreground mb-1">Quality: {Math.round(quality * 100)}%</label>
                 <input type="range" min="0.5" max="1" step="0.05" value={quality} onChange={(e) => setQuality(Number(e.target.value))} className="w-full accent-orange-500" />
               </div>
             )}
@@ -236,7 +236,7 @@ export default function PdfToImagesTool() {
               >
                 <div className="bg-card rounded-2xl border border-border p-4 flex justify-between items-center shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
+                    <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center text-red-500">
                       <FileImage className="w-6 h-6" />
                     </div>
                     <h3 className="font-semibold text-foreground">{file.name}</h3>
@@ -246,7 +246,7 @@ export default function PdfToImagesTool() {
 
                 <div className="bg-secondary rounded-2xl border border-border p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <span className="text-sm font-medium text-slate-600">Select pages to export</span>
+                    <span className="text-sm font-medium text-muted-foreground">Select pages to export</span>
                     <button onClick={toggleAll} className="text-blue-600 text-sm font-medium hover:text-blue-800 flex items-center gap-1">
                       <RefreshCcw className="w-3 h-3" /> Toggle All
                     </button>
@@ -259,7 +259,7 @@ export default function PdfToImagesTool() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => toggle(i)}
-                        className={`aspect-[3/4] flex items-center justify-center rounded-lg border-2 transition-all font-medium text-sm relative ${s ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-card border-border text-muted-foreground hover:border-blue-300'}`}
+                        className={`aspect-[3/4] flex items-center justify-center rounded-lg border-2 transition-all font-medium text-sm relative ${s ? 'bg-primary/10 border-blue-500 text-blue-600' : 'bg-card border-border text-muted-foreground hover:border-blue-300'}`}
                       >
                         {i + 1}
                         {s && (

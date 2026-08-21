@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import React, { useState } from 'react'
 import { saveAs } from 'file-saver'
@@ -181,7 +181,7 @@ export default function ExtractImagesTool() {
           <button onClick={() => setBatchMode(true)} className={`rounded-xl px-4 py-2.5 text-sm font-black transition ${batchMode ? 'bg-card text-primary shadow-sm' : 'text-muted-foreground'}`}>Batch PDFs</button>
         </div>
 
-        <div className="flex gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-100">
+        <div className="flex gap-3 rounded-2xl border border-blue-200 bg-primary/10 p-4 text-sm leading-6 text-blue-900 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-100">
           <Images className="mt-0.5 h-5 w-5 shrink-0" />
           <p>This extracts image objects, not a screenshot of every page. For scanned or flattened pages, use <strong>PDF to JPG</strong> instead.</p>
         </div>

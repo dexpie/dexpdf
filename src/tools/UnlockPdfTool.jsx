@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import { useTranslation } from 'react-i18next'
 import ToolLayout from '../components/common/ToolLayout'
@@ -293,7 +293,7 @@ export default function UnlockPdfTool() {
 
             {/* Not Encrypted Message */}
             {!isEncrypted && (
-              <div className="bg-green-50 dark:bg-green-900/20 rounded-2xl border border-green-200 dark:border-green-800 p-6">
+              <div className="bg-emerald-500/10 dark:bg-green-900/20 rounded-2xl border border-green-200 dark:border-green-800 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-xl flex items-center justify-center">
                     <CheckCircle className="w-5 h-5 text-green-600" />

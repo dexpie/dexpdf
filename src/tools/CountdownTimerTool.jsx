@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Play, Pause, RefreshCw, Bell } from 'lucide-react'
 
@@ -53,7 +53,7 @@ export default function CountdownTimerTool() {
                             <button
                                 key={m}
                                 onClick={() => { setDuration(m * 60); setTimeLeft(m * 60); }}
-                                className={`px-4 py-2 rounded-full font-bold text-sm ${duration === m * 60 ? 'bg-slate-800 text-white' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'}`}
+                                className={`px-4 py-2 rounded-full font-bold text-sm ${duration === m * 60 ? 'bg-slate-800 text-white' : 'bg-secondary text-muted-foreground hover:bg-secondary'}`}
                             >
                                 {m}m
                             </button>
@@ -72,13 +72,13 @@ export default function CountdownTimerTool() {
                             <Pause className="icon-xl fill-current" />
                         </button>
                     )}
-                    <button onClick={reset} className="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center text-muted-foreground shadow-xl hover:scale-110 transition-transform">
+                    <button onClick={reset} className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center text-muted-foreground shadow-xl hover:scale-110 transition-transform">
                         <RefreshCw className="icon-xl" />
                     </button>
                 </div>
 
                 {timeLeft === 0 && (
-                    <div className="inline-flex items-center gap-2 text-red-500 font-bold bg-red-50 px-6 py-2 rounded-full">
+                    <div className="inline-flex items-center gap-2 text-red-500 font-bold bg-destructive/10 px-6 py-2 rounded-full">
                         <Bell className="animate-swing" /> Time's Up!
                     </div>
                 )}

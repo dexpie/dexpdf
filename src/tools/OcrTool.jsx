@@ -413,41 +413,41 @@ export default function OcrTool() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Language */}
           <div>
-            <label className="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
               <Languages className="w-4 h-4" /> Language
             </label>
-            <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-secondary focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
+            <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full p-2.5 rounded-xl border border-[rgba(243,239,228,0.16)] bg-secondary focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
               {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.name}</option>)}
             </select>
           </div>
 
           {/* Engine */}
           <div>
-            <label className="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
               <Monitor className="w-4 h-4" /> Processing Engine
             </label>
-            <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl">
+            <div className="grid grid-cols-2 gap-1 p-1 bg-secondary rounded-xl">
               <button
                 onClick={() => setOcrEngine('local')}
-                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'local' ? 'bg-card text-green-600 shadow-sm' : 'text-muted-foreground hover:bg-slate-200'}`}
+                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'local' ? 'bg-card text-green-600 shadow-sm' : 'text-muted-foreground hover:bg-secondary'}`}
               >
                 <Laptop className="w-3 h-3" /> Local (Private)
               </button>
               <button
                 onClick={() => setOcrEngine('cloud')}
-                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'cloud' ? 'bg-card text-blue-600 shadow-sm' : 'text-muted-foreground hover:bg-slate-200'}`}
+                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'cloud' ? 'bg-card text-blue-600 shadow-sm' : 'text-muted-foreground hover:bg-secondary'}`}
               >
                 <Cloud className="w-3 h-3" /> Cloud
               </button>
             </div>
             {ocrEngine === 'cloud' && (
-              <p className="mt-2 text-[11px] leading-snug text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 flex items-start gap-1.5">
+              <p className="mt-2 text-[11px] leading-snug text-amber-600 bg-amber-500/10 border border-amber-200 rounded-lg px-2 py-1.5 flex items-start gap-1.5">
                 <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                 Cloud mode uploads page images to OCR.space. For confidential documents, use Local mode.
               </p>
             )}
             {ocrEngine === 'local' && (
-              <p className="mt-2 text-[11px] leading-snug text-green-600 bg-green-50 border border-green-200 rounded-lg px-2 py-1.5 flex items-start gap-1.5">
+              <p className="mt-2 text-[11px] leading-snug text-green-600 bg-emerald-500/10 border border-green-200 rounded-lg px-2 py-1.5 flex items-start gap-1.5">
                 <CheckCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
                 100% private: processing runs entirely on your device.
               </p>
@@ -456,10 +456,10 @@ export default function OcrTool() {
 
           {/* Mode */}
           <div>
-            <label className="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-2">
+            <label className="block text-sm font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
               <Zap className="w-4 h-4" /> Speed vs Accuracy
             </label>
-            <select value={ocrMode} onChange={e => setOcrMode(e.target.value)} className="w-full p-2.5 rounded-xl border border-slate-300 bg-secondary focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
+            <select value={ocrMode} onChange={e => setOcrMode(e.target.value)} className="w-full p-2.5 rounded-xl border border-[rgba(243,239,228,0.16)] bg-secondary focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
               <option value="fast">⚡ Fast (Draft)</option>
               <option value="balanced">⚖️ Balanced</option>
               <option value="accurate">🎯 High Accuracy</option>
@@ -472,12 +472,12 @@ export default function OcrTool() {
       <div className="flex flex-col gap-6">
         <AnimatePresence>
           {errorMsg && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2">
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-destructive/10 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5" /> {errorMsg}
             </motion.div>
           )}
           {successMsg && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2">
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-emerald-500/10 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2">
               <CheckCircle className="w-5 h-5" /> {successMsg}
             </motion.div>
           )}
@@ -500,9 +500,9 @@ export default function OcrTool() {
             {busy && (
               <div className="bg-secondary p-6 rounded-2xl border border-border text-center animate-pulse">
                 <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-slate-600 font-medium mb-1">{progressText}</p>
+                <p className="text-muted-foreground font-medium mb-1">{progressText}</p>
                 <p className="text-sm text-muted-foreground font-mono">{progress}%</p>
-                <div className="w-full bg-slate-200 h-1.5 rounded-full mt-4 overflow-hidden">
+                <div className="w-full bg-secondary h-1.5 rounded-full mt-4 overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
@@ -520,14 +520,14 @@ export default function OcrTool() {
                   <div className="flex gap-2">
                     {file.type === 'application/pdf' && totalPages > 1 && (
                       <div className="flex items-center gap-1 bg-card rounded-lg border border-border px-1">
-                        <button disabled={selectedPage <= 1} onClick={() => setSelectedPage(p => p - 1)} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30"><ChevronLeft className="w-4 h-4" /></button>
+                        <button disabled={selectedPage <= 1} onClick={() => setSelectedPage(p => p - 1)} className="p-1 hover:bg-secondary rounded disabled:opacity-30"><ChevronLeft className="w-4 h-4" /></button>
                         <span className="text-xs px-2">{selectedPage}/{totalPages}</span>
-                        <button disabled={selectedPage >= totalPages} onClick={() => setSelectedPage(p => p + 1)} className="p-1 hover:bg-slate-100 rounded disabled:opacity-30"><ChevronRight className="w-4 h-4" /></button>
+                        <button disabled={selectedPage >= totalPages} onClick={() => setSelectedPage(p => p + 1)} className="p-1 hover:bg-secondary rounded disabled:opacity-30"><ChevronRight className="w-4 h-4" /></button>
                       </div>
                     )}
                   </div>
                 </div>
-                <div className="flex-1 overflow-auto p-4 bg-slate-100 flex items-center justify-center">
+                <div className="flex-1 overflow-auto p-4 bg-secondary flex items-center justify-center">
                   {previewUrl ? (
                     <img src={previewUrl} alt="Preview" className="max-w-full max-h-full object-contain shadow-lg rounded" />
                   ) : (
@@ -547,7 +547,7 @@ export default function OcrTool() {
                     {confidence && <span className={`text-[10px] px-2 py-0.5 rounded-full ${confidence > 80 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{confidence}% Score</span>}
                   </span>
                   <div className="flex gap-2">
-                    <select value={exportFormat} onChange={e => setExportFormat(e.target.value)} className="text-xs p-1.5 rounded border border-slate-300 bg-card">
+                    <select value={exportFormat} onChange={e => setExportFormat(e.target.value)} className="text-xs p-1.5 rounded border border-[rgba(243,239,228,0.16)] bg-card">
                       <option value="txt">.txt</option>
                       <option value="json">.json</option>
                       <option value="csv">.csv</option>

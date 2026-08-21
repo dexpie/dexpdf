@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Link2, ArrowDownUp, Copy } from 'lucide-react'
 
@@ -46,7 +46,7 @@ function ResultBox({ label, value, color }) {
         <div className={`bg-card rounded-3xl shadow-md border border-border overflow-hidden flex flex-col`}>
             <div className={`p-4 bg-${color}-50 border-b border-${color}-100 flex justify-between items-center`}>
                 <span className={`font-bold text-${color}-600`}>{label}</span>
-                <button onClick={() => navigator.clipboard.writeText(value)} className="text-muted-foreground hover:text-slate-600">
+                <button onClick={() => navigator.clipboard.writeText(value)} className="text-muted-foreground hover:text-muted-foreground">
                     <Copy className="w-4 h-4" />
                 </button>
             </div>

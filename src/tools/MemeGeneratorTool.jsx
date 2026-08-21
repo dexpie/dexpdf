@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+﻿import React, { useState, useRef, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import { Download, Type } from 'lucide-react'
@@ -47,7 +47,7 @@ export default function MemeGeneratorTool() {
         <ToolLayout title="Meme Generator" description="Add classic top/bottom text to any image.">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8">
 
-                <div className="flex-1 bg-slate-900/5 min-h-[400px] rounded-3xl flex items-center justify-center overflow-hidden border-2 border-dashed border-slate-300">
+                <div className="flex-1 bg-slate-900/5 min-h-[400px] rounded-3xl flex items-center justify-center overflow-hidden border-2 border-dashed border-[rgba(243,239,228,0.16)]">
                     {!image ? (
                         <div className="p-8 w-full"><FileDropZone onFiles={handleFile} accept="image/*" hint="Upload meme template" /></div>
                     ) : (

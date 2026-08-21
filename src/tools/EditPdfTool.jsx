@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
 import { v4 as uuidv4 } from 'uuid'
 import FilenameInput from '../components/FilenameInput'
@@ -188,7 +188,7 @@ export default function EditPdfTool() {
               <div className="flex gap-2">
                 <button
                   onClick={addText}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
                 >
                   <Type size={18} />
                   <span>Add Text</span>
@@ -246,7 +246,7 @@ export default function EditPdfTool() {
                         </div>
                       )}
 
-                      <button onClick={() => deleteElement(selectedEl.id)} className="text-red-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 p-1.5 rounded-lg transition-colors">
+                      <button onClick={() => deleteElement(selectedEl.id)} className="text-red-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-destructive/10 dark:hover:bg-red-900/30 p-1.5 rounded-lg transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </motion.div>
@@ -256,7 +256,7 @@ export default function EditPdfTool() {
 
               <div className="flex gap-2 ml-auto">
                 <button className="text-muted-foreground hover:text-red-500 px-4 py-2 text-sm font-bold" onClick={() => setFile(null)}>Close</button>
-                <div className="h-8 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
+                <div className="h-8 w-[1px] bg-secondary dark:bg-slate-700 mx-2"></div>
                 <div className="flex gap-2">
                   <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="edited" className="w-32" />
                   <button
@@ -271,7 +271,7 @@ export default function EditPdfTool() {
             </div>
 
             {/* Canvas Area */}
-            <div className="relative bg-slate-100 dark:bg-slate-900/50 rounded-3xl p-8 min-h-[800px] overflow-auto flex justify-center items-start border border-border dark:border-slate-700 shadow-inner">
+            <div className="relative bg-secondary dark:bg-slate-900/50 rounded-3xl p-8 min-h-[800px] overflow-auto flex justify-center items-start border border-border dark:border-slate-700 shadow-inner">
               <EditorCanvas
                 file={file}
                 pageIndex={pageIndex}

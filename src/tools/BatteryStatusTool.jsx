@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Battery, BatteryCharging, BatteryFull, BatteryLow, BatteryMedium, AlertTriangle } from 'lucide-react'
 
@@ -39,7 +39,7 @@ export default function BatteryStatusTool() {
     if (!supported) {
         return (
             <ToolLayout title="Battery Status" description="Monitor battery level and charging state.">
-                <div className="max-w-2xl mx-auto p-8 bg-red-50 text-red-600 rounded-3xl text-center border border-red-100">
+                <div className="max-w-2xl mx-auto p-8 bg-destructive/10 text-red-600 rounded-3xl text-center border border-red-100">
                     <AlertTriangle className="w-12 h-12 mx-auto mb-4" />
                     <h3 className="text-xl font-bold mb-2">Not Supported</h3>
                     <p>Your browser does not support the Battery Status API.</p>
@@ -84,7 +84,7 @@ export default function BatteryStatusTool() {
                         </span>
                     </div>
 
-                    <div className="w-full bg-slate-100 h-6 rounded-full overflow-hidden mb-8">
+                    <div className="w-full bg-secondary h-6 rounded-full overflow-hidden mb-8">
                         <div
                             className={`h-full ${barColor} transition-all duration-1000 ease-out`}
                             style={{ width: `${levelPercent}%` }}

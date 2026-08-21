@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Fingerprint, Copy, RefreshCw, Layers } from 'lucide-react'
 import { v4 as uuidv4 } from 'uuid'
@@ -48,7 +48,7 @@ export default function UuidGeneratorTool() {
                         </div>
 
                         <div className="space-y-3">
-                            <label className="flex items-center gap-3 p-3 bg-secondary rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                            <label className="flex items-center gap-3 p-3 bg-secondary rounded-xl cursor-pointer hover:bg-secondary transition-colors">
                                 <input
                                     type="checkbox"
                                     checked={hyphens}
@@ -58,7 +58,7 @@ export default function UuidGeneratorTool() {
                                 <span className="font-bold text-foreground text-sm">Hyphens</span>
                             </label>
 
-                            <label className="flex items-center gap-3 p-3 bg-secondary rounded-xl cursor-pointer hover:bg-slate-100 transition-colors">
+                            <label className="flex items-center gap-3 p-3 bg-secondary rounded-xl cursor-pointer hover:bg-secondary transition-colors">
                                 <input
                                     type="checkbox"
                                     checked={uppercase}
@@ -88,7 +88,7 @@ export default function UuidGeneratorTool() {
                             <Copy className="w-4 h-4" /> Copy All
                         </button>
                     </div>
-                    <div className="p-6 pt-16 h-[500px] overflow-y-auto space-y-2 font-mono text-slate-600">
+                    <div className="p-6 pt-16 h-[500px] overflow-y-auto space-y-2 font-mono text-muted-foreground">
                         {uuids.map((id, idx) => (
                             <div key={idx} className="flex gap-4 items-center group pb-2 border-b border-slate-50 last:border-0 hover:bg-secondary p-2 rounded-lg">
                                 <span className="text-muted-foreground text-xs w-6 text-right select-none">{idx + 1}</span>

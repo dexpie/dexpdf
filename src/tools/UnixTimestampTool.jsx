@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Clock, ArrowRight, Calendar, Copy } from 'lucide-react'
 

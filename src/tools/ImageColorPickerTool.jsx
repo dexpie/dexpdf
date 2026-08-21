@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+﻿import React, { useState, useRef } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
 import { Pipette, Copy, Image as ImageIcon } from 'lucide-react'
@@ -66,7 +66,7 @@ export default function ImageColorPickerTool() {
 
                             <button
                                 onClick={() => setImage(null)}
-                                className="absolute top-6 right-6 p-2 bg-card/90 backdrop-blur text-slate-600 rounded-full shadow-lg hover:text-red-500 transition-colors"
+                                className="absolute top-6 right-6 p-2 bg-card/90 backdrop-blur text-muted-foreground rounded-full shadow-lg hover:text-red-500 transition-colors"
                             >
                                 <ImageIcon className="w-5 h-5" />
                             </button>
@@ -101,7 +101,7 @@ export default function ImageColorPickerTool() {
                         </div>
                     </div>
 
-                    <div className="bg-blue-50 p-4 rounded-2xl text-blue-700 text-sm font-bold border border-blue-100 text-center">
+                    <div className="bg-primary/10 p-4 rounded-2xl text-blue-700 text-sm font-bold border border-blue-100 text-center">
                         Hover over the image to pick colors instantly.
                     </div>
                 </div>

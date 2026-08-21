@@ -187,7 +187,7 @@ export default function InvoiceGeneratorTool() {
                         {/* From */}
                         <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-border dark:border-slate-700">
                             <div className="flex justify-between items-center mb-3">
-                                <h4 className="font-bold text-sm flex items-center gap-2 text-slate-600 dark:text-muted-foreground">
+                                <h4 className="font-bold text-sm flex items-center gap-2 text-muted-foreground dark:text-muted-foreground">
                                     <User className="w-4 h-4" /> From (You)
                                 </h4>
                                 {hasBrand && (
@@ -213,7 +213,7 @@ export default function InvoiceGeneratorTool() {
 
                         {/* To */}
                         <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-border dark:border-slate-700">
-                            <h4 className="font-bold text-sm mb-3 flex items-center gap-2 text-slate-600 dark:text-muted-foreground">
+                            <h4 className="font-bold text-sm mb-3 flex items-center gap-2 text-muted-foreground dark:text-muted-foreground">
                                 <User className="w-4 h-4" /> Bill To (Client)
                             </h4>
                             <div className="space-y-3">
@@ -234,7 +234,7 @@ export default function InvoiceGeneratorTool() {
                             <h3 className="font-bold text-lg flex items-center gap-2 text-foreground dark:text-slate-200">
                                 <DollarSign className="w-5 h-5 text-green-500" /> Items
                             </h3>
-                            <button onClick={addItem} className="text-xs flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50">
+                            <button onClick={addItem} className="text-xs flex items-center gap-1 bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50">
                                 <Plus className="w-3 h-3" /> Add Item
                             </button>
                         </div>
@@ -254,7 +254,7 @@ export default function InvoiceGeneratorTool() {
                                         <input type="number" placeholder="Rate" className="w-full p-2 border border-border dark:border-slate-700 rounded-lg text-sm text-right bg-card dark:bg-slate-900 text-foreground dark:text-slate-200"
                                             value={item.rate} onChange={e => updateItem(item.id, 'rate', Number(e.target.value))} />
                                     </div>
-                                    <button onClick={() => removeItem(item.id)} className="p-2 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                    <button onClick={() => removeItem(item.id)} className="p-2 text-red-300 hover:text-red-500 hover:bg-destructive/10 rounded-lg transition-colors">
                                         <Trash className="w-4 h-4" />
                                     </button>
                                 </div>
@@ -282,14 +282,14 @@ export default function InvoiceGeneratorTool() {
                     {/* Action Card */}
                     <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-border dark:border-slate-700">
                         <div className="mb-4">
-                            <label className="text-sm font-medium text-slate-600 dark:text-muted-foreground block mb-2">Filename</label>
+                            <label className="text-sm font-medium text-muted-foreground dark:text-muted-foreground block mb-2">Filename</label>
                             <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} />
                         </div>
 
                         <AnimatePresence>
                             <div className="space-y-2 mb-4">
-                                {errorMsg && <div className="text-xs text-red-500 bg-red-50 p-2 rounded flex gap-2"><AlertCircle className="w-4 h-4" /> {errorMsg}</div>}
-                                {successMsg && <div className="text-xs text-green-500 bg-green-50 p-2 rounded flex gap-2"><CheckCircle className="w-4 h-4" /> {successMsg}</div>}
+                                {errorMsg && <div className="text-xs text-red-500 bg-destructive/10 p-2 rounded flex gap-2"><AlertCircle className="w-4 h-4" /> {errorMsg}</div>}
+                                {successMsg && <div className="text-xs text-green-500 bg-emerald-500/10 p-2 rounded flex gap-2"><CheckCircle className="w-4 h-4" /> {successMsg}</div>}
                             </div>
                         </AnimatePresence>
 
@@ -337,7 +337,7 @@ export default function InvoiceGeneratorTool() {
                                     <div>
                                         <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Bill To</h3>
                                         <div className="font-bold text-lg">{data.to.name}</div>
-                                        <div className="text-sm text-slate-600 whitespace-pre-wrap max-w-[250px]">{data.to.address}</div>
+                                        <div className="text-sm text-muted-foreground whitespace-pre-wrap max-w-[250px]">{data.to.address}</div>
                                     </div>
                                     <div className="text-right space-y-2">
                                         <div>
@@ -393,7 +393,7 @@ export default function InvoiceGeneratorTool() {
 
                                 {/* Notes */}
                                 {data.notes && (
-                                    <div className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
+                                    <div className="border-l-4 border-blue-500 bg-primary/10 p-4 rounded-r-lg">
                                         <h4 className="font-bold text-sm text-blue-700 mb-1">Notes</h4>
                                         <p className="text-sm text-blue-600 italic">{data.notes}</p>
 
@@ -449,7 +449,7 @@ export default function InvoiceGeneratorTool() {
                         <div>
                             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">Bill To</h3>
                             <div className="font-bold text-lg">{data.to.name}</div>
-                            <div className="text-sm text-slate-600 whitespace-pre-wrap max-w-[250px]">{data.to.address}</div>
+                            <div className="text-sm text-muted-foreground whitespace-pre-wrap max-w-[250px]">{data.to.address}</div>
                         </div>
                         <div className="text-right space-y-2">
                             <div>
@@ -505,7 +505,7 @@ export default function InvoiceGeneratorTool() {
 
                     {/* Notes */}
                     {data.notes && (
-                        <div className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
+                        <div className="border-l-4 border-blue-500 bg-primary/10 p-4 rounded-r-lg">
                             <h4 className="font-bold text-sm text-blue-700 mb-1">Notes</h4>
                             <p className="text-sm text-blue-600 italic">{data.notes}</p>
 

@@ -180,18 +180,21 @@ export default function FileDropZone({
         onDrop={handleDrop}
         className={`
           relative cursor-pointer
-          border-2 border-dashed rounded-2xl p-8
+          rounded-xl p-8
           transition-all duration-200
           flex flex-col items-center justify-center
           gap-4 text-center
           ${disabled
-            ? 'border-border bg-muted/30 cursor-not-allowed opacity-60'
+            ? 'border border-[rgba(243,239,228,0.10)] bg-muted/30 cursor-not-allowed opacity-60'
             : isDragOver
-              ? 'border-primary bg-primary/10 scale-[1.01] shadow-lg shadow-primary/10'
-              : 'glass-subtle hover:border-primary/50 hover:bg-card/60'
+              ? 'boundary-box bg-primary/5 scale-[1.01]'
+              : 'glass-subtle hover:border-primary/40'
           }
         `}
       >
+        {!isDragOver && !disabled && (
+          <span className="pointer-events-none absolute inset-1.5 rounded-lg border border-dashed border-[rgba(243,239,228,0.16)]" />
+        )}
         <input
           ref={inputRef}
           type="file"
@@ -207,11 +210,11 @@ export default function FileDropZone({
           transition-colors duration-200
           ${isDragOver ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}
         `}>
-          {icon || <Upload className="w-7 h-7" />}
+          {icon || <Upload className="w-6 h-6" />}
         </div>
 
         <div>
-          <p className="text-foreground font-medium mb-1">
+          <p className="font-semibold text-foreground mb-1">
             {isDragOver ? 'Drop files here' : title || 'Drag & drop your file here'}
           </p>
           <p className="text-muted-foreground text-sm">
@@ -220,10 +223,10 @@ export default function FileDropZone({
         </div>
 
         <div className="flex items-center gap-2 text-muted-foreground">
-          <FileIcon className="w-4 h-4" />
-          <span className="text-xs">
-            {acceptExtensions ? acceptExtensions.join(', ').toUpperCase() : 'All files'}
-            {maxSizeMB && ` (max ${maxSizeMB}MB)`}
+          <FileIcon className="w-3.5 h-3.5" />
+          <span className="font-mono text-[11px] uppercase tracking-wide">
+            {acceptExtensions ? acceptExtensions.join(', ') : 'All files'}
+            {maxSizeMB && ` · max ${maxSizeMB}MB`}
           </span>
         </div>
       </div>

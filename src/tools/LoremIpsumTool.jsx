@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { AlignLeft, Copy, RefreshCw } from 'lucide-react'
 import { triggerConfetti } from '../utils/confetti'
@@ -45,7 +45,7 @@ export default function LoremIpsumTool() {
                     {/* Controls */}
                     <div className="bg-card p-6 rounded-3xl shadow-lg border border-border col-span-1 space-y-6">
                         <div>
-                            <label className="block text-sm font-bold text-slate-600 mb-2">Paragraphs</label>
+                            <label className="block text-sm font-bold text-muted-foreground mb-2">Paragraphs</label>
                             <input
                                 type="number"
                                 min="1" max="20"
@@ -55,13 +55,13 @@ export default function LoremIpsumTool() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-slate-600 mb-2">Length</label>
+                            <label className="block text-sm font-bold text-muted-foreground mb-2">Length</label>
                             <div className="flex flex-col gap-2">
                                 {['short', 'medium', 'long'].map(l => (
                                     <button
                                         key={l}
                                         onClick={() => setLength(l)}
-                                        className={`p-2 rounded-lg text-sm font-bold capitalize border ${length === l ? 'bg-blue-50 border-blue-500 text-blue-600' : 'border-transparent hover:bg-secondary'}`}
+                                        className={`p-2 rounded-lg text-sm font-bold capitalize border ${length === l ? 'bg-primary/10 border-blue-500 text-blue-600' : 'border-transparent hover:bg-secondary'}`}
                                     >
                                         {l}
                                     </button>
@@ -78,7 +78,7 @@ export default function LoremIpsumTool() {
                         <textarea
                             value={generated}
                             readOnly
-                            className="w-full h-[500px] p-8 -mt-2 bg-card rounded-3xl shadow-xl border border-border resize-none outline-none font-serif text-slate-600 leading-relaxed text-lg"
+                            className="w-full h-[500px] p-8 -mt-2 bg-card rounded-3xl shadow-xl border border-border resize-none outline-none font-serif text-muted-foreground leading-relaxed text-lg"
                         />
                         <button
                             onClick={() => {

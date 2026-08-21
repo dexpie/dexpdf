@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { configurePdfWorker } from '../utils/pdfWorker'
@@ -215,7 +215,7 @@ export default function ChatPdfTool() {
 
                             <div className="bg-secondary dark:bg-slate-900 rounded-xl p-4 border border-border dark:border-slate-700 h-32 overflow-y-auto">
                                 <h4 className="text-xs font-bold text-muted-foreground dark:text-muted-foreground uppercase tracking-wider mb-2">Raw Content</h4>
-                                <p className="text-[10px] text-slate-600 dark:text-muted-foreground leading-relaxed font-mono">
+                                <p className="text-[10px] text-muted-foreground dark:text-muted-foreground leading-relaxed font-mono">
                                     {isProcessing ? (
                                         <span className="flex items-center gap-2 text-indigo-500">
                                             <Loader2 className="w-3 h-3 animate-spin" /> Analyzing...

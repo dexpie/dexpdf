@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Wifi, Signal, Globe, AlertTriangle } from 'lucide-react'
 
@@ -43,7 +43,7 @@ export default function NetworkInfoTool() {
         <ToolLayout title="Network Info" description="View connection type and speed estimate.">
             <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="bg-card p-8 rounded-[2rem] shadow-xl border border-border flex flex-col justify-center items-center">
-                    <div className="mb-4 p-6 bg-blue-50 text-blue-600 rounded-full">
+                    <div className="mb-4 p-6 bg-primary/10 text-blue-600 rounded-full">
                         <Signal className="w-12 h-12" />
                     </div>
                     <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">EFFECTIVE TYPE</div>
@@ -51,7 +51,7 @@ export default function NetworkInfoTool() {
                 </div>
 
                 <div className="bg-card p-8 rounded-[2rem] shadow-xl border border-border flex flex-col justify-center items-center">
-                    <div className="mb-4 p-6 bg-green-50 text-green-600 rounded-full">
+                    <div className="mb-4 p-6 bg-emerald-500/10 text-green-600 rounded-full">
                         <Wifi className="w-12 h-12" />
                     </div>
                     <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">DOWNLINK</div>
@@ -65,7 +65,7 @@ export default function NetworkInfoTool() {
                     </div>
                     <div className="bg-card p-6 rounded-2xl border border-border flex justify-between items-center shadow-sm">
                         <span className="font-bold text-muted-foreground">Save Data Mode</span>
-                        <span className={`font-bold px-3 py-1 rounded-lg ${conn.saveData ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>
+                        <span className={`font-bold px-3 py-1 rounded-lg ${conn.saveData ? 'bg-green-100 text-green-700' : 'bg-secondary text-muted-foreground'}`}>
                             {conn.saveData ? 'ON' : 'OFF'}
                         </span>
                     </div>

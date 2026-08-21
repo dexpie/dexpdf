@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+﻿import React, { useState, useMemo } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Sigma, BarChart, X } from 'lucide-react'
 
@@ -40,7 +40,7 @@ export default function StatisticsTool() {
                 <div className="flex flex-col gap-4">
                     <div className="bg-card p-6 rounded-3xl shadow-lg border border-border h-full flex flex-col">
                         <div className="flex justify-between items-center mb-4">
-                            <label className="font-bold text-slate-600 flex items-center gap-2">
+                            <label className="font-bold text-muted-foreground flex items-center gap-2">
                                 <Sigma className="w-5 h-5 text-blue-500" /> Data Set
                             </label>
                             <button onClick={() => setInput('')} className="text-muted-foreground hover:text-red-500">

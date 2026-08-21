@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Eye, CheckCircle, XCircle, RefreshCw } from 'lucide-react'
 
@@ -75,8 +75,8 @@ export default function ColorContrastTool() {
                         </div>
                     </div>
 
-                    <button onClick={swap} className="mx-auto p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
-                        <RefreshCw className="w-5 h-5 text-slate-600" />
+                    <button onClick={swap} className="mx-auto p-2 bg-secondary rounded-full hover:bg-secondary transition-colors">
+                        <RefreshCw className="w-5 h-5 text-muted-foreground" />
                     </button>
 
                     {/* Preview */}

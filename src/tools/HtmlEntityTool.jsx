@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Code, Copy } from 'lucide-react'
 
@@ -59,7 +59,7 @@ export default function HtmlEntityTool() {
                     <div className="bg-card rounded-3xl shadow-md border border-border overflow-hidden flex flex-col">
                         <div className="p-4 bg-orange-50 border-b border-orange-100 flex justify-between items-center">
                             <span className="font-bold text-orange-600">Escaped (Safe)</span>
-                            <button onClick={() => navigator.clipboard.writeText(escaped)} className="text-muted-foreground hover:text-slate-600">
+                            <button onClick={() => navigator.clipboard.writeText(escaped)} className="text-muted-foreground hover:text-muted-foreground">
                                 <Copy className="w-4 h-4" />
                             </button>
                         </div>
@@ -71,9 +71,9 @@ export default function HtmlEntityTool() {
                     </div>
 
                     <div className="bg-card rounded-3xl shadow-md border border-border overflow-hidden flex flex-col">
-                        <div className="p-4 bg-blue-50 border-b border-blue-100 flex justify-between items-center">
+                        <div className="p-4 bg-primary/10 border-b border-blue-100 flex justify-between items-center">
                             <span className="font-bold text-blue-600">Unescaped (Raw)</span>
-                            <button onClick={() => navigator.clipboard.writeText(unescaped)} className="text-muted-foreground hover:text-slate-600">
+                            <button onClick={() => navigator.clipboard.writeText(unescaped)} className="text-muted-foreground hover:text-muted-foreground">
                                 <Copy className="w-4 h-4" />
                             </button>
                         </div>

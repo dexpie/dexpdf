@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Key, ShieldCheck, Lock, AlertTriangle, CheckCircle } from 'lucide-react'
 
@@ -53,7 +53,7 @@ export default function JwtDebuggerTool() {
                             onChange={e => setToken(e.target.value)}
                             placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                             className={`w-full h-64 bg-secondary border-2 rounded-xl p-4 font-mono text-sm resize-none outline-none focus:ring-2 ring-blue-500 break-all
-                                ${error ? 'border-red-300 bg-red-50 text-red-800' : 'border-border text-foreground'}
+                                ${error ? 'border-red-300 bg-destructive/10 text-red-800' : 'border-border text-foreground'}
                             `}
                         />
                         {error && (
@@ -90,7 +90,7 @@ export default function JwtDebuggerTool() {
                     </div>
 
                     {/* Signature (Visual Only) */}
-                    <div className="bg-slate-100 p-4 rounded-2xl border border-border relative overflow-hidden opacity-75">
+                    <div className="bg-secondary p-4 rounded-2xl border border-border relative overflow-hidden opacity-75">
                         <div className="absolute top-0 left-0 w-2 h-full bg-blue-400"></div>
                         <h3 className="text-blue-400 font-bold mb-1 uppercase text-xs tracking-wider">Signature</h3>
                         <div className="text-muted-foreground text-xs italic">Signature verification requires server-side secret.</div>

@@ -141,14 +141,14 @@ export default function ResumeBuilderTool() {
                     <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-border dark:border-slate-700">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="font-bold text-lg flex items-center gap-2 text-foreground dark:text-slate-200"><Briefcase className="w-5 h-5" /> Experience</h3>
-                            <button onClick={addExp} className="btn-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full px-3 py-1 flex items-center gap-1 text-xs font-bold">
+                            <button onClick={addExp} className="btn-sm bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full px-3 py-1 flex items-center gap-1 text-xs font-bold">
                                 <Plus className="w-3 h-3" /> Add
                             </button>
                         </div>
                         <div className="space-y-6">
                             {data.experience.map((exp, i) => (
                                 <div key={exp.id} className="relative p-4 border border-border dark:border-slate-700 rounded-xl bg-secondary/50 dark:bg-slate-900/50 group">
-                                    <button onClick={() => removeExp(exp.id)} className="absolute top-2 right-2 text-muted-foreground dark:text-slate-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button onClick={() => removeExp(exp.id)} className="absolute top-2 right-2 text-muted-foreground dark:text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <Trash className="w-4 h-4" />
                                     </button>
                                     <div className="grid md:grid-cols-2 gap-3 mb-3">
@@ -167,7 +167,7 @@ export default function ResumeBuilderTool() {
                     <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-border dark:border-slate-700">
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="font-bold text-lg flex items-center gap-2 text-foreground dark:text-slate-200"><GraduationCap className="w-5 h-5" /> Education</h3>
-                            <button onClick={addEdu} className="btn-sm bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full px-3 py-1 flex items-center gap-1 text-xs font-bold">
+                            <button onClick={addEdu} className="btn-sm bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-full px-3 py-1 flex items-center gap-1 text-xs font-bold">
                                 <Plus className="w-3 h-3" /> Add
                             </button>
                         </div>
@@ -202,16 +202,16 @@ export default function ResumeBuilderTool() {
                     {/* Controls */}
                     <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-border dark:border-slate-700">
                         <div className="flex gap-4 mb-6">
-                            <button onClick={() => setLayout('modern')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'modern' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-muted-foreground'}`}>
+                            <button onClick={() => setLayout('modern')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'modern' ? 'border-blue-500 bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 hover:border-[rgba(243,239,228,0.16)] dark:hover:border-slate-600 text-muted-foreground dark:text-muted-foreground'}`}>
                                 Modern
                             </button>
-                            <button onClick={() => setLayout('classic')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'classic' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-600 dark:text-muted-foreground'}`}>
+                            <button onClick={() => setLayout('classic')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'classic' ? 'border-blue-500 bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 hover:border-[rgba(243,239,228,0.16)] dark:hover:border-slate-600 text-muted-foreground dark:text-muted-foreground'}`}>
                                 Classic
                             </button>
                         </div>
 
                         <div className="mb-4">
-                            <label className="text-sm font-medium text-slate-600 dark:text-muted-foreground block mb-2">Filename</label>
+                            <label className="text-sm font-medium text-muted-foreground dark:text-muted-foreground block mb-2">Filename</label>
                             <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} />
                         </div>
 
@@ -304,7 +304,7 @@ function ModernLayout({ data }) {
             <div className="w-2/3 p-8">
                 <div className="mb-8">
                     <h3 className="font-bold text-foreground border-b-2 border-border pb-2 mb-4 uppercase text-sm tracking-widest">Summary</h3>
-                    <p className="text-slate-600 text-sm leading-relaxed">{data.personal.summary}</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{data.personal.summary}</p>
                 </div>
 
                 <div>
@@ -316,7 +316,7 @@ function ModernLayout({ data }) {
                                 <span className="text-xs font-bold text-muted-foreground bg-secondary px-2 py-1 rounded">{exp.startDate} - {exp.endDate}</span>
                             </div>
                             <div className="text-blue-600 font-medium text-sm mb-2">{exp.company}</div>
-                            <p className="text-slate-600 text-sm whitespace-pre-wrap leading-relaxed">{exp.description}</p>
+                            <p className="text-muted-foreground text-sm whitespace-pre-wrap leading-relaxed">{exp.description}</p>
                         </div>
                     ))}
                 </div>
@@ -330,7 +330,7 @@ function ClassicLayout({ data }) {
         <div className="p-12 h-full">
             <header className="border-b-2 border-black pb-6 mb-8 text-center">
                 <h1 className="text-4xl font-serif font-bold text-black mb-2">{data.personal.name}</h1>
-                <p className="text-lg text-slate-600 mb-4">{data.personal.title}</p>
+                <p className="text-lg text-muted-foreground mb-4">{data.personal.title}</p>
                 <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
                     <span>{data.personal.email}</span> •
                     <span>{data.personal.phone}</span> •
@@ -339,12 +339,12 @@ function ClassicLayout({ data }) {
             </header>
 
             <section className="mb-6">
-                <h3 className="font-bold text-lg uppercase border-b border-slate-300 mb-3 pb-1">Professional Summary</h3>
+                <h3 className="font-bold text-lg uppercase border-b border-[rgba(243,239,228,0.16)] mb-3 pb-1">Professional Summary</h3>
                 <p className="text-foreground text-sm leading-relaxed">{data.personal.summary}</p>
             </section>
 
             <section className="mb-6">
-                <h3 className="font-bold text-lg uppercase border-b border-slate-300 mb-4 pb-1">Experience</h3>
+                <h3 className="font-bold text-lg uppercase border-b border-[rgba(243,239,228,0.16)] mb-4 pb-1">Experience</h3>
                 {data.experience.map((exp, i) => (
                     <div key={i} className="mb-5">
                         <div className="flex justify-between items-baseline mb-1">
@@ -352,7 +352,7 @@ function ClassicLayout({ data }) {
                             <span className="text-sm text-muted-foreground italic">{exp.startDate} – {exp.endDate}</span>
                         </div>
                         <div className="text-foreground font-medium mb-2">{exp.company}</div>
-                        <p className="text-slate-600 text-sm whitespace-pre-wrap">{exp.description}</p>
+                        <p className="text-muted-foreground text-sm whitespace-pre-wrap">{exp.description}</p>
                     </div>
                 ))}
             </section>
@@ -360,17 +360,17 @@ function ClassicLayout({ data }) {
             <section className="mb-6">
                 <div className="grid grid-cols-2 gap-8">
                     <div>
-                        <h3 className="font-bold text-lg uppercase border-b border-slate-300 mb-3 pb-1">Education</h3>
+                        <h3 className="font-bold text-lg uppercase border-b border-[rgba(243,239,228,0.16)] mb-3 pb-1">Education</h3>
                         {data.education.map((edu, i) => (
                             <div key={i} className="mb-3">
                                 <div className="font-bold text-sm">{edu.school}</div>
-                                <div className="text-slate-600 text-sm">{edu.degree}</div>
+                                <div className="text-muted-foreground text-sm">{edu.degree}</div>
                                 <div className="text-muted-foreground text-xs italic">{edu.year}</div>
                             </div>
                         ))}
                     </div>
                     <div>
-                        <h3 className="font-bold text-lg uppercase border-b border-slate-300 mb-3 pb-1">Skills</h3>
+                        <h3 className="font-bold text-lg uppercase border-b border-[rgba(243,239,228,0.16)] mb-3 pb-1">Skills</h3>
                         <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-foreground">
                             {data.skills.map((skill, i) => (
                                 <span key={i}>• {skill}</span>

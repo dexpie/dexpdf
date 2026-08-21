@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { FileText, Eye, Code, Download, Copy } from 'lucide-react'
 import { triggerConfetti } from '../utils/confetti'
@@ -34,7 +34,7 @@ export default function MarkdownPreviewTool() {
             .replace(/\*(.*)\*/gim, '<i>$1</i>')
             .replace(/!\[(.*?)\]\((.*?)\)/gim, "<img alt='$1' src='$2' class='rounded-lg shadow-md max-w-full my-4' />")
             .replace(/\[(.*?)\]\((.*?)\)/gim, "<a href='$2' target='_blank' class='text-blue-600 hover:underline'>$1</a>")
-            .replace(/`(.*?)`/gim, '<code class="bg-slate-100 text-red-500 rounded px-1 font-mono text-sm">$1</code>')
+            .replace(/`(.*?)`/gim, '<code class="bg-secondary text-red-500 rounded px-1 font-mono text-sm">$1</code>')
             .replace(/\n$/gim, '<br />')
             .replace(/\n/gim, '<br />')
 
@@ -88,10 +88,10 @@ export default function MarkdownPreviewTool() {
                             <Eye className="w-4 h-4 text-green-500" /> Preview
                         </div>
                         <div className="flex gap-2">
-                            <button onClick={() => navigator.clipboard.writeText(markdown)} className="p-2 hover:bg-slate-200 rounded-lg text-muted-foreground">
+                            <button onClick={() => navigator.clipboard.writeText(markdown)} className="p-2 hover:bg-secondary rounded-lg text-muted-foreground">
                                 <Copy className="w-4 h-4" />
                             </button>
-                            <button onClick={downloadMd} className="p-2 hover:bg-slate-200 rounded-lg text-blue-600">
+                            <button onClick={downloadMd} className="p-2 hover:bg-secondary rounded-lg text-blue-600">
                                 <Download className="w-4 h-4" />
                             </button>
                         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Binary, Hash, Copy } from 'lucide-react'
 
@@ -80,9 +80,9 @@ export default function BaseConverterTool() {
 
 function BaseInput({ label, value, onChange, icon, color }) {
     const colorClasses = {
-        blue: { ring: 'focus-within:ring-blue-100', text: 'text-blue-600', bg: 'bg-blue-50' },
+        blue: { ring: 'focus-within:ring-blue-100', text: 'text-blue-600', bg: 'bg-primary/10' },
         purple: { ring: 'focus-within:ring-purple-100', text: 'text-purple-600', bg: 'bg-purple-50' },
-        green: { ring: 'focus-within:ring-green-100', text: 'text-green-600', bg: 'bg-green-50' },
+        green: { ring: 'focus-within:ring-green-100', text: 'text-green-600', bg: 'bg-emerald-500/10' },
         orange: { ring: 'focus-within:ring-orange-100', text: 'text-orange-600', bg: 'bg-orange-50' }
     }
     const theme = colorClasses[color] || colorClasses.blue
@@ -94,7 +94,7 @@ function BaseInput({ label, value, onChange, icon, color }) {
                     <div className={`p-2 rounded-lg ${theme.bg}`}>{icon}</div>
                     {label}
                 </div>
-                <button onClick={() => navigator.clipboard.writeText(value)} className="text-muted-foreground hover:text-slate-600">
+                <button onClick={() => navigator.clipboard.writeText(value)} className="text-muted-foreground hover:text-muted-foreground">
                     <Copy className="w-4 h-4" />
                 </button>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+﻿import React, { useState, useEffect, useRef } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Keyboard, RefreshCw } from 'lucide-react'
 
@@ -76,7 +76,7 @@ export default function TypingSpeedTestTool() {
                         <div className="text-6xl font-black text-foreground">{wpm}</div>
                     </div>
 
-                    <button onClick={reset} className="p-4 bg-slate-100 rounded-full hover:bg-slate-200 text-slate-600 transition-colors">
+                    <button onClick={reset} className="p-4 bg-secondary rounded-full hover:bg-secondary text-muted-foreground transition-colors">
                         <RefreshCw className="w-6 h-6" />
                     </button>
                 </div>

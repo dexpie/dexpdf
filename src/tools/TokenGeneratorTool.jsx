@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { KeyRound, RefreshCw, Copy, List } from 'lucide-react'
 
@@ -100,7 +100,7 @@ export default function TokenGeneratorTool() {
                             </div>
                         ))}
                         {tokens.length === 0 && (
-                            <div className="text-slate-600 text-center mt-20 italic">Press generate to start</div>
+                            <div className="text-muted-foreground text-center mt-20 italic">Press generate to start</div>
                         )}
                     </div>
                 </div>

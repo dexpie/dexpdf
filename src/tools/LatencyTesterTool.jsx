@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Activity, Signal, Globe } from 'lucide-react'
 
@@ -51,7 +51,7 @@ export default function LatencyTesterTool() {
                     {TARGETS.map(target => (
                         <div key={target.name} className="bg-card p-4 rounded-xl shadow-sm border border-border flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="p-2 bg-slate-100 rounded-lg text-muted-foreground">
+                                <div className="p-2 bg-secondary rounded-lg text-muted-foreground">
                                     <Globe className="w-5 h-5" />
                                 </div>
                                 <span className="font-bold text-foreground">{target.name}</span>

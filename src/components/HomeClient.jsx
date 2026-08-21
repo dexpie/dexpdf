@@ -19,28 +19,42 @@ const QUICK_TOOLS = ['merge', 'compress', 'pdf2word', 'signature', 'qr-code']
 
 function BoundaryVisual() {
   return (
-    <div className="relative mx-auto w-full max-w-md" aria-hidden="true">
+    <div className="relative mx-auto w-full max-w-md pt-8" aria-hidden="true">
       {/* Device boundary */}
-      <div className="boundary-box p-6">
-        <span className="boundary-label absolute -top-2.5 left-4 bg-[#10151C] px-2">your device</span>
+      <div className="boundary-box relative p-6">
+        {/* Corner ticks */}
+        <span className="absolute -left-[5px] -top-[5px] h-2.5 w-2.5 border-l-2 border-t-2 border-[#35D68E]" />
+        <span className="absolute -right-[5px] -top-[5px] h-2.5 w-2.5 border-r-2 border-t-2 border-[#35D68E]" />
+        <span className="absolute -bottom-[5px] -left-[5px] h-2.5 w-2.5 border-b-2 border-l-2 border-[#35D68E]" />
+        <span className="absolute -bottom-[5px] -right-[5px] h-2.5 w-2.5 border-b-2 border-r-2 border-[#35D68E]" />
+
+        <div className="flex items-center justify-between border-b border-dashed border-[rgba(243,239,228,0.14)] pb-4">
+          <span className="boundary-label absolute -top-2.5 left-4 bg-[#10151C] px-2">your device</span>
+          <span className="ml-auto flex items-center gap-1.5 font-mono text-[10px] text-[#8E97A3]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#35D68E]" />
+            online
+          </span>
+        </div>
 
         {/* Mini tool icons the document travels between */}
-        <div className="flex items-center justify-between px-2 pt-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[rgba(243,239,228,0.12)] bg-[#171E27]">
-            <Layers className="h-5 w-5 text-[#8E97A3]" />
-          </div>
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[rgba(243,239,228,0.12)] bg-[#171E27]">
-            <Scissors className="h-5 w-5 text-[#8E97A3]" />
-          </div>
-          <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[rgba(243,239,228,0.12)] bg-[#171E27]">
-            <FileSignature className="h-5 w-5 text-[#8E97A3]" />
-          </div>
+        <div className="grid grid-cols-3 gap-3 px-1 pt-5">
+          {[
+            { icon: Layers, label: 'merge' },
+            { icon: Scissors, label: 'split' },
+            { icon: FileSignature, label: 'sign' },
+          ].map(item => (
+            <div key={item.label} className="rounded-lg border border-[rgba(243,239,228,0.12)] bg-[#171E27] p-3 text-center">
+              <item.icon className="mx-auto h-5 w-5 text-[#F3EFE4]/80" />
+              <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#8E97A3]">{item.label}</p>
+            </div>
+          ))}
         </div>
 
         {/* The document, moving between tools, never leaving the box */}
-        <div className="doc-move mt-5 flex w-fit items-center gap-2 rounded-md bg-[#F3EFE4] px-3 py-2 shadow-sm">
+        <div className="doc-move mt-6 flex w-fit items-center gap-2 rounded-md bg-[#F3EFE4] px-3 py-2 shadow-md">
           <FileText className="h-4 w-4 text-[#1B2027]" />
           <span className="font-mono text-[10px] font-bold tracking-wide text-[#1B2027]">contract.pdf</span>
+          <span className="ml-1 h-1.5 w-1.5 animate-pulse rounded-full bg-[#35D68E]" />
         </div>
 
         <p className="mt-6 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#35D68E]">
@@ -84,12 +98,13 @@ export default function HomeClient() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-background">
-      <section className="border-b border-[rgba(243,239,228,0.12)] px-4 pb-16 pt-16 md:px-6 md:pb-24 md:pt-24">
+      <section className="vault-dots border-b border-[rgba(243,239,228,0.12)] px-4 pb-16 pt-16 md:px-6 md:pb-20 md:pt-24">
         <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <h1 className="max-w-xl font-mono text-4xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              Your files never leave{' '}
-              <span className="text-primary">the building.</span>
+            <h1 className="max-w-xl font-mono text-4xl font-bold leading-[1.12] tracking-tight text-foreground sm:text-5xl md:text-6xl">
+              Your files never
+              <br />
+              leave <span className="text-primary">the building.</span>
             </h1>
 
             <p className="mt-6 max-w-lg font-serif text-lg leading-8 text-muted-foreground md:text-xl">
@@ -124,7 +139,7 @@ export default function HomeClient() {
           <BoundaryVisual />
         </div>
 
-        <div className="mx-auto mt-14 flex max-w-6xl flex-wrap items-center gap-2">
+        <div className="mx-auto mt-10 flex max-w-6xl flex-wrap items-center gap-2">
           <span className="boundary-label mr-2">Start here:</span>
           {quickTools.map(tool => (
             <Link

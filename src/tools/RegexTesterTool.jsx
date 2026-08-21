@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+﻿import React, { useState, useMemo } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Search, AlertTriangle, CheckCircle, Copy } from 'lucide-react'
 
@@ -74,7 +74,7 @@ export default function RegexTesterTool() {
                         value={flags}
                         onChange={e => setFlags(e.target.value)}
                         placeholder="gims"
-                        className="w-20 p-2 outline-none font-mono text-slate-600 bg-secondary rounded-lg text-sm text-center"
+                        className="w-20 p-2 outline-none font-mono text-muted-foreground bg-secondary rounded-lg text-sm text-center"
                     />
                 </div>
 
@@ -84,7 +84,7 @@ export default function RegexTesterTool() {
                         <button
                             key={f}
                             onClick={() => toggleFlag(f)}
-                            className={`px-3 py-1 rounded-lg font-mono text-xs font-bold border transition-colors ${flags.includes(f) ? 'bg-blue-100 border-blue-200 text-blue-700' : 'bg-card border-border text-muted-foreground hover:border-slate-300'
+                            className={`px-3 py-1 rounded-lg font-mono text-xs font-bold border transition-colors ${flags.includes(f) ? 'bg-blue-100 border-blue-200 text-blue-700' : 'bg-card border-border text-muted-foreground hover:border-[rgba(243,239,228,0.16)]'
                                 }`}
                         >
                             {f}
@@ -93,7 +93,7 @@ export default function RegexTesterTool() {
                 </div>
 
                 {error && (
-                    <div className="bg-red-50 text-red-600 p-4 rounded-xl flex items-center gap-3 border border-red-100">
+                    <div className="bg-destructive/10 text-red-600 p-4 rounded-xl flex items-center gap-3 border border-red-100">
                         <AlertTriangle className="w-5 h-5 flex-shrink-0" />
                         <span className="font-mono text-sm">{error}</span>
                     </div>
@@ -102,7 +102,7 @@ export default function RegexTesterTool() {
                 {/* Test String Input/Output */}
                 <div className="bg-card rounded-3xl shadow-xl border border-border overflow-hidden min-h-[400px] flex flex-col">
                     <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
-                        <h3 className="font-bold text-slate-600 flex items-center gap-2">
+                        <h3 className="font-bold text-muted-foreground flex items-center gap-2">
                             Test String
                         </h3>
                         <div className="text-xs font-bold text-muted-foreground uppercase">

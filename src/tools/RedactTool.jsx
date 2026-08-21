@@ -283,7 +283,7 @@ export default function RedactTool() {
                                     onKeyDown={e => e.key === 'Enter' && handleTextRedact()}
                                 />
                                 {searchText && (
-                                    <button onClick={() => setSearchText('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-slate-600">
+                                    <button onClick={() => setSearchText('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground">
                                         <X className="w-3 h-3" />
                                     </button>
                                 )}
@@ -291,7 +291,7 @@ export default function RedactTool() {
                             <button
                                 onClick={handleTextRedact}
                                 disabled={busy || !searchText}
-                                className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-foreground rounded-xl font-bold text-xs transition-all disabled:opacity-50"
+                                className="px-3 py-2 bg-secondary hover:bg-secondary text-foreground rounded-xl font-bold text-xs transition-all disabled:opacity-50"
                             >
                                 Redact Matches
                             </button>
@@ -310,7 +310,7 @@ export default function RedactTool() {
 
 
                         {/* Editor Area */}
-                        <div className="relative bg-slate-100 rounded-3xl p-8 min-h-[800px] flex justify-center border border-border">
+                        <div className="relative bg-secondary rounded-3xl p-8 min-h-[800px] flex justify-center border border-border">
                             <div className="relative">
                                 <EditorCanvas
                                     file={file}

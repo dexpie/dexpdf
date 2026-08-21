@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Clock, Globe, Plus, X, Search } from 'lucide-react'
 
@@ -61,7 +61,7 @@ export default function WorldClockTool() {
                     {clocks.map(zone => (
                         <div key={zone} className="bg-card p-6 rounded-3xl shadow-lg border border-border relative group overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onClick={() => removeClock(zone)} className="bg-slate-100 text-muted-foreground p-2 rounded-full hover:bg-red-100 hover:text-red-500">
+                                <button onClick={() => removeClock(zone)} className="bg-secondary text-muted-foreground p-2 rounded-full hover:bg-red-100 hover:text-red-500">
                                     <X className="w-4 h-4" />
                                 </button>
                             </div>

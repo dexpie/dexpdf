@@ -170,7 +170,7 @@ export default function PdfToTextTool() {
           className={`px-6 py-2 rounded-full font-medium transition-all ${
             !batchMode
               ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-              : 'bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-slate-700'
+              : 'bg-secondary dark:bg-slate-800 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-700'
           }`}
           onClick={() => setBatchMode(false)}
         >
@@ -180,7 +180,7 @@ export default function PdfToTextTool() {
           className={`px-6 py-2 rounded-full font-medium transition-all ${
             batchMode
               ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-              : 'bg-slate-100 dark:bg-slate-800 text-muted-foreground dark:text-muted-foreground hover:bg-slate-200 dark:hover:bg-slate-700'
+              : 'bg-secondary dark:bg-slate-800 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-700'
           }`}
           onClick={() => setBatchMode(true)}
         >
@@ -197,7 +197,7 @@ export default function PdfToTextTool() {
           maxFiles={100}
           customOptions={
             <div className="p-4 bg-secondary dark:bg-slate-800/50 rounded-xl border border-border dark:border-slate-700">
-              <div className="text-sm text-slate-600 dark:text-muted-foreground mb-3">
+              <div className="text-sm text-muted-foreground dark:text-muted-foreground mb-3">
                 <span className="flex items-center gap-2">
                   <AlignLeft className="w-4 h-4 text-indigo-500" />
                   {t('tools.pdfToText.batchOptions', 'Extraction Options')}
@@ -208,9 +208,9 @@ export default function PdfToTextTool() {
                   type="checkbox"
                   checked={includePageHeaders}
                   onChange={(e) => setIncludePageHeaders(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 rounded border-[rgba(243,239,228,0.16)] text-indigo-600 focus:ring-indigo-500"
                 />
-                <span className="text-sm text-slate-600 dark:text-muted-foreground">
+                <span className="text-sm text-muted-foreground dark:text-muted-foreground">
                   {t('tools.pdfToText.includeHeaders', 'Include page headers (--- Page X ---)')}
                 </span>
               </label>
@@ -225,7 +225,7 @@ export default function PdfToTextTool() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-100 dark:border-red-800/30 flex items-center gap-2 mb-6"
+                className="bg-destructive/10 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-100 dark:border-red-800/30 flex items-center gap-2 mb-6"
               >
                 <AlertCircle className="w-5 h-5" /> {errorMsg}
               </motion.div>
@@ -235,7 +235,7 @@ export default function PdfToTextTool() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-xl border border-green-100 dark:border-green-800/30 flex items-center gap-2 mb-6"
+                className="bg-emerald-500/10 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-xl border border-green-100 dark:border-green-800/30 flex items-center gap-2 mb-6"
               >
                 <CheckCircle className="w-5 h-5" /> {successMsg}
               </motion.div>
@@ -254,7 +254,7 @@ export default function PdfToTextTool() {
                   type="checkbox"
                   checked={includePageHeaders}
                   onChange={(e) => setIncludePageHeaders(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 rounded border-[rgba(243,239,228,0.16)] text-indigo-600 focus:ring-indigo-500"
                 />
                 <div>
                   <span className="text-sm font-medium text-foreground dark:text-muted-foreground">
@@ -327,7 +327,7 @@ export default function PdfToTextTool() {
 
                 {/* Filename Input */}
                 <div className="w-full max-w-md">
-                  <label className="block text-sm font-medium text-slate-600 dark:text-muted-foreground mb-2 text-left">
+                  <label className="block text-sm font-medium text-muted-foreground dark:text-muted-foreground mb-2 text-left">
                     {t('tools.common.outputFilename', 'Output Filename')}
                   </label>
                   <FilenameInput

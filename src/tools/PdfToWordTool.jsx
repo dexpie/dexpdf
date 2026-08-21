@@ -221,7 +221,7 @@ async function advancedPdfToWord(file, onProgress) {
   return blob
 }
 
-const LIST_ITEM_RE = /^([•▪◦‣·]|[-–—]\s|\(?\d{1,2}[.)]\s)/
+const LIST_ITEM_RE = /^([•▪◦‣·]|[-��]\s|\(?\d{1,2}[.)]\s)/
 
 function joinWrappedLines(lineItems) {
   let combined = ''
@@ -761,7 +761,7 @@ export default function PdfToWordTool() {
       description: 'Extracts normal text instantly and OCRs only image-only pages with optimized local workers.',
       badges: [
         { label: 'Private', class: 'bg-blue-100 text-blue-700' },
-        { label: 'Mixed PDF ready', class: 'bg-blue-50 text-blue-700' }
+        { label: 'Mixed PDF ready', class: 'bg-primary/10 text-blue-700' }
       ]
     },
     {
@@ -1038,7 +1038,7 @@ export default function PdfToWordTool() {
 
                   {conversionMode === 'certificate' && (
                     <div className="mt-4 space-y-4 border-t border-border pt-4">
-                      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-950 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-100">
+                      <div className="rounded-xl border border-blue-200 bg-primary/10 p-4 text-sm text-blue-950 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-100">
                         <div className="flex items-start gap-3">
                           <Images className="mt-0.5 h-5 w-5 shrink-0 text-blue-600 dark:text-blue-300" />
                           <div>

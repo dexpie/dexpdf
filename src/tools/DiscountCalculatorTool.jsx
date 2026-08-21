@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Tag, TrendingDown } from 'lucide-react'
 
@@ -27,7 +27,7 @@ export default function DiscountCalculatorTool() {
                         <div className="flex items-center gap-4">
                             <input
                                 type="range" min="0" max="100" value={discount} onChange={e => setDiscount(Number(e.target.value))}
-                                className="flex-1 h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                                className="flex-1 h-3 bg-secondary rounded-lg appearance-none cursor-pointer accent-orange-500"
                             />
                             <input
                                 type="number" value={discount} onChange={e => setDiscount(Number(e.target.value))}
@@ -40,7 +40,7 @@ export default function DiscountCalculatorTool() {
                         {[10, 20, 25, 30, 50, 75].map(d => (
                             <button
                                 key={d} onClick={() => setDiscount(d)}
-                                className={`px-4 py-2 rounded-lg font-bold text-sm ${discount === d ? 'bg-orange-600 text-white' : 'bg-slate-100 text-muted-foreground'}`}
+                                className={`px-4 py-2 rounded-lg font-bold text-sm ${discount === d ? 'bg-orange-600 text-white' : 'bg-secondary text-muted-foreground'}`}
                             >
                                 {d}%
                             </button>

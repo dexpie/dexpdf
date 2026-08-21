@@ -186,17 +186,17 @@ export default function TranslatePdfTool() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                                         <div className="p-4 rounded-2xl border-2 border-border dark:border-slate-700 bg-secondary dark:bg-slate-900 flex items-center justify-between opacity-70">
                                             <span className="font-bold text-muted-foreground dark:text-muted-foreground">Auto-Detect</span>
-                                            <span className="text-xs bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded-full text-slate-600 dark:text-muted-foreground">Source</span>
+                                            <span className="text-xs bg-secondary dark:bg-slate-700 px-2 py-1 rounded-full text-muted-foreground dark:text-muted-foreground">Source</span>
                                         </div>
-                                        <div className="flex justify-center md:hidden"><ArrowRight className="w-6 h-6 text-muted-foreground dark:text-slate-600 rotate-90" /></div>
-                                        <div className="hidden md:flex justify-center"><ArrowRight className="w-6 h-6 text-muted-foreground dark:text-slate-600" /></div>
+                                        <div className="flex justify-center md:hidden"><ArrowRight className="w-6 h-6 text-muted-foreground dark:text-muted-foreground rotate-90" /></div>
+                                        <div className="hidden md:flex justify-center"><ArrowRight className="w-6 h-6 text-muted-foreground dark:text-muted-foreground" /></div>
 
                                         <div className="grid grid-cols-2 gap-2">
                                             {languages.map(lang => (
                                                 <button
                                                     key={lang.code}
                                                     onClick={() => setTargetLang(lang.code)}
-                                                    className={`p-3 rounded-xl border-2 text-left transition-all flex items-center gap-2 ${targetLang === lang.code ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-900/50' : 'border-border dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-secondary dark:hover:bg-slate-800'}`}
+                                                    className={`p-3 rounded-xl border-2 text-left transition-all flex items-center gap-2 ${targetLang === lang.code ? 'border-blue-500 bg-primary/10 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-900/50' : 'border-border dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-secondary dark:hover:bg-slate-800'}`}
                                                 >
                                                     <span className="text-xl">{lang.flag}</span>
                                                     <span className="font-bold text-foreground dark:text-slate-200 text-sm">{lang.name}</span>
@@ -208,11 +208,11 @@ export default function TranslatePdfTool() {
                                     {/* Progress Bar */}
                                     {busy && (
                                         <div className="space-y-2">
-                                            <div className="flex justify-between text-sm font-bold text-slate-600 dark:text-muted-foreground">
+                                            <div className="flex justify-between text-sm font-bold text-muted-foreground dark:text-muted-foreground">
                                                 <span>{status}</span>
                                                 <span>{Math.round(progress)}%</span>
                                             </div>
-                                            <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                            <div className="h-3 bg-secondary dark:bg-slate-700 rounded-full overflow-hidden">
                                                 <motion.div
                                                     initial={{ width: 0 }}
                                                     animate={{ width: `${progress}%` }}

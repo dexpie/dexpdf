@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Palette, Copy, RefreshCw } from 'lucide-react'
 
@@ -57,7 +57,7 @@ export default function PaletteGeneratorTool() {
                 {/* Controls */}
                 <div className="bg-card p-6 rounded-3xl shadow-lg border border-border flex flex-wrap gap-6 items-center justify-between">
                     <div className="flex items-center gap-4 flex-1 min-w-[300px]">
-                        <label className="font-bold text-slate-600">Base Hue</label>
+                        <label className="font-bold text-muted-foreground">Base Hue</label>
                         <input
                             type="range"
                             min="0"
@@ -73,7 +73,7 @@ export default function PaletteGeneratorTool() {
                             <button
                                 key={m}
                                 onClick={() => setHarmony(m)}
-                                className={`px-4 py-2 rounded-full font-bold text-sm capitalize transition-all ${harmony === m ? 'bg-slate-800 text-white shadow-lg' : 'bg-slate-100 text-muted-foreground hover:bg-slate-200'
+                                className={`px-4 py-2 rounded-full font-bold text-sm capitalize transition-all ${harmony === m ? 'bg-slate-800 text-white shadow-lg' : 'bg-secondary text-muted-foreground hover:bg-secondary'
                                     }`}
                             >
                                 {m}

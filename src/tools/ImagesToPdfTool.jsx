@@ -166,12 +166,12 @@ export default function ImagesToPdfTool() {
 			<div className="max-w-6xl mx-auto">
 				<AnimatePresence>
 					{errorMsg && (
-						<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-100 dark:border-red-800 flex items-center gap-2 mb-6">
+						<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-destructive/10 dark:bg-red-950/30 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-100 dark:border-red-800 flex items-center gap-2 mb-6">
 							<AlertTriangle className="w-5 h-5" /> {errorMsg}
 						</motion.div>
 					)}
 					{successMsg && (
-						<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 p-4 rounded-xl border border-green-100 dark:border-green-800 flex items-center gap-2 mb-6">
+						<motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-emerald-500/10 dark:bg-green-950/30 text-green-600 dark:text-green-400 p-4 rounded-xl border border-green-100 dark:border-green-800 flex items-center gap-2 mb-6">
 							<CheckCircle className="w-5 h-5" /> {successMsg}
 						</motion.div>
 					)}
@@ -194,7 +194,7 @@ export default function ImagesToPdfTool() {
 									{images.length} Images Selected
 								</h3>
 
-								<div className="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-xl">
+								<div className="flex bg-secondary dark:bg-slate-700 p-1 rounded-xl">
 									{[
 										{ id: 'fit', label: 'Fit Page', icon: Minimize },
 										{ id: 'fill', label: 'Fill Page', icon: Maximize },
@@ -203,7 +203,7 @@ export default function ImagesToPdfTool() {
 										<button
 											key={m.id}
 											onClick={() => setMode(m.id)}
-											className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${mode === m.id ? 'bg-card dark:bg-slate-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-muted-foreground dark:text-muted-foreground hover:text-foreground hover:bg-slate-200 dark:hover:bg-slate-600'}`}
+											className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${mode === m.id ? 'bg-card dark:bg-slate-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-muted-foreground dark:text-muted-foreground hover:text-foreground hover:bg-secondary dark:hover:bg-slate-600'}`}
 										>
 											<m.icon className="w-4 h-4" />
 											{m.label}
@@ -245,18 +245,18 @@ export default function ImagesToPdfTool() {
 										</button>
 
 										<button
-											className="absolute top-2 right-2 bg-card text-red-500 rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-red-50 transform hover:scale-110"
+											className="absolute top-2 right-2 bg-card text-red-500 rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm hover:bg-destructive/10 transform hover:scale-110"
 											onClick={(e) => { e.stopPropagation(); remove(images.indexOf(entry)); }}
 											disabled={busy}
 										>
 											<X className="w-4 h-4" />
 										</button>
 									</div>
-									<div className="text-xs text-center truncate text-slate-600 font-medium px-1">{entry.file.name}</div>
+									<div className="text-xs text-center truncate text-muted-foreground font-medium px-1">{entry.file.name}</div>
 								</Reorder.Item>
 							))}
 
-							<div className="flex flex-col items-center justify-center aspect-[3/4] bg-secondary rounded-xl border-2 border-dashed border-border hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer text-muted-foreground hover:text-blue-500" onClick={() => document.querySelector('input[type=file]').click()}>
+							<div className="flex flex-col items-center justify-center aspect-[3/4] bg-secondary rounded-xl border-2 border-dashed border-border hover:border-blue-400 hover:bg-primary/10 transition-all cursor-pointer text-muted-foreground hover:text-blue-500" onClick={() => document.querySelector('input[type=file]').click()}>
 								<ImageIcon className="w-8 h-8 mb-2" />
 								<span className="text-xs font-semibold">Add More</span>
 							</div>
@@ -265,7 +265,7 @@ export default function ImagesToPdfTool() {
 						<div className="flex justify-end sticky bottom-6 z-10">
 							<div className="bg-card p-4 rounded-2xl shadow-xl border border-border flex gap-4">
 								<button
-									className="px-6 py-2.5 rounded-xl font-bold text-muted-foreground hover:bg-slate-100 transition-colors"
+									className="px-6 py-2.5 rounded-xl font-bold text-muted-foreground hover:bg-secondary transition-colors"
 									onClick={() => { setImages([]); setErrorMsg(''); setSuccessMsg(''); }}
 								>
 									Reset

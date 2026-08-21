@@ -82,7 +82,7 @@ function FilterSlider({ label, value, min = 0, max, onChange }) {
             </div>
             <input
                 type="range" min={min} max={max} value={value} onChange={e => onChange(Number(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer accent-purple-600"
             />
         </div>
     )

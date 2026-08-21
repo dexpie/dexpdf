@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Link, Search, Globe, Folder, Database } from 'lucide-react'
 
@@ -89,8 +89,8 @@ export default function UrlParserTool() {
                                 <div className="space-y-3">
                                     {Object.entries(parsed.params).map(([key, val]) => (
                                         <div key={key} className="flex justify-between items-center bg-secondary p-3 rounded-xl border border-border">
-                                            <span className="font-bold text-slate-600">{key}</span>
-                                            <span className="font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded text-sm">{val}</span>
+                                            <span className="font-bold text-muted-foreground">{key}</span>
+                                            <span className="font-mono text-blue-600 bg-primary/10 px-2 py-1 rounded text-sm">{val}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -100,7 +100,7 @@ export default function UrlParserTool() {
                         </div>
                     </div>
                 ) : (
-                    <div className="text-center p-12 bg-red-50 text-red-400 rounded-3xl font-bold">
+                    <div className="text-center p-12 bg-destructive/10 text-red-400 rounded-3xl font-bold">
                         Invalid URL
                     </div>
                 )}

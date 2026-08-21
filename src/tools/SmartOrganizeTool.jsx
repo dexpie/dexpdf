@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -142,7 +142,7 @@ export default function SmartOrganizeTool() {
                                             </p>
                                         </div>
                                         {item.date && (
-                                            <span className="text-[10px] bg-green-50 text-green-600 px-1.5 py-0.5 rounded border border-green-100 mt-1 inline-block">
+                                            <span className="text-[10px] bg-emerald-500/10 text-green-600 px-1.5 py-0.5 rounded border border-green-100 mt-1 inline-block">
                                                 Detected: {item.date}
                                             </span>
                                         )}
@@ -151,9 +151,9 @@ export default function SmartOrganizeTool() {
                                     {/* Category */}
                                     <div className="col-span-3">
                                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${item.category === 'Finance' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                item.category === 'Legal' ? 'bg-blue-50 text-blue-600 border-blue-100' :
+                                                item.category === 'Legal' ? 'bg-primary/10 text-blue-600 border-blue-100' :
                                                     item.category === 'Personal' ? 'bg-purple-50 text-purple-600 border-purple-100' :
-                                                        'bg-slate-100 text-slate-600 border-border'
+                                                        'bg-secondary text-muted-foreground border-border'
                                             }`}>
                                             <Tag className="w-3 h-3" />
                                             {item.category}

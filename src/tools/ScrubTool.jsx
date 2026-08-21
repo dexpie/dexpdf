@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import React, { useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import FilenameInput from '../components/FilenameInput'
@@ -130,7 +130,7 @@ export default function ScrubTool() {
                                 </div>
                             ) : (
                                 <div className="animate-pulse flex space-x-4">
-                                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                                    <div className="h-4 bg-secondary rounded w-3/4"></div>
                                 </div>
                             )}
                         </div>

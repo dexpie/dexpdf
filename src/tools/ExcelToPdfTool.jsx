@@ -133,12 +133,12 @@ export default function ExcelToPdfTool() {
             <div className="max-w-4xl mx-auto">
                 <AnimatePresence>
                     {errorMsg && (
-                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-destructive/10 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
                             <AlertCircle className="w-5 h-5" /> {errorMsg}
                         </motion.div>
                     )}
                     {successMsg && (
-                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-emerald-500/10 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
                             <CheckCircle className="w-5 h-5" /> {successMsg}
                         </motion.div>
                     )}
@@ -151,7 +151,7 @@ export default function ExcelToPdfTool() {
                 ) : (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
                         <div className="bg-card p-6 rounded-2xl border border-border shadow-sm flex flex-col items-center text-center gap-6">
-                            <div className="w-20 h-20 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-2">
+                            <div className="w-20 h-20 bg-emerald-500/10 text-green-600 rounded-2xl flex items-center justify-center mb-2">
                                 <FileSpreadsheet className="w-10 h-10" />
                             </div>
 
@@ -161,11 +161,11 @@ export default function ExcelToPdfTool() {
                             </div>
 
                             {rows.length > 0 && (
-                                <div className="w-full max-w-lg bg-secondary border border-border rounded-xl overflow-hidden text-xs text-slate-600">
+                                <div className="w-full max-w-lg bg-secondary border border-border rounded-xl overflow-hidden text-xs text-muted-foreground">
                                     <table className="w-full">
                                         <tbody>
                                             {rows.map((r, i) => (
-                                                <tr key={i} className={i === 0 ? "bg-slate-100 font-bold" : ""}>
+                                                <tr key={i} className={i === 0 ? "bg-secondary font-bold" : ""}>
                                                     {r.map((c, j) => (
                                                         <td key={j} className="p-2 border-b border-r border-border last:border-r-0 truncate max-w-[100px]">{c}</td>
                                                     ))}
@@ -178,7 +178,7 @@ export default function ExcelToPdfTool() {
                             )}
 
                             <div className="w-full max-w-md">
-                                <label className="block text-sm font-medium text-slate-600 mb-2 text-left">Output Filename</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-2 text-left">Output Filename</label>
                                 <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="document" />
                             </div>
 

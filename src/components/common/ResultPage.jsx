@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Download, RefreshCcw, FileText, TrendingDown, Eye, CheckCircle, ArrowRight, Clock3 } from 'lucide-react'
 import Link from 'next/link'
@@ -178,7 +178,7 @@ export default function ResultPage({
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-        className="w-16 h-16 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-green-200 dark:border-green-800"
+        className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/30"
       >
         <CheckCircle className="w-8 h-8" />
       </motion.div>
@@ -191,7 +191,7 @@ export default function ResultPage({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-secondary rounded-xl border border-border p-4 max-w-sm mx-auto mb-6"
+          className="glass rounded-lg p-4 max-w-sm mx-auto mb-6"
         >
           <div className="grid grid-cols-3 gap-4">
             {stats.map((stat, i) => (
@@ -211,7 +211,7 @@ export default function ResultPage({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-secondary rounded-xl border border-border p-4 max-w-sm mx-auto mb-6"
+          className="glass rounded-lg p-4 max-w-sm mx-auto mb-6"
         >
           <div className="flex items-center justify-between text-sm mb-2">
             <span className="text-muted-foreground">Original</span>
@@ -239,7 +239,7 @@ export default function ResultPage({
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-card rounded-2xl border border-border shadow-lg p-6 max-w-md mx-auto mb-8"
+          className="glass rounded-lg p-6 max-w-md mx-auto mb-8"
         >
           <div className="flex items-center gap-2 mb-4 text-muted-foreground">
             <Eye className="w-5 h-5" />
@@ -308,10 +308,10 @@ export default function ResultPage({
       </div>
 
       {/* Suggestions */}
-      <div className="bg-secondary/50 rounded-2xl p-8 border border-border max-w-3xl mx-auto">
+      <div className="rounded-lg border border-[rgba(243,239,228,0.12)] p-6 sm:p-8 max-w-3xl mx-auto">
         <div className="mb-6 flex flex-col items-center justify-between gap-3 sm:flex-row sm:text-left">
           <div>
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">Recommended next steps</h3>
+            <h3 className="boundary-label mb-2">Recommended next steps</h3>
             <p className="text-sm text-muted-foreground">Keep the workflow moving with tools that usually come next.</p>
           </div>
           <Link href="/my-documents" className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-bold text-foreground transition hover:border-primary/30 hover:text-primary">
@@ -322,15 +322,15 @@ export default function ResultPage({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {suggestions.map((tool) => (
             <Link href={tool.href || `/${tool.id}`} key={tool.id}>
-              <div className="group flex h-full items-center gap-3 rounded-xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-md">
-                <div className="rounded-lg bg-primary/10 p-2 text-primary">
+              <div className="paper-card group flex h-full items-center gap-3 p-4 text-left transition-all hover:-translate-y-0.5">
+                <div className="rounded-lg bg-[#1B2027]/5 p-2 text-[#1B2027]/70">
                   <tool.icon className="w-4 h-4" />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold text-foreground transition-colors group-hover:text-primary">{tool.title}</p>
-                  <p className="mt-0.5 truncate text-xs text-muted-foreground">{tool.description}</p>
+                  <p className="font-semibold text-[#1B2027] transition-colors group-hover:text-[#1B2027]/70">{tool.title}</p>
+                  <p className="mt-0.5 truncate font-serif text-xs text-[#1B2027]/60">{tool.description}</p>
                 </div>
-                <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-primary" />
+                <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-[#1B2027]/40 transition group-hover:translate-x-0.5 group-hover:text-[#1B2027]" />
               </div>
             </Link>
           ))}

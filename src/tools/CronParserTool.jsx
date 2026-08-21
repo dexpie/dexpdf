@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Clock, Calendar, AlertCircle } from 'lucide-react'
 
@@ -74,7 +74,7 @@ export default function CronParserTool() {
                         </div>
                     </div>
 
-                    <div className="text-2xl font-bold text-blue-600 text-center mt-4 bg-blue-50 px-8 py-4 rounded-xl border border-blue-100">
+                    <div className="text-2xl font-bold text-blue-600 text-center mt-4 bg-primary/10 px-8 py-4 rounded-xl border border-blue-100">
                         "{desc}"
                     </div>
                 </div>

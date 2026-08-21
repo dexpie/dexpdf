@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import React, { useState, useRef, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { QrCode, Download, Palette, Image as ImageIcon, Wifi as WifiIcon, Mail, Phone, MessageSquare, CreditCard, Link2, Type, Trash2, History, Settings2, Shapes, Share2, Bitcoin, Calendar as CalendarIcon, Smartphone } from 'lucide-react'
@@ -190,7 +190,7 @@ export default function QrCodeProTool() {
                                         onClick={() => { setInputType(type.id); setValue('') }}
                                         className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all ${inputType === type.id
                                             ? 'bg-blue-600 text-white shadow-md scale-105 ring-2 ring-offset-2 ring-blue-600 dark:ring-blue-500 dark:ring-offset-slate-800'
-                                            : 'bg-secondary dark:bg-slate-700/50 text-muted-foreground dark:text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-700'
+                                            : 'bg-secondary dark:bg-slate-700/50 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-700'
                                             }`}
                                     >
                                         <type.icon className="w-5 h-5" />
@@ -316,7 +316,7 @@ export default function QrCodeProTool() {
                                         <button
                                             key={type}
                                             onClick={() => setDotOptions(prev => ({ ...prev, type }))}
-                                            className={`p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${dotOptions.type === type ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-800'}`}
+                                            className={`p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${dotOptions.type === type ? 'bg-primary/10 border-blue-500 text-blue-600' : 'bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-800'}`}
                                         >
                                             {type.replace('-', ' ')}
                                         </button>
@@ -333,7 +333,7 @@ export default function QrCodeProTool() {
                                             <button
                                                 key={type}
                                                 onClick={() => setCornerSquareOptions(prev => ({ ...prev, type }))}
-                                                className={`flex-1 p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${cornerSquareOptions.type === type ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-800'}`}
+                                                className={`flex-1 p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${cornerSquareOptions.type === type ? 'bg-primary/10 border-blue-500 text-blue-600' : 'bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-800'}`}
                                             >
                                                 {type.replace('-', ' ')}
                                             </button>
@@ -347,7 +347,7 @@ export default function QrCodeProTool() {
                                             <button
                                                 key={type}
                                                 onClick={() => setCornerDotOptions(prev => ({ ...prev, type }))}
-                                                className={`flex-1 p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${cornerDotOptions.type === type ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-800'}`}
+                                                className={`flex-1 p-2 rounded-lg text-xs font-semibold capitalize border transition-all ${cornerDotOptions.type === type ? 'bg-primary/10 border-blue-500 text-blue-600' : 'bg-card dark:bg-slate-900 border-border dark:border-slate-700 text-muted-foreground dark:text-muted-foreground hover:bg-secondary dark:hover:bg-slate-800'}`}
                                             >
                                                 {type}
                                             </button>
@@ -362,7 +362,7 @@ export default function QrCodeProTool() {
                                 <div className="flex items-center gap-4">
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="h-12 px-4 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors text-foreground dark:text-slate-200"
+                                        className="h-12 px-4 bg-secondary dark:bg-slate-700 hover:bg-secondary dark:hover:bg-slate-600 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors text-foreground dark:text-slate-200"
                                     >
                                         <ImageIcon className="w-4 h-4" /> Upload Logo
                                     </button>
@@ -382,7 +382,7 @@ export default function QrCodeProTool() {
                                                         <span>Size</span>
                                                         <span>{Math.round(logoSize * 100)}%</span>
                                                     </div>
-                                                    <input type="range" min="0.1" max="0.5" step="0.05" value={logoSize} onChange={e => setLogoSize(Number(e.target.value))} className="w-full accent-blue-600 h-1 bg-slate-200 rounded-full appearance-none" />
+                                                    <input type="range" min="0.1" max="0.5" step="0.05" value={logoSize} onChange={e => setLogoSize(Number(e.target.value))} className="w-full accent-blue-600 h-1 bg-secondary rounded-full appearance-none" />
                                                 </div>
                                             </div>
                                         </div>
@@ -423,14 +423,14 @@ export default function QrCodeProTool() {
                                         <button
                                             onClick={() => download('svg')}
                                             disabled={!hasContent}
-                                            className="flex-1 py-3 bg-card border-2 border-border hover:border-slate-300 text-foreground rounded-2xl font-bold transition-all disabled:opacity-50"
+                                            className="flex-1 py-3 bg-card border-2 border-border hover:border-[rgba(243,239,228,0.16)] text-foreground rounded-2xl font-bold transition-all disabled:opacity-50"
                                         >
                                             SVG
                                         </button>
                                         <button
                                             onClick={() => download('webp')}
                                             disabled={!hasContent}
-                                            className="flex-1 py-3 bg-card border-2 border-border hover:border-slate-300 text-foreground rounded-2xl font-bold transition-all disabled:opacity-50"
+                                            className="flex-1 py-3 bg-card border-2 border-border hover:border-[rgba(243,239,228,0.16)] text-foreground rounded-2xl font-bold transition-all disabled:opacity-50"
                                         >
                                             WEBP
                                         </button>

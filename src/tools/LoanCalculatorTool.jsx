@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { DollarSign, PieChart as PieIcon } from 'lucide-react'
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
@@ -62,7 +62,7 @@ export default function LoanCalculatorTool() {
                         <Pie data={data} />
                     </div>
                     <div className="mt-8 w-full space-y-2">
-                        <div className="flex justify-between font-bold text-slate-600 border-b border-border pb-2">
+                        <div className="flex justify-between font-bold text-muted-foreground border-b border-border pb-2">
                             <span>Total Principal</span>
                             <span>${amount.toLocaleString()}</span>
                         </div>

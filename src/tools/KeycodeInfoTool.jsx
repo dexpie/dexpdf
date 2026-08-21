@@ -97,7 +97,7 @@ function KeyDetail({ label, value }) {
 
 function Modifier({ label, active }) {
     return (
-        <div className={`px-4 py-2 rounded-lg font-bold text-xs transition-all ${active ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'bg-slate-800 text-slate-600'}`}>
+        <div className={`px-4 py-2 rounded-lg font-bold text-xs transition-all ${active ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'bg-slate-800 text-muted-foreground'}`}>
             {label}
         </div>
     )

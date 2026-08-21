@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import React, { useState } from 'react'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
@@ -81,12 +81,12 @@ export default function HtmlToPdfTool() {
             <div className="max-w-4xl mx-auto">
                 <AnimatePresence>
                     {errorMsg && (
-                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-destructive/10 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
                             <AlertCircle className="w-5 h-5" /> {errorMsg}
                         </motion.div>
                     )}
                     {successMsg && (
-                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-emerald-500/10 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
                             <CheckCircle className="w-5 h-5" /> {successMsg}
                         </motion.div>
                     )}
@@ -107,7 +107,7 @@ export default function HtmlToPdfTool() {
                             </div>
 
                             <div className="w-full max-w-md">
-                                <label className="block text-sm font-medium text-slate-600 mb-2 text-left">Output Filename</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-2 text-left">Output Filename</label>
                                 <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="webpage" />
                             </div>
 

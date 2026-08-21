@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import React, { useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
@@ -59,7 +59,7 @@ export default function PdfToPdfATool() {
       steps={[{ num: '1', label: 'Choose PDF' }, { num: '2', label: 'Set metadata' }, { num: '3', label: 'Validate later' }]}
     >
       <div className="mx-auto max-w-3xl space-y-5">
-        <div className="flex gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-900 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-100">
+        <div className="flex gap-3 rounded-2xl border border-blue-200 bg-primary/10 p-4 text-sm leading-6 text-blue-900 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-100">
           <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0" />
           <p><strong>Honest scope:</strong> browser-side metadata changes cannot guarantee PDF/A conformance. Fonts, color profiles, transparency, and XMP still need a certified converter and validator.</p>
         </div>

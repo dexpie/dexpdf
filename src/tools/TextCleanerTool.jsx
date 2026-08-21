@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Eraser, Scissors, Copy } from 'lucide-react'
 
@@ -61,7 +61,7 @@ function ActionButton({ icon, label, onClick }) {
     return (
         <button
             onClick={onClick}
-            className="p-3 bg-card text-slate-600 rounded-xl border border-border font-bold text-sm hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-all flex items-center gap-2"
+            className="p-3 bg-card text-muted-foreground rounded-xl border border-border font-bold text-sm hover:bg-primary/10 hover:text-blue-600 hover:border-blue-200 transition-all flex items-center gap-2"
         >
             {icon} {label}
         </button>

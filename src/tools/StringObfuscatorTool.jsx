@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Lock, Unlock, RefreshCw, Copy } from 'lucide-react'
 
@@ -40,7 +40,7 @@ export default function StringObfuscatorTool() {
                         {['rot13', 'base64', 'reverse', 'binary'].map(m => (
                             <button
                                 key={m} onClick={() => setMode(m)}
-                                className={`px-4 py-2 rounded-lg font-bold text-xs uppercase ${mode === m ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-muted-foreground'}`}
+                                className={`px-4 py-2 rounded-lg font-bold text-xs uppercase ${mode === m ? 'bg-indigo-600 text-white' : 'bg-secondary text-muted-foreground'}`}
                             >
                                 {m}
                             </button>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { FileText, Copy, RefreshCw } from 'lucide-react'
 import { LoremIpsum } from 'lorem-ipsum'
@@ -57,14 +57,14 @@ export default function LoremIpsumGeneratorTool() {
                     </button>
                     <button
                         onClick={() => navigator.clipboard.writeText(text)}
-                        className="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors flex items-center gap-2"
+                        className="px-6 py-3 bg-secondary text-muted-foreground rounded-xl font-bold hover:bg-secondary transition-colors flex items-center gap-2"
                     >
                         <Copy className="w-5 h-5" /> Copy
                     </button>
                 </div>
 
                 <div className="bg-card p-8 rounded-3xl shadow-lg border border-border min-h-[300px]">
-                    <div className="prose max-w-none text-slate-600 leading-relaxed whitespace-pre-line font-serif text-lg">
+                    <div className="prose max-w-none text-muted-foreground leading-relaxed whitespace-pre-line font-serif text-lg">
                         {text}
                     </div>
                 </div>

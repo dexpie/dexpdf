@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+﻿import React, { useState, useMemo } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { FileText, BarChart2 } from 'lucide-react'
 
@@ -38,7 +38,7 @@ export default function WordDensityTool() {
                 {/* Input Area */}
                 <div className="flex-1 flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
                     <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
-                        <label className="font-bold text-slate-600 flex items-center gap-2">
+                        <label className="font-bold text-muted-foreground flex items-center gap-2">
                             <FileText className="w-4 h-4" /> Source Text
                         </label>
                         <label className="flex items-center gap-2 text-xs font-bold text-muted-foreground cursor-pointer select-none">
@@ -80,7 +80,7 @@ export default function WordDensityTool() {
                                         <span className="font-medium text-foreground">{word}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <div className="h-1.5 w-12 bg-slate-200 rounded-full overflow-hidden">
+                                        <div className="h-1.5 w-12 bg-secondary rounded-full overflow-hidden">
                                             <div style={{ width: `${percent}%` }} className="h-full bg-blue-500"></div>
                                         </div>
                                         <span className="text-xs font-bold text-muted-foreground w-8 text-right">{count}</span>

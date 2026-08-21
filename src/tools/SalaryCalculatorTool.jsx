@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Briefcase, CreditCard } from 'lucide-react'
 
@@ -60,7 +60,7 @@ export default function SalaryCalculatorTool() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {Object.entries(results).map(([key, value]) => (
-                        <div key={key} className={`p-6 rounded-2xl shadow-sm border border-border flex flex-col ${period === key ? 'bg-blue-50 border-blue-200' : 'bg-card'}`}>
+                        <div key={key} className={`p-6 rounded-2xl shadow-sm border border-border flex flex-col ${period === key ? 'bg-primary/10 border-blue-200' : 'bg-card'}`}>
                             <span className="text-xs font-bold text-muted-foreground uppercase mb-2">{key}</span>
                             <span className={`text-2xl font-black ${period === key ? 'text-blue-600' : 'text-foreground'}`}>
                                 ${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}

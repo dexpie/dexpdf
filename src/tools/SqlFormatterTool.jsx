@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Database, AlignLeft, Copy, Terminal } from 'lucide-react'
 import { format } from 'sql-formatter'
@@ -27,13 +27,13 @@ export default function SqlFormatterTool() {
                 {/* Input */}
                 <div className="flex-1 flex flex-col bg-card rounded-3xl shadow-lg border border-border overflow-hidden">
                     <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
-                        <label className="font-bold text-slate-600 flex items-center gap-2">
+                        <label className="font-bold text-muted-foreground flex items-center gap-2">
                             <Terminal className="w-4 h-4" /> Raw SQL
                         </label>
                         <select
                             value={language}
                             onChange={e => setLanguage(e.target.value)}
-                            className="text-xs font-bold bg-card border border-slate-300 rounded-lg p-1 text-slate-600"
+                            className="text-xs font-bold bg-card border border-[rgba(243,239,228,0.16)] rounded-lg p-1 text-muted-foreground"
                         >
                             <option value="sql">Standard SQL</option>
                             <option value="postgresql">PostgreSQL</option>

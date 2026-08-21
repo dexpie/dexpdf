@@ -47,12 +47,12 @@ export default function PrimeFactorTool() {
                 </div>
 
                 {result && (
-                    <div className={`p-8 rounded-[2rem] shadow-lg border-2 text-center transition-all ${result.isPrime ? 'bg-green-50 border-green-200' : 'bg-card border-border'}`}>
+                    <div className={`p-8 rounded-[2rem] shadow-lg border-2 text-center transition-all ${result.isPrime ? 'bg-emerald-500/10 border-green-200' : 'bg-card border-border'}`}>
                         <div className="mb-4">
                             {result.isPrime ? (
                                 <div className="inline-block px-4 py-2 bg-green-200 text-green-800 rounded-lg font-bold">PRIME NUMBER</div>
                             ) : (
-                                <div className="inline-block px-4 py-2 bg-slate-200 text-slate-600 rounded-lg font-bold">COMPOSITE NUMBER</div>
+                                <div className="inline-block px-4 py-2 bg-secondary text-muted-foreground rounded-lg font-bold">COMPOSITE NUMBER</div>
                             )}
                         </div>
 

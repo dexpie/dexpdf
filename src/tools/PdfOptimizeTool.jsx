@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
@@ -249,7 +249,7 @@ export default function PdfOptimizeTool() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="mb-4 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 rounded-lg flex items-center gap-2 text-red-600"
+                  className="mb-4 p-3 bg-destructive/10 dark:bg-red-950/30 border border-red-200 rounded-lg flex items-center gap-2 text-red-600"
                 >
                   <AlertTriangle className="w-5 h-5" />
                   {errorMsg}

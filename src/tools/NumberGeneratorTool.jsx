@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Dices, RefreshCw, Copy, List } from 'lucide-react'
 
@@ -58,7 +58,7 @@ export default function NumberGeneratorTool() {
                         <input type="number" value={count} onChange={e => setCount(Number(e.target.value))} className="w-full p-3 bg-secondary rounded-xl font-bold" />
                     </div>
 
-                    <label className="flex items-center gap-2 font-bold text-slate-600 cursor-pointer">
+                    <label className="flex items-center gap-2 font-bold text-muted-foreground cursor-pointer">
                         <input type="checkbox" checked={allowDuplicates} onChange={e => setAllowDuplicates(e.target.checked)} className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500" />
                         Allow Duplicates
                     </label>
@@ -92,7 +92,7 @@ export default function NumberGeneratorTool() {
                                 ))}
                             </div>
                         ) : (
-                            <div className="h-full flex flex-col justify-center items-center text-slate-600">
+                            <div className="h-full flex flex-col justify-center items-center text-muted-foreground">
                                 <Dices className="w-16 h-16 mb-4 opacity-20" />
                                 <p>Ready to roll</p>
                             </div>

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import React, { useState } from 'react'
 import mammoth from 'mammoth'
 import html2canvas from 'html2canvas'
@@ -132,12 +132,12 @@ export default function WordToPdfTool() {
             <div className="max-w-4xl mx-auto">
                 <AnimatePresence>
                     {errorMsg && (
-                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-destructive/10 text-red-600 p-4 rounded-xl border border-red-100 flex items-center gap-2 mb-6">
                             <AlertCircle className="w-5 h-5" /> {errorMsg}
                         </motion.div>
                     )}
                     {successMsg && (
-                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-green-50 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-emerald-500/10 text-green-600 p-4 rounded-xl border border-green-100 flex items-center gap-2 mb-6">
                             <CheckCircle className="w-5 h-5" /> {successMsg}
                         </motion.div>
                     )}
@@ -155,7 +155,7 @@ export default function WordToPdfTool() {
                 ) : (
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
                         <div className="bg-card p-6 rounded-2xl border border-border shadow-sm flex flex-col items-center text-center gap-6">
-                            <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-2">
+                            <div className="w-20 h-20 bg-primary/10 text-blue-600 rounded-2xl flex items-center justify-center mb-2">
                                 <FileText className="w-10 h-10" />
                             </div>
 
@@ -165,7 +165,7 @@ export default function WordToPdfTool() {
                             </div>
 
                             <div className="w-full max-w-md">
-                                <label className="block text-sm font-medium text-slate-600 mb-2 text-left">Output Filename</label>
+                                <label className="block text-sm font-medium text-muted-foreground mb-2 text-left">Output Filename</label>
                                 <FilenameInput value={outputFileName} onChange={e => setOutputFileName(e.target.value)} placeholder="document" />
                             </div>
 

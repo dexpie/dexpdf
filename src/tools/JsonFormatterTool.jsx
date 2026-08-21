@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Braces, Copy, Minimize2, AlignLeft, Trash2, CheckCircle, AlertTriangle } from 'lucide-react'
 import { triggerConfetti } from '../utils/confetti'
@@ -53,13 +53,13 @@ export default function JsonFormatterTool() {
                     <div className="flex gap-2">
                         <button
                             onClick={handleFormat}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 font-bold transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-blue-600 rounded-lg hover:bg-blue-100 font-bold transition-colors"
                         >
                             <AlignLeft className="w-4 h-4" /> Prettify
                         </button>
                         <button
                             onClick={handleMinify}
-                            className="flex items-center gap-2 px-4 py-2 bg-secondary text-slate-600 rounded-lg hover:bg-slate-100 font-bold transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 bg-secondary text-muted-foreground rounded-lg hover:bg-secondary font-bold transition-colors"
                         >
                             <Minimize2 className="w-4 h-4" /> Minify
                         </button>
@@ -67,13 +67,13 @@ export default function JsonFormatterTool() {
                     <div className="flex gap-2">
                         <button
                             onClick={copyToClipboard}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 font-bold transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-green-600 rounded-lg hover:bg-green-100 font-bold transition-colors"
                         >
                             <Copy className="w-4 h-4" /> Copy
                         </button>
                         <button
                             onClick={clear}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 font-bold transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 bg-destructive/10 text-red-600 rounded-lg hover:bg-red-100 font-bold transition-colors"
                         >
                             <Trash2 className="w-4 h-4" /> Clear
                         </button>
@@ -91,7 +91,7 @@ export default function JsonFormatterTool() {
                         placeholder="Paste your JSON here..."
                         className={`
                             w-full h-full p-6 font-mono text-sm resize-none focus:outline-none border-2 rounded-b-3xl
-                            ${error ? 'border-red-300 bg-red-50 text-red-900' : 'border-border bg-slate-900 text-green-400'}
+                            ${error ? 'border-red-300 bg-destructive/10 text-red-900' : 'border-border bg-slate-900 text-green-400'}
                         `}
                     />
 

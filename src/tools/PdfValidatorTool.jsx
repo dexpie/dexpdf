@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+﻿import React, { useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
@@ -290,7 +290,7 @@ export default function PdfValidatorTool() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="mb-4 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-lg flex items-center gap-2 text-red-600 dark:text-red-400"
+                  className="mb-4 p-3 bg-destructive/10 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-lg flex items-center gap-2 text-red-600 dark:text-red-400"
                 >
                   <AlertTriangle className="w-5 h-5" />
                   {errorMsg}
@@ -326,7 +326,7 @@ export default function PdfValidatorTool() {
             className="bg-card border border-border rounded-2xl p-6"
           >
             {/* Status Banner */}
-            <div className={`rounded-xl p-4 mb-6 ${validationResult.isValid ? 'bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900' : 'bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900'}`}>
+            <div className={`rounded-xl p-4 mb-6 ${validationResult.isValid ? 'bg-emerald-500/10 dark:bg-green-950/30 border border-green-200 dark:border-green-900' : 'bg-destructive/10 dark:bg-red-950/30 border border-red-200 dark:border-red-900'}`}>
               <div className="flex items-center gap-3">
                 {validationResult.isValid ? (
                   <CheckCircle className="w-8 h-8 text-green-600" />
@@ -352,7 +352,7 @@ export default function PdfValidatorTool() {
                 </h4>
                 <div className="space-y-2">
                   {validationResult.issues.map((issue, idx) => (
-                    <div key={idx} className="p-3 bg-red-50 dark:bg-red-950/20 rounded-lg text-sm text-red-700 dark:text-red-300">
+                    <div key={idx} className="p-3 bg-destructive/10 dark:bg-red-950/20 rounded-lg text-sm text-red-700 dark:text-red-300">
                       {issue.message}
                     </div>
                   ))}
@@ -368,7 +368,7 @@ export default function PdfValidatorTool() {
                 </h4>
                 <div className="space-y-2">
                   {validationResult.warnings.map((warning, idx) => (
-                    <div key={idx} className="p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg text-sm text-amber-700 dark:text-amber-300">
+                    <div key={idx} className="p-3 bg-amber-500/10 dark:bg-amber-950/20 rounded-lg text-sm text-amber-700 dark:text-amber-300">
                       {warning.message}
                     </div>
                   ))}

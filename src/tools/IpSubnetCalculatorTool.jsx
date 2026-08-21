@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Network, Calculator, AlertCircle } from 'lucide-react'
 
@@ -119,7 +119,7 @@ function DetailCard({ label, value, icon }) {
         orange: 'bg-orange-100 text-orange-600',
         purple: 'bg-purple-100 text-purple-600',
         green: 'bg-green-100 text-green-600',
-        slate: 'bg-slate-100 text-slate-600',
+        slate: 'bg-secondary text-muted-foreground',
     }
 
     return (
