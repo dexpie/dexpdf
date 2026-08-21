@@ -71,10 +71,7 @@ export default function CertificateMakerTool() {
 
     return (
         <ToolLayout title="Certificate Maker" description="Design professional certificates for awards and courses.">
-            {/* Font Loader */}
-            <style jsx global>{`
-                @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap');
-            `}</style>
+            {/* Fonts are self-hosted via globals.css — nothing is fetched from third parties */}
 
             <div className="flex flex-col xl:flex-row gap-8 max-w-7xl mx-auto">
                 {/* Editor Column */}

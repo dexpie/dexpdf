@@ -53,11 +53,11 @@ export function getToolProcessingCopy(toolOrId: { id?: string } | string | null 
   const processing = getToolProcessing(toolOrId)
 
   if (processing === 'server') {
-    return 'Memerlukan server/AI. File atau teks yang diperlukan dikirim ke provider terkait untuk diproses.'
+    return 'Butuh API key milikmu (BYOK). Teks dikirim langsung dari browser ke Google Gemini dan tidak pernah melewati server DexPDF.'
   }
 
   if (processing === 'mixed') {
-    return 'Tersedia mode Local di browser; mode Cloud/AI mengirim file ke provider eksternal bila dipilih.'
+    return 'Default 100% Local di browser. Mode Cloud hanya dipakai kalau kamu pilih sendiri, dan filenya akan diunggah ke provider eksternal.'
   }
 
   return '100% berjalan di browser. File tidak diunggah ke server DexPDF.'
@@ -65,9 +65,9 @@ export function getToolProcessingCopy(toolOrId: { id?: string } | string | null 
 
 export function getToolProcessingBadges(toolOrId: { id?: string } | string | null | undefined) {
   const processing = getToolProcessing(toolOrId)
-  if (processing === 'server') return ['Server']
-  if (processing === 'mixed') return ['Local', 'Cloud/AI']
-  return ['Local']
+  if (processing === 'server') return ['BYOK']
+  if (processing === 'mixed') return ['100% Local', 'Cloud opt-in']
+  return ['100% Local']
 }
 
 export const FREE_TIER_LIMIT_COPY = 'Belum ada limit harian yang diberlakukan; batas saat ini 50 MB per file.'

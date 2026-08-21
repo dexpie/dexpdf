@@ -437,7 +437,7 @@ export default function PdfToWordTool() {
   const [successMsg, setSuccessMsg] = useState('')
   const [downloadUrl, setDownloadUrl] = useState(null)
   const [outputFileName, setOutputFileName] = useState('')
-  const [conversionMode, setConversionMode] = useState('certificate')
+  const [conversionMode, setConversionMode] = useState('layout')
   const [thumbnail, setThumbnail] = useState(null)
   const [pageCount, setPageCount] = useState(0)
   const [documentKind, setDocumentKind] = useState('unknown')
@@ -515,11 +515,8 @@ export default function PdfToWordTool() {
 
       setDocumentKind(detectedKind)
       setHasVisualAssets(visualAssetsDetected)
-      setConversionMode(
-        detectedKind === 'scanned' || detectedKind === 'mixed' || visualAssetsDetected
-          ? 'certificate'
-          : 'layout'
-      )
+      // Privacy: never auto-select cloud mode. The user picks an engine explicitly;
+      // detection results are shown as informational badges only.
       await pdf.destroy()
     } catch (e) {
       console.warn('Could not generate thumbnail', e)

@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react'
 import i18n from '@/i18n'
 import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
-import Analytics from '@/components/Analytics'
 import ProgressBar from '@/components/ProgressBar'
 import CommandPalette from '@/components/CommandPalette'
 import GlobalDropZone from '@/components/GlobalDropZone'
@@ -52,7 +51,6 @@ export default function ClientLayout({ children }) {
 
     return (
         <div className="app-layout pt-16">
-            <Analytics />
             <ProgressBar />
             <NavBar />
             <GlobalDropZone />

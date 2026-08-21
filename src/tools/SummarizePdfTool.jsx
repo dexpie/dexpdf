@@ -24,6 +24,7 @@ const ApiKeyModal = ({ onSave, onClose }) => {
                     <h3 className="text-xl font-bold text-foreground dark:text-slate-200">Enable AI Summarizer</h3>
                     <p className="text-sm text-muted-foreground dark:text-muted-foreground mt-2">
                         To summarize documents, please enter your free Google Gemini API Key.
+                        It stays in this browser tab and requests go straight to Google — never through our servers.
                     </p>
                 </div>
                 <input
@@ -80,6 +81,10 @@ export default function SummarizePdfTool() {
 
     const generateSummary = async () => {
         if (!file) return
+        if (!apiKey) {
+            setShowKeyModal(true)
+            return
+        }
         setIsProcessing(true)
         setError('')
 
@@ -120,10 +125,10 @@ export default function SummarizePdfTool() {
             `
 
             try {
-                const result = await generateJSON(apiKey, prompt) // apiKey handles server/client priority
+                const result = await generateJSON(apiKey, prompt)
                 setSummary(result)
             } catch (error) {
-                if (error.message === 'SERVER_KEY_UNAVAILABLE' || error.message?.includes('API Key')) {
+                if (error.message?.includes('API Key')) {
                     setShowKeyModal(true)
                     return
                 }

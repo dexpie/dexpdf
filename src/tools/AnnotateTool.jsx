@@ -9,13 +9,9 @@ import FileDropZone from '../components/common/FileDropZone'
 import ActionButtons from '../components/common/ActionButtons'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Palette, Pen, Eraser, Download, Trash2, Undo, Save, AlertCircle, CheckCircle } from 'lucide-react'
+import { configurePdfWorker } from '../utils/pdfWorker'
 
-// Ensure worker
-try {
-  if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`
-  }
-} catch (e) { }
+configurePdfWorker()
 
 export default function AnnotateTool() {
   const [file, setFile] = useState(null)

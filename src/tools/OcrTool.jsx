@@ -47,7 +47,7 @@ export default function OcrTool() {
   const [totalPages, setTotalPages] = useState(1)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
-  const [ocrEngine, setOcrEngine] = useState('auto') // auto, cloud, local
+  const [ocrEngine, setOcrEngine] = useState('local') // local (private default), cloud (explicit opt-in)
   const ocrWorkerRef = useRef(null)
   const ocrWorkerKeyRef = useRef('')
 
@@ -62,7 +62,7 @@ export default function OcrTool() {
     formData.append('OCREngine', ocrMode === 'accurate' ? '2' : '1')
 
     try {
-      setProgressText('🌩️ Using Cloud OCR (faster)...')
+      setProgressText('🌩️ Uploading image to OCR.space (cloud mode)...')
       const response = await fetch('/api/ocr', {
         method: 'POST',
         body: formData
@@ -294,17 +294,11 @@ export default function OcrTool() {
     setBusy(true); setProgress(0); setProgressText('Initializing OCR...')
     try {
       let result = null
-      if (ocrEngine === 'cloud' || ocrEngine === 'auto') {
-        try {
-          const imageDataUrl = cloudCanvas.toDataURL('image/jpeg', 0.9)
-          result = await runCloudOCR(imageDataUrl)
-        } catch (error) {
-          if (ocrEngine === 'cloud') throw error
-          console.warn('Cloud OCR failed, falling back to local OCR:', error)
-          setProgressText('Cloud OCR unavailable, switching to local OCR...')
-        }
+      if (ocrEngine === 'cloud') {
+        const imageDataUrl = cloudCanvas.toDataURL('image/jpeg', 0.9)
+        result = await runCloudOCR(imageDataUrl)
       }
-      if ((!result && ocrEngine === 'auto') || ocrEngine === 'local') {
+      if (ocrEngine === 'local') {
         setProgressText('Using local OCR (Tesseract.js)...')
         setProgressText('Recognizing text...')
         result = await recognizeLocally(canvas)
@@ -354,17 +348,12 @@ export default function OcrTool() {
     const rawCanvas = canvas
     const processedCanvas = preprocessCanvas(canvas)
     let textResult = ''
-    if (ocrEngine === 'cloud' || ocrEngine === 'auto') {
-      try {
-        const imageDataUrl = rawCanvas.toDataURL('image/jpeg', 0.9)
-        const result = await runCloudOCR(imageDataUrl)
-        if (result && result.text) textResult = result.text
-      } catch (error) {
-        if (ocrEngine === 'cloud') throw error
-        console.warn('Cloud OCR failed in batch, using local:', error)
-      }
+    if (ocrEngine === 'cloud') {
+      const imageDataUrl = rawCanvas.toDataURL('image/jpeg', 0.9)
+      const result = await runCloudOCR(imageDataUrl)
+      if (result && result.text) textResult = result.text
     }
-    if ((!textResult && ocrEngine === 'auto') || ocrEngine === 'local') {
+    if (ocrEngine === 'local') {
       const result = await recognizeLocally(processedCanvas)
       textResult = result.text
     }
@@ -406,7 +395,7 @@ export default function OcrTool() {
   }, [selectedPage])
 
   return (
-    <ToolLayout title="OCR Text Extraction" description={t('tool.ocr_desc', 'Extract text locally with Tesseract or optionally send an image to OCR.space.')}>
+    <ToolLayout title="OCR Text Extraction" description={t('tool.ocr_desc', 'Extract text 100% privately on your device with Tesseract. Optional cloud mode sends images to OCR.space.')}>
 
       {/* Settings Panel */}
       <div className="bg-card p-5 rounded-2xl border border-border shadow-sm max-w-4xl mx-auto w-full mb-8">
@@ -431,12 +420,12 @@ export default function OcrTool() {
             <label className="block text-sm font-medium text-slate-600 mb-1.5 flex items-center gap-2">
               <Monitor className="w-4 h-4" /> Processing Engine
             </label>
-            <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl">
+            <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl">
               <button
-                onClick={() => setOcrEngine('auto')}
-                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all ${ocrEngine === 'auto' ? 'bg-card text-blue-600 shadow-sm' : 'text-muted-foreground hover:bg-slate-200'}`}
+                onClick={() => setOcrEngine('local')}
+                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'local' ? 'bg-card text-green-600 shadow-sm' : 'text-muted-foreground hover:bg-slate-200'}`}
               >
-                Auto
+                <Laptop className="w-3 h-3" /> Local (Private)
               </button>
               <button
                 onClick={() => setOcrEngine('cloud')}
@@ -444,13 +433,19 @@ export default function OcrTool() {
               >
                 <Cloud className="w-3 h-3" /> Cloud
               </button>
-              <button
-                onClick={() => setOcrEngine('local')}
-                className={`text-xs font-semibold py-1.5 px-2 rounded-lg transition-all flex items-center justify-center gap-1 ${ocrEngine === 'local' ? 'bg-card text-blue-600 shadow-sm' : 'text-muted-foreground hover:bg-slate-200'}`}
-              >
-                <Laptop className="w-3 h-3" /> Local
-              </button>
             </div>
+            {ocrEngine === 'cloud' && (
+              <p className="mt-2 text-[11px] leading-snug text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 flex items-start gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                Cloud mode uploads page images to OCR.space. For confidential documents, use Local mode.
+              </p>
+            )}
+            {ocrEngine === 'local' && (
+              <p className="mt-2 text-[11px] leading-snug text-green-600 bg-green-50 border border-green-200 rounded-lg px-2 py-1.5 flex items-start gap-1.5">
+                <CheckCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                100% private: processing runs entirely on your device.
+              </p>
+            )}
           </div>
 
           {/* Mode */}

@@ -1,15 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import DraggableElement from './DraggableElement'
+import { configurePdfWorker } from '../../utils/pdfWorker'
 
-// Ensure worker is configured (can move to a shared init check)
-// This might need to be consistent with OcrTool's config
-try {
-    // Use the specific version installed to match package.json
-    if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`
-    }
-} catch (e) { console.warn('Worker init warn', e) }
+configurePdfWorker()
 
 export default function EditorCanvas({
     file,

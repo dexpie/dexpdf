@@ -3,8 +3,9 @@ import * as pdfjsLib from 'pdfjs-dist'
 import { PDFDocument } from 'pdf-lib'
 import FilenameInput from '../components/FilenameInput'
 import { getOutputFilename, getDefaultFilename } from '../utils/fileHelpers'
+import { configurePdfWorker } from '../utils/pdfWorker'
 
-try { pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js` } catch (e) {/*ignore*/ }
+configurePdfWorker()
 
 function move(arr, from, to) { const a = arr.slice(); const v = a.splice(from, 1)[0]; a.splice(to, 0, v); return a }
 
