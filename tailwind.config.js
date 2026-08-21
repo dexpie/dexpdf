@@ -17,7 +17,9 @@ module.exports = {
         },
         extend: {
             fontFamily: {
-                sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+                sans: ["Inter", "var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+                serif: ["Newsreader", "Georgia", "serif"],
+                mono: ["Space Mono", "ui-monospace", "SFMono-Regular", "monospace"],
             },
             colors: {
                 border: "hsl(var(--border))",
@@ -26,7 +28,7 @@ module.exports = {
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
                 primary: {
-                    DEFAULT: "hsl(var(--primary))", // Deep Indigo / Brand Color
+                    DEFAULT: "hsl(var(--primary))",
                     foreground: "hsl(var(--primary-foreground))",
                 },
                 secondary: {
@@ -53,6 +55,14 @@ module.exports = {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
+                vault: "#10151C",
+                "vault-2": "#171E27",
+                paper: "#F3EFE4",
+                "paper-2": "#EAE3D2",
+                ink: "#1B2027",
+                "signal-green": "#35D68E",
+                "stamp-amber": "#E0A339",
+                "stamp-blue": "#6B8CBE",
             },
             borderRadius: {
                 lg: "var(--radius)",

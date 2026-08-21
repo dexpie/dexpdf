@@ -57,17 +57,17 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl">
           <Link
             href="/blog/cara-compress-pdf-tanpa-kehilangan-kualitas"
-            className="glass group flex flex-col gap-4 rounded-2xl p-6 transition hover:border-primary/30 hover:shadow-lg md:flex-row md:items-center md:gap-6"
+            className="glass group flex flex-col gap-4 rounded-lg p-6 transition hover:border-primary/40 md:flex-row md:items-center md:gap-6"
           >
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
               <BookOpen className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Guide · 5 min read</p>
-              <h2 className="mt-1 text-lg font-bold tracking-tight text-foreground group-hover:text-primary md:text-xl">
+              <p className="boundary-label">Guide · 5 min read</p>
+              <h2 className="mt-1 text-lg font-semibold tracking-tight text-foreground group-hover:text-primary md:text-xl">
                 Cara Compress PDF Tanpa Kehilangan Kualitas
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground">Pilih level kompresi yang tepat dan pahami trade-off kualitasnya.</p>
+              <p className="mt-1 font-serif text-sm text-muted-foreground">Pilih level kompresi yang tepat dan pahami trade-off kualitasnya.</p>
             </div>
             <span className="inline-flex shrink-0 items-center gap-2 text-sm font-bold text-primary">
               Baca panduan

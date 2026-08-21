@@ -1,27 +1,70 @@
-'use client'
+﻿'use client'
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import {
   ArrowRight,
-  ArrowUpRight,
-  CheckCircle2,
   CloudOff,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  Zap,
+  FileText,
+  Layers,
+  Lock,
+  Scissors,
+  FileSignature,
 } from 'lucide-react'
 import ToolGrid from '@/components/ToolGrid'
 import { TOOLS } from '@/config/tools'
 
 const QUICK_TOOLS = ['merge', 'compress', 'pdf2word', 'signature', 'qr-code']
 
+function BoundaryVisual() {
+  return (
+    <div className="relative mx-auto w-full max-w-md" aria-hidden="true">
+      {/* Device boundary */}
+      <div className="boundary-box p-6">
+        <span className="boundary-label absolute -top-2.5 left-4 bg-[#10151C] px-2">your device</span>
+
+        {/* Mini tool icons the document travels between */}
+        <div className="flex items-center justify-between px-2 pt-2">
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[rgba(243,239,228,0.12)] bg-[#171E27]">
+            <Layers className="h-5 w-5 text-[#8E97A3]" />
+          </div>
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[rgba(243,239,228,0.12)] bg-[#171E27]">
+            <Scissors className="h-5 w-5 text-[#8E97A3]" />
+          </div>
+          <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[rgba(243,239,228,0.12)] bg-[#171E27]">
+            <FileSignature className="h-5 w-5 text-[#8E97A3]" />
+          </div>
+        </div>
+
+        {/* The document, moving between tools â€” never leaving the box */}
+        <div className="doc-move mt-5 flex w-fit items-center gap-2 rounded-md bg-[#F3EFE4] px-3 py-2 shadow-sm">
+          <FileText className="h-4 w-4 text-[#1B2027]" />
+          <span className="font-mono text-[10px] font-bold tracking-wide text-[#1B2027]">contract.pdf</span>
+        </div>
+
+        <p className="mt-6 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#35D68E]">
+          <Lock className="h-3 w-3" />
+          processed here
+        </p>
+      </div>
+
+      {/* The cloud â€” outside the boundary, connection never completes */}
+      <div className="absolute -right-3 -top-8 flex flex-col items-center gap-1">
+        <CloudOff className="h-6 w-6 text-[#8E97A3]" />
+        <span className="boundary-label">cloud</span>
+      </div>
+      <svg className="absolute -right-1 top-0 h-10 w-16 text-[#8E97A3]" viewBox="0 0 64 40" fill="none" aria-hidden="true">
+        <line x1="62" y1="20" x2="30" y2="20" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.5" />
+        <line x1="24" y1="20" x2="14" y2="20" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.25" />
+      </svg>
+    </div>
+  )
+}
+
 export default function HomeClient() {
   const { t } = useTranslation()
   const [mounted, setMounted] = useState(false)
-  const [heroQuery, setHeroQuery] = useState('')
 
   useEffect(() => setMounted(true), [])
 
@@ -39,71 +82,60 @@ export default function HomeClient() {
     window.setTimeout(() => document.getElementById('tool-search')?.focus(), 450)
   }
 
-  const submitSearch = event => {
-    event.preventDefault()
-    const query = heroQuery.trim()
-    window.__dexpdfHeroSearch = query
-    window.dispatchEvent(new Event('dexpdf:tool-search'))
-    document.getElementById('tool-catalog')?.scrollIntoView({ behavior: 'smooth' })
-    window.setTimeout(() => document.getElementById('tool-search')?.focus(), 450)
-  }
-
   return (
     <main className="min-h-screen overflow-hidden bg-background">
-      <section className="relative px-4 pb-20 pt-20 text-center md:pb-28 md:pt-28">
-        <div className="mx-auto max-w-3xl">
-          <div className="glass mb-8 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold text-muted-foreground shadow-sm">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
-            {copy('home.eyebrow', '100% private — files never leave your device')}
-          </div>
+      <section className="border-b border-[rgba(243,239,228,0.12)] px-4 pb-16 pt-16 md:px-6 md:pb-24 md:pt-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <h1 className="max-w-xl font-mono text-4xl font-bold leading-[1.08] tracking-tight text-foreground sm:text-5xl md:text-6xl">
+              Your files never leave{' '}
+              <span className="text-primary">the building.</span>
+            </h1>
 
-          <h1 className="text-balance text-5xl font-black leading-[1.02] tracking-[-0.045em] text-foreground sm:text-6xl md:text-7xl">
-            {copy('home.title', 'PDF tools that feel')}
-            <span className="hero-gradient-text block">{copy('home.titleAccent', 'effortlessly fast.')}</span>
-          </h1>
+            <p className="mt-6 max-w-lg font-serif text-lg leading-8 text-muted-foreground md:text-xl">
+              {TOOLS.length} PDF and QR tools that run entirely in your browser.
+              No uploads, no accounts, no waiting rooms â€” your documents are
+              processed on this device and nowhere else.
+            </p>
 
-          <p className="mx-auto mt-6 max-w-xl text-pretty text-base leading-7 text-muted-foreground md:text-lg">
-            {copy('home.subtitle', 'Edit, convert, organize, and protect documents in one fast workspace — no sign-up, no uploads for local tools.')}
-          </p>
-
-          <form onSubmit={submitSearch} className="mx-auto mt-10 max-w-xl">
-            <label htmlFor="hero-tool-search" className="sr-only">{copy('home.searchLabel', 'Search tools')}</label>
-            <div className="glass-strong flex min-h-16 items-center gap-2 rounded-2xl p-2 shadow-xl shadow-slate-900/10 transition focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/10">
-              <Search className="ml-4 h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
-              <input
-                id="hero-tool-search"
-                value={heroQuery}
-                onChange={event => setHeroQuery(event.target.value)}
-                placeholder={copy('home.searchPlaceholder', 'Search: merge, compress, QR, sign...')}
-                className="min-w-0 flex-1 bg-transparent px-1 text-base font-medium text-foreground outline-none placeholder:text-muted-foreground"
-              />
-              <button type="submit" className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-sm shadow-primary/25 transition hover:opacity-90">
-                {copy('home.searchCta', 'Search')}
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              <button
+                onClick={openSearch}
+                className="inline-flex min-h-12 items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
+                Browse tools
                 <ArrowRight className="h-4 w-4" />
               </button>
-            </div>
-          </form>
-
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-            {quickTools.map(tool => (
               <Link
-                key={tool.id}
-                href={tool.href || `/${tool.id}`}
-                className="glass-subtle group inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-foreground transition hover:border-primary/40 hover:text-primary"
+                href="/privacy"
+                className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-[rgba(243,239,228,0.2)] px-6 py-3 text-sm font-semibold text-foreground transition hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <tool.icon className="h-4 w-4 text-primary" />
-                {tool.title}
-                <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 transition group-hover:opacity-100" />
+                See how local works
               </Link>
-            ))}
+            </div>
+
+            <div className="terminal-strip mt-10 max-w-sm px-4 py-3">
+              <p><span className="prompt">$</span> upload_required: <span className="value">false</span></p>
+              <p><span className="prompt">$</span> files_transmitted: <span className="value">0</span></p>
+              <p><span className="prompt">$</span> processed_on: <span className="value">this_device</span></p>
+            </div>
           </div>
 
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-semibold text-muted-foreground">
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-emerald-500" /> {copy('home.noSignup', 'No sign-up')}</span>
-            <span className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-emerald-500" /> {copy('home.privacyByDesign', 'Privacy by design')}</span>
-            <span className="flex items-center gap-1.5"><CloudOff className="h-4 w-4 text-emerald-500" /> {copy('home.browserFirst', 'Runs in your browser')}</span>
-            <span className="flex items-center gap-1.5"><Zap className="h-4 w-4 text-amber-500" /> {TOOLS.length} tools free</span>
-          </div>
+          <BoundaryVisual />
+        </div>
+
+        <div className="mx-auto mt-14 flex max-w-6xl flex-wrap items-center gap-2">
+          <span className="boundary-label mr-2">Start here:</span>
+          {quickTools.map(tool => (
+            <Link
+              key={tool.id}
+              href={tool.href || `/${tool.id}`}
+              className="group inline-flex items-center gap-1.5 rounded-full border border-[rgba(243,239,228,0.14)] px-4 py-1.5 text-xs font-semibold text-muted-foreground transition hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <tool.icon className="h-3.5 w-3.5" />
+              {tool.title}
+            </Link>
+          ))}
         </div>
       </section>
 

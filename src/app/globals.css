@@ -1,9 +1,44 @@
-
+﻿
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Self-hosted fonts (latin subset) so no request ever leaves the device */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/inter-var.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/newsreader-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/newsreader-400italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/space-mono-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/space-mono-700.woff2') format('woff2');
+}
 @font-face {
   font-family: 'Cinzel';
   font-style: normal;
@@ -42,70 +77,68 @@
 
 @layer base {
   :root {
-    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    /* Soft Neutral Palette - Comfortable for Eyes */
-    /* Light mode - soft off-white, not pure white */
-    --background: 220 18% 96%;
-    --foreground: 220 12% 22%;
+    /* Vault & Paper — dark vault chrome, paper document surfaces */
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --background: 215 27% 9%;        /* --vault #10151C */
+    --foreground: 45 38% 92%;        /* --paper #F3EFE4 */
 
-    --card: 220 18% 98%;
-    --card-foreground: 220 12% 22%;
+    --card: 213 22% 12%;             /* --vault-2 #171E27 */
+    --card-foreground: 45 38% 92%;
 
-    --popover: 220 18% 98%;
-    --popover-foreground: 220 12% 22%;
+    --popover: 213 22% 12%;
+    --popover-foreground: 45 38% 92%;
 
-    /* Softer primary - warm blue instead of harsh indigo */
-    --primary: 211 85% 55%;
-    --primary-foreground: 220 18% 96%;
+    --primary: 155 64% 52%;          /* --signal-green #35D68E */
+    --primary-foreground: 215 27% 9%;
 
-    --secondary: 220 15% 92%;
-    --secondary-foreground: 220 12% 25%;
+    --secondary: 214 20% 15%;
+    --secondary-foreground: 45 38% 92%;
 
-    --muted: 220 12% 92%;
-    --muted-foreground: 220 8% 45%;
+    --muted: 214 20% 15%;
+    --muted-foreground: 214 11% 60%; /* --muted #8E97A3 */
 
-    --accent: 220 12% 92%;
-    --accent-foreground: 220 12% 25%;
+    --accent: 214 20% 15%;
+    --accent-foreground: 45 38% 92%;
 
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 220 18% 96%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 45 38% 92%;
 
-    --border: 220 12% 86%;
-    --input: 220 12% 86%;
-    --ring: 211 85% 55%;
+    --border: 210 12% 18%;
+    --input: 210 12% 22%;
+    --ring: 155 64% 52%;
 
-    --radius: 0.75rem;
+    --radius: 0.625rem;
   }
 
   .dark {
-    /* Dark mode - sophisticated charcoal/slate, NOT pure black */
-    --background: 220 15% 8%;
-    --foreground: 220 10% 90%;
+    /* The vault is always dark — same palette in both themes */
+    --background: 215 27% 9%;
+    --foreground: 45 38% 92%;
 
-    --card: 220 18% 10%;
-    --card-foreground: 220 10% 90%;
+    --card: 213 22% 12%;
+    --card-foreground: 45 38% 92%;
 
-    --popover: 220 18% 10%;
-    --popover-foreground: 220 10% 90%;
+    --popover: 213 22% 12%;
+    --popover-foreground: 45 38% 92%;
 
-    --primary: 211 80% 60%;
-    --primary-foreground: 220 15% 8%;
+    --primary: 155 64% 52%;
+    --primary-foreground: 215 27% 9%;
 
-    --secondary: 220 15% 14%;
-    --secondary-foreground: 220 10% 90%;
+    --secondary: 214 20% 15%;
+    --secondary-foreground: 45 38% 92%;
 
-    --muted: 220 15% 12%;
-    --muted-foreground: 220 8% 60%;
+    --muted: 214 20% 15%;
+    --muted-foreground: 214 11% 60%;
 
-    --accent: 220 15% 14%;
-    --accent-foreground: 220 10% 90%;
+    --accent: 214 20% 15%;
+    --accent-foreground: 45 38% 92%;
 
-    --destructive: 0 70% 45%;
-    --destructive-foreground: 220 15% 8%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 45 38% 92%;
 
-    --border: 220 12% 16%;
-    --input: 220 12% 16%;
-    --ring: 211 80% 60%;
+    --border: 210 12% 18%;
+    --input: 210 12% 22%;
+    --ring: 155 64% 52%;
   }
 }
 
@@ -130,71 +163,98 @@
 }
 
 @layer utilities {
-  /* Glassmorphism surfaces */
+  /* Vault & Paper surfaces */
   .glass {
-    background: hsl(var(--card) / 0.65);
-    backdrop-filter: blur(16px) saturate(1.4);
-    -webkit-backdrop-filter: blur(16px) saturate(1.4);
-    border: 1px solid hsl(var(--border) / 0.6);
+    background: hsl(213 22% 12% / 0.85);
+    border: 1px solid rgba(243, 239, 228, 0.12);
   }
 
   .glass-strong {
-    background: hsl(var(--card) / 0.8);
-    backdrop-filter: blur(20px) saturate(1.5);
-    -webkit-backdrop-filter: blur(20px) saturate(1.5);
-    border: 1px solid hsl(var(--border) / 0.7);
+    background: #171E27;
+    border: 1px solid rgba(243, 239, 228, 0.14);
   }
 
   .glass-subtle {
-    background: hsl(var(--card) / 0.45);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid hsl(var(--border) / 0.45);
+    background: hsl(213 22% 12% / 0.6);
+    border: 1px solid rgba(243, 239, 228, 0.10);
   }
 
-  /* Ambient color orbs behind glass surfaces */
-  .ambient-orbs {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
+  /* Paper document card — the thing you work on */
+  .paper-card {
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 0.5rem;
+    transition: transform 0.15s ease, background-color 0.15s ease;
   }
 
-  .ambient-orbs::before,
-  .ambient-orbs::after {
-    content: '';
-    position: absolute;
-    border-radius: 9999px;
-    filter: blur(90px);
-    opacity: 0.35;
+  .paper-card:hover {
+    background: var(--paper-2);
   }
 
-  .ambient-orbs::before {
-    width: 480px;
-    height: 480px;
-    top: -160px;
-    right: -120px;
-    background: radial-gradient(circle, hsl(211 85% 55% / 0.5), transparent 70%);
+  /* Dashed device boundary — files never cross this line */
+  .boundary-box {
+    position: relative;
+    border: 1.5px dashed rgba(243, 239, 228, 0.28);
+    border-radius: 0.75rem;
   }
 
-  .ambient-orbs::after {
-    width: 420px;
-    height: 420px;
-    bottom: -140px;
-    left: -120px;
-    background: radial-gradient(circle, hsl(160 70% 45% / 0.35), transparent 70%);
+  .boundary-label {
+    font-family: "Space Mono", monospace;
+    font-size: 0.625rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8E97A3;
   }
 
-  .dark .ambient-orbs::before {
-    opacity: 0.25;
+  /* Terminal status strip */
+  .terminal-strip {
+    font-family: "Space Mono", monospace;
+    font-size: 0.75rem;
+    line-height: 1.9;
+    text-align: left;
+    background: hsl(213 22% 12% / 0.7);
+    border: 1px solid rgba(243, 239, 228, 0.12);
+    border-radius: 0.5rem;
   }
 
-  .dark .ambient-orbs::after {
-    opacity: 0.18;
+  .terminal-strip .prompt {
+    color: #35D68E;
+  }
+
+  .terminal-strip .value {
+    color: #F3EFE4;
+  }
+
+  /* Classification stamp (trust cards) */
+  .stamp {
+    font-family: "Space Mono", monospace;
+    font-weight: 700;
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+    border: 2px solid currentColor;
+    border-radius: 0.25rem;
+    transform: rotate(-4deg);
+    display: inline-block;
+  }
+
+  .doc-move {
+    animation: doc-move 7s ease-in-out infinite;
+  }
+
+  @keyframes doc-move {
+    0%, 100% { transform: translate(0, 0); }
+    30%      { transform: translate(34px, -18px); }
+    65%      { transform: translate(72px, 8px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .doc-move {
+      animation: none;
+    }
   }
 }
-
 /* Fade-in Animation */
 @keyframes fadeIn {
   from {

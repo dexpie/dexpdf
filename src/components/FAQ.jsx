@@ -34,36 +34,34 @@ export default function FAQ({ faqs = DEFAULT_FAQS }) {
   const [openIndex, setOpenIndex] = useState(null)
 
   return (
-    <section className="py-24 bg-[#F8FAFC]">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="text-center mb-12">
-          <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-            <HelpCircle className="w-8 h-8" />
-          </div>
-          <h2 className="text-3xl font-bold text-foreground mb-4">Frequently Asked Questions</h2>
-          <p className="text-muted-foreground text-lg">Everything you need to know about DexPDF features and security.</p>
+    <section className="py-20 md:py-24">
+      <div className="container mx-auto px-4 max-w-3xl">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold tracking-tight text-foreground mb-3">Frequently Asked Questions</h2>
+          <p className="text-muted-foreground">Everything you need to know about DexPDF features and security.</p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className={`bg-card rounded-2xl border transition-colors ${openIndex === index ? 'border-blue-200 shadow-md' : 'border-border shadow-sm hover:border-blue-100'}`}
+              className={`glass rounded-2xl transition-colors ${openIndex === index ? 'border-primary/30' : ''}`}
             >
               <button
-                className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
+                className="w-full px-6 py-4.5 py-5 flex items-center justify-between gap-4 text-left focus:outline-none"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                aria-expanded={openIndex === index}
               >
-                <span className={`text-lg font-semibold transition-colors ${openIndex === index ? 'text-blue-600' : 'text-foreground'}`}>
+                <span className={`font-semibold transition-colors ${openIndex === index ? 'text-primary' : 'text-foreground'}`}>
                   {faq.question}
                 </span>
-                <div className={`p-2 rounded-full transition-colors ${openIndex === index ? 'bg-blue-50 text-blue-600' : 'bg-secondary text-muted-foreground'}`}>
-                  {openIndex === index ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                <div className={`shrink-0 p-1.5 rounded-full transition-colors ${openIndex === index ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'}`}>
+                  {openIndex === index ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                 </div>
               </button>
 
               <div className={`accordion-content ${openIndex === index ? 'open' : ''}`}>
-                <div className="px-6 pb-6 pt-0 text-muted-foreground leading-relaxed border-t border-border mt-2 pt-4">
+                <div className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed">
                   {faq.answer}
                 </div>
               </div>

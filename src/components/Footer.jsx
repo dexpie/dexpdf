@@ -11,7 +11,7 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="mt-0 border-t border-border bg-card py-8">
+    <footer className="glass-subtle mt-0 border-x-0 border-b-0 py-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 md:flex-row md:items-center md:justify-between md:px-6">
         <div>
           <p className="text-sm font-black text-foreground">DexPDF</p>
