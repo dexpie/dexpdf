@@ -39,7 +39,7 @@ export default function NavBar() {
   ]
 
   return (
-    <nav className="fixed left-0 top-0 z-50 h-16 w-full border-b border-border bg-background/80 shadow-sm backdrop-blur-xl">
+    <nav className="glass-strong fixed left-0 top-0 z-50 h-16 w-full border-x-0 border-t-0 shadow-sm">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 md:px-6">
         <button onClick={() => navigate('/')} className="group flex items-center gap-2.5 text-left">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition group-hover:-rotate-3">
@@ -95,7 +95,7 @@ export default function NavBar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="absolute left-0 top-full z-50 flex w-full flex-col gap-1 border-b border-border bg-background p-3 shadow-xl md:hidden">
+        <div className="glass-strong absolute left-0 top-full z-50 flex w-full flex-col gap-1 border-x-0 p-3 shadow-xl md:hidden">
           {navLinks.map(link => (
             <button key={link.href} onClick={() => navigate(link.href)} className="w-full rounded-xl p-3 text-left text-sm font-bold text-foreground transition hover:bg-secondary">
               {link.label} PDF

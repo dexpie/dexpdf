@@ -51,6 +51,7 @@ export default function ClientLayout({ children }) {
 
     return (
         <div className="app-layout pt-16">
+            <div className="ambient-orbs" aria-hidden="true" />
             <ProgressBar />
             <NavBar />
             <GlobalDropZone />

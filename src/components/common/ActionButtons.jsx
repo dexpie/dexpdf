@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button } from '@/components/ui/button'
 
 /**
  * ActionButtons - Standard action buttons for tool pages
@@ -29,37 +30,36 @@ export default function ActionButtons({
   return (
     <div className={`flex flex-wrap gap-3 ${className}`}>
       {onSecondary && (
-        <button
+        <Button
           type="button"
+          variant="outline"
           onClick={onSecondary}
           disabled={disabled || loading}
-          className={`min-h-11 px-5 py-2.5 font-bold text-muted-foreground hover:text-foreground hover:bg-secondary rounded-xl border border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${secondaryClassName}`}
+          className={secondaryClassName}
         >
           {secondaryText}
-        </button>
+        </Button>
       )}
       {onPrimary && (
-        <button
+        <Button
           type="button"
+          variant={danger ? 'destructive' : 'default'}
           onClick={onPrimary}
           disabled={disabled || loading}
-          className={`
-            min-h-11 px-6 py-2.5 font-bold rounded-xl transition-all
-            flex items-center justify-center gap-2
-            ${danger
-              ? 'bg-destructive text-destructive-foreground hover:opacity-90'
-              : 'bg-primary text-primary-foreground hover:opacity-90'
-            }
-            disabled:opacity-50 disabled:cursor-not-allowed
-            ${primaryClassName}
-          `}
+          className={primaryClassName}
         >
-          {loading && (
-            <div className="w-4 h-4 border-2 border-current/30 border-current rounded-full animate-spin" />
+          {loading ? (
+            <>
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current" />
+              Processing...
+            </>
+          ) : (
+            <>
+              {PrimaryIcon && <PrimaryIcon className="h-4 w-4" />}
+              {primaryText}
+            </>
           )}
-          {!loading && PrimaryIcon && <PrimaryIcon className="h-4 w-4" />}
-          {loading ? 'Processing...' : primaryText}
-        </button>
+        </Button>
       )}
     </div>
   )

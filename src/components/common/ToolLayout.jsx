@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ArrowLeft, CheckCircle2, Lock, Share2, Shield, Star, Zap } from 'lucide-react'
+import { ArrowLeft, Share2, Star } from 'lucide-react'
 import { TOOLS } from '@/config/tools'
 import ToolProcessingBadge from '@/components/ToolProcessingBadge'
 import { getToolFormats, getToolMaxFileSize, getToolProcessingCopy } from '@/config/toolMetadata'
@@ -34,19 +34,12 @@ export default function ToolLayout({ title, description, children, features, ste
   }, [toolId])
 
   const defaultFeatures = [
-    { icon: Shield, label: 'Privacy-aware', desc: 'Local tools keep files on your device' },
-    { icon: Zap, label: 'Fast workflow', desc: 'Clear controls with no unnecessary steps' },
-    { icon: Lock, label: 'No account needed', desc: 'Start the core workflow immediately' },
-  ]
-
-  const defaultSteps = [
-    { num: '1', label: 'Choose input' },
-    { num: '2', label: 'Adjust settings' },
-    { num: '3', label: 'Download result' },
+    { label: 'Privacy-aware', desc: 'Local tools keep files on your device' },
+    { label: 'Fast workflow', desc: 'Clear controls with no unnecessary steps' },
+    { label: 'No account needed', desc: 'Start the core workflow immediately' },
   ]
 
   const toolFeatures = features || defaultFeatures
-  const toolSteps = steps || defaultSteps
 
   const toggleFavorite = () => {
     if (!toolId) return
@@ -71,31 +64,31 @@ export default function ToolLayout({ title, description, children, features, ste
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-background pb-16">
-      <header className="relative overflow-hidden border-b border-blue-100 bg-gradient-to-b from-blue-50/90 via-background to-background px-4 pb-16 pt-5 dark:border-blue-500/15 dark:from-blue-950/25 md:px-6 md:pb-20">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.12),transparent_52%)]" />
-        <div className="relative mx-auto max-w-6xl">
+      <header className="glass-subtle border-x-0 border-t-0 px-4 py-6 md:px-6">
+        <div className="mx-auto max-w-5xl">
           <div className="flex items-center justify-between gap-3">
-            <Link href="/" className="inline-flex min-h-10 items-center gap-2 rounded-xl px-3 text-sm font-bold text-muted-foreground transition hover:bg-card hover:text-foreground hover:shadow-sm">
+            <Link href="/" className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-semibold text-muted-foreground transition hover:bg-secondary hover:text-foreground">
               <ArrowLeft className="h-4 w-4" />
               All tools
             </Link>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               {tool && (
                 <button
                   type="button"
                   onClick={toggleFavorite}
                   aria-pressed={isFavorite}
-                  className={`inline-flex min-h-10 items-center gap-2 rounded-xl border px-3 text-sm font-bold transition ${isFavorite ? 'border-amber-300 bg-amber-50 text-amber-600 dark:bg-amber-500/10' : 'border-border bg-card text-muted-foreground hover:border-amber-300 hover:text-amber-600'}`}
+                  aria-label={isFavorite ? 'Remove from saved tools' : 'Save tool'}
+                  className={`inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-sm font-semibold transition ${isFavorite ? 'border-amber-300 bg-amber-50 text-amber-600 dark:bg-amber-500/10' : 'border-border bg-card text-muted-foreground hover:text-foreground'}`}
                 >
                   <Star className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
-                  <span className="hidden sm:inline">{isFavorite ? 'Saved' : 'Save tool'}</span>
+                  <span className="hidden sm:inline">{isFavorite ? 'Saved' : 'Save'}</span>
                 </button>
               )}
               <button
                 type="button"
                 onClick={shareTool}
-                className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-border bg-card px-3 text-sm font-bold text-muted-foreground transition hover:border-primary/30 hover:text-primary"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-semibold text-muted-foreground transition hover:text-foreground"
               >
                 <Share2 className="h-4 w-4" />
                 <span className="hidden sm:inline">{shareStatus || 'Share'}</span>
@@ -103,54 +96,36 @@ export default function ToolLayout({ title, description, children, features, ste
             </div>
           </div>
 
-          <div className="mx-auto mt-8 max-w-3xl text-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-card/80 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-blue-700 shadow-sm backdrop-blur dark:border-blue-500/20 dark:text-blue-300">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              DexPDF workspace
+          <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">{title}</h1>
+              {description && <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p>}
             </div>
-            <h1 className="text-3xl font-black tracking-[-0.04em] text-foreground md:text-5xl">{title}</h1>
-            {description && <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">{description}</p>}
-
-            {tool && (
-              <div className="mx-auto mt-5 max-w-2xl rounded-2xl border border-border bg-card/80 p-4 text-left shadow-sm backdrop-blur">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <ToolProcessingBadge tool={tool} />
-                  <span className="text-xs font-bold text-muted-foreground">{getToolMaxFileSize(tool)}</span>
-                </div>
-                <p className="mt-3 text-xs leading-5 text-muted-foreground">{getToolProcessingCopy(tool)}</p>
-                <p className="mt-2 text-xs font-semibold text-foreground">Format: {getToolFormats(tool)}</p>
-              </div>
-            )}
-
-            <ol className="mx-auto mt-7 grid max-w-2xl grid-cols-3 overflow-hidden rounded-2xl border border-border bg-card/90 shadow-sm backdrop-blur">
-              {toolSteps.map((step, index) => (
-                <li key={step.num || index} className={`flex min-h-16 items-center justify-center gap-2 px-2 py-3 text-center ${index > 0 ? 'border-l border-border' : ''}`}>
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">{step.num}</span>
-                  <span className="hidden text-xs font-bold text-muted-foreground sm:inline">{step.label}</span>
-                </li>
-              ))}
-            </ol>
+            {tool && <ToolProcessingBadge tool={tool} />}
           </div>
+
+          {tool && (
+            <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+              <span>{getToolProcessingCopy(tool)}</span>
+              <span aria-hidden="true" className="hidden sm:inline">·</span>
+              <span>Format: {getToolFormats(tool)}</span>
+              <span aria-hidden="true">·</span>
+              <span>{getToolMaxFileSize(tool)}</span>
+            </p>
+          )}
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto -mt-8 max-w-6xl px-4 md:-mt-10 md:px-6">
-        <div className="min-h-[420px] rounded-[1.75rem] border border-border bg-card p-4 shadow-xl shadow-slate-900/[0.06] md:p-8">
-          {children}
-        </div>
+      <main className="mx-auto -mt-px max-w-5xl px-4 pt-8 md:px-6">
+        {children}
       </main>
 
-      <section className="mx-auto mt-8 max-w-6xl px-4 md:px-6">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+      <section className="mx-auto mt-12 max-w-5xl px-4 md:px-6">
+        <div className="grid grid-cols-1 gap-3 border-t border-border pt-6 sm:grid-cols-3">
           {toolFeatures.map((feature, index) => (
-            <div key={feature.label || index} className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-300">
-                <feature.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-sm font-black text-foreground">{feature.label}</h2>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">{feature.desc}</p>
-              </div>
+            <div key={feature.label || index} className="text-left">
+              <h2 className="text-sm font-semibold text-foreground">{feature.label}</h2>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">{feature.desc}</p>
             </div>
           ))}
         </div>

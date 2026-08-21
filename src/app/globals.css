@@ -129,6 +129,72 @@
   }
 }
 
+@layer utilities {
+  /* Glassmorphism surfaces */
+  .glass {
+    background: hsl(var(--card) / 0.65);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid hsl(var(--border) / 0.6);
+  }
+
+  .glass-strong {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(20px) saturate(1.5);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    border: 1px solid hsl(var(--border) / 0.7);
+  }
+
+  .glass-subtle {
+    background: hsl(var(--card) / 0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid hsl(var(--border) / 0.45);
+  }
+
+  /* Ambient color orbs behind glass surfaces */
+  .ambient-orbs {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .ambient-orbs::before,
+  .ambient-orbs::after {
+    content: '';
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    opacity: 0.35;
+  }
+
+  .ambient-orbs::before {
+    width: 480px;
+    height: 480px;
+    top: -160px;
+    right: -120px;
+    background: radial-gradient(circle, hsl(211 85% 55% / 0.5), transparent 70%);
+  }
+
+  .ambient-orbs::after {
+    width: 420px;
+    height: 420px;
+    bottom: -140px;
+    left: -120px;
+    background: radial-gradient(circle, hsl(160 70% 45% / 0.35), transparent 70%);
+  }
+
+  .dark .ambient-orbs::before {
+    opacity: 0.25;
+  }
+
+  .dark .ambient-orbs::after {
+    opacity: 0.18;
+  }
+}
+
 /* Fade-in Animation */
 @keyframes fadeIn {
   from {

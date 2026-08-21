@@ -180,15 +180,15 @@ export default function FileDropZone({
         onDrop={handleDrop}
         className={`
           relative cursor-pointer
-          border-2 border-dashed rounded-xl p-8
+          border-2 border-dashed rounded-2xl p-8
           transition-all duration-200
           flex flex-col items-center justify-center
           gap-4 text-center
           ${disabled
             ? 'border-border bg-muted/30 cursor-not-allowed opacity-60'
             : isDragOver
-              ? 'border-primary bg-primary/5 scale-[1.02]'
-              : 'border-border hover:border-primary/50 hover:bg-secondary/50'
+              ? 'border-primary bg-primary/10 scale-[1.01] shadow-lg shadow-primary/10'
+              : 'glass-subtle hover:border-primary/50 hover:bg-card/60'
           }
         `}
       >

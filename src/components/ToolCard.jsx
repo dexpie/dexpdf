@@ -43,7 +43,7 @@ export default function ToolCard({ tool }) {
   return (
     <div className="group relative h-full">
       <Link href={tool.href || `/${tool.id}`} className="block h-full rounded-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/20">
-        <article className="relative flex h-full min-h-44 flex-col overflow-hidden rounded-2xl border border-border bg-card p-5 transition duration-300 group-hover:-translate-y-1 group-hover:border-primary/25 group-hover:shadow-xl group-hover:shadow-slate-900/10">
+        <article className="glass relative flex h-full min-h-44 flex-col overflow-hidden rounded-2xl p-5 transition duration-300 group-hover:-translate-y-1 group-hover:border-primary/25 group-hover:shadow-xl group-hover:shadow-slate-900/10">
           <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-primary/0 blur-2xl transition group-hover:bg-primary/10" />
           <div className="relative mb-6 flex items-start justify-between">
             <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${styles.icon}`}>
