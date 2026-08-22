@@ -208,7 +208,7 @@ export default function PdfToTextTool() {
                   type="checkbox"
                   checked={includePageHeaders}
                   onChange={(e) => setIncludePageHeaders(e.target.checked)}
-                  className="w-4 h-4 rounded border-[rgba(243,239,228,0.16)] text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 rounded border-[hsl(var(--hairline)/0.4)] text-indigo-600 focus:ring-indigo-500"
                 />
                 <span className="text-sm text-muted-foreground dark:text-muted-foreground">
                   {t('tools.pdfToText.includeHeaders', 'Include page headers (--- Page X ---)')}
@@ -254,7 +254,7 @@ export default function PdfToTextTool() {
                   type="checkbox"
                   checked={includePageHeaders}
                   onChange={(e) => setIncludePageHeaders(e.target.checked)}
-                  className="w-4 h-4 rounded border-[rgba(243,239,228,0.16)] text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 rounded border-[hsl(var(--hairline)/0.4)] text-indigo-600 focus:ring-indigo-500"
                 />
                 <div>
                   <span className="text-sm font-medium text-foreground dark:text-muted-foreground">

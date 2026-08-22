@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react'
+import React, { useState } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Database, AlignLeft, Copy, Terminal } from 'lucide-react'
 import { format } from 'sql-formatter'
@@ -33,7 +33,7 @@ export default function SqlFormatterTool() {
                         <select
                             value={language}
                             onChange={e => setLanguage(e.target.value)}
-                            className="text-xs font-bold bg-card border border-[rgba(243,239,228,0.16)] rounded-lg p-1 text-muted-foreground"
+                            className="text-xs font-bold bg-card border border-[hsl(var(--hairline)/0.4)] rounded-lg p-1 text-muted-foreground"
                         >
                             <option value="sql">Standard SQL</option>
                             <option value="postgresql">PostgreSQL</option>

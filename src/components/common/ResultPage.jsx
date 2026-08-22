@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Download, RefreshCcw, FileText, TrendingDown, Eye, CheckCircle, ArrowRight, Clock3 } from 'lucide-react'
 import Link from 'next/link'
@@ -308,7 +308,7 @@ export default function ResultPage({
       </div>
 
       {/* Suggestions */}
-      <div className="rounded-lg border border-[rgba(243,239,228,0.12)] p-6 sm:p-8 max-w-3xl mx-auto">
+      <div className="rounded-lg border border-border p-6 sm:p-8 max-w-3xl mx-auto">
         <div className="mb-6 flex flex-col items-center justify-between gap-3 sm:flex-row sm:text-left">
           <div>
             <h3 className="boundary-label mb-2">Recommended next steps</h3>

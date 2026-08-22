@@ -185,7 +185,7 @@ export default function FileDropZone({
           flex flex-col items-center justify-center
           gap-4 text-center
           ${disabled
-            ? 'border border-[rgba(243,239,228,0.10)] bg-muted/30 cursor-not-allowed opacity-60'
+            ? 'border border-border bg-muted/30 cursor-not-allowed opacity-60'
             : isDragOver
               ? 'boundary-box bg-primary/5 scale-[1.01]'
               : 'glass-subtle hover:border-primary/40'
@@ -193,7 +193,7 @@ export default function FileDropZone({
         `}
       >
         {!isDragOver && !disabled && (
-          <span className="pointer-events-none absolute inset-1.5 rounded-lg border border-dashed border-[rgba(243,239,228,0.16)]" />
+          <span className="pointer-events-none absolute inset-1.5 rounded-lg border border-dashed border-[hsl(var(--hairline)/0.4)]" />
         )}
         <input
           ref={inputRef}

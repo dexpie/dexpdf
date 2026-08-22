@@ -175,7 +175,7 @@ export default function PageNumbersTool() {
                       type="number"
                       value={start}
                       onChange={e => setStart(e.target.value)}
-                      className="w-full px-4 py-2 rounded-xl border border-[rgba(243,239,228,0.16)] focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                      className="w-full px-4 py-2 rounded-xl border border-[hsl(var(--hairline)/0.4)] focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
                     />
                   </div>
 

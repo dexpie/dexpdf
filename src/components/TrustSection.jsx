@@ -4,19 +4,19 @@ import { FREE_TIER_LIMIT_COPY } from '@/config/toolMetadata'
 const CLASSIFICATIONS = [
   {
     stamp: '100% Local',
-    stampClass: 'text-[#35D68E]',
+    stampClass: 'text-[#178A5E] dark:text-[#35D68E]',
     title: 'Processed in your browser',
     desc: 'Local tools run entirely on this device — even offline. Your files are never uploaded to DexPDF.',
   },
   {
     stamp: 'Cloud opt-in',
-    stampClass: 'text-[#E0A339]',
+    stampClass: 'text-[#8A6210] dark:text-[#E0A339]',
     title: 'Your choice, always disclosed',
     desc: 'A few conversions can use a cloud provider for higher fidelity. It only happens when you pick it, and the tool tells you first.',
   },
   {
     stamp: 'BYOK AI',
-    stampClass: 'text-[#6B8CBE]',
+    stampClass: 'text-[#3D5A85] dark:text-[#6B8CBE]',
     title: 'AI with your own key',
     desc: 'AI tools use your own Gemini API key and talk straight to Google from your browser — never through our servers.',
   },
@@ -24,7 +24,7 @@ const CLASSIFICATIONS = [
 
 export default function TrustSection() {
   return (
-    <section className="border-t border-[rgba(243,239,228,0.12)] px-4 py-16 md:px-6 md:py-20">
+    <section className="border-t border-border px-4 py-16 md:px-6 md:py-20">
       <div className="mx-auto max-w-6xl">
         <div className="boundary-label mb-3">Security classification</div>
         <h2 className="max-w-xl text-balance text-3xl font-bold tracking-tight text-foreground md:text-4xl">
@@ -38,7 +38,7 @@ export default function TrustSection() {
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {CLASSIFICATIONS.map(item => (
             <div key={item.stamp} className="glass relative rounded-lg p-6 pt-8">
-              <span className={`stamp absolute -top-3 right-4 bg-[#10151C] ${item.stampClass}`}>
+              <span className={`stamp absolute -top-3 right-4 bg-background ${item.stampClass}`}>
                 {item.stamp}
               </span>
               <h3 className="font-semibold text-foreground">{item.title}</h3>

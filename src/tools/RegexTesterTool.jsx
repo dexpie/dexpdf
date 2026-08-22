@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Search, AlertTriangle, CheckCircle, Copy } from 'lucide-react'
 
@@ -84,7 +84,7 @@ export default function RegexTesterTool() {
                         <button
                             key={f}
                             onClick={() => toggleFlag(f)}
-                            className={`px-3 py-1 rounded-lg font-mono text-xs font-bold border transition-colors ${flags.includes(f) ? 'bg-blue-100 border-blue-200 text-blue-700' : 'bg-card border-border text-muted-foreground hover:border-[rgba(243,239,228,0.16)]'
+                            className={`px-3 py-1 rounded-lg font-mono text-xs font-bold border transition-colors ${flags.includes(f) ? 'bg-blue-100 border-blue-200 text-blue-700' : 'bg-card border-border text-muted-foreground hover:border-[hsl(var(--hairline)/0.4)]'
                                 }`}
                         >
                             {f}

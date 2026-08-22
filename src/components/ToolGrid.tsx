@@ -108,7 +108,7 @@ export default function ToolGrid() {
                 <Link
                   key={tool.id}
                   href={tool.href || `/${tool.id}`}
-                  className="group flex items-center gap-3 rounded-md border border-[rgba(243,239,228,0.12)] bg-background p-3 transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="group flex items-center gap-3 rounded-md border border-border bg-background p-3 transition hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                     <tool.icon className="h-4 w-4" />
@@ -164,7 +164,7 @@ export default function ToolGrid() {
               placeholder="Try: gabung, kecilkan, qr, scan..."
               value={searchQuery}
               onChange={event => setSearchQuery(event.target.value)}
-              className="w-full rounded-md border border-[rgba(243,239,228,0.16)] bg-background py-2.5 pl-10 pr-10 text-sm font-medium text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/60 focus:ring-2 focus:ring-ring"
+              className="w-full rounded-md border border-[hsl(var(--hairline)/0.4)] bg-background py-2.5 pl-10 pr-10 text-sm font-medium text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/60 focus:ring-2 focus:ring-ring"
             />
             {searchQuery && (
               <button

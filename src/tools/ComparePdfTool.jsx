@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 import React, { useState, useEffect, useRef } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import FileDropZone from '../components/common/FileDropZone'
@@ -154,7 +154,7 @@ export default function ComparePdfTool() {
 
                 {/* Viewer */}
                 {fileA && fileB && (
-                    <div className="bg-secondary/50 rounded-3xl p-8 min-h-[600px] flex justify-center overflow-auto border border-dashed border-[rgba(243,239,228,0.16)]">
+                    <div className="bg-secondary/50 rounded-3xl p-8 min-h-[600px] flex justify-center overflow-auto border border-dashed border-[hsl(var(--hairline)/0.4)]">
                         {viewMode === 'overlay' ? (
                             <div className="relative shadow-2xl bg-card">
                                 {/* Base Layer */}

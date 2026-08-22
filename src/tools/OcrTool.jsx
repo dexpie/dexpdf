@@ -416,7 +416,7 @@ export default function OcrTool() {
             <label className="block text-sm font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
               <Languages className="w-4 h-4" /> Language
             </label>
-            <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full p-2.5 rounded-xl border border-[rgba(243,239,228,0.16)] bg-secondary focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
+            <select value={language} onChange={e => setLanguage(e.target.value)} className="w-full p-2.5 rounded-xl border border-[hsl(var(--hairline)/0.4)] bg-secondary focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
               {LANGUAGES.map(l => <option key={l.code} value={l.code}>{l.name}</option>)}
             </select>
           </div>
@@ -459,7 +459,7 @@ export default function OcrTool() {
             <label className="block text-sm font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
               <Zap className="w-4 h-4" /> Speed vs Accuracy
             </label>
-            <select value={ocrMode} onChange={e => setOcrMode(e.target.value)} className="w-full p-2.5 rounded-xl border border-[rgba(243,239,228,0.16)] bg-secondary focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
+            <select value={ocrMode} onChange={e => setOcrMode(e.target.value)} className="w-full p-2.5 rounded-xl border border-[hsl(var(--hairline)/0.4)] bg-secondary focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all outline-none">
               <option value="fast">⚡ Fast (Draft)</option>
               <option value="balanced">⚖️ Balanced</option>
               <option value="accurate">🎯 High Accuracy</option>
@@ -547,7 +547,7 @@ export default function OcrTool() {
                     {confidence && <span className={`text-[10px] px-2 py-0.5 rounded-full ${confidence > 80 ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{confidence}% Score</span>}
                   </span>
                   <div className="flex gap-2">
-                    <select value={exportFormat} onChange={e => setExportFormat(e.target.value)} className="text-xs p-1.5 rounded border border-[rgba(243,239,228,0.16)] bg-card">
+                    <select value={exportFormat} onChange={e => setExportFormat(e.target.value)} className="text-xs p-1.5 rounded border border-[hsl(var(--hairline)/0.4)] bg-card">
                       <option value="txt">.txt</option>
                       <option value="json">.json</option>
                       <option value="csv">.csv</option>

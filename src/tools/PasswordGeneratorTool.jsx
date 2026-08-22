@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { Key, Copy, RefreshCw, ShieldCheck } from 'lucide-react'
 import { triggerConfetti } from '../utils/confetti'
@@ -96,7 +96,7 @@ export default function PasswordGeneratorTool() {
                         {Object.keys(options).map(key => (
                             <label key={key} className={`
                                 flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all
-                                ${options[key] ? 'border-blue-500 bg-primary/10 text-blue-700' : 'border-border hover:border-[rgba(243,239,228,0.16)] text-muted-foreground'}
+                                ${options[key] ? 'border-blue-500 bg-primary/10 text-blue-700' : 'border-border hover:border-[hsl(var(--hairline)/0.4)] text-muted-foreground'}
                             `}>
                                 <span className="capitalize font-bold">{key}</span>
                                 <input

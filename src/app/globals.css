@@ -1,4 +1,4 @@
-﻿
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -77,35 +77,35 @@
 
 @layer base {
   :root {
-    /* Vault & Paper — dark vault chrome, paper document surfaces */
+    /* Vault & Paper — LIGHT: daylight desk holding cream paper documents */
     --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --background: 215 27% 9%;        /* --vault #10151C */
-    --foreground: 45 38% 92%;        /* --paper #F3EFE4 */
+    --background: 43 33% 93%;        /* warm desk */
+    --foreground: 213 18% 13%;       /* --ink #1B2027 */
 
-    --card: 213 22% 12%;             /* --vault-2 #171E27 */
-    --card-foreground: 45 38% 92%;
+    --card: 45 45% 97%;              /* bright panel on the desk */
+    --card-foreground: 213 18% 13%;
 
-    --popover: 213 22% 12%;
-    --popover-foreground: 45 38% 92%;
+    --popover: 45 45% 98%;
+    --popover-foreground: 213 18% 13%;
 
-    --primary: 155 64% 52%;          /* --signal-green #35D68E */
-    --primary-foreground: 215 27% 9%;
+    --primary: 155 71% 30%;          /* signal green, darkened for light bg */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 214 20% 15%;
-    --secondary-foreground: 45 38% 92%;
+    --secondary: 41 22% 86%;
+    --secondary-foreground: 213 18% 13%;
 
-    --muted: 214 20% 15%;
-    --muted-foreground: 214 11% 60%; /* --muted #8E97A3 */
+    --muted: 41 22% 87%;
+    --muted-foreground: 213 10% 40%;
 
-    --accent: 214 20% 15%;
-    --accent-foreground: 45 38% 92%;
+    --accent: 41 22% 86%;
+    --accent-foreground: 213 18% 13%;
 
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 45 38% 92%;
+    --destructive: 0 68% 44%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 210 12% 18%;
-    --input: 210 12% 22%;
-    --ring: 155 64% 52%;
+    --border: 40 12% 76%;
+    --input: 40 12% 72%;
+    --ring: 155 71% 30%;
 
     --radius: 0.625rem;
 
@@ -115,10 +115,15 @@
     --paper: #F3EFE4;
     --paper-2: #EAE3D2;
     --ink: #1B2027;
+
+    /* Theme-aware lines & chips */
+    --hairline: 213 14% 50%;
+    --chip-bg: 43 33% 93%;
+    --dot-color: rgba(27, 32, 39, 0.08);
   }
 
   .dark {
-    /* The vault is always dark — same palette in both themes */
+    /* DARK: the vault — same palette as the original design */
     --background: 215 27% 9%;
     --foreground: 45 38% 92%;
 
@@ -147,11 +152,9 @@
     --input: 210 12% 22%;
     --ring: 155 64% 52%;
 
-    --vault: #10151C;
-    --vault-2: #171E27;
-    --paper: #F3EFE4;
-    --paper-2: #EAE3D2;
-    --ink: #1B2027;
+    --hairline: 45 38% 92%;
+    --chip-bg: 215 27% 9%;
+    --dot-color: rgba(243, 239, 228, 0.05);
   }
 }
 
@@ -178,18 +181,18 @@
 @layer utilities {
   /* Vault & Paper surfaces */
   .glass {
-    background: hsl(213 22% 12% / 0.85);
-    border: 1px solid rgba(243, 239, 228, 0.12);
+    background: hsl(var(--card) / 0.85);
+    border: 1px solid hsl(var(--hairline) / 0.35);
   }
 
   .glass-strong {
-    background: #171E27;
-    border: 1px solid rgba(243, 239, 228, 0.14);
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--hairline) / 0.4);
   }
 
   .glass-subtle {
-    background: hsl(213 22% 12% / 0.6);
-    border: 1px solid rgba(243, 239, 228, 0.10);
+    background: hsl(var(--card) / 0.6);
+    border: 1px solid hsl(var(--hairline) / 0.3);
   }
 
   /* Paper document card — the thing you work on */
@@ -208,13 +211,13 @@
   /* Dashed device boundary — files never cross this line */
   .boundary-box {
     position: relative;
-    border: 1.5px dashed rgba(243, 239, 228, 0.28);
+    border: 1.5px dashed hsl(var(--hairline) / 0.45);
     border-radius: 0.75rem;
   }
 
   /* Faint engineering-dot texture for vault sections */
   .vault-dots {
-    background-image: radial-gradient(rgba(243, 239, 228, 0.05) 1px, transparent 1px);
+    background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
     background-size: 22px 22px;
   }
 
@@ -223,7 +226,7 @@
     font-size: 0.625rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #8E97A3;
+    color: hsl(var(--muted-foreground));
   }
 
   /* Terminal status strip */
@@ -232,17 +235,17 @@
     font-size: 0.75rem;
     line-height: 1.9;
     text-align: left;
-    background: hsl(213 22% 12% / 0.7);
-    border: 1px solid rgba(243, 239, 228, 0.12);
+    background: hsl(var(--card) / 0.75);
+    border: 1px solid hsl(var(--hairline) / 0.35);
     border-radius: 0.5rem;
   }
 
   .terminal-strip .prompt {
-    color: #35D68E;
+    color: hsl(var(--primary));
   }
 
   .terminal-strip .value {
-    color: #F3EFE4;
+    color: hsl(var(--foreground));
   }
 
   /* Classification stamp (trust cards) */

@@ -28,9 +28,9 @@ function BoundaryVisual() {
         <span className="absolute -bottom-[5px] -left-[5px] h-2.5 w-2.5 border-b-2 border-l-2 border-[#35D68E]" />
         <span className="absolute -bottom-[5px] -right-[5px] h-2.5 w-2.5 border-b-2 border-r-2 border-[#35D68E]" />
 
-        <div className="flex items-center justify-between border-b border-dashed border-[rgba(243,239,228,0.14)] pb-4">
-          <span className="boundary-label absolute -top-2.5 left-4 bg-[#10151C] px-2">your device</span>
-          <span className="ml-auto flex items-center gap-1.5 font-mono text-[10px] text-[#8E97A3]">
+        <div className="flex items-center justify-between border-b border-dashed border-border pb-4">
+          <span className="boundary-label absolute -top-2.5 left-4 bg-background px-2">your device</span>
+          <span className="ml-auto flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-full bg-[#35D68E]" />
             online
           </span>
@@ -43,9 +43,9 @@ function BoundaryVisual() {
             { icon: Scissors, label: 'split' },
             { icon: FileSignature, label: 'sign' },
           ].map(item => (
-            <div key={item.label} className="rounded-lg border border-[rgba(243,239,228,0.12)] bg-[#171E27] p-3 text-center">
-              <item.icon className="mx-auto h-5 w-5 text-[#F3EFE4]/80" />
-              <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-[#8E97A3]">{item.label}</p>
+            <div key={item.label} className="rounded-lg border border-border bg-card p-3 text-center">
+              <item.icon className="mx-auto h-5 w-5 text-foreground/80" />
+              <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">{item.label}</p>
             </div>
           ))}
         </div>
@@ -65,11 +65,11 @@ function BoundaryVisual() {
 
       {/* The cloud — outside the boundary, connection never completes */}
       <div className="absolute -top-10 right-0 flex items-center gap-2">
-        <svg className="h-6 w-14 text-[#8E97A3]" viewBox="0 0 56 24" fill="none" aria-hidden="true">
+        <svg className="h-6 w-14 text-muted-foreground" viewBox="0 0 56 24" fill="none" aria-hidden="true">
           <line x1="54" y1="12" x2="34" y2="12" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.5" />
           <line x1="28" y1="12" x2="18" y2="12" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 5" opacity="0.25" />
         </svg>
-        <CloudOff className="h-5 w-5 shrink-0 text-[#8E97A3]" />
+        <CloudOff className="h-5 w-5 shrink-0 text-muted-foreground" />
         <span className="boundary-label">cloud</span>
       </div>
     </div>
@@ -98,7 +98,7 @@ export default function HomeClient() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-background">
-      <section className="vault-dots border-b border-[rgba(243,239,228,0.12)] px-4 pb-16 pt-16 md:px-6 md:pb-20 md:pt-24">
+      <section className="vault-dots border-b border-border px-4 pb-16 pt-16 md:px-6 md:pb-20 md:pt-24">
         <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
             <h1 className="max-w-xl font-mono text-4xl font-bold leading-[1.12] tracking-tight text-foreground sm:text-5xl md:text-6xl">
@@ -123,7 +123,7 @@ export default function HomeClient() {
               </button>
               <Link
                 href="/privacy"
-                className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-[rgba(243,239,228,0.2)] px-6 py-3 text-sm font-semibold text-foreground transition hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-[hsl(var(--hairline)/0.55)] px-6 py-3 text-sm font-semibold text-foreground transition hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 See how local works
               </Link>
@@ -145,7 +145,7 @@ export default function HomeClient() {
             <Link
               key={tool.id}
               href={tool.href || `/${tool.id}`}
-              className="group inline-flex items-center gap-1.5 rounded-full border border-[rgba(243,239,228,0.14)] px-4 py-1.5 text-xs font-semibold text-muted-foreground transition hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="group inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-1.5 text-xs font-semibold text-muted-foreground transition hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <tool.icon className="h-3.5 w-3.5" />
               {tool.title}

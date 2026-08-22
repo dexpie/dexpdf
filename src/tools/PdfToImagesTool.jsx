@@ -202,7 +202,7 @@ export default function PdfToImagesTool() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-muted-foreground mb-1">Format</label>
-              <select value={format} onChange={(e) => setFormat(e.target.value)} className="w-full p-2.5 rounded-xl border border-[rgba(243,239,228,0.16)] bg-secondary focus:ring-2 focus:ring-orange-200 focus:border-orange-500 transition-all outline-none">
+              <select value={format} onChange={(e) => setFormat(e.target.value)} className="w-full p-2.5 rounded-xl border border-[hsl(var(--hairline)/0.4)] bg-secondary focus:ring-2 focus:ring-orange-200 focus:border-orange-500 transition-all outline-none">
                 <option value="png">PNG (Best Quality)</option>
                 <option value="jpeg">JPEG (Smaller Size)</option>
                 <option value="webp">WEBP (Modern)</option>

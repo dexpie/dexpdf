@@ -1,4 +1,4 @@
-﻿import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import * as pdfjsLib from 'pdfjs-dist'
 import { PDFDocument } from 'pdf-lib'
 import FilenameInput from '../components/FilenameInput'
@@ -280,7 +280,7 @@ export default function AnnotateTool() {
                 </div>
               ) : (
                 <div className="flex items-center justify-center text-muted-foreground gap-2">
-                  <div className="w-6 h-6 border-2 border-[rgba(243,239,228,0.16)] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-6 h-6 border-2 border-[hsl(var(--hairline)/0.4)] border-t-transparent rounded-full animate-spin"></div>
                   Rendering...
                 </div>
               )}

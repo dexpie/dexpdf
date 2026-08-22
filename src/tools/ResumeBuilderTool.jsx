@@ -202,10 +202,10 @@ export default function ResumeBuilderTool() {
                     {/* Controls */}
                     <div className="bg-card dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-border dark:border-slate-700">
                         <div className="flex gap-4 mb-6">
-                            <button onClick={() => setLayout('modern')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'modern' ? 'border-blue-500 bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 hover:border-[rgba(243,239,228,0.16)] dark:hover:border-slate-600 text-muted-foreground dark:text-muted-foreground'}`}>
+                            <button onClick={() => setLayout('modern')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'modern' ? 'border-blue-500 bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 hover:border-[hsl(var(--hairline)/0.4)] dark:hover:border-slate-600 text-muted-foreground dark:text-muted-foreground'}`}>
                                 Modern
                             </button>
-                            <button onClick={() => setLayout('classic')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'classic' ? 'border-blue-500 bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 hover:border-[rgba(243,239,228,0.16)] dark:hover:border-slate-600 text-muted-foreground dark:text-muted-foreground'}`}>
+                            <button onClick={() => setLayout('classic')} className={`flex-1 p-3 rounded-xl border-2 font-bold text-sm transition-all ${layout === 'classic' ? 'border-blue-500 bg-primary/10 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'border-border dark:border-slate-700 hover:border-[hsl(var(--hairline)/0.4)] dark:hover:border-slate-600 text-muted-foreground dark:text-muted-foreground'}`}>
                                 Classic
                             </button>
                         </div>
@@ -339,12 +339,12 @@ function ClassicLayout({ data }) {
             </header>
 
             <section className="mb-6">
-                <h3 className="font-bold text-lg uppercase border-b border-[rgba(243,239,228,0.16)] mb-3 pb-1">Professional Summary</h3>
+                <h3 className="font-bold text-lg uppercase border-b border-[hsl(var(--hairline)/0.4)] mb-3 pb-1">Professional Summary</h3>
                 <p className="text-foreground text-sm leading-relaxed">{data.personal.summary}</p>
             </section>
 
             <section className="mb-6">
-                <h3 className="font-bold text-lg uppercase border-b border-[rgba(243,239,228,0.16)] mb-4 pb-1">Experience</h3>
+                <h3 className="font-bold text-lg uppercase border-b border-[hsl(var(--hairline)/0.4)] mb-4 pb-1">Experience</h3>
                 {data.experience.map((exp, i) => (
                     <div key={i} className="mb-5">
                         <div className="flex justify-between items-baseline mb-1">
@@ -360,7 +360,7 @@ function ClassicLayout({ data }) {
             <section className="mb-6">
                 <div className="grid grid-cols-2 gap-8">
                     <div>
-                        <h3 className="font-bold text-lg uppercase border-b border-[rgba(243,239,228,0.16)] mb-3 pb-1">Education</h3>
+                        <h3 className="font-bold text-lg uppercase border-b border-[hsl(var(--hairline)/0.4)] mb-3 pb-1">Education</h3>
                         {data.education.map((edu, i) => (
                             <div key={i} className="mb-3">
                                 <div className="font-bold text-sm">{edu.school}</div>
@@ -370,7 +370,7 @@ function ClassicLayout({ data }) {
                         ))}
                     </div>
                     <div>
-                        <h3 className="font-bold text-lg uppercase border-b border-[rgba(243,239,228,0.16)] mb-3 pb-1">Skills</h3>
+                        <h3 className="font-bold text-lg uppercase border-b border-[hsl(var(--hairline)/0.4)] mb-3 pb-1">Skills</h3>
                         <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-foreground">
                             {data.skills.map((skill, i) => (
                                 <span key={i}>• {skill}</span>

@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 import React, { useState, useRef, useEffect } from 'react'
 import ToolLayout from '../components/common/ToolLayout'
 import { QrCode, Download, Palette, Image as ImageIcon, Wifi as WifiIcon, Mail, Phone, MessageSquare, CreditCard, Link2, Type, Trash2, History, Settings2, Shapes, Share2, Bitcoin, Calendar as CalendarIcon, Smartphone } from 'lucide-react'
@@ -423,14 +423,14 @@ export default function QrCodeProTool() {
                                         <button
                                             onClick={() => download('svg')}
                                             disabled={!hasContent}
-                                            className="flex-1 py-3 bg-card border-2 border-border hover:border-[rgba(243,239,228,0.16)] text-foreground rounded-2xl font-bold transition-all disabled:opacity-50"
+                                            className="flex-1 py-3 bg-card border-2 border-border hover:border-[hsl(var(--hairline)/0.4)] text-foreground rounded-2xl font-bold transition-all disabled:opacity-50"
                                         >
                                             SVG
                                         </button>
                                         <button
                                             onClick={() => download('webp')}
                                             disabled={!hasContent}
-                                            className="flex-1 py-3 bg-card border-2 border-border hover:border-[rgba(243,239,228,0.16)] text-foreground rounded-2xl font-bold transition-all disabled:opacity-50"
+                                            className="flex-1 py-3 bg-card border-2 border-border hover:border-[hsl(var(--hairline)/0.4)] text-foreground rounded-2xl font-bold transition-all disabled:opacity-50"
                                         >
                                             WEBP
                                         </button>
