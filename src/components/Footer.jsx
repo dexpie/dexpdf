@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { Github } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 export default function Footer() {
@@ -22,10 +23,19 @@ export default function Footer() {
             }
           </small>
         </div>
-        <nav className="flex flex-wrap gap-x-4 gap-y-2 text-xs font-bold text-muted-foreground" aria-label="Footer">
+        <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-bold text-muted-foreground" aria-label="Footer">
           <Link href="/blog" className="transition hover:text-foreground">Guides</Link>
           <Link href="/privacy" className="transition hover:text-foreground">Privacy Policy</Link>
           <Link href="/terms" className="transition hover:text-foreground">Terms of Service</Link>
+          <a
+            href="https://github.com/dexpie/dexpdf"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 transition hover:text-foreground"
+          >
+            <Github className="h-3.5 w-3.5" />
+            GitHub
+          </a>
         </nav>
       </div>
     </footer>

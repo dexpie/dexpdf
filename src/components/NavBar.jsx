@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
-import { Download, FileText, Menu, Search, Sparkles, X } from 'lucide-react'
+import { Download, FileText, Github, Menu, Search, Sparkles, X } from 'lucide-react'
 import { usePWA } from '@/hooks/usePWA'
 import ThemeToggle from './ThemeToggle'
 
@@ -70,6 +70,17 @@ export default function NavBar() {
             <FileText className="h-4 w-4" />
           </button>
 
+          <a
+            href="https://github.com/dexpie/dexpdf"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="DexPDF on GitHub"
+            title="Open source — view on GitHub"
+            className="rounded-lg p-2 text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+          >
+            <Github className="h-4 w-4" />
+          </a>
+
           <ThemeToggle />
 
           {mounted && (
@@ -104,6 +115,15 @@ export default function NavBar() {
           <button onClick={() => navigate('/my-documents')} className="w-full rounded-xl p-3 text-left text-sm font-bold text-muted-foreground transition hover:bg-secondary">
             My documents
           </button>
+          <a
+            href="https://github.com/dexpie/dexpdf"
+            target="_blank"
+            rel="noreferrer"
+            className="flex w-full items-center gap-2 rounded-xl p-3 text-left text-sm font-bold text-muted-foreground transition hover:bg-secondary"
+          >
+            <Github className="h-4 w-4" />
+            GitHub — open source
+          </a>
         </div>
       )}
     </nav>
