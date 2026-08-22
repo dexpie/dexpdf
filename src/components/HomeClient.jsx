@@ -122,7 +122,7 @@ export default function HomeClient() {
                 <ArrowRight className="h-4 w-4" />
               </button>
               <Link
-                href="/privacy"
+                href="/how-it-works"
                 className="inline-flex min-h-12 items-center gap-2 rounded-lg border border-[hsl(var(--hairline)/0.55)] px-6 py-3 text-sm font-semibold text-foreground transition hover:border-primary/50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 See how local works

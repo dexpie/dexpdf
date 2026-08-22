@@ -7,6 +7,7 @@ import Footer from '@/components/Footer'
 import ProgressBar from '@/components/ProgressBar'
 import CommandPalette from '@/components/CommandPalette'
 import GlobalDropZone from '@/components/GlobalDropZone'
+import PrivacyAnalytics from '@/components/PrivacyAnalytics'
 import { TOOLS } from '@/config/tools'
 import { registerServiceWorker } from '@/utils/serviceWorkerUpdates'
 
@@ -51,6 +52,7 @@ export default function ClientLayout({ children }) {
 
     return (
         <div className="app-layout pt-16">
+            <PrivacyAnalytics />
             <ProgressBar />
             <NavBar />
             <GlobalDropZone />

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
-import { Download, FileText, Github, Menu, Search, Sparkles, X } from 'lucide-react'
+import { Download, FileText, Github, Menu, Search, X } from 'lucide-react'
 import { usePWA } from '@/hooks/usePWA'
 import ThemeToggle from './ThemeToggle'
 
@@ -42,9 +42,13 @@ export default function NavBar() {
     <nav className="glass-strong fixed left-0 top-0 z-50 h-16 w-full border-x-0 border-t-0 shadow-sm">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 md:px-6">
         <button onClick={() => navigate('/')} className="group flex items-center gap-2.5 text-left">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition group-hover:-rotate-3">
-            <Sparkles className="h-4 w-4" />
-          </span>
+          <img
+            src="/assets/logo-dexpdf.svg"
+            alt="DexPDF logo"
+            className="h-9 w-9 rounded-lg transition group-hover:-rotate-3"
+            width={36}
+            height={36}
+          />
           <span>
             <span className="block text-lg font-black leading-none tracking-[-0.04em] text-foreground">DexPDF</span>
             <span className="mt-0.5 hidden text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground lg:block">Private PDF workspace</span>

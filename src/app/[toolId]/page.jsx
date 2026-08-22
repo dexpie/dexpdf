@@ -3,7 +3,6 @@ import ToolPageClient from '@/components/ToolPageClient'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import {
-    DEFAULT_OG_IMAGE,
     getAbsoluteUrl,
     getRelatedTools,
     getToolSeoCopy,
@@ -42,13 +41,11 @@ export async function generateMetadata({ params }) {
             description: seo?.description || tool.description,
             url: getAbsoluteUrl(tool.href || `/${tool.id}`),
             type: 'website',
-            images: [DEFAULT_OG_IMAGE],
         },
         twitter: {
             card: 'summary_large_image',
             title: `${tool.title} - ${SITE_NAME}`,
             description: seo?.description || tool.description,
-            images: [DEFAULT_OG_IMAGE],
         },
     }
 }

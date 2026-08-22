@@ -214,5 +214,18 @@ export function getToolStructuredData(toolId: string) {
         },
       ],
     },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: `How to ${tool.title.toLowerCase()} with ${SITE_NAME}`,
+      totalTime: 'PT1M',
+      step: seo.steps.map((step, index) => ({
+        '@type': 'HowToStep',
+        position: index + 1,
+        name: `Step ${index + 1}`,
+        text: step,
+        url: `${getAbsoluteUrl(toolPath)}#step-${index + 1}`,
+      })),
+    },
   ]
 }

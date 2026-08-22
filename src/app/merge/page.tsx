@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import ToolPageClient from '@/components/ToolPageClient'
 import {
-  DEFAULT_OG_IMAGE,
   getAbsoluteUrl,
   getRelatedTools,
   getToolSeoCopy,
@@ -25,13 +24,11 @@ export const metadata: Metadata = {
     title: `Merge PDF - ${SITE_NAME}`,
     description: seo?.description || 'Combine multiple PDFs into one.',
     url: getAbsoluteUrl('/merge'),
-    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: `Merge PDF - ${SITE_NAME}`,
     description: seo?.description || 'Combine multiple PDFs into one.',
-    images: [DEFAULT_OG_IMAGE],
   },
 }
 

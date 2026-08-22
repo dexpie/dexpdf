@@ -87,6 +87,7 @@ Copy-Item .env.local.example .env.local
 | `GEMINI_API_KEY` | Chat, summarization, and translation features | No |
 | `OCR_SPACE_API_KEY` | Cloud OCR fallback | No |
 | `CONVERT_API_SECRET` | High-fidelity PDF and Office conversion | No |
+| `NEXT_PUBLIC_CF_BEACON_TOKEN` | Cloudflare Web Analytics (cookieless, aggregate). Empty = fully silent. | No |
 
 Never commit `.env` or `.env.local`. These files are ignored by Git.
 
@@ -96,6 +97,7 @@ Never commit `.env` or `.env.local`. These files are ignored by Git.
 | --- | --- |
 | `npm run dev` | Start the development server |
 | `npm run lint` | Run ESLint |
+| `npm run test` | Run unit tests (vitest) |
 | `npm run audit:tools` | Validate public tool routes and runtime mappings |
 | `npm run build` | Create a production build |
 | `npm run smoke:tools` | Smoke-test production routes after a build |

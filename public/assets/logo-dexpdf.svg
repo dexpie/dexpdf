@@ -1,3 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40">
-  <text x="0" y="28" font-family="DexpdfCustom, Arial, sans-serif" font-size="28" font-weight="800">DEX<span fill="#FF0000">PDF</span></text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DexPDF">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3FC5F7"/>
+      <stop offset="1" stop-color="#1E8FD6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- speed dashes -->
+  <rect x="128" y="188" width="94" height="22" rx="11" fill="#29B6F6"/>
+  <rect x="62" y="242" width="42" height="22" rx="11" fill="#29B6F6"/>
+  <rect x="118" y="242" width="142" height="22" rx="11" fill="#1E56C8"/>
+  <rect x="112" y="296" width="106" height="22" rx="11" fill="#29B6F6"/>
+
+  <!-- document -->
+  <path d="M200 88 H326 L418 180 V396 Q418 426 388 426 H200 Q170 426 170 396 V118 Q170 88 200 88 Z" fill="#1D3FB0"/>
+  <!-- folded corner -->
+  <path d="M326 88 L418 180 H356 Q326 180 326 150 Z" fill="#29B6F6"/>
+
+  <!-- italic P -->
+  <text x="286" y="352" text-anchor="middle" fill="#FFFFFF"
+        font-family="'Arial Black', Arial, Helvetica, sans-serif"
+        font-weight="900" font-style="italic" font-size="252">P</text>
+
+  <!-- shield -->
+  <path d="M392 318 l60 23 v54 c0 45 -27 74 -60 87 c-33 -13 -60 -42 -60 -87 v-54 Z" fill="url(#shieldGrad)"/>
+  <!-- padlock -->
+  <path d="M376 396 v-12 a16 16 0 0 1 32 0 v12" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round"/>
+  <rect x="369" y="394" width="46" height="38" rx="8" fill="#FFFFFF"/>
+  <circle cx="392" cy="408" r="5.5" fill="#1E8FD6"/>
+  <rect x="389" y="408" width="6" height="12" rx="3" fill="#1E8FD6"/>
 </svg>

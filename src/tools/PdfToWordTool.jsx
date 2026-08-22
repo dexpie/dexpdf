@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import ResultPage from '../components/common/ResultPage'
+import { LIST_ITEM_RE, joinWrappedLines } from '../utils/textLayout'
 
 configurePdfWorker()
 
@@ -219,24 +220,6 @@ async function advancedPdfToWord(file, onProgress) {
   if (onProgress) onProgress(100)
 
   return blob
-}
-
-const LIST_ITEM_RE = /^([•▪◦‣·]|[-��]\s|\(?\d{1,2}[.)]\s)/
-
-function joinWrappedLines(lineItems) {
-  let combined = ''
-  lineItems.forEach((line, index) => {
-    if (index === 0) {
-      combined = line.text
-      return
-    }
-    if (/[A-Za-z]-$/.test(combined) && /^[a-z]/.test(line.text)) {
-      combined = combined.slice(0, -1) + line.text
-    } else {
-      combined += ' ' + line.text
-    }
-  })
-  return combined.replace(/\s+/g, ' ').trim()
 }
 
 function formatParagraph(lineItems, avgFontHeight) {

@@ -4,7 +4,7 @@ import ClientLayout from '@/components/ClientLayout'
 import BottomNav from '@/components/BottomNav'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { cn } from '@/lib/utils'
-import { DEFAULT_OG_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/seo'
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/seo'
 
 export const metadata: Metadata = {
     metadataBase: new URL(SITE_URL),
@@ -18,6 +18,13 @@ export const metadata: Metadata = {
     creator: 'DexPie',
     publisher: 'DexPie',
     manifest: '/manifest.json',
+    icons: {
+        icon: [
+            { url: '/favicon.ico', sizes: 'any' },
+            { url: '/assets/logo-dexpdf.svg', type: 'image/svg+xml' },
+        ],
+        apple: '/assets/icon-192.png',
+    },
     alternates: {
         canonical: SITE_URL,
     },
@@ -40,21 +47,12 @@ export const metadata: Metadata = {
         siteName: SITE_NAME,
         locale: 'en_US',
         type: 'website',
-        images: [
-            {
-                url: DEFAULT_OG_IMAGE,
-                width: 512,
-                height: 512,
-                alt: `${SITE_NAME} icon`,
-            },
-        ],
     },
     twitter: {
         card: 'summary_large_image',
         title: `${SITE_NAME} - PDF and QR Workspace`,
         description: SITE_DESCRIPTION,
         creator: '@dexpie',
-        images: [DEFAULT_OG_IMAGE],
     },
 }
 
