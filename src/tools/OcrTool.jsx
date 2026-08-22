@@ -25,6 +25,8 @@ const LANGUAGES = [
   { code: 'ara', name: '🇸🇦 Arabic', popular: true },
   { code: 'por', name: '🇵🇹 Portuguese', popular: true },
   { code: 'rus', name: '🇷🇺 Russian', popular: false },
+  { code: 'jav', name: '🇮🇩 Jawa (aksara Latin)', popular: true },
+  { code: 'sun', name: '🇮🇩 Sunda (aksara Latin)', popular: false },
   { code: 'tha', name: '🇹🇭 Thai', popular: true },
   { code: 'vie', name: '🇻🇳 Vietnamese', popular: true },
 ]

@@ -5,6 +5,35 @@ const withPWA = require('next-pwa')({
     clientsClaim: true,
     skipWaiting: true,
     cleanupOutdatedCaches: true,
+    runtimeCaching: [
+        {
+            urlPattern: /\/fonts\/.+\.(woff2?|ttf)$/,
+            handler: 'CacheFirst',
+            options: {
+                cacheName: 'dexpdf-fonts',
+                expiration: { maxEntries: 24, maxAgeSeconds: 60 * 60 * 24 * 365 },
+                cacheableResponse: { statuses: [200] },
+            },
+        },
+        {
+            urlPattern: /\/pdfjs\/.+\.js$/,
+            handler: 'CacheFirst',
+            options: {
+                cacheName: 'dexpdf-pdfjs-worker',
+                expiration: { maxEntries: 6, maxAgeSeconds: 60 * 60 * 24 * 365 },
+                cacheableResponse: { statuses: [200] },
+            },
+        },
+        {
+            urlPattern: /\/assets\/.+\.(svg|png|jpe?g|webp|ico)$/,
+            handler: 'CacheFirst',
+            options: {
+                cacheName: 'dexpdf-static-assets',
+                expiration: { maxEntries: 40, maxAgeSeconds: 60 * 60 * 24 * 30 },
+                cacheableResponse: { statuses: [200] },
+            },
+        },
+    ],
 })
 
 /** @type {import('next').NextConfig} */

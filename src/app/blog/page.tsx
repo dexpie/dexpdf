@@ -28,6 +28,12 @@ const ARTICLES = [
     title: 'PDF ke Word Tanpa Format Berantakan',
     desc: 'Pilih mesin konversi yang mengelompokkan paragraf dengan benar dan meng-OCR halaman scan secara otomatis.',
   },
+  {
+    href: '/blog/cara-tanda-tangan-pdf-online',
+    tag: 'Sign PDF · 3 menit',
+    title: 'Tanda Tangan PDF Tanpa Print-Scan',
+    desc: 'Gambar atau unggah tanda tangan sekali, tempatkan, kunci hasilnya — tanpa mencetak dan tanpa upload.',
+  },
 ]
 
 export default function BlogPage() {
