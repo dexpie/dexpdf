@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, FileText, Clock, Trash2, FileSpreadsheet, Layers, ShieldCheck, Sparkles } from 'lucide-react'
+import { ArrowRight, FileText, Clock, Trash2, FileSpreadsheet, Layers, ShieldCheck, Sparkles, Upload } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Link from 'next/link'
 import { useFileHistory } from '@/hooks/useFileHistory'
@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button'
 import { TOOLS } from '@/config/tools'
 
 export default function MyDocumentsPage() {
-    const { history, clearHistory } = useFileHistory()
+    const { history, clearHistory, exportHistory, importHistory } = useFileHistory()
+    const importInputRef = React.useRef(null)
     const { t } = useTranslation()
     const recent = history.slice(0, 5)
     const completedCount = history.length
@@ -43,6 +44,29 @@ export default function MyDocumentsPage() {
         a.click()
     }
 
+    const handleBackupJson = () => {
+        const blob = new Blob([JSON.stringify(exportHistory(), null, 2)], { type: 'application/json' })
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `dexpdf_backup_${Date.now()}.json`
+        a.click()
+        window.URL.revokeObjectURL(url)
+    }
+
+    const handleImportJson = async (event) => {
+        const file = event.target.files?.[0]
+        event.target.value = ''
+        if (!file) return
+        try {
+            const parsed = JSON.parse(await file.text())
+            const result = importHistory(parsed)
+            window.alert(`Imported ${result.added} record(s). ${result.skipped} skipped (duplicate or invalid).`)
+        } catch {
+            window.alert('That file is not a valid DexPDF backup.')
+        }
+    }
+
     return (
         <div className="min-h-screen bg-secondary py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
@@ -65,6 +89,22 @@ export default function MyDocumentsPage() {
                                     className="bg-card text-foreground border border-slate-300 hover:bg-secondary shadow-sm"
                                 >
                                     <FileSpreadsheet className="w-4 h-4 mr-2" /> Export CSV
+                                </Button>
+                                {history.length > 0 && (
+                                    <Button
+                                        onClick={handleBackupJson}
+                                        className="bg-card text-foreground border border-slate-300 hover:bg-secondary shadow-sm"
+                                    >
+                                        Backup JSON
+                                    </Button>
+                                )}
+                                <input ref={importInputRef} type="file" accept=".json" onChange={handleImportJson} className="hidden" aria-hidden="true" />
+                                <Button
+                                    onClick={() => importInputRef.current?.click()}
+                                    variant="outline"
+                                    className="border-slate-300"
+                                >
+                                    <Upload className="w-4 h-4 mr-2" /> Restore
                                 </Button>
                                 <Button
                                     variant="destructive"

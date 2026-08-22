@@ -76,6 +76,7 @@ const TOOL_COMPONENTS = {
   'form-filler': loadTool(() => import('../../tools/FormFillerTool')),
   'pdf-validator': loadTool(() => import('../../tools/PdfValidatorTool')),
   'batch-pdf': loadTool(() => import('../../tools/BatchPdfTool')),
+  'pipeline': loadTool(() => import('../../tools/PipelineTool')),
   'header-footer': loadTool(() => import('../../tools/HeaderFooterTool')),
   'pdf-optimize': loadTool(() => import('../../tools/PdfOptimizeTool')),
   'csv-to-pdf': loadTool(() => import('../../tools/CSVToPdfTool')),

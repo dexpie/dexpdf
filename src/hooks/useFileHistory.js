@@ -43,5 +43,21 @@ export function useFileHistory() {
         localStorage.removeItem(STORAGE_KEY)
     }, [])
 
-    return { history, addToHistory, clearHistory }
+    const exportHistory = useCallback(() => {
+        return history
+    }, [history])
+
+    const importHistory = useCallback((incoming) => {
+        if (!Array.isArray(incoming)) return { added: 0, skipped: 0 }
+        const existingIds = new Set(history.map(item => item.id))
+        const valid = incoming.filter(item =>
+            item && typeof item === 'object' && item.name && item.tool && !existingIds.has(String(item.id))
+        )
+        const merged = [...valid, ...history].slice(0, 50)
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
+        setHistory(merged)
+        return { added: valid.length, skipped: incoming.length - valid.length }
+    }, [history])
+
+    return { history, addToHistory, clearHistory, exportHistory, importHistory }
 }

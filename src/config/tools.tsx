@@ -36,6 +36,7 @@ export const TOOLS = [
   { id: 'form-filler', category: 'organize', title: "PDF Form Filler", description: "Fill out PDF forms easily.", icon: ClipboardList, color: "text-blue-500", iconBg: "bg-blue-50", href: "/form-filler" },
 { id: 'pdf-validator', category: 'organize', title: "Basic PDF Check", description: "Run structural checks and normalize readable PDFs.", icon: FileCheck, color: "text-green-500", iconBg: "bg-green-50", href: "/pdf-validator" },
 { id: 'batch-pdf', category: 'organize', title: "Batch PDF", description: "Compress, merge, convert multiple PDFs at once.", icon: FolderOutput, color: "text-cyan-500", iconBg: "bg-cyan-50", href: "/batch-pdf" },
+{ id: 'pipeline', category: 'organize', title: "Batch Pipeline", description: "Compress, merge, and protect PDFs in one local run.", icon: Layers, color: "text-emerald-500", iconBg: "bg-emerald-50", href: "/pipeline" },
 { id: 'header-footer', category: 'organize', title: "Header & Footer", description: "Add header or footer to PDF pages.", icon: AlignCenter, color: "text-indigo-500", iconBg: "bg-indigo-50", href: "/header-footer" },
 { id: 'pdf-optimize', category: 'organize', title: "Optimize PDF Structure", description: "Rebuild object structure and optionally clear metadata.", icon: Zap, color: "text-orange-500", iconBg: "bg-orange-50", href: "/pdf-optimize" },
 

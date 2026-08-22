@@ -34,6 +34,12 @@ const ARTICLES = [
     title: 'Tanda Tangan PDF Tanpa Print-Scan',
     desc: 'Gambar atau unggah tanda tangan sekali, tempatkan, kunci hasilnya — tanpa mencetak dan tanpa upload.',
   },
+  {
+    href: '/blog/cara-membuka-pdf-terkunci',
+    tag: 'Unlock PDF · 3 menit',
+    title: 'Membuka PDF Terkunci (Menghapus Password)',
+    desc: 'Masih tahu passwordnya? Hapus proteksinya sekali saja supaya file terbuka langsung — diproses lokal.',
+  },
 ]
 
 export default function BlogPage() {
